@@ -9,7 +9,7 @@ export const App: FC = () => (
   <div className={styles.App}>
     <Background />
     <Nav />
-    <RecCard />
+    {/* <RecCard /> */}
     <Workspace />
   </div>
 );
