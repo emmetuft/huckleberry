@@ -1,0 +1,27 @@
+@import '../../styles/shared.scss';
+
+.RecCard {
+  @extend .card;
+  position: fixed;
+  top: 20px;
+  left: calc(62px + 40px);
+  width: fit-content;
+
+  h4 {
+    font-size: 12px;
+    margin-bottom: 10px;
+  }
+
+  .article {
+    width: fit-content;
+    padding: 5px 10px;
+    background-color: rgb(212, 224, 240);
+    border: 1px solid rgb(117, 149, 185);
+    border-radius: 6px;
+    cursor: pointer;
+
+    p {
+      font-size: 10px;
+    }
+  }
+}

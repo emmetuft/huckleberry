@@ -2,13 +2,13 @@
 // IF YOU DO, GENERATED REDUCERS WILL NOT BE WIRED UP AUTOMATICALLY.
 
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
-import CounterSlice from './counter/slice';
+import AppReducer from './app/slice';
 //-- importRef
 import { useDispatch } from 'react-redux';
 
 export const store = configureStore({
   reducer: {
-    counter: CounterSlice,
+    app: AppReducer,
     //-- reducerRef
   },
 });

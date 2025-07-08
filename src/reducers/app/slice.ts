@@ -8,8 +8,8 @@ const initialState: State = {
   value: 0,
 };
 
-export const CounterSlice = createAppSlice({
-  name: 'counter',
+export const AppReducer = createAppSlice({
+  name: 'app',
   initialState,
   reducers: (create) => ({
     // increments the counter by one
@@ -48,7 +48,7 @@ export const CounterSlice = createAppSlice({
 });
 
 export const { increment, decrement, incrementByAmount, incrementAsync } =
-  CounterSlice.actions;
-export const { selectValue } = CounterSlice.selectors;
+  AppReducer.actions;
+export const { selectValue } = AppReducer.selectors;
 
-export default CounterSlice.reducer;
+export default AppReducer.reducer;

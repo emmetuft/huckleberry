@@ -1,0 +1,22 @@
+@import '../../styles/shared.scss';
+
+.Nav {
+  @extend .card;
+  position: fixed;
+  left: 20px;
+  height: calc(100vh - 40px);
+  width: 62px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+
+  .logo {
+    margin-bottom: 100px;
+  }
+
+  .buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+}
