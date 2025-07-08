@@ -1,0 +1,20 @@
+import { FC, useState } from 'react';
+
+import styles from './TemplateList.module.scss';
+import { Template } from 'models/interfaces/template';
+
+interface TemplateListProps {}
+
+export const TemplateList: FC<TemplateListProps> = ({}) => {
+  const [templates, setTemplates] = useState<Template[]>([]);
+  return (
+    <div className={styles.TemplateList}>
+      {templates.map((template) => (
+        <div className={styles.template}>
+          <h4>{template.name}</h4>
+          <p>{template.description}</p>
+        </div>
+      ))}
+    </div>
+  );
+};

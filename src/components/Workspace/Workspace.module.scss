@@ -2,11 +2,17 @@
 @import '../../styles/variables.scss';
 
 .Workspace {
-  @extend .card;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
   width: 600px;
-  min-height: 100px;
-  animation: breathe 4s ease-in-out infinite;
-  transition: box-shadow 0.3s ease;
+
+  .inputWrapper {
+    @extend .card;
+    min-height: 100px;
+    animation: breathe 4s ease-in-out infinite;
+    transition: box-shadow 0.3s ease;
+  }
 
   .editable {
     outline: none;
@@ -27,29 +33,6 @@
       background-color: white;
       padding: 1px 4px;
       border-radius: 4px;
-    }
-  }
-
-  .recWrapper {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 10px;
-
-    .rec {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      padding: 15px;
-      border: 1px solid white;
-      border-radius: 8px;
-
-      h4 {
-        font-size: 14px;
-      }
-
-      p {
-        font-size: 12px;
-      }
     }
   }
 

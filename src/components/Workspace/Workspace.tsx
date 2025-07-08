@@ -18,6 +18,7 @@ import {
   setCaretPosition,
 } from 'utils/dom';
 import { ActionType, getSuggestedActions } from 'utils/temp';
+import { TemplateList } from 'components/TemplateList/TemplateList';
 
 interface WorkspaceProps {}
 
@@ -63,50 +64,45 @@ export const Workspace: FC<WorkspaceProps> = ({}) => {
 
   return (
     <div className={styles.Workspace}>
-      <div>
-        <div
-          className={`${styles.editable} ${isEmpty ? styles.empty : ''}`}
-          contentEditable
-          ref={editableRef}
-          onInput={onInput}
-          data-placeholder="Start something new: a workflow, a dashboard, an agent—your call."
-        />
-      </div>
-      {/* <div className={styles.recWrapper}>
-        <div className={styles.rec}>
-          <h4>Set up automation</h4>
-          <p>
-            You uploaded sales data yesterday. Let's build an automated report.
-          </p>
+      <div className={styles.inputWrapper}>
+        <div>
+          <div
+            className={`${styles.editable} ${isEmpty ? styles.empty : ''}`}
+            contentEditable
+            ref={editableRef}
+            onInput={onInput}
+            data-placeholder="Start something new: a workflow, a dashboard, an agent—your call."
+          />
         </div>
-      </div> */}
-      <div className={styles.actions}>
-        <div className={styles.buttons}>
-          <IconBtn icon={<Plus {...sharedIconProps} size={16} />} />
-          <AnimatePresence>
-            {suggestedActions.map((action) => (
-              <motion.div
-                key={action.type}
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.2 }}
-              >
-                <Button type="text" icon={actionIconMap[action.type]}>
-                  {action.text}
-                </Button>
-              </motion.div>
-            ))}
-          </AnimatePresence>
+        <div className={styles.actions}>
+          <div className={styles.buttons}>
+            <IconBtn icon={<Plus {...sharedIconProps} size={16} />} />
+            <AnimatePresence>
+              {suggestedActions.map((action) => (
+                <motion.div
+                  key={action.type}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Button type="text" icon={actionIconMap[action.type]}>
+                    {action.text}
+                  </Button>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+          <Button
+            shape="circle"
+            type="text"
+            icon={<ArrowUp color={isEmpty ? '#2c2b2a' : 'white'} size={16} />}
+            style={{ backgroundColor: isEmpty ? 'transparent' : '#4a23d1' }}
+            onClick={onClickSend}
+          />
         </div>
-        <Button
-          shape="circle"
-          type="text"
-          icon={<ArrowUp color={isEmpty ? '#2c2b2a' : 'white'} size={16} />}
-          style={{ backgroundColor: isEmpty ? 'transparent' : '#4a23d1' }}
-          onClick={onClickSend}
-        />
       </div>
+      <TemplateList />
     </div>
   );
 };

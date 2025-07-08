@@ -1,0 +1,23 @@
+@import '../../styles/shared.scss';
+
+.TemplateList {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+
+  .template {
+    @extend .card;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    cursor: pointer;
+
+    h4 {
+      font-size: 14px;
+    }
+
+    p {
+      font-size: 12px;
+    }
+  }
+}
