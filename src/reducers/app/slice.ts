@@ -1,54 +1,49 @@
+import { Identity } from '@domoinc/toolkit';
 import { createAppSlice } from '../createAppSlice';
+import { AppService } from 'services/app';
 
 interface State {
-  value: number;
+  identity?: Identity;
+  loading: {
+    identity: boolean;
+  };
 }
 
 const initialState: State = {
-  value: 0,
+  loading: {
+    identity: false,
+  },
 };
 
 export const AppReducer = createAppSlice({
   name: 'app',
   initialState,
   reducers: (create) => ({
-    // increments the counter by one
-    increment: create.reducer((state) => {
-      state.value += 1;
-    }),
-
-    // decrements the counter by one
-    decrement: create.reducer((state) => {
-      state.value -= 1;
-    }),
-
-    // increments the counter by the given amount
-    incrementByAmount: create.reducer<number>((state, { payload }) => {
-      state.value += payload;
-    }),
-
-    // increments the counter by the given amount, asynchronously
-    incrementAsync: create.asyncThunk<number, number>(
-      async (amount: number) =>
-        await new Promise<number>((resolve) => {
-          setTimeout(() => {
-            resolve(amount);
-          }, 1000);
-        }),
+    fetchIdentity: create.asyncThunk<Identity, void>(
+      async () => {
+        const identity = await AppService.fetchIdentity();
+        return identity;
+      },
       {
-        fulfilled: (state, { payload }) => {
-          state.value += payload;
+        fulfilled: (state: State, { payload }: { payload: Identity }) => {
+          state.identity = payload;
+          state.loading.identity = false;
+        },
+        pending: (state: State) => {
+          state.loading.identity = true;
+        },
+        rejected: (state: State) => {
+          state.loading.identity = false;
         },
       },
     ),
   }),
   selectors: {
-    selectValue: (state) => state.value,
+    selectIdentity: (state) => state.identity,
   },
 });
 
-export const { increment, decrement, incrementByAmount, incrementAsync } =
-  AppReducer.actions;
-export const { selectValue } = AppReducer.selectors;
+export const { fetchIdentity } = AppReducer.actions;
+export const { selectIdentity } = AppReducer.selectors;
 
 export default AppReducer.reducer;

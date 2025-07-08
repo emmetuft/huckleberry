@@ -5,24 +5,25 @@
   @extend .card;
   width: 600px;
   min-height: 100px;
+  animation: breathe 4s ease-in-out infinite;
+  transition: box-shadow 0.3s ease;
 
   .editable {
     outline: none;
     font-size: 16px;
     white-space: pre-wrap;
-    caret-color: $blue;
-    color: white;
+    caret-color: $purple;
 
     &:empty::before {
       content: attr(data-placeholder);
-      color: rgba(255, 255, 255, 0.5);
+      color: rgba(101, 101, 101, 0.5);
       pointer-events: none;
     }
 
     span.entity {
       font-weight: 600;
-      color: $blue;
-      background-color: #e7f1ff;
+      color: $purple;
+      background-color: white;
       padding: 1px 4px;
       border-radius: 4px;
     }
@@ -49,5 +50,20 @@
         font-size: 12px;
       }
     }
+  }
+}
+
+@keyframes breathe {
+  0% {
+    box-shadow: 0 0 0px rgba(73, 35, 209, 0.15);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 12px rgba(73, 35, 209, 0.15);
+    transform: scale(1.01);
+  }
+  100% {
+    box-shadow: 0 0 0px rgba(73, 35, 209, 0.15);
+    transform: scale(1);
   }
 }

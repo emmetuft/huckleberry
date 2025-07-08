@@ -29,6 +29,7 @@
     ]
   },
   "dependencies": {
+    "@domoinc/toolkit": "^2.3.0",
     "@reduxjs/toolkit": "^2.2.7",
     "antd": "^5.26.4",
     "phosphor-react": "^1.4.1",

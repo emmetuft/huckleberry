@@ -8,7 +8,7 @@ export const Background: FC<BackgroundProps> = ({}) => {
   return (
     <>
       <div className={styles.Background} />
-      <div className={styles.FrostedOverlay} />
+      {/* <div className={styles.FrostedOverlay} /> */}
     </>
   );
 };
