@@ -1,4 +1,5 @@
 import { FC } from 'react';
+import { useSelector } from 'react-redux';
 import {
   Atom,
   Database,
@@ -7,19 +8,14 @@ import {
   UserCircle,
 } from 'phosphor-react';
 import styles from './Nav.module.scss';
-import { IconBtn } from 'components/IconBtn/IconBtn';
-import { useSelector } from 'react-redux';
+import { sharedIconProps } from 'constants/styles';
 import { selectIdentity } from 'reducers/app/slice';
+import { IconBtn } from 'components/IconBtn/IconBtn';
 
 interface NavProps {}
 
 export const Nav: FC<NavProps> = ({}) => {
   const identity = useSelector(selectIdentity);
-
-  const sharedProps = {
-    color: '#2c2b2a',
-    size: 24,
-  };
 
   const avatar =
     identity !== undefined
@@ -32,25 +28,19 @@ export const Nav: FC<NavProps> = ({}) => {
         <img src="/static/logo.svg" width="100%" />
       </div>
       <div className={styles.buttons}>
-        <IconBtn icon={<Database {...sharedProps} />} />
-        <IconBtn icon={<TreeStructure {...sharedProps} />} />
-        <IconBtn icon={<Lightning {...sharedProps} />} />
-        <IconBtn icon={<Atom {...sharedProps} />} />
+        <IconBtn icon={<Database {...sharedIconProps} />} />
+        <IconBtn icon={<TreeStructure {...sharedIconProps} />} />
+        <IconBtn icon={<Lightning {...sharedIconProps} />} />
+        <IconBtn icon={<Atom {...sharedIconProps} />} />
       </div>
       <div className={styles.divider} />
       <div className={`${styles.buttons} ${styles.bottom}`}>
         <IconBtn
           icon={
             avatar ? (
-              <img
-                src={avatar}
-                alt="User Avatar"
-                className={styles.avatar}
-                // height='30px'
-                // width='30px'
-              />
+              <img src={avatar} alt="User Avatar" className={styles.avatar} />
             ) : (
-              <UserCircle {...sharedProps} />
+              <UserCircle {...sharedIconProps} />
             )
           }
         />

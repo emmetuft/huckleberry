@@ -14,10 +14,11 @@
     white-space: pre-wrap;
     caret-color: $purple;
 
-    &:empty::before {
+    &.empty::before {
       content: attr(data-placeholder);
-      color: rgba(101, 101, 101, 0.5);
+      color: #999;
       pointer-events: none;
+      display: block;
     }
 
     span.entity {
@@ -51,19 +52,27 @@
       }
     }
   }
+
+  .actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: auto;
+
+    .buttons {
+      display: flex;
+      gap: 5px;
+    }
+  }
 }
 
 @keyframes breathe {
   0% {
     box-shadow: 0 0 0px rgba(73, 35, 209, 0.15);
-    transform: scale(1);
   }
   50% {
     box-shadow: 0 0 12px rgba(73, 35, 209, 0.15);
-    transform: scale(1.01);
   }
   100% {
     box-shadow: 0 0 0px rgba(73, 35, 209, 0.15);
-    transform: scale(1);
   }
 }

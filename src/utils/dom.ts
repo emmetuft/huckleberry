@@ -1,3 +1,18 @@
+import { ENTITIES } from 'constants/app';
+
+export const getTextWithHighlights = (text: string, styles: any): string => {
+  const words = text.split(/(\s+)/);
+  return words
+    .map((word) => {
+      const clean = word.trim().toLowerCase();
+      if (ENTITIES.includes(clean)) {
+        return `<span class="${styles.entity}">${word}</span>`;
+      }
+      return word;
+    })
+    .join('');
+};
+
 export function getCaretCharacterOffsetWithin(element: HTMLElement): number {
   const selection = window.getSelection();
   if (!selection || selection.rangeCount === 0) return 0;

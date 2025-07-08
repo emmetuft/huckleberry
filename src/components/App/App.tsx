@@ -1,4 +1,5 @@
 import { FC, useEffect } from 'react';
+import { ConfigProvider } from 'antd';
 import styles from './App.module.scss';
 import { useAppDispatch } from 'reducers';
 import { fetchIdentity } from 'reducers/app/slice';
@@ -15,11 +16,19 @@ export const App: FC = () => {
   }, []);
 
   return (
-    <div className={styles.App}>
-      <Background />
-      <Nav />
-      {/* <RecCard /> */}
-      <Workspace />
-    </div>
+    <ConfigProvider
+      theme={{
+        token: {
+          colorPrimary: '#5a0cff',
+        },
+      }}
+    >
+      <div className={styles.App}>
+        <Background />
+        <Nav />
+        {/* <RecCard /> */}
+        <Workspace />
+      </div>
+    </ConfigProvider>
   );
 };

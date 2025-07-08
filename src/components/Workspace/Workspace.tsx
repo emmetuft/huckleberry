@@ -1,53 +1,74 @@
-import { FC, useEffect, useRef, useState } from 'react';
+import { FC, useRef, useState } from 'react';
+import { Button } from 'antd';
+import {
+  ArrowUp,
+  CalendarBlank,
+  ChartLine,
+  Database,
+  PaperPlaneTilt,
+  Plus,
+} from 'phosphor-react';
+import { AnimatePresence, motion } from 'framer-motion';
 import styles from './Workspace.module.scss';
-import { getCaretCharacterOffsetWithin, setCaretPosition } from 'utils/dom';
+import { sharedIconProps } from 'constants/styles';
+import { IconBtn } from 'components/IconBtn/IconBtn';
+import {
+  getCaretCharacterOffsetWithin,
+  getTextWithHighlights,
+  setCaretPosition,
+} from 'utils/dom';
+import { ActionType, getSuggestedActions } from 'utils/temp';
 
 interface WorkspaceProps {}
 
 export const Workspace: FC<WorkspaceProps> = ({}) => {
+  const [isEmpty, setIsEmpty] = useState<boolean>(true);
+  const [suggestedActions, setSuggestedActions] = useState<
+    { type: ActionType; text: string }[]
+  >([]);
+
   const editableRef = useRef<HTMLDivElement>(null);
 
-  const ENTITIES = ['dataset', 'workflow', 'agent', 'dashboard', 'chart'];
-
-  const getTextWithHighlights = (text: string): string => {
-    const words = text.split(/(\s+)/);
-    return words
-      .map((word) => {
-        const clean = word.trim().toLowerCase();
-        if (ENTITIES.includes(clean)) {
-          return `<span class="${styles.entity}">${word}</span>`;
-        }
-        return word;
-      })
-      .join('');
-  };
-
-  const handleInput = () => {
+  const onInput = () => {
     const el = editableRef.current;
     if (!el) return;
 
-    // 1. Save cursor position before updating HTML
     const preCaretOffset = getCaretCharacterOffsetWithin(el);
 
-    // 2. Get plain text and convert it to highlighted HTML
-    const plainText = el.innerText;
-    const highlightedHTML = getTextWithHighlights(plainText);
+    const text = el.innerText;
+    const isNowEmpty = text.trim() === '';
+    setIsEmpty(isNowEmpty);
 
-    // 3. Replace HTML
-    el.innerHTML = highlightedHTML;
+    if (isNowEmpty) {
+      el.innerHTML = '';
+    } else {
+      setSuggestedActions(getSuggestedActions(text));
+      const highlightedHTML = getTextWithHighlights(text, styles);
+      el.innerHTML = highlightedHTML;
+    }
 
-    // 4. Restore cursor position
     setCaretPosition(el, preCaretOffset);
+  };
+
+  const onClickSend = () => {
+    // TODO: Implement send action
+  };
+
+  const actionIconMap = {
+    [ActionType.SCHEDULE]: <CalendarBlank {...sharedIconProps} size={16} />,
+    [ActionType.CHART]: <ChartLine {...sharedIconProps} size={16} />,
+    [ActionType.DATASET]: <Database {...sharedIconProps} size={16} />,
+    [ActionType.SEND]: <PaperPlaneTilt {...sharedIconProps} size={16} />,
   };
 
   return (
     <div className={styles.Workspace}>
       <div>
         <div
-          className={styles.editable}
+          className={`${styles.editable} ${isEmpty ? styles.empty : ''}`}
           contentEditable
           ref={editableRef}
-          onInput={handleInput}
+          onInput={onInput}
           data-placeholder="Start something new: a workflow, a dashboard, an agent—your call."
         />
       </div>
@@ -59,6 +80,33 @@ export const Workspace: FC<WorkspaceProps> = ({}) => {
           </p>
         </div>
       </div> */}
+      <div className={styles.actions}>
+        <div className={styles.buttons}>
+          <IconBtn icon={<Plus {...sharedIconProps} size={16} />} />
+          <AnimatePresence>
+            {suggestedActions.map((action) => (
+              <motion.div
+                key={action.type}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Button type="text" icon={actionIconMap[action.type]}>
+                  {action.text}
+                </Button>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
+        <Button
+          shape="circle"
+          type="text"
+          icon={<ArrowUp color={isEmpty ? '#2c2b2a' : 'white'} size={16} />}
+          style={{ backgroundColor: isEmpty ? 'transparent' : '#4a23d1' }}
+          onClick={onClickSend}
+        />
+      </div>
     </div>
   );
 };
