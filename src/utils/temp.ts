@@ -16,13 +16,13 @@ export function getSuggestedActions(
     text.includes('schedule') ||
     text.includes('remind')
   )
-    actions.push({ type: ActionType.SCHEDULE, text: 'Set a schedule' });
+    actions.push({ type: ActionType.SCHEDULE, text: 'Set schedule' });
   if (text.includes('report') || text.includes('dashboard'))
-    actions.push({ type: ActionType.DATASET, text: 'Choose a dataset' });
+    actions.push({ type: ActionType.DATASET, text: 'Select data' });
   if (text.includes('chart') || text.includes('visualize'))
-    actions.push({ type: ActionType.CHART, text: 'Pick a chart type' });
+    actions.push({ type: ActionType.CHART, text: 'Pick chart' });
   if (text.includes('send') || text.includes('email') || text.includes('slack'))
-    actions.push({ type: ActionType.SEND, text: 'Set a destination' });
+    actions.push({ type: ActionType.SEND, text: 'Set destination' });
 
   return actions;
 }

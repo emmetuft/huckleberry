@@ -7,6 +7,7 @@ import { Background } from 'components/Background/Background';
 import { Nav } from 'components/Nav/Nav';
 import { RecCard } from 'components/RecCard/RecCard';
 import { Workspace } from 'components/Workspace/Workspace';
+import { FlowCanvas } from 'components/FlowCanvas/FlowCanvas';
 
 export const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -28,6 +29,7 @@ export const App: FC = () => {
         <Nav />
         {/* <RecCard /> */}
         <Workspace />
+        <FlowCanvas />
       </div>
     </ConfigProvider>
   );

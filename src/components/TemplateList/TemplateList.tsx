@@ -6,7 +6,14 @@ import { Template } from 'models/interfaces/template';
 interface TemplateListProps {}
 
 export const TemplateList: FC<TemplateListProps> = ({}) => {
-  const [templates, setTemplates] = useState<Template[]>([]);
+  const [templates, setTemplates] = useState<Template[]>([
+    {
+      id: '1',
+      name: 'Recommendation',
+      description:
+        'A template for generating recommendations based on user input.',
+    },
+  ]);
   return (
     <div className={styles.TemplateList}>
       {templates.map((template) => (
