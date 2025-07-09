@@ -9,11 +9,12 @@ export const TemplateList: FC<TemplateListProps> = ({}) => {
   const [templates, setTemplates] = useState<Template[]>([
     {
       id: '1',
-      name: 'Recommendation',
+      name: 'Automate sales export',
       description:
-        'A template for generating recommendations based on user input.',
+        "You've exported the 2024 Sales Report every week for the last 2 months. Let's automate that process.",
     },
   ]);
+
   return (
     <div className={styles.TemplateList}>
       {templates.map((template) => (

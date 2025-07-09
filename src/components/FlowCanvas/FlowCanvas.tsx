@@ -26,13 +26,13 @@ const initialNodes = [
   {
     id: 'node-1',
     type: NodeType.START,
-    position: { x: 0, y: 0 },
+    position: { x: 200, y: 200 },
     data: { value: 123 },
   },
   {
     id: 'node-2',
     type: NodeType.END,
-    position: { x: 0, y: 200 },
+    position: { x: 200, y: 400 },
     data: { value: 123 },
   },
 ];
