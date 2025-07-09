@@ -1,10 +1,43 @@
 {
-  "name": "Domo Vite React app",
+  "name": "Blueberry AI",
   "version": "0.0.1",
   "size": {
     "width": 5,
     "height": 3
   },
   "fullpage": true,
-  "mapping": []
+  "mapping": [],
+  "collections": [
+    {
+      "name": "UserPersona",
+      "schema": {
+        "columns": [
+          {
+            "type": "STRING",
+            "name": "role"
+          },
+          {
+            "type": "STRING",
+            "name": "department"
+          },
+          {
+            "type": "STRING",
+            "name": "focusAreas"
+          },
+          {
+            "type": "STRING",
+            "name": "usePersona"
+          },
+          {
+            "type": "STRING",
+            "name": "useActivity"
+          },
+          {
+            "type": "STRING",
+            "name": "useData"
+          }
+        ]
+      }
+    }
+  ]
 }

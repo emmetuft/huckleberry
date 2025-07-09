@@ -1,0 +1,91 @@
+import { FC, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { Modal, Tabs, TabsProps } from 'antd';
+import styles from './PersonaModal.module.scss';
+import { useAppDispatch } from 'reducers';
+import {
+  saveUserPersona,
+  selectPersona,
+  selectPersonaModalOpen,
+  setPersonaModal,
+} from 'reducers/app/slice';
+import { Persona } from 'models/interfaces/persona';
+import { PersonaTab } from './tabs/PersonaTab';
+import { defaultPersona } from 'constants/persona';
+import { SettingsTab } from './tabs/SettingsTab';
+
+interface PersonaModalProps {}
+
+export const PersonaModal: FC<PersonaModalProps> = ({}) => {
+  const dispatch = useAppDispatch();
+  const userPersona = useSelector(selectPersona);
+  const isOpen = useSelector(selectPersonaModalOpen);
+
+  const [editedPersona, setEditedPersona] = useState<Persona>(defaultPersona);
+
+  useEffect(() => {
+    if (userPersona) {
+      setEditedPersona({
+        ...userPersona,
+      });
+    } else {
+      setEditedPersona({
+        ...defaultPersona,
+      });
+    }
+  }, [isOpen, userPersona]);
+
+  const onChangeTab = (key: string) => {
+    console.log(key);
+  };
+
+  const onOk = () => {
+    dispatch(saveUserPersona(editedPersona));
+    dispatch(setPersonaModal(false));
+  };
+
+  const onCancel = () => {
+    dispatch(setPersonaModal(false));
+  };
+
+  const items: TabsProps['items'] = [
+    {
+      key: '1',
+      label: 'Persona',
+      children: (
+        <PersonaTab
+          editedPersona={editedPersona}
+          setEditedPersona={setEditedPersona}
+        />
+      ),
+    },
+    {
+      key: '2',
+      label: 'AI Access',
+      children: (
+        <SettingsTab
+          editedPersona={editedPersona}
+          setEditedPersona={setEditedPersona}
+        />
+      ),
+    },
+    // {
+    //   key: '3',
+    //   label: 'Context',
+    //   children: 'Content of Tab Pane 3',
+    // },
+  ];
+
+  return (
+    <Modal
+      title="Define your digital twin"
+      closable={{ 'aria-label': 'Custom Close Button' }}
+      open={isOpen}
+      okText="Save"
+      onOk={onOk}
+      onCancel={onCancel}
+    >
+      <Tabs defaultActiveKey="1" items={items} onChange={onChangeTab} />
+    </Modal>
+  );
+};

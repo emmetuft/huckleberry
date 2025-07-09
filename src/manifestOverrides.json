@@ -1,7 +1,10 @@
 {
-  "dev": {
-    "description": "Development.domo.com environment for the Domo app",
-    "manifest": {}
+  "domo-es": {
+    "description": "domo-es",
+    "manifest": {
+      "id": "565a154b-d584-44dd-a9aa-63ceb36f39c7",
+      "proxyId": "3f65f51d-710e-46c5-bb2e-4eda9cec433c"
+    }
   },
   "qa": {
     "description": "QA.domo.com environment for the Domo app",

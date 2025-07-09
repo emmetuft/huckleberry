@@ -10,9 +10,10 @@ import {
 } from 'phosphor-react';
 import styles from './Nav.module.scss';
 import { sharedIconProps } from 'constants/styles';
-import { selectIdentity } from 'reducers/app/slice';
+import { selectIdentity, setPersonaModal } from 'reducers/app/slice';
 import { IconBtn } from 'components/IconBtn/IconBtn';
 import { Tooltip } from 'antd';
+import { useAppDispatch } from 'reducers';
 
 enum NavIcon {
   Data = 'Data',
@@ -25,7 +26,35 @@ enum NavIcon {
 interface NavProps {}
 
 export const Nav: FC<NavProps> = ({}) => {
+  const dispatch = useAppDispatch();
+
   const identity = useSelector(selectIdentity);
+
+  const onClickIcon = (icon: NavIcon) => {
+    switch (icon) {
+      case NavIcon.Data:
+        console.log('Data icon clicked');
+        break;
+      case NavIcon.Health:
+        console.log('Health icon clicked');
+        break;
+      case NavIcon.Workflow:
+        console.log('Workflow icon clicked');
+        break;
+      case NavIcon.Automation:
+        console.log('Automation icon clicked');
+        break;
+      case NavIcon.Atom:
+        console.log('Atom icon clicked');
+        break;
+      default:
+        console.warn(`Unknown icon: ${icon}`);
+    }
+  };
+
+  const onClickAvatar = () => {
+    dispatch(setPersonaModal(true));
+  };
 
   const navIconMap = {
     [NavIcon.Data]: <Database {...sharedIconProps} />,
@@ -46,10 +75,7 @@ export const Nav: FC<NavProps> = ({}) => {
   const renderIconBtn = (icon: NavIcon) => (
     <Tooltip key={icon} title={icon} placement="right" mouseEnterDelay={0.5}>
       <div>
-        <IconBtn
-          icon={navIconMap[icon]}
-          onClick={() => console.log(`Clicked ${icon}`)}
-        />
+        <IconBtn icon={navIconMap[icon]} onClick={() => onClickIcon(icon)} />
       </div>
     </Tooltip>
   );
@@ -75,6 +101,7 @@ export const Nav: FC<NavProps> = ({}) => {
               <UserCircle {...sharedIconProps} />
             )
           }
+          onClick={onClickAvatar}
         />
       </div>
     </div>

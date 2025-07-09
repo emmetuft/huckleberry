@@ -1,0 +1,112 @@
+export const defaultPersona = {
+  role: '',
+  department: '',
+  focusAreas: [],
+  usePersona: true,
+  useActivity: true,
+  useData: true,
+};
+
+export const groupedDepartments = [
+  {
+    label: 'Go-to-Market',
+    options: [
+      'Marketing',
+      'Sales',
+      'Customer Success',
+      'Business Development',
+      'Partnerships / Alliances',
+      'Revenue Operations (RevOps)',
+      'Growth',
+      'Community / Advocacy',
+    ],
+  },
+  {
+    label: 'Operations & Supply Chain',
+    options: [
+      'Operations',
+      'Procurement',
+      'Supply Chain',
+      'Logistics',
+      'Manufacturing / Production',
+      'Field Services',
+      'Facilities / Workplace',
+    ],
+  },
+  {
+    label: 'Finance & Legal',
+    options: ['Finance', 'Legal', 'Compliance', 'Investor Relations'],
+  },
+  {
+    label: 'People & Admin',
+    options: [
+      'Human Resources',
+      'Training & Enablement',
+      'Executive / Leadership',
+      'Project Management',
+    ],
+  },
+  {
+    label: 'Technology & Product',
+    options: [
+      'Engineering',
+      'Product',
+      'Design / UX',
+      'IT',
+      'Security / InfoSec',
+      'Innovation / AI / Digital Transformation',
+    ],
+  },
+  {
+    label: 'Data & Strategy',
+    options: [
+      'Data & Analytics',
+      'Strategy',
+      'R&D (Research & Development)',
+      'Quality Assurance',
+    ],
+  },
+  {
+    label: 'Customer Support',
+    options: ['Customer Support'],
+  },
+  {
+    label: 'Other',
+    options: ['Other'],
+  },
+];
+
+export const focusAreas = [
+  'Customer Retention',
+  'Revenue Growth',
+  'Cost Optimization',
+  'Process Automation',
+  'Data Quality',
+  'Forecasting & Planning',
+  'Churn Reduction',
+  'Lead Generation',
+  'Campaign Performance',
+  'Customer Segmentation',
+  'User Experience',
+  'Product Adoption',
+  'Compliance & Risk',
+  'Inventory Management',
+  'Supply Chain Efficiency',
+  'Hiring & Talent Management',
+  'Employee Engagement',
+  'Operational Efficiency',
+  'Customer Satisfaction',
+  'Financial Reporting',
+  'Real-time Insights',
+  'KPI Tracking',
+  'Anomaly Detection',
+  'AI Experimentation',
+  'Time to Market',
+  'Innovation & R&D',
+  'Sustainability Metrics',
+  'Partner Enablement',
+  'Service Reliability',
+  'Workflow Optimization',
+  'Change Management',
+  'Sales Enablement',
+];

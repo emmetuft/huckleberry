@@ -1,0 +1,16 @@
+@import '../../styles/variables.scss';
+
+.PersonaModal {
+}
+
+.labelInput {
+  display: flex;
+  flex-direction: column;
+  //   gap: 5px;
+
+  .label {
+    font-size: 12px;
+    font-weight: 600;
+    color: $grey-dark;
+  }
+}
