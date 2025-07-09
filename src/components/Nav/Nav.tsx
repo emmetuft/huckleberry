@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import {
   Atom,
   Database,
+  Heartbeat,
   Lightning,
   TreeStructure,
   UserCircle,
@@ -15,6 +16,7 @@ import { Tooltip } from 'antd';
 
 enum NavIcon {
   Data = 'Data',
+  Health = 'Data health',
   Workflow = 'Workflows',
   Automation = 'Automations',
   Atom = 'Agents',
@@ -27,15 +29,30 @@ export const Nav: FC<NavProps> = ({}) => {
 
   const navIconMap = {
     [NavIcon.Data]: <Database {...sharedIconProps} />,
+    [NavIcon.Health]: <Heartbeat {...sharedIconProps} />,
     [NavIcon.Workflow]: <TreeStructure {...sharedIconProps} />,
     [NavIcon.Automation]: <Lightning {...sharedIconProps} />,
     [NavIcon.Atom]: <Atom {...sharedIconProps} />,
   };
 
+  const upperIcons = [NavIcon.Data, NavIcon.Health];
+  const lowerIcons = [NavIcon.Workflow, NavIcon.Automation, NavIcon.Atom];
+
   const avatar =
     identity !== undefined
       ? `https://${identity.host}/api/content/v1/avatar/USER/${identity.userId}?size=100`
       : undefined;
+
+  const renderIconBtn = (icon: NavIcon) => (
+    <Tooltip key={icon} title={icon} placement="right" mouseEnterDelay={0.5}>
+      <div>
+        <IconBtn
+          icon={navIconMap[icon]}
+          onClick={() => console.log(`Clicked ${icon}`)}
+        />
+      </div>
+    </Tooltip>
+  );
 
   return (
     <div className={styles.Nav}>
@@ -43,23 +60,12 @@ export const Nav: FC<NavProps> = ({}) => {
         <img src="/static/logo.svg" width="100%" />
       </div>
       <div className={styles.buttons}>
-        {Object.entries(navIconMap).map(([key, icon]) => (
-          <Tooltip
-            key={key}
-            title={key}
-            placement="right"
-            mouseEnterDelay={0.5}
-          >
-            <div>
-              <IconBtn
-                icon={icon}
-                onClick={() => console.log(`Clicked ${key}`)}
-              />
-            </div>
-          </Tooltip>
-        ))}
+        {upperIcons.map((icon) => renderIconBtn(icon))}
       </div>
       <div className={styles.divider} />
+      <div className={styles.buttons}>
+        {lowerIcons.map((icon) => renderIconBtn(icon))}
+      </div>
       <div className={`${styles.buttons} ${styles.bottom}`}>
         <IconBtn
           icon={
