@@ -1,7 +1,9 @@
 import { FC, useCallback } from 'react';
 import { Handle, Position } from '@xyflow/react';
-import styles from './index.module.scss';
+
 import { CustomHandle } from 'components/FlowCanvas/Handle';
+import { MotionWrapper } from '../MotionWrapper';
+import styles from './index.module.scss';
 
 export const StartNode: FC = (props) => {
   const onChange = useCallback((evt: any) => {
@@ -9,9 +11,9 @@ export const StartNode: FC = (props) => {
   }, []);
 
   return (
-    <div className={styles.StartNode}>
+    <MotionWrapper className={styles.StartNode}>
       <div>Start</div>
-      <CustomHandle id="a" type="source" position={Position.Bottom} />
-    </div>
+      <CustomHandle id="a" type="source" position={Position.Right} />
+    </MotionWrapper>
   );
 };

@@ -16,10 +16,12 @@ import '@xyflow/react/dist/style.css';
 import { StartNode } from './Nodes/StartNode';
 import { NodeType } from 'models/enums/nodeType';
 import { EndNode } from './Nodes/EndNode';
+import { ActionNode } from './Nodes/ActionNode';
 
 const nodeTypes = {
   [NodeType.START]: StartNode,
   [NodeType.END]: EndNode,
+  [NodeType.ACTION]: ActionNode,
 };
 
 const initialNodes = [
@@ -31,8 +33,14 @@ const initialNodes = [
   },
   {
     id: 'node-2',
-    type: NodeType.END,
+    type: NodeType.ACTION,
     position: { x: 200, y: 400 },
+    data: { value: 123 },
+  },
+  {
+    id: 'node-3',
+    type: NodeType.END,
+    position: { x: 200, y: 600 },
     data: { value: 123 },
   },
 ];
@@ -68,8 +76,8 @@ export const FlowCanvas: FC<FlowCanvasProps> = ({}) => {
           variant={BackgroundVariant.Dots}
           gap={25}
           size={2}
-          // color="#2c2b2a"
-          // bgColor="white"
+          color="#b7b6b6"
+          bgColor="white"
         />
       </ReactFlow>
     </div>
