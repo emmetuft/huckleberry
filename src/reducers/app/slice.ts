@@ -4,10 +4,12 @@ import { fetchUserPersona } from './actions';
 import { Persona } from 'models/interfaces/persona';
 import { AppService } from 'services/app';
 import { StorageService } from 'services/storage';
+import { AppPage } from 'models/enums/appPage';
 
 interface State {
   identity?: Identity;
   persona?: Persona;
+  page: AppPage;
   personaModalOpen: boolean;
   loading: {
     identity: boolean;
@@ -17,6 +19,7 @@ interface State {
 }
 
 const initialState: State = {
+  page: AppPage.HOME,
   personaModalOpen: false,
   loading: {
     identity: false,
@@ -29,6 +32,9 @@ export const AppReducer = createAppSlice({
   name: 'app',
   initialState,
   reducers: (create) => ({
+    setPage: create.reducer((state, { payload }: { payload: AppPage }) => {
+      state.page = payload;
+    }),
     setPersonaModal: create.reducer(
       (state, { payload }: { payload: boolean }) => {
         state.personaModalOpen = payload;
@@ -88,16 +94,18 @@ export const AppReducer = createAppSlice({
   selectors: {
     selectIdentity: (state) => state.identity,
     selectPersona: (state) => state.persona,
+    selectPage: (state) => state.page,
     selectPersonaModalOpen: (state) => state.personaModalOpen,
     selectLoading: (state) => state.loading,
   },
 });
 
-export const { fetchIdentity, saveUserPersona, setPersonaModal } =
+export const { fetchIdentity, saveUserPersona, setPage, setPersonaModal } =
   AppReducer.actions;
 export const {
   selectIdentity,
   selectPersona,
+  selectPage,
   selectPersonaModalOpen,
   selectLoading,
 } = AppReducer.selectors;

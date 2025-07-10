@@ -10,10 +10,11 @@ import {
 } from 'phosphor-react';
 import styles from './Nav.module.scss';
 import { sharedIconProps } from 'constants/styles';
-import { selectIdentity, setPersonaModal } from 'reducers/app/slice';
+import { selectIdentity, setPage, setPersonaModal } from 'reducers/app/slice';
 import { IconBtn } from 'components/IconBtn/IconBtn';
 import { Tooltip } from 'antd';
 import { useAppDispatch } from 'reducers';
+import { AppPage } from 'models/enums/appPage';
 
 enum NavIcon {
   Data = 'Data',
@@ -39,7 +40,7 @@ export const Nav: FC<NavProps> = ({}) => {
         console.log('Health icon clicked');
         break;
       case NavIcon.Workflow:
-        console.log('Workflow icon clicked');
+        dispatch(setPage(AppPage.WORKFLOW));
         break;
       case NavIcon.Automation:
         console.log('Automation icon clicked');
@@ -82,7 +83,10 @@ export const Nav: FC<NavProps> = ({}) => {
 
   return (
     <div className={styles.Nav}>
-      <div className={styles.logo}>
+      <div
+        className={styles.logo}
+        onClick={() => dispatch(setPage(AppPage.HOME))}
+      >
         <img src="/static/logo.svg" width="100%" />
       </div>
       <div className={styles.buttons}>

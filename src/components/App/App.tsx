@@ -4,17 +4,19 @@ import { ConfigProvider } from 'antd';
 import styles from './App.module.scss';
 import { useAppDispatch } from 'reducers';
 import { fetchUserPersona } from 'reducers/app/actions';
-import { fetchIdentity, selectIdentity } from 'reducers/app/slice';
+import { fetchIdentity, selectIdentity, selectPage } from 'reducers/app/slice';
 import { Background } from 'components/Background/Background';
 import { Nav } from 'components/Nav/Nav';
 import { RecCard } from 'components/RecCard/RecCard';
 import { Workspace } from 'components/Workspace/Workspace';
 import { FlowCanvas } from 'components/FlowCanvas/FlowCanvas';
 import { PersonaModal } from 'components/PersonaModal/PersonaModal';
+import { AppPage } from 'models/enums/appPage';
 
 export const App: FC = () => {
   const dispatch = useAppDispatch();
   const identity = useSelector(selectIdentity);
+  const page = useSelector(selectPage);
 
   useEffect(() => {
     dispatch(fetchIdentity());
@@ -35,12 +37,17 @@ export const App: FC = () => {
       }}
     >
       <div className={styles.App}>
-        <Background />
         <Nav />
-        {/* <RecCard /> */}
-        <Workspace />
-        <FlowCanvas />
         <PersonaModal />
+        {page === AppPage.HOME ? (
+          <>
+            <Workspace />
+            {/* <RecCard /> */}
+            <Background />
+          </>
+        ) : AppPage.WORKFLOW ? (
+          <FlowCanvas />
+        ) : null}
       </div>
     </ConfigProvider>
   );

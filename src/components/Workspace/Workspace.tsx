@@ -102,11 +102,19 @@ export const Workspace: FC<WorkspaceProps> = ({}) => {
               ))}
             </AnimatePresence>
           </div>
-          {showGreeting && (
-            <p
-              className={styles.greeting}
-            >{`Good ${getTimeOfDay()}, ${getFirstName(identity)}!`}</p>
-          )}
+          <AnimatePresence>
+            {showGreeting && identity && (
+              <motion.p
+                className={styles.greeting}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+              >
+                {`Good ${getTimeOfDay()}, ${getFirstName(identity)}!`}
+              </motion.p>
+            )}
+          </AnimatePresence>
           <Button
             shape="circle"
             type="text"
