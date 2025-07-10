@@ -13,6 +13,7 @@ import { Persona } from 'models/interfaces/persona';
 import { PersonaTab } from './tabs/PersonaTab';
 import { defaultPersona } from 'constants/persona';
 import { SettingsTab } from './tabs/SettingsTab';
+import { AccountsTab } from './tabs/AccountsTab';
 
 interface PersonaModalProps {}
 
@@ -61,6 +62,16 @@ export const PersonaModal: FC<PersonaModalProps> = ({}) => {
     },
     {
       key: '2',
+      label: 'Accounts',
+      children: (
+        <AccountsTab
+          editedPersona={editedPersona}
+          setEditedPersona={setEditedPersona}
+        />
+      ),
+    },
+    {
+      key: '3',
       label: 'AI Access',
       children: (
         <SettingsTab
@@ -69,11 +80,6 @@ export const PersonaModal: FC<PersonaModalProps> = ({}) => {
         />
       ),
     },
-    // {
-    //   key: '3',
-    //   label: 'Context',
-    //   children: 'Content of Tab Pane 3',
-    // },
   ];
 
   return (

@@ -19,18 +19,27 @@ import {
 } from 'utils/dom';
 import { ActionType, getSuggestedActions } from 'utils/temp';
 import { TemplateList } from 'components/TemplateList/TemplateList';
+import { getFirstName, getTimeOfDay } from 'utils/misc';
+import { useSelector } from 'react-redux';
+import { selectIdentity } from 'reducers/app/slice';
+import { useAppDispatch } from 'reducers';
 
 interface WorkspaceProps {}
 
 export const Workspace: FC<WorkspaceProps> = ({}) => {
+  const dispatch = useAppDispatch();
+  const identity = useSelector(selectIdentity);
+
   const [isEmpty, setIsEmpty] = useState<boolean>(true);
   const [suggestedActions, setSuggestedActions] = useState<
     { type: ActionType; text: string }[]
   >([]);
+  const [showGreeting, setShowGreeting] = useState<boolean>(true);
 
   const editableRef = useRef<HTMLDivElement>(null);
 
   const onInput = () => {
+    setShowGreeting(false);
     const el = editableRef.current;
     if (!el) return;
 
@@ -93,6 +102,11 @@ export const Workspace: FC<WorkspaceProps> = ({}) => {
               ))}
             </AnimatePresence>
           </div>
+          {showGreeting && (
+            <p
+              className={styles.greeting}
+            >{`Good ${getTimeOfDay()}, ${getFirstName(identity)}!`}</p>
+          )}
           <Button
             shape="circle"
             type="text"
