@@ -1,0 +1,45 @@
+{
+  "name": "Blueberry AI",
+  "version": "0.0.1",
+  "size": {
+    "width": 5,
+    "height": 3
+  },
+  "fullpage": true,
+  "mapping": [],
+  "collections": [
+    {
+      "name": "UserPersona",
+      "schema": {
+        "columns": [
+          {
+            "type": "STRING",
+            "name": "role"
+          },
+          {
+            "type": "STRING",
+            "name": "department"
+          },
+          {
+            "type": "STRING",
+            "name": "focusAreas"
+          },
+          {
+            "type": "STRING",
+            "name": "usePersona"
+          },
+          {
+            "type": "STRING",
+            "name": "useActivity"
+          },
+          {
+            "type": "STRING",
+            "name": "useData"
+          }
+        ]
+      }
+    }
+  ],
+  "id": "875e3940-9b15-4f38-bb89-bc56b4093acb",
+  "proxyId": "d725fe10-742a-4710-8563-3ec550f3d25e"
+}

@@ -14,6 +14,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import styles from './Workspace.module.scss';
 import { useAppDispatch } from 'reducers';
 import { selectIdentity } from 'reducers/app/slice';
+import { COMMANDS } from 'constants/app';
 import { sharedIconProps } from 'constants/styles';
 import { IconBtn } from 'components/IconBtn/IconBtn';
 import { TemplateList } from 'components/TemplateList/TemplateList';
@@ -94,17 +95,17 @@ export const Workspace: FC<WorkspaceProps> = ({}) => {
   };
 
   const controlToolPopup = (text: string, el: HTMLElement) => {
-    // Reset popup trigger if the "@" was removed
+    // Reset popup trigger if the command was removed
     if (
       lastPopupTriggerIndex !== null &&
       (text.length < lastPopupTriggerIndex ||
-        text[lastPopupTriggerIndex] !== '@')
+        text[lastPopupTriggerIndex] !== COMMANDS.TOOL)
     ) {
       setLastPopupTriggerIndex(null);
     }
 
-    // Check if user typed "@" and trigger popup
-    const atIndex = text.lastIndexOf('@');
+    // Check if user typed tool command and trigger popup
+    const atIndex = text.lastIndexOf(COMMANDS.TOOL);
     if (atIndex === -1 || atIndex === lastPopupTriggerIndex) return;
 
     setShowToolPopup(true);
@@ -116,14 +117,14 @@ export const Workspace: FC<WorkspaceProps> = ({}) => {
   const onPopupKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     console.log(event);
     if (event.key === 'Backspace' && !event.currentTarget.value) {
-      event.preventDefault(); // Prevent deleting "@"
+      event.preventDefault(); // Prevent deleting command
       setShowToolPopup(false);
 
       const el = editableRef.current;
       if (el) {
         el.focus();
         const text = el.innerText;
-        const atIndex = text.lastIndexOf('@');
+        const atIndex = text.lastIndexOf(COMMANDS.TOOL);
         if (atIndex !== -1) {
           setCaretPosition(el, atIndex + 1);
         }
@@ -137,11 +138,11 @@ export const Workspace: FC<WorkspaceProps> = ({}) => {
     setSelectedTools([...selectedTools, value]);
     setShowToolPopup(false);
 
-    // Remove "@" from the editable content
+    // Remove command from the editable content
     const el = editableRef.current;
     if (!el) return;
     const text = el.innerText;
-    const atIndex = text.lastIndexOf('@');
+    const atIndex = text.lastIndexOf(COMMANDS.TOOL);
     if (atIndex !== -1) {
       el.innerText = text.slice(0, atIndex) + text.slice(atIndex + 1);
     }

@@ -1,3 +1,7 @@
+export const COMMANDS = {
+  TOOL: '@',
+};
+
 export const ENTITIES = [
   'dataset',
   'workflow',
