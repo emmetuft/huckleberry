@@ -40,11 +40,11 @@ export const App: FC = () => {
         <Nav />
         <PersonaModal />
         {page === AppPage.HOME ? (
-          <>
+          <div className={styles.home}>
             <Workspace />
             {/* <RecCard /> */}
             <Background />
-          </>
+          </div>
         ) : AppPage.WORKFLOW ? (
           <FlowCanvas />
         ) : null}

@@ -17,7 +17,7 @@ import { selectIdentity } from 'reducers/app/slice';
 import { COMMANDS } from 'constants/app';
 import { sharedIconProps } from 'constants/styles';
 import { IconBtn } from 'components/IconBtn/IconBtn';
-import { TemplateList } from 'components/TemplateList/TemplateList';
+import { Resources } from 'components/Resources/Resources';
 import { ToolPopup } from './ToolPopup';
 import {
   getCaretCharacterOffsetWithin,
@@ -37,7 +37,6 @@ export const Workspace: FC<WorkspaceProps> = ({}) => {
   const [suggestedActions, setSuggestedActions] = useState<
     { type: ActionType; text: string }[]
   >([]);
-  const [showGreeting, setShowGreeting] = useState<boolean>(true);
   const [showToolPopup, setShowToolPopup] = useState<boolean>(false);
   const [lastPopupTriggerIndex, setLastPopupTriggerIndex] = useState<
     number | null
@@ -72,7 +71,6 @@ export const Workspace: FC<WorkspaceProps> = ({}) => {
   }, []);
 
   const onInput = () => {
-    setShowGreeting(false);
     const el = editableRef.current;
     if (!el) return;
 
@@ -171,6 +169,17 @@ export const Workspace: FC<WorkspaceProps> = ({}) => {
 
   return (
     <div className={styles.Workspace}>
+      <AnimatePresence>
+        <motion.p
+          className={styles.greeting}
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.3 }}
+        >
+          {`Good ${getTimeOfDay()}${identity ? `, ${getFirstName(identity)}` : ''}!`}
+        </motion.p>
+      </AnimatePresence>
       {showToolPopup && (
         <ToolPopup
           popupRef={popupRef}
@@ -220,19 +229,6 @@ export const Workspace: FC<WorkspaceProps> = ({}) => {
               ))}
             </AnimatePresence>
           </div>
-          <AnimatePresence>
-            {showGreeting && identity && (
-              <motion.p
-                className={styles.greeting}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
-              >
-                {`Good ${getTimeOfDay()}, ${getFirstName(identity)}!`}
-              </motion.p>
-            )}
-          </AnimatePresence>
           <Button
             shape="circle"
             type="text"
@@ -242,7 +238,7 @@ export const Workspace: FC<WorkspaceProps> = ({}) => {
           />
         </div>
       </div>
-      <TemplateList />
+      <Resources />
     </div>
   );
 };

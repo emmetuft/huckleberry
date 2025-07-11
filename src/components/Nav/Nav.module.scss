@@ -4,6 +4,7 @@
 .Nav {
   @extend .card;
   position: fixed;
+  top: 0;
   left: 20px;
   height: calc(100vh - 40px);
   width: 62px;

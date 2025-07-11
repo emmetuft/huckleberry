@@ -7,9 +7,9 @@ interface BackgroundProps {}
 export const Background: FC<BackgroundProps> = ({}) => {
   return (
     <>
-      <div className={styles.imgBackground}>
+      {/* <div className={styles.imgBackground}>
         <img src="/static/bg.jpg" />
-      </div>
+      </div> */}
       {/* <div className={styles.Background} /> */}
       <div className={styles.FrostedOverlay} />
     </>

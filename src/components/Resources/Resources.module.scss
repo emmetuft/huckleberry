@@ -1,0 +1,23 @@
+.Resources {
+  .subHeader {
+    display: flex;
+    justify-content: space-between;
+    margin: 50px 0 20px;
+
+    .subTabs {
+      display: flex;
+      gap: 10px;
+
+      button {
+        background-color: transparent;
+        border: none;
+        font-size: 14px;
+        font-weight: 600;
+        opacity: 100%;
+        cursor: pointer;
+
+        transition: opacity 0.3s ease;
+      }
+    }
+  }
+}
