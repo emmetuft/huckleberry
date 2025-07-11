@@ -1,0 +1,870 @@
+{
+  "nodes": [
+    {
+      "id": "Environmental Protection Agency",
+      "type": "literal",
+      "name": "Environmental Protection Agency",
+      "group": "agency"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/terms#federal_water_pollution_control_act",
+      "type": "uri",
+      "name": "federal_water_pollution_control_act",
+      "group": "synonym"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/terms#superfund",
+      "type": "uri",
+      "name": "superfund",
+      "group": "synonym"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.pub.l.83-703",
+      "type": "uri",
+      "name": "law.US.pub.l.83-703",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.statute.68stat.919",
+      "type": "uri",
+      "name": "law.US.statute.68stat.919",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.USC.Title42.Chapter23.DivisonA.SubchapterI.2011",
+      "type": "uri",
+      "name": "law.US.USC.Title42.Chapter23.DivisonA.SubchapterI.2011",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.pub.l.88-206",
+      "type": "uri",
+      "name": "law.US.pub.l.88-206",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.statute.77stat.392",
+      "type": "uri",
+      "name": "law.US.statute.77stat.392",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.USC.Title42.Chapter85.SubchapterI.PartA.7401",
+      "type": "uri",
+      "name": "law.US.USC.Title42.Chapter85.SubchapterI.PartA.7401",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.statute.86stat.816",
+      "type": "uri",
+      "name": "law.US.statute.86stat.816",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.USC.Title33.Chapter26.SubchapterI.1251",
+      "type": "uri",
+      "name": "law.US.USC.Title33.Chapter26.SubchapterI.1251",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.pub.l.92-500",
+      "type": "uri",
+      "name": "law.US.pub.l.92-500",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.statute.94stat.2767",
+      "type": "uri",
+      "name": "law.US.statute.94stat.2767",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.USC.Title42.Chapter103.SubchapterI.9601",
+      "type": "uri",
+      "name": "law.US.USC.Title42.Chapter103.SubchapterI.9601",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.pub.l.96-510",
+      "type": "uri",
+      "name": "law.US.pub.l.96-510",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.statute.132stat.1296",
+      "type": "uri",
+      "name": "law.US.statute.132stat.1296",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.USC.Title42.Chapter116.SubchapterI.11001",
+      "type": "uri",
+      "name": "law.US.USC.Title42.Chapter116.SubchapterI.11001",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.pub.l.115-174",
+      "type": "uri",
+      "name": "law.US.pub.l.115-174",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.statute.88stat.829",
+      "type": "uri",
+      "name": "law.US.statute.88stat.829",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.USC.Title16.Chapter35.1531",
+      "type": "uri",
+      "name": "law.US.USC.Title16.Chapter35.1531",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.pub.l.93-406",
+      "type": "uri",
+      "name": "law.US.pub.l.93-406",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.pub.l.75-717",
+      "type": "uri",
+      "name": "law.US.pub.l.75-717",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.statute.52stat.1040",
+      "type": "uri",
+      "name": "law.US.statute.52stat.1040",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.USC.Title7.Chapter6.SubchapterII.136",
+      "type": "uri",
+      "name": "law.US.USC.Title7.Chapter6.SubchapterII.136",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.statute.83stat.742",
+      "type": "uri",
+      "name": "law.US.statute.83stat.742",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.USC.Title42.Chapter55.4321",
+      "type": "uri",
+      "name": "law.US.USC.Title42.Chapter55.4321",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.pub.l.91-173",
+      "type": "uri",
+      "name": "law.US.pub.l.91-173",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.statute.110stat.775",
+      "type": "uri",
+      "name": "law.US.statute.110stat.775",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.pub.l.104-113",
+      "type": "uri",
+      "name": "law.US.pub.l.104-113",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.statute.84stat.1590",
+      "type": "uri",
+      "name": "law.US.statute.84stat.1590",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.USC.Title44.Chapter35.SubchapterI.3501",
+      "type": "uri",
+      "name": "law.US.USC.Title44.Chapter35.SubchapterI.3501",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.pub.l.91-596",
+      "type": "uri",
+      "name": "law.US.pub.l.91-596",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.statute.58stat.682",
+      "type": "uri",
+      "name": "law.US.statute.58stat.682",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.USC.Title5.PartI.Chapter6.601",
+      "type": "uri",
+      "name": "law.US.USC.Title5.PartI.Chapter6.601",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.pub.l.78-410",
+      "type": "uri",
+      "name": "law.US.pub.l.78-410",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.pub.l.96-354",
+      "type": "uri",
+      "name": "law.US.pub.l.96-354",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.statute.94stat.1164",
+      "type": "uri",
+      "name": "law.US.statute.94stat.1164",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.USC.Title42.Chapter82.SubchapterI",
+      "type": "uri",
+      "name": "law.US.USC.Title42.Chapter82.SubchapterI",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.statute.116stat.729",
+      "type": "uri",
+      "name": "law.US.statute.116stat.729",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.pub.l.107-198",
+      "type": "uri",
+      "name": "law.US.pub.l.107-198",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.statute.49stat.620",
+      "type": "uri",
+      "name": "law.US.statute.49stat.620",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.USC.Title42.Chapter82.SubchapterI.6901",
+      "type": "uri",
+      "name": "law.US.USC.Title42.Chapter82.SubchapterI.6901",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.pub.l.74-271",
+      "type": "uri",
+      "name": "law.US.pub.l.74-271",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.statute.79stat.997",
+      "type": "uri",
+      "name": "law.US.statute.79stat.997",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.USC.Title15.Chapter53.SubchapterI.2601",
+      "type": "uri",
+      "name": "law.US.USC.Title15.Chapter53.SubchapterI.2601",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#law.US.pub.l.89-272",
+      "type": "uri",
+      "name": "law.US.pub.l.89-272",
+      "group": "shortname"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#atomic_energy_act_of_1954",
+      "type": "uri",
+      "name": "atomic_energy_act_of_1954",
+      "group": "act"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#clean_air_act",
+      "type": "uri",
+      "name": "clean_air_act",
+      "group": "act"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#clean_water_act",
+      "type": "uri",
+      "name": "clean_water_act",
+      "group": "act"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#comprehensive_environmental_response,_compensation,_and_liability_act_of_1980_(cercla)",
+      "type": "uri",
+      "name": "comprehensive_environmental_response,_compensation,_and_liability_act_of_1980_(cercla)",
+      "group": "act"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#emergency_planning_and_community_right-to-_know_act_of_1986",
+      "type": "uri",
+      "name": "emergency_planning_and_community_right-to-_know_act_of_1986",
+      "group": "act"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#endangered_species_act_of_1973",
+      "type": "uri",
+      "name": "endangered_species_act_of_1973",
+      "group": "act"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#federal_insecticide,_fungicide,_and_rodenticide_act",
+      "type": "uri",
+      "name": "federal_insecticide,_fungicide,_and_rodenticide_act",
+      "group": "act"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#national_environmental_policy_act",
+      "type": "uri",
+      "name": "national_environmental_policy_act",
+      "group": "act"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#national_technology_transfer_and_advancement_act",
+      "type": "uri",
+      "name": "national_technology_transfer_and_advancement_act",
+      "group": "act"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#paperwork_reduction_act_1980",
+      "type": "uri",
+      "name": "paperwork_reduction_act_1980",
+      "group": "act"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#regulatory_flexibility_act",
+      "type": "uri",
+      "name": "regulatory_flexibility_act",
+      "group": "act"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#resource_conservation_and_recovery_act",
+      "type": "uri",
+      "name": "resource_conservation_and_recovery_act",
+      "group": "act"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#small_business_paperwork_relief_act_of_2002",
+      "type": "uri",
+      "name": "small_business_paperwork_relief_act_of_2002",
+      "group": "act"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#solid_waste_disposal_act",
+      "type": "uri",
+      "name": "solid_waste_disposal_act",
+      "group": "act"
+    },
+    {
+      "id": "http://dev.data.internal.fintechstudios.com/entities#toxic_substance_control_act",
+      "type": "uri",
+      "name": "toxic_substance_control_act",
+      "group": "act"
+    },
+    {
+      "id": "https://legcounsel.house.gov/Comps/Atomic%20Energy%20Act%20Of%201954.pdf",
+      "type": "uri",
+      "name": "https://legcounsel.house.gov/Comps/Atomic%20Energy%20Act%20Of%201954.pdf",
+      "group": "source"
+    },
+    {
+      "id": "https://fas.org/sgp/crs/misc/RL30853.pdf",
+      "type": "uri",
+      "name": "https://fas.org/sgp/crs/misc/RL30853.pdf",
+      "group": "source"
+    },
+    {
+      "id": "https://www.epa.gov/sites/production/files/2017-08/documents/federal-water-pollution-control-act-508full.pdf",
+      "type": "uri",
+      "name": "https://www.epa.gov/sites/production/files/2017-08/documents/federal-water-pollution-control-act-508full.pdf",
+      "group": "source"
+    },
+    {
+      "id": "https://legcounsel.house.gov/Comps/CERCLA.pdf",
+      "type": "uri",
+      "name": "https://legcounsel.house.gov/Comps/CERCLA.pdf",
+      "group": "source"
+    },
+    {
+      "id": "https://digital.library.unt.edu/ark:/67531/metadc11967/m2/1/high_res_d/esa73.pdf",
+      "type": "uri",
+      "name": "https://digital.library.unt.edu/ark:/67531/metadc11967/m2/1/high_res_d/esa73.pdf",
+      "group": "source"
+    },
+    {
+      "id": "https://www.whitehouse.gov/sites/whitehouse.gov/files/ceq/NEPA_full_text.pdf",
+      "type": "uri",
+      "name": "https://www.whitehouse.gov/sites/whitehouse.gov/files/ceq/NEPA_full_text.pdf",
+      "group": "source"
+    },
+    {
+      "id": "https://www.govinfo.gov/content/pkg/PLAW-104publ113/pdf/PLAW-104publ113.pdf",
+      "type": "uri",
+      "name": "https://www.govinfo.gov/content/pkg/PLAW-104publ113/pdf/PLAW-104publ113.pdf",
+      "group": "source"
+    },
+    {
+      "id": "https://www.govinfo.gov/content/pkg/STATUTE-94/pdf/STATUTE-94-Pg1164.pdf",
+      "type": "uri",
+      "name": "https://www.govinfo.gov/content/pkg/STATUTE-94/pdf/STATUTE-94-Pg1164.pdf",
+      "group": "source"
+    },
+    {
+      "id": "https://legcounsel.house.gov/Comps/Solid%20Waste%20Disposal%20Act.pdf",
+      "type": "uri",
+      "name": "https://legcounsel.house.gov/Comps/Solid%20Waste%20Disposal%20Act.pdf",
+      "group": "source"
+    },
+    {
+      "id": "https://legcounsel.house.gov/Comps/Toxic%20Substances%20Control%20Act.pdf",
+      "type": "uri",
+      "name": "https://legcounsel.house.gov/Comps/Toxic%20Substances%20Control%20Act.pdf",
+      "group": "source"
+    }
+  ],
+  "links": [
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#atomic_energy_act_of_1954",
+      "target": "Environmental Protection Agency",
+      "value": 1,
+      "type": "AdministeredBy"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#clean_air_act",
+      "target": "Environmental Protection Agency",
+      "value": 1,
+      "type": "AdministeredBy"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#clean_water_act",
+      "target": "Environmental Protection Agency",
+      "value": 1,
+      "type": "AdministeredBy"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#comprehensive_environmental_response,_compensation,_and_liability_act_of_1980_(cercla)",
+      "target": "Environmental Protection Agency",
+      "value": 1,
+      "type": "AdministeredBy"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#emergency_planning_and_community_right-to-_know_act_of_1986",
+      "target": "Environmental Protection Agency",
+      "value": 1,
+      "type": "AdministeredBy"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#endangered_species_act_of_1973",
+      "target": "Environmental Protection Agency",
+      "value": 1,
+      "type": "AdministeredBy"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#federal_insecticide,_fungicide,_and_rodenticide_act",
+      "target": "Environmental Protection Agency",
+      "value": 1,
+      "type": "AdministeredBy"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#national_environmental_policy_act",
+      "target": "Environmental Protection Agency",
+      "value": 1,
+      "type": "AdministeredBy"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#national_technology_transfer_and_advancement_act",
+      "target": "Environmental Protection Agency",
+      "value": 1,
+      "type": "AdministeredBy"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#paperwork_reduction_act_1980",
+      "target": "Environmental Protection Agency",
+      "value": 1,
+      "type": "AdministeredBy"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#regulatory_flexibility_act",
+      "target": "Environmental Protection Agency",
+      "value": 1,
+      "type": "AdministeredBy"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#resource_conservation_and_recovery_act",
+      "target": "Environmental Protection Agency",
+      "value": 1,
+      "type": "AdministeredBy"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#small_business_paperwork_relief_act_of_2002",
+      "target": "Environmental Protection Agency",
+      "value": 1,
+      "type": "AdministeredBy"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#solid_waste_disposal_act",
+      "target": "Environmental Protection Agency",
+      "value": 1,
+      "type": "AdministeredBy"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#toxic_substance_control_act",
+      "target": "Environmental Protection Agency",
+      "value": 1,
+      "type": "AdministeredBy"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#clean_water_act",
+      "target": "http://dev.data.internal.fintechstudios.com/terms#federal_water_pollution_control_act",
+      "value": 1,
+      "type": "hasSynonym"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#comprehensive_environmental_response,_compensation,_and_liability_act_of_1980_(cercla)",
+      "target": "http://dev.data.internal.fintechstudios.com/terms#superfund",
+      "value": 1,
+      "type": "hasSynonym"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#atomic_energy_act_of_1954",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.pub.l.83-703",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#atomic_energy_act_of_1954",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.statute.68stat.919",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#atomic_energy_act_of_1954",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.USC.Title42.Chapter23.DivisonA.SubchapterI.2011",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#clean_air_act",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.pub.l.88-206",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#clean_air_act",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.statute.77stat.392",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#clean_air_act",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.USC.Title42.Chapter85.SubchapterI.PartA.7401",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#clean_water_act",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.statute.86stat.816",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#clean_water_act",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.USC.Title33.Chapter26.SubchapterI.1251",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#clean_water_act",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.pub.l.92-500",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#comprehensive_environmental_response,_compensation,_and_liability_act_of_1980_(cercla)",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.statute.94stat.2767",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#comprehensive_environmental_response,_compensation,_and_liability_act_of_1980_(cercla)",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.USC.Title42.Chapter103.SubchapterI.9601",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#comprehensive_environmental_response,_compensation,_and_liability_act_of_1980_(cercla)",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.pub.l.96-510",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#emergency_planning_and_community_right-to-_know_act_of_1986",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.statute.132stat.1296",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#emergency_planning_and_community_right-to-_know_act_of_1986",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.USC.Title42.Chapter116.SubchapterI.11001",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#emergency_planning_and_community_right-to-_know_act_of_1986",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.pub.l.115-174",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#endangered_species_act_of_1973",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.statute.88stat.829",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#endangered_species_act_of_1973",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.USC.Title16.Chapter35.1531",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#endangered_species_act_of_1973",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.pub.l.93-406",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#federal_insecticide,_fungicide,_and_rodenticide_act",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.pub.l.75-717",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#federal_insecticide,_fungicide,_and_rodenticide_act",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.statute.52stat.1040",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#federal_insecticide,_fungicide,_and_rodenticide_act",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.USC.Title7.Chapter6.SubchapterII.136",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#national_environmental_policy_act",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.statute.83stat.742",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#national_environmental_policy_act",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.USC.Title42.Chapter55.4321",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#national_environmental_policy_act",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.pub.l.91-173",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#national_technology_transfer_and_advancement_act",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.statute.110stat.775",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#national_technology_transfer_and_advancement_act",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.pub.l.104-113",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#paperwork_reduction_act_1980",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.statute.84stat.1590",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#paperwork_reduction_act_1980",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.USC.Title44.Chapter35.SubchapterI.3501",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#paperwork_reduction_act_1980",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.pub.l.91-596",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#regulatory_flexibility_act",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.statute.58stat.682",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#regulatory_flexibility_act",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.USC.Title5.PartI.Chapter6.601",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#regulatory_flexibility_act",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.pub.l.78-410",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#resource_conservation_and_recovery_act",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.pub.l.96-354",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#resource_conservation_and_recovery_act",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.statute.94stat.1164",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#resource_conservation_and_recovery_act",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.USC.Title42.Chapter82.SubchapterI",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#small_business_paperwork_relief_act_of_2002",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.statute.116stat.729",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#small_business_paperwork_relief_act_of_2002",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.pub.l.107-198",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#solid_waste_disposal_act",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.statute.49stat.620",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#solid_waste_disposal_act",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.USC.Title42.Chapter82.SubchapterI.6901",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#solid_waste_disposal_act",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.pub.l.74-271",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#toxic_substance_control_act",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.statute.79stat.997",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#toxic_substance_control_act",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.USC.Title15.Chapter53.SubchapterI.2601",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#toxic_substance_control_act",
+      "target": "http://dev.data.internal.fintechstudios.com/entities#law.US.pub.l.89-272",
+      "value": 1,
+      "type": "ShortNameOf"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#clean_water_act",
+      "target": "http://dev.data.internal.fintechstudios.com/terms#federal_water_pollution_control_act",
+      "value": 1,
+      "type": "hasSynonym"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#comprehensive_environmental_response,_compensation,_and_liability_act_of_1980_(cercla)",
+      "target": "http://dev.data.internal.fintechstudios.com/terms#superfund",
+      "value": 1,
+      "type": "hasSynonym"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#atomic_energy_act_of_1954",
+      "target": "https://legcounsel.house.gov/Comps/Atomic%20Energy%20Act%20Of%201954.pdf",
+      "value": 1,
+      "type": "hasSource"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#clean_air_act",
+      "target": "https://fas.org/sgp/crs/misc/RL30853.pdf",
+      "value": 1,
+      "type": "hasSource"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#clean_water_act",
+      "target": "https://www.epa.gov/sites/production/files/2017-08/documents/federal-water-pollution-control-act-508full.pdf",
+      "value": 1,
+      "type": "hasSource"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#comprehensive_environmental_response,_compensation,_and_liability_act_of_1980_(cercla)",
+      "target": "https://legcounsel.house.gov/Comps/CERCLA.pdf",
+      "value": 1,
+      "type": "hasSource"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#endangered_species_act_of_1973",
+      "target": "https://digital.library.unt.edu/ark:/67531/metadc11967/m2/1/high_res_d/esa73.pdf",
+      "value": 1,
+      "type": "hasSource"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#national_environmental_policy_act",
+      "target": "https://www.whitehouse.gov/sites/whitehouse.gov/files/ceq/NEPA_full_text.pdf",
+      "value": 1,
+      "type": "hasSource"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#national_technology_transfer_and_advancement_act",
+      "target": "https://www.govinfo.gov/content/pkg/PLAW-104publ113/pdf/PLAW-104publ113.pdf",
+      "value": 1,
+      "type": "hasSource"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#regulatory_flexibility_act",
+      "target": "https://www.govinfo.gov/content/pkg/STATUTE-94/pdf/STATUTE-94-Pg1164.pdf",
+      "value": 1,
+      "type": "hasSource"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#resource_conservation_and_recovery_act",
+      "target": "https://legcounsel.house.gov/Comps/Solid%20Waste%20Disposal%20Act.pdf",
+      "value": 1,
+      "type": "hasSource"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#solid_waste_disposal_act",
+      "target": "https://legcounsel.house.gov/Comps/Solid%20Waste%20Disposal%20Act.pdf",
+      "value": 1,
+      "type": "hasSource"
+    },
+    {
+      "source": "http://dev.data.internal.fintechstudios.com/entities#toxic_substance_control_act",
+      "target": "https://legcounsel.house.gov/Comps/Toxic%20Substances%20Control%20Act.pdf",
+      "value": 1,
+      "type": "hasSource"
+    }
+  ]
+}

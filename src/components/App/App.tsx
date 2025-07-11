@@ -12,6 +12,7 @@ import { Workspace } from 'components/Workspace/Workspace';
 import { FlowCanvas } from 'components/FlowCanvas/FlowCanvas';
 import { PersonaModal } from 'components/PersonaModal/PersonaModal';
 import { AppPage } from 'models/enums/appPage';
+import { Ontology } from 'components/Ontology/Ontology';
 
 export const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -28,6 +29,25 @@ export const App: FC = () => {
     }
   }, [identity]);
 
+  const renderPage = () => {
+    switch (page) {
+      case AppPage.HOME:
+        return (
+          <div className={styles.home}>
+            <Workspace />
+            {/* <RecCard /> */}
+            <Background />
+          </div>
+        );
+      case AppPage.ONTOLOGY:
+        return <Ontology />;
+      case AppPage.WORKFLOW:
+        return <FlowCanvas />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <ConfigProvider
       theme={{
@@ -39,15 +59,7 @@ export const App: FC = () => {
       <div className={styles.App}>
         <Nav />
         <PersonaModal />
-        {page === AppPage.HOME ? (
-          <div className={styles.home}>
-            <Workspace />
-            {/* <RecCard /> */}
-            <Background />
-          </div>
-        ) : AppPage.WORKFLOW ? (
-          <FlowCanvas />
-        ) : null}
+        {renderPage()}
       </div>
     </ConfigProvider>
   );

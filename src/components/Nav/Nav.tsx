@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import {
   Atom,
   Database,
+  Graph,
   Heartbeat,
   Lightning,
   TreeStructure,
@@ -17,11 +18,12 @@ import { useAppDispatch } from 'reducers';
 import { AppPage } from 'models/enums/appPage';
 
 enum NavIcon {
+  Atom = 'Agents',
+  Automation = 'Automations',
   Data = 'Data',
   Health = 'Data health',
+  Ontology = 'Ontology',
   Workflow = 'Workflows',
-  Automation = 'Automations',
-  Atom = 'Agents',
 }
 
 interface NavProps {}
@@ -33,20 +35,23 @@ export const Nav: FC<NavProps> = ({}) => {
 
   const onClickIcon = (icon: NavIcon) => {
     switch (icon) {
+      case NavIcon.Atom:
+        console.log('Atom icon clicked');
+        break;
+      case NavIcon.Automation:
+        console.log('Automation icon clicked');
+        break;
       case NavIcon.Data:
         console.log('Data icon clicked');
         break;
       case NavIcon.Health:
         console.log('Health icon clicked');
         break;
+      case NavIcon.Ontology:
+        dispatch(setPage(AppPage.ONTOLOGY));
+        break;
       case NavIcon.Workflow:
         dispatch(setPage(AppPage.WORKFLOW));
-        break;
-      case NavIcon.Automation:
-        console.log('Automation icon clicked');
-        break;
-      case NavIcon.Atom:
-        console.log('Atom icon clicked');
         break;
       default:
         console.warn(`Unknown icon: ${icon}`);
@@ -58,14 +63,15 @@ export const Nav: FC<NavProps> = ({}) => {
   };
 
   const navIconMap = {
+    [NavIcon.Atom]: <Atom {...sharedIconProps} />,
+    [NavIcon.Automation]: <Lightning {...sharedIconProps} />,
     [NavIcon.Data]: <Database {...sharedIconProps} />,
     [NavIcon.Health]: <Heartbeat {...sharedIconProps} />,
+    [NavIcon.Ontology]: <Graph {...sharedIconProps} />,
     [NavIcon.Workflow]: <TreeStructure {...sharedIconProps} />,
-    [NavIcon.Automation]: <Lightning {...sharedIconProps} />,
-    [NavIcon.Atom]: <Atom {...sharedIconProps} />,
   };
 
-  const upperIcons = [NavIcon.Data, NavIcon.Health];
+  const upperIcons = [NavIcon.Ontology, NavIcon.Data, NavIcon.Health];
   const lowerIcons = [NavIcon.Workflow, NavIcon.Automation, NavIcon.Atom];
 
   const avatar =
