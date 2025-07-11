@@ -18,7 +18,7 @@ export const TemplateList: FC<TemplateListProps> = ({}) => {
   return (
     <div className={styles.TemplateList}>
       {templates.map((template) => (
-        <div className={styles.template}>
+        <div key={template.id} className={styles.template}>
           <h4>{template.name}</h4>
           <p>{template.description}</p>
         </div>

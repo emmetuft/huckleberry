@@ -6,3 +6,26 @@ export const ENTITIES = [
   'chart',
   'automation',
 ];
+
+export const mcpTools = [
+  'queryDatabase',
+  'summarizeData',
+  'createVisualization',
+  'runWorkflow',
+  'getUserProfile',
+  'listDatasets',
+  'fetchKPI',
+  'updateRecord',
+  'generateSQL',
+  'searchDocumentation',
+  'invokeAgent',
+  'sendEmail',
+  'scheduleReport',
+  'translateText',
+  'analyzeSentiment',
+  'extractEntities',
+  'callExternalAPI',
+  'checkPermissions',
+  'logEvent',
+  'recommendNextAction',
+];

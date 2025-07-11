@@ -48,3 +48,27 @@ export function setCaretPosition(element: HTMLElement, offset: number) {
     currentOffset += textLength;
   }
 }
+
+export function getCharRectAtOffset(
+  el: HTMLElement,
+  offset: number,
+): DOMRect | null {
+  const range = document.createRange();
+  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
+
+  let currentOffset = 0;
+  let node: Text | null = null;
+
+  while ((node = walker.nextNode() as Text | null)) {
+    const textLength = node.textContent?.length ?? 0;
+    if (currentOffset + textLength >= offset) {
+      const localOffset = offset - currentOffset;
+      range.setStart(node, localOffset);
+      range.setEnd(node, localOffset + 1);
+      return range.getBoundingClientRect();
+    }
+    currentOffset += textLength;
+  }
+
+  return null;
+}

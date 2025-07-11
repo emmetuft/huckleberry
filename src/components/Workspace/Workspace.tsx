@@ -1,5 +1,7 @@
-import { FC, useRef, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Button } from 'antd';
+import { CloseOutlined } from '@ant-design/icons';
 import {
   ArrowUp,
   CalendarBlank,
@@ -10,19 +12,19 @@ import {
 } from 'phosphor-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import styles from './Workspace.module.scss';
+import { useAppDispatch } from 'reducers';
+import { selectIdentity } from 'reducers/app/slice';
 import { sharedIconProps } from 'constants/styles';
 import { IconBtn } from 'components/IconBtn/IconBtn';
+import { TemplateList } from 'components/TemplateList/TemplateList';
+import { ToolPopup } from './ToolPopup';
 import {
   getCaretCharacterOffsetWithin,
   getTextWithHighlights,
   setCaretPosition,
 } from 'utils/dom';
-import { ActionType, getSuggestedActions } from 'utils/temp';
-import { TemplateList } from 'components/TemplateList/TemplateList';
 import { getFirstName, getTimeOfDay } from 'utils/misc';
-import { useSelector } from 'react-redux';
-import { selectIdentity } from 'reducers/app/slice';
-import { useAppDispatch } from 'reducers';
+import { ActionType, getSuggestedActions } from 'utils/temp';
 
 interface WorkspaceProps {}
 
@@ -35,8 +37,38 @@ export const Workspace: FC<WorkspaceProps> = ({}) => {
     { type: ActionType; text: string }[]
   >([]);
   const [showGreeting, setShowGreeting] = useState<boolean>(true);
+  const [showToolPopup, setShowToolPopup] = useState<boolean>(false);
+  const [lastPopupTriggerIndex, setLastPopupTriggerIndex] = useState<
+    number | null
+  >(null);
+  const [selectedTools, setSelectedTools] = useState<string[]>([]);
 
   const editableRef = useRef<HTMLDivElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
+  const popupInputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+
+      const clickedInsidePopup =
+        popupRef.current && popupRef.current.contains(target);
+
+      const dropdowns = document.querySelectorAll('.ant-select-dropdown');
+      const clickedInsideDropdown = Array.from(dropdowns).some((dropdown) =>
+        dropdown.contains(target),
+      );
+
+      if (!clickedInsidePopup && !clickedInsideDropdown) {
+        setShowToolPopup(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const onInput = () => {
     setShowGreeting(false);
@@ -55,9 +87,74 @@ export const Workspace: FC<WorkspaceProps> = ({}) => {
       setSuggestedActions(getSuggestedActions(text));
       const highlightedHTML = getTextWithHighlights(text, styles);
       el.innerHTML = highlightedHTML;
+      controlToolPopup(text, el);
     }
 
     setCaretPosition(el, preCaretOffset);
+  };
+
+  const controlToolPopup = (text: string, el: HTMLElement) => {
+    // Reset popup trigger if the "@" was removed
+    if (
+      lastPopupTriggerIndex !== null &&
+      (text.length < lastPopupTriggerIndex ||
+        text[lastPopupTriggerIndex] !== '@')
+    ) {
+      setLastPopupTriggerIndex(null);
+    }
+
+    // Check if user typed "@" and trigger popup
+    const atIndex = text.lastIndexOf('@');
+    if (atIndex === -1 || atIndex === lastPopupTriggerIndex) return;
+
+    setShowToolPopup(true);
+    setLastPopupTriggerIndex(atIndex);
+
+    setTimeout(() => popupInputRef.current?.focus(), 0);
+  };
+
+  const onPopupKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    console.log(event);
+    if (event.key === 'Backspace' && !event.currentTarget.value) {
+      event.preventDefault(); // Prevent deleting "@"
+      setShowToolPopup(false);
+
+      const el = editableRef.current;
+      if (el) {
+        el.focus();
+        const text = el.innerText;
+        const atIndex = text.lastIndexOf('@');
+        if (atIndex !== -1) {
+          setCaretPosition(el, atIndex + 1);
+        }
+      }
+    }
+  };
+
+  const onSelectTool = (value: string) => {
+    // Add value to selectedTools, avoiding duplicates
+    if (selectedTools.includes(value)) return;
+    setSelectedTools([...selectedTools, value]);
+    setShowToolPopup(false);
+
+    // Remove "@" from the editable content
+    const el = editableRef.current;
+    if (!el) return;
+    const text = el.innerText;
+    const atIndex = text.lastIndexOf('@');
+    if (atIndex !== -1) {
+      el.innerText = text.slice(0, atIndex) + text.slice(atIndex + 1);
+    }
+    // Refocus the editable element
+    el.focus();
+    // Set caret position after the inserted tool
+    const newText = el.innerText + ' ';
+    el.innerText = newText;
+    setCaretPosition(el, newText.length);
+  };
+
+  const onRemoveTool = (tool: string) => {
+    setSelectedTools(selectedTools.filter((t) => t !== tool));
   };
 
   const onClickSend = () => {
@@ -73,7 +170,27 @@ export const Workspace: FC<WorkspaceProps> = ({}) => {
 
   return (
     <div className={styles.Workspace}>
+      {showToolPopup && (
+        <ToolPopup
+          popupRef={popupRef}
+          inputRef={popupInputRef}
+          onPopupKeyDown={onPopupKeyDown}
+          onSelectTool={onSelectTool}
+        />
+      )}
       <div className={styles.inputWrapper}>
+        {selectedTools.length > 0 && (
+          <div className={styles.selectedTools}>
+            {selectedTools.map((tool) => (
+              <div key={tool} className={styles.tool}>
+                <p>{tool}</p>
+                <button onClick={() => onRemoveTool(tool)}>
+                  <CloseOutlined className={styles.closeIcon} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
         <div>
           <div
             className={`${styles.editable} ${isEmpty ? styles.empty : ''}`}
