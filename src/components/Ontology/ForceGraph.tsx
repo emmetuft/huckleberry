@@ -1,28 +1,26 @@
 import React, { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
-import data from './miserables.json';
 
 import { SimulationNodeDatum } from 'd3';
+import { GraphData } from './Ontology';
 
-interface NodeType extends SimulationNodeDatum {
+export interface NodeType extends SimulationNodeDatum {
   id: string;
   group: number;
 }
 
-interface LinkType {
-  source: string | NodeType;
-  target: string | NodeType;
-  value: number;
-}
-
 interface ForceGraphProps {
+  data: GraphData;
   width?: number;
   height?: number;
+  onNodeClick?: (node: NodeType) => void;
 }
 
 const ForceGraph: React.FC<ForceGraphProps> = ({
+  data,
   width = 928,
   height = 600,
+  onNodeClick,
 }) => {
   const ref = useRef<SVGSVGElement | null>(null);
 
@@ -70,7 +68,11 @@ const ForceGraph: React.FC<ForceGraphProps> = ({
       .data(nodes)
       .join('circle')
       .attr('r', 5)
-      .attr('fill', (d) => color((d as NodeType).group.toString()) as string);
+      .attr('fill', (d) => color((d as NodeType).group.toString()) as string)
+      .attr('cursor', 'pointer')
+      .on('click', (event, d) => {
+        if (onNodeClick) onNodeClick(d);
+      });
 
     (addDragBehavior(simulation) as any)(node);
 
@@ -108,7 +110,7 @@ const ForceGraph: React.FC<ForceGraphProps> = ({
     return () => {
       simulation.stop(); // Stop simulation on unmount
     };
-  }, [data, width, height]);
+  }, [data, width, height, onNodeClick]);
 
   return <svg ref={ref}></svg>;
 };
