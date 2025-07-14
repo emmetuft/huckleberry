@@ -14,6 +14,8 @@ export const Heading: FC<HeadingProps> = ({}) => {
     switch (appPage) {
       case AppPage.ONTOLOGY:
         return 'Business Ontology';
+      case AppPage.DATA_HEALTH:
+        return 'Data Health';
       default:
         return null;
     }

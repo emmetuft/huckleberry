@@ -45,7 +45,7 @@ export const Nav: FC<NavProps> = ({}) => {
         console.log('Data icon clicked');
         break;
       case NavIcon.Health:
-        console.log('Health icon clicked');
+        dispatch(setPage(AppPage.DATA_HEALTH));
         break;
       case NavIcon.Ontology:
         dispatch(setPage(AppPage.ONTOLOGY));

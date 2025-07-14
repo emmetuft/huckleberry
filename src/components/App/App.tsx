@@ -14,6 +14,7 @@ import { PersonaModal } from 'components/PersonaModal/PersonaModal';
 import { AppPage } from 'models/enums/appPage';
 import { Ontology } from 'components/Ontology/Ontology';
 import { Heading } from 'components/Heading/Heading';
+import { DataHealth } from 'components/DataHealth/DataHealth';
 
 export const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -42,6 +43,8 @@ export const App: FC = () => {
         );
       case AppPage.ONTOLOGY:
         return <Ontology />;
+      case AppPage.DATA_HEALTH:
+        return <DataHealth />;
       case AppPage.WORKFLOW:
         return <FlowCanvas />;
       default:
