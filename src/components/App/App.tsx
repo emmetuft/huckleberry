@@ -15,6 +15,7 @@ import { AppPage } from 'models/enums/appPage';
 import { Ontology } from 'components/Ontology/Ontology';
 import { Heading } from 'components/Heading/Heading';
 import { DataHealth } from 'components/DataHealth/DataHealth';
+import Automation from 'components/Automation/Automation';
 
 export const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -33,6 +34,8 @@ export const App: FC = () => {
 
   const renderPage = () => {
     switch (page) {
+      case AppPage.AUTOMATION:
+        return <Automation />;
       case AppPage.HOME:
         return (
           <div className={styles.home}>

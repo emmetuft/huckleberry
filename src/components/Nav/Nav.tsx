@@ -39,7 +39,7 @@ export const Nav: FC<NavProps> = ({}) => {
         console.log('Atom icon clicked');
         break;
       case NavIcon.Automation:
-        console.log('Automation icon clicked');
+        dispatch(setPage(AppPage.AUTOMATION));
         break;
       case NavIcon.Data:
         console.log('Data icon clicked');

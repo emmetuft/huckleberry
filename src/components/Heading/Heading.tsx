@@ -12,10 +12,12 @@ export const Heading: FC<HeadingProps> = ({}) => {
 
   const pageTitle = useMemo(() => {
     switch (appPage) {
-      case AppPage.ONTOLOGY:
-        return 'Business Ontology';
+      case AppPage.AUTOMATION:
+        return 'Automation Rules';
       case AppPage.DATA_HEALTH:
         return 'Data Health';
+      case AppPage.ONTOLOGY:
+        return 'Business Ontology';
       default:
         return null;
     }

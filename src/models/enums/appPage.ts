@@ -1,6 +1,7 @@
 export enum AppPage {
+  AUTOMATION = 'automation',
+  DATA_HEALTH = 'data_health',
   HOME = 'home',
   ONTOLOGY = 'ontology',
-  DATA_HEALTH = 'data_health',
   WORKFLOW = 'workflow',
 }
