@@ -16,6 +16,8 @@ export const Heading: FC<HeadingProps> = ({}) => {
         return 'Automation Rules';
       case AppPage.DATA_HEALTH:
         return 'Data Health';
+      case AppPage.DATA_HUB:
+        return 'Data Hub';
       case AppPage.ONTOLOGY:
         return 'Business Ontology';
       default:

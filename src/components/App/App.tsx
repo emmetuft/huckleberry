@@ -16,6 +16,7 @@ import { Ontology } from 'components/Ontology/Ontology';
 import { Heading } from 'components/Heading/Heading';
 import { DataHealth } from 'components/DataHealth/DataHealth';
 import Automation from 'components/Automation/Automation';
+import { DataHub } from 'components/DataHub/DataHub';
 
 export const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -36,6 +37,10 @@ export const App: FC = () => {
     switch (page) {
       case AppPage.AUTOMATION:
         return <Automation />;
+      case AppPage.DATA_HEALTH:
+        return <DataHealth />;
+      case AppPage.DATA_HUB:
+        return <DataHub />;
       case AppPage.HOME:
         return (
           <div className={styles.home}>
@@ -46,8 +51,6 @@ export const App: FC = () => {
         );
       case AppPage.ONTOLOGY:
         return <Ontology />;
-      case AppPage.DATA_HEALTH:
-        return <DataHealth />;
       case AppPage.WORKFLOW:
         return <FlowCanvas />;
       default:
@@ -60,6 +63,12 @@ export const App: FC = () => {
       theme={{
         token: {
           colorPrimary: '#5a0cff',
+        },
+        components: {
+          Table: {
+            borderColor: '#f8f8f8',
+            headerBg: '#f8f8f8',
+          },
         },
       }}
     >

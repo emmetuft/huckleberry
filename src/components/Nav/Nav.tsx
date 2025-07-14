@@ -42,7 +42,7 @@ export const Nav: FC<NavProps> = ({}) => {
         dispatch(setPage(AppPage.AUTOMATION));
         break;
       case NavIcon.Data:
-        console.log('Data icon clicked');
+        dispatch(setPage(AppPage.DATA_HUB));
         break;
       case NavIcon.Health:
         dispatch(setPage(AppPage.DATA_HEALTH));

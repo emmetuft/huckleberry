@@ -15,3 +15,14 @@
 .ant-drawer-right > .ant-drawer-content-wrapper {
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 }
+
+.ant-table-pagination {
+  background-color: #f8f8f8;
+  margin: 0 !important;
+  padding: 16px;
+  border-radius: 0 0 8px 8px;
+}
+
+.ant-table-wrapper .ant-table-thead > tr > th {
+  line-height: 14px;
+}

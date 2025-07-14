@@ -91,7 +91,9 @@ export const Ontology: FC<OntologyProps> = ({}) => {
             />
           </div>
           <div className={styles.buttons}>
-            <Button onClick={onClickCreateNode}>Create node</Button>
+            <Button type="primary" onClick={onClickCreateNode}>
+              Save
+            </Button>
           </div>
         </div>
       );
