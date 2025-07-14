@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 
 import { SimulationNodeDatum } from 'd3';
@@ -18,11 +18,31 @@ interface ForceGraphProps {
 
 const ForceGraph: React.FC<ForceGraphProps> = ({
   data,
-  width = 928,
-  height = 600,
+  width = 1200,
+  height = 800,
   onNodeClick,
 }) => {
   const ref = useRef<SVGSVGElement | null>(null);
+
+  const [tooltip, setTooltip] = useState<{
+    visible: boolean;
+    x: number;
+    y: number;
+    content: string;
+  }>({ visible: false, x: 0, y: 0, content: '' });
+
+  const onNodeHover = (node: NodeType | null, event: any) => {
+    if (node) {
+      setTooltip({
+        visible: true,
+        x: event.pageX,
+        y: event.pageY,
+        content: node.id,
+      });
+    } else {
+      setTooltip({ ...tooltip, visible: false });
+    }
+  };
 
   useEffect(() => {
     if (!data) return;
@@ -54,7 +74,10 @@ const ForceGraph: React.FC<ForceGraphProps> = ({
       .forceSimulation<NodeType>(nodes as NodeType[])
       .force(
         'link',
-        d3.forceLink(links).id((d: any) => d.id),
+        d3
+          .forceLink(links)
+          .id((d: any) => d.id)
+          .distance(50),
       )
       .force('charge', d3.forceManyBody())
       .force('center', d3.forceCenter(width / 2, height / 2))
@@ -67,16 +90,20 @@ const ForceGraph: React.FC<ForceGraphProps> = ({
       .selectAll('circle')
       .data(nodes)
       .join('circle')
-      .attr('r', 5)
+      .attr('r', 6)
       .attr('fill', (d) => color((d as NodeType).group.toString()) as string)
       .attr('cursor', 'pointer')
       .on('click', (event, d) => {
         if (onNodeClick) onNodeClick(d);
+      })
+      .on('mouseover', function (event, d) {
+        if (onNodeHover) onNodeHover(d, event);
+      })
+      .on('mouseout', function () {
+        if (onNodeHover) onNodeHover(null, null);
       });
 
     (addDragBehavior(simulation) as any)(node);
-
-    node.append('title').text((d) => d.id);
 
     function ticked() {
       link
@@ -88,31 +115,35 @@ const ForceGraph: React.FC<ForceGraphProps> = ({
       node.attr('cx', (d: any) => d.x!).attr('cy', (d: any) => d.y!);
     }
 
-    function drag(simulation: d3.Simulation<NodeType, undefined>) {
-      return d3
-        .drag<SVGCircleElement, NodeType>()
-        .on('start', (event) => {
-          if (!event.active) simulation.alphaTarget(0.3).restart();
-          event.subject.fx = event.subject.x;
-          event.subject.fy = event.subject.y;
-        })
-        .on('drag', (event) => {
-          event.subject.fx = event.x;
-          event.subject.fy = event.y;
-        })
-        .on('end', (event) => {
-          if (!event.active) simulation.alphaTarget(0);
-          event.subject.fx = null;
-          event.subject.fy = null;
-        });
-    }
-
     return () => {
       simulation.stop(); // Stop simulation on unmount
     };
   }, [data, width, height, onNodeClick]);
 
-  return <svg ref={ref}></svg>;
+  return (
+    <>
+      <svg ref={ref}></svg>
+      {tooltip.visible && (
+        <div
+          style={{
+            position: 'absolute',
+            top: tooltip.y + 5,
+            left: tooltip.x + 10,
+            padding: '6px 10px',
+            background: '#2c2b2a',
+            borderRadius: 4,
+            boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+            color: 'white',
+            fontSize: '14px',
+            pointerEvents: 'none',
+            zIndex: 1000,
+          }}
+        >
+          {tooltip.content}
+        </div>
+      )}
+    </>
+  );
 };
 
 function addDragBehavior(simulation: d3.Simulation<NodeType, undefined>) {

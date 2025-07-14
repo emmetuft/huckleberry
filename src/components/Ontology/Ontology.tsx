@@ -1,8 +1,18 @@
 import { FC, useCallback, useMemo, useState } from 'react';
-import { Drawer, FloatButton, List, Tooltip } from 'antd';
+import {
+  Button,
+  Drawer,
+  FloatButton,
+  Input,
+  List,
+  Select,
+  Tooltip,
+} from 'antd';
 import { ExportOutlined, PlusSquareOutlined } from '@ant-design/icons';
 import styles from './Ontology.module.scss';
 import ForceGraph, { NodeType } from './ForceGraph';
+
+const { TextArea } = Input;
 
 import graphData from './miserables.json';
 
@@ -40,12 +50,50 @@ export const Ontology: FC<OntologyProps> = ({}) => {
     [selectedNode],
   );
 
+  const handleChange = (value: string[]) => {
+    console.log(`selected ${value}`);
+  };
+
+  const onClickCreateNode = () => {
+    // TODO: Implement node creation logic
+    setDrawerOpen(false);
+  };
+
   const drawerContent = useMemo(() => {
     if (addNode) {
       return (
-        <>
-          <h4>Define relationships</h4>
-        </>
+        <div className={styles.drawerContent}>
+          <div className={styles.section}>
+            <h4>Name</h4>
+            <Input />
+          </div>
+          <div className={styles.section}>
+            <h4>Description</h4>
+            <TextArea rows={3} />
+          </div>
+          <div className={styles.section}>
+            <h4>Define relationships</h4>
+            <Select
+              mode="multiple"
+              allowClear
+              style={{ width: '100%' }}
+              placeholder="Source nodes"
+              onChange={handleChange}
+              options={[]}
+            />
+            <Select
+              mode="multiple"
+              allowClear
+              style={{ width: '100%' }}
+              placeholder="Target nodes"
+              onChange={handleChange}
+              options={[]}
+            />
+          </div>
+          <div className={styles.buttons}>
+            <Button onClick={onClickCreateNode}>Create node</Button>
+          </div>
+        </div>
       );
     }
 

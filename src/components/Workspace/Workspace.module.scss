@@ -17,6 +17,7 @@
   .inputWrapper {
     @extend .card;
     min-height: 100px;
+    border: 1px solid $grey-bg;
     animation: breathe 4s ease-in-out infinite;
     transition: box-shadow 0.3s ease;
 
