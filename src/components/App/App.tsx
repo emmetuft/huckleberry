@@ -13,6 +13,7 @@ import { FlowCanvas } from 'components/FlowCanvas/FlowCanvas';
 import { PersonaModal } from 'components/PersonaModal/PersonaModal';
 import { AppPage } from 'models/enums/appPage';
 import { Ontology } from 'components/Ontology/Ontology';
+import { Heading } from 'components/Heading/Heading';
 
 export const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -57,6 +58,7 @@ export const App: FC = () => {
       }}
     >
       <div className={styles.App}>
+        <Heading />
         <Nav />
         <PersonaModal />
         {renderPage()}
