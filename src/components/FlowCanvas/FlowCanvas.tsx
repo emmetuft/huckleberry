@@ -18,6 +18,7 @@ import { NodeType } from 'models/enums/nodeType';
 import { EndNode } from './Nodes/EndNode';
 import { ActionNode } from './Nodes/ActionNode';
 import { TEMPLATE_NODES } from 'constants/templates';
+import { Chat } from 'components/Chat/Chat';
 
 const nodeTypes = {
   [NodeType.START]: StartNode,
@@ -41,6 +42,7 @@ export const FlowCanvas: FC<FlowCanvasProps> = ({}) => {
 
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
+      <Chat />
       <ReactFlow
         nodes={nodes}
         edges={edges}

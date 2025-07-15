@@ -1,6 +1,6 @@
 import { FC, useEffect } from 'react';
 import { Select } from 'antd';
-import styles from './Workspace.module.scss';
+import styles from './IntentInput.module.scss';
 import { mcpTools } from 'constants/app';
 
 interface ToolPopupProps {

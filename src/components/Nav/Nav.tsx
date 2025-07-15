@@ -11,7 +11,12 @@ import {
 } from 'phosphor-react';
 import styles from './Nav.module.scss';
 import { sharedIconProps } from 'constants/styles';
-import { selectIdentity, setPage, setPersonaModal } from 'reducers/app/slice';
+import {
+  selectIdentity,
+  selectPage,
+  setPage,
+  setPersonaModal,
+} from 'reducers/app/slice';
 import { IconBtn } from 'components/IconBtn/IconBtn';
 import { Tooltip } from 'antd';
 import { useAppDispatch } from 'reducers';
@@ -30,6 +35,7 @@ interface NavProps {}
 
 export const Nav: FC<NavProps> = ({}) => {
   const dispatch = useAppDispatch();
+  const page = useSelector(selectPage);
 
   const identity = useSelector(selectIdentity);
 

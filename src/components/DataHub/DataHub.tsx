@@ -19,7 +19,23 @@ export const DataHub: FC<DataHubProps> = ({}) => {
   const [loading, setLoading] = useState<boolean>(false);
   const loadingRef = useRef<boolean>(false);
 
-  const tableHeight = window.innerHeight - 500;
+  const topSectionRef = useRef<HTMLDivElement>(null);
+  const [tableHeight, setTableHeight] = useState<number>(500);
+
+  useEffect(() => {
+    const resize = () => {
+      const topHeight = topSectionRef.current?.offsetHeight || 0;
+      const padding = 100;
+      const extraTableHeight = 61 + 64;
+      setTableHeight(
+        window.innerHeight - topHeight - padding - extraTableHeight,
+      );
+    };
+
+    resize();
+    window.addEventListener('resize', resize);
+    return () => window.removeEventListener('resize', resize);
+  }, []);
 
   useEffect(() => {
     if (!loadingRef.current) fetchDataSources();
@@ -95,6 +111,11 @@ export const DataHub: FC<DataHubProps> = ({}) => {
 
   return (
     <div className={styles.DataHub}>
+      <div ref={topSectionRef} className={styles.topSection}>
+        <div className={styles.placeholder} />
+        <div className={styles.placeholder} />
+        <div className={styles.placeholder} />
+      </div>
       <Table
         dataSource={dataSourceList}
         columns={columns}
