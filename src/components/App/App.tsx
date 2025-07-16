@@ -5,18 +5,17 @@ import styles from './App.module.scss';
 import { useAppDispatch } from 'reducers';
 import { fetchUserPersona } from 'reducers/app/actions';
 import { fetchIdentity, selectIdentity, selectPage } from 'reducers/app/slice';
-import { Background } from 'components/Background/Background';
-import { Nav } from 'components/Nav/Nav';
-import { RecCard } from 'components/RecCard/RecCard';
-import { Workspace } from 'components/Workspace/Workspace';
-import { FlowCanvas } from 'components/FlowCanvas/FlowCanvas';
-import { PersonaModal } from 'components/PersonaModal/PersonaModal';
 import { AppPage } from 'models/enums/appPage';
-import { Ontology } from 'components/Ontology/Ontology';
-import { Heading } from 'components/Heading/Heading';
-import { DataHealth } from 'components/DataHealth/DataHealth';
 import Automation from 'components/Automation/Automation';
+import { Background } from 'components/Background/Background';
+import { DataHealth } from 'components/DataHealth/DataHealth';
 import { DataHub } from 'components/DataHub/DataHub';
+import { FlowCanvas } from 'components/FlowCanvas/FlowCanvas';
+import { Heading } from 'components/Heading/Heading';
+import { Nav } from 'components/Nav/Nav';
+import { Ontology } from 'components/Ontology/Ontology';
+import { PersonaModal } from 'components/PersonaModal/PersonaModal';
+import { Workspace } from 'components/Workspace/Workspace';
 
 export const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -45,7 +44,6 @@ export const App: FC = () => {
         return (
           <div className={styles.home}>
             <Workspace />
-            {/* <RecCard /> */}
             <Background />
           </div>
         );
