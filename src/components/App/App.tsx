@@ -4,7 +4,12 @@ import { ConfigProvider } from 'antd';
 import styles from './App.module.scss';
 import { useAppDispatch } from 'reducers';
 import { fetchUserPersona } from 'reducers/app/actions';
-import { fetchIdentity, selectIdentity, selectPage } from 'reducers/app/slice';
+import {
+  authenticate,
+  fetchIdentity,
+  selectIdentity,
+  selectPage,
+} from 'reducers/app/slice';
 import { AppPage } from 'models/enums/appPage';
 import Automation from 'components/Automation/Automation';
 import { Background } from 'components/Background/Background';
@@ -23,6 +28,7 @@ export const App: FC = () => {
   const page = useSelector(selectPage);
 
   useEffect(() => {
+    dispatch(authenticate());
     dispatch(fetchIdentity());
   }, []);
 

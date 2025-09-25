@@ -1,4 +1,20 @@
-import { AppDBDocument, ResponseWithBody } from '@domoinc/toolkit';
+import {
+  AppDBDocument,
+  DataFormatTypes,
+  ResponseWithBody,
+} from '@domoinc/toolkit';
+import Cookies from 'js-cookie';
+
+export const getOauthToken = () => {
+  const token = Cookies.get('oauth_token');
+  return token ?? '';
+};
+
+export const commonHeaders = () => ({
+  'Content-Type': DataFormatTypes.json,
+  accept: 'application/json',
+  'X-EPS-AUTH-TOKEN': getOauthToken(),
+});
 
 export function extractAppDbData<T>(
   collection:
@@ -18,3 +34,15 @@ export function extractAppDbData<T>(
 
   return extractedData;
 }
+
+export const getDatasetRequestBody = (columnNames: string[]) => {
+  // Fetch values from all columns in the dataset
+  const requestBody: any = {
+    columns: columnNames.map((name) => ({
+      exprType: 'COLUMN',
+      column: name,
+    })),
+  };
+
+  return requestBody;
+};

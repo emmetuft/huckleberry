@@ -39,5 +39,7 @@
         ]
       }
     }
-  ]
+  ],
+  "oAuthEnabled": true,
+  "scopes": ["identity", "user", "data", "query"]
 }

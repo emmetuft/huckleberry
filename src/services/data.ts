@@ -1,6 +1,9 @@
+import { Column } from 'models/interfaces/column';
 import { DataSource } from 'models/interfaces/dataSource';
+import { commonHeaders, getDatasetRequestBody } from 'utils/service';
 
 const DataSourcesUrl = '/domo/datasources/v1';
+const SCHEMA_URL = '/domo/datasources/v1/{id}/schema';
 
 interface FetchDataSourcesInput {
   page: number;
@@ -21,7 +24,6 @@ const fetchDataSources = async ({
     const response = await fetch(apiUrl);
     if (response.ok) {
       const result = await response.json();
-      console.log(result);
       return {
         sources: result.dataSources,
         total: result._metaData.totalCount,
@@ -50,6 +52,56 @@ const buildDatasetQuery = (
   return urlBuilder.href;
 };
 
+const fetchDataSourceSchema = async (
+  dataSourceId: string,
+): Promise<Column[]> => {
+  try {
+    const response = await fetch(SCHEMA_URL.replace('{id}', dataSourceId));
+    if (response.ok) {
+      const result = await response.json();
+      console.log(result);
+      return result.columnList;
+    }
+    return [];
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+const fetchSampleRows = async (dataSourceId: string, schema: Column[]) => {
+  const columnNames = schema.map((column) => column.name);
+
+  const requestBody = getDatasetRequestBody(columnNames);
+
+  const url = `https://domo-service.labsprod.domotech.io/api/v2/domo/datasets/${dataSourceId}/data?page=0&size=3`;
+  const options = {
+    method: 'POST',
+    headers: commonHeaders(),
+    body: JSON.stringify(requestBody),
+  };
+
+  const response = await fetch(url, options);
+  if (response.ok) {
+    const datasetResponse = await response.json();
+    const dataContent = datasetResponse.content;
+    const datasetRows = formatRowsWithKeys(schema, dataContent);
+    return datasetRows;
+  }
+
+  throw new Error('Failed to load dataset data');
+};
+
+const formatRowsWithKeys = (schema: Column[], rows: string[][]) =>
+  rows.map((row) => {
+    const rowObj: any = {};
+    schema.forEach((column, index) => {
+      rowObj[column.name] = row[index];
+    });
+    return rowObj;
+  });
+
 export const DataService = {
   fetchDataSources,
+  fetchDataSourceSchema,
+  fetchSampleRows,
 };

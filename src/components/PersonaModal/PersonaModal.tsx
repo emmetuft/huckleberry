@@ -85,7 +85,6 @@ export const PersonaModal: FC<PersonaModalProps> = ({}) => {
   return (
     <Modal
       title="Define your digital twin"
-      closable={{ 'aria-label': 'Custom Close Button' }}
       open={isOpen}
       okText="Save"
       onOk={onOk}

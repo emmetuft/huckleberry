@@ -1,4 +1,5 @@
-import { FC, useCallback, useMemo, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import { useSelector } from 'react-redux';
 import {
   Button,
   Drawer,
@@ -10,28 +11,31 @@ import {
 } from 'antd';
 import { ExportOutlined, PlusSquareOutlined } from '@ant-design/icons';
 import styles from './Ontology.module.scss';
-import ForceGraph, { NodeType } from './ForceGraph';
+import { selectGraphData } from 'reducers/ontology/slice';
+import { nodeColors } from 'constants/styles';
+import { NodeType } from 'models/interfaces/ontology';
+import ForceGraph from './ForceGraph';
+import { OntologyInitModal } from './OntologyInitModal/OntologyInitModal';
 
 const { TextArea } = Input;
 
-import graphData from './miserables.json';
-
-export interface GraphData {
-  nodes: NodeType[];
-  links: {
-    source: string;
-    target: string;
-    type: string;
-    value: number;
-  }[];
-}
+// import graphData from './miserables.json';
 
 interface OntologyProps {}
 
 export const Ontology: FC<OntologyProps> = ({}) => {
+  const graphData = useSelector(selectGraphData);
+
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
   const [selectedNode, setSelectedNode] = useState<any>(null);
   const [addNode, setAddNode] = useState<boolean>(false);
+  const [initModalOpen, setInitModalOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (graphData.nodes.length > 0 && initModalOpen) {
+      setInitModalOpen(false);
+    }
+  }, [graphData]);
 
   const onNodeClick = useCallback((node: NodeType) => {
     setSelectedNode(node);
@@ -39,11 +43,9 @@ export const Ontology: FC<OntologyProps> = ({}) => {
     setDrawerOpen(true);
   }, []);
 
-  const ontologyData = graphData as GraphData;
-
   const relatedLinks = useMemo(
     () =>
-      ontologyData.links.filter(
+      graphData.links.filter(
         (link) =>
           link.source === selectedNode?.id || link.target === selectedNode?.id,
       ),
@@ -138,9 +140,24 @@ export const Ontology: FC<OntologyProps> = ({}) => {
     }
   };
 
+  const selectedNodeIndex = graphData.nodes.findIndex(
+    (node) => node.id === selectedNode.id,
+  );
+  const selectedNodeColor = nodeColors[selectedNodeIndex % nodeColors.length];
+
   return (
     <div className={styles.Ontology}>
-      <ForceGraph data={ontologyData} onNodeClick={onNodeClick} />
+      {graphData.nodes.length === 0 ? (
+        <div className={styles.emptyWrapper}>
+          <h3>It's empty in here!</h3>
+          <Button type="primary" onClick={() => setInitModalOpen(true)}>
+            Let's get cooking
+          </Button>
+        </div>
+      ) : (
+        <ForceGraph data={graphData} onNodeClick={onNodeClick} />
+      )}
+
       <FloatButton.Group shape="square">
         <FloatButton
           icon={
@@ -158,8 +175,27 @@ export const Ontology: FC<OntologyProps> = ({}) => {
           }
         />
       </FloatButton.Group>
+
       <Drawer
-        title={selectedNode ? selectedNode.id : 'Add node'}
+        title={
+          selectedNode ? (
+            <div className={styles.drawerHeader}>
+              {selectedNode.id}
+              <div
+                className={styles.nodeGroup}
+                style={
+                  {
+                    '--node-color': selectedNodeColor,
+                  } as React.CSSProperties
+                }
+              >
+                {selectedNode.group}
+              </div>
+            </div>
+          ) : (
+            'Add node'
+          )
+        }
         mask={false}
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
@@ -167,6 +203,11 @@ export const Ontology: FC<OntologyProps> = ({}) => {
       >
         {drawerContent}
       </Drawer>
+
+      <OntologyInitModal
+        isOpen={initModalOpen}
+        onClose={() => setInitModalOpen(false)}
+      />
     </div>
   );
 };

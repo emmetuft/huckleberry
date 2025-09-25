@@ -1,13 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
-
-import { SimulationNodeDatum } from 'd3';
-import { GraphData } from './Ontology';
-
-export interface NodeType extends SimulationNodeDatum {
-  id: string;
-  group: number;
-}
+import { GraphData, NodeType } from 'models/interfaces/ontology';
+import { nodeColors } from 'constants/styles';
 
 interface ForceGraphProps {
   data: GraphData;
@@ -45,9 +39,13 @@ const ForceGraph: React.FC<ForceGraphProps> = ({
   };
 
   useEffect(() => {
+    console.log(data);
     if (!data) return;
 
-    const color = d3.scaleOrdinal(d3.schemeCategory10);
+    const color = d3
+      .scaleOrdinal<string>()
+      .domain(new Set(data.nodes.map((d) => d.group.toString())).values())
+      .range(nodeColors);
     const nodes = data.nodes.map((d) => ({ ...d }));
     const links = data.links.map((d) => ({ ...d }));
 
@@ -77,7 +75,7 @@ const ForceGraph: React.FC<ForceGraphProps> = ({
         d3
           .forceLink(links)
           .id((d: any) => d.id)
-          .distance(50),
+          .distance(120),
       )
       .force('charge', d3.forceManyBody())
       .force('center', d3.forceCenter(width / 2, height / 2))
@@ -85,23 +83,37 @@ const ForceGraph: React.FC<ForceGraphProps> = ({
 
     const node = svg
       .append('g')
-      .attr('stroke', '#fff')
-      .attr('stroke-width', 1.5)
-      .selectAll('circle')
+      .selectAll('g')
       .data(nodes)
-      .join('circle')
-      .attr('r', 6)
-      .attr('fill', (d) => color((d as NodeType).group.toString()) as string)
+      .join('g')
       .attr('cursor', 'pointer')
       .on('click', (event, d) => {
         if (onNodeClick) onNodeClick(d);
-      })
-      .on('mouseover', function (event, d) {
-        if (onNodeHover) onNodeHover(d, event);
-      })
-      .on('mouseout', function () {
-        if (onNodeHover) onNodeHover(null, null);
       });
+    // .on('mouseover', (event, d) => {
+    //   onNodeHover?.(d, event);
+    // })
+    // .on('mouseout', () => {
+    //   onNodeHover?.(null, null);
+    // });
+
+    // Circle inside each group
+    node
+      .append('circle')
+      .attr('r', 30) // larger radius
+      .attr('fill', (d) => color((d as NodeType).group.toString()) as string)
+      .attr('stroke', '#fff')
+      .attr('stroke-width', 1.5);
+
+    // Text inside each group
+    node
+      .append('text')
+      .text((d) => d.id)
+      .attr('text-anchor', 'middle')
+      .attr('dominant-baseline', 'middle')
+      .attr('fill', 'white')
+      .attr('font-weight', 700)
+      .attr('font-size', 10); // adjust font size as needed
 
     (addDragBehavior(simulation) as any)(node);
 
@@ -112,7 +124,7 @@ const ForceGraph: React.FC<ForceGraphProps> = ({
         .attr('x2', (d: any) => (d.target as NodeType).x!)
         .attr('y2', (d: any) => (d.target as NodeType).y!);
 
-      node.attr('cx', (d: any) => d.x!).attr('cy', (d: any) => d.y!);
+      node.attr('transform', (d: any) => `translate(${d.x},${d.y})`);
     }
 
     return () => {

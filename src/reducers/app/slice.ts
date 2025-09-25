@@ -5,6 +5,7 @@ import { Persona } from 'models/interfaces/persona';
 import { AppService } from 'services/app';
 import { StorageService } from 'services/storage';
 import { AppPage } from 'models/enums/appPage';
+import { AuthResponse } from '@appteam6/domoapps.js';
 
 interface State {
   identity?: Identity;
@@ -39,6 +40,9 @@ export const AppReducer = createAppSlice({
       (state, { payload }: { payload: boolean }) => {
         state.personaModalOpen = payload;
       },
+    ),
+    authenticate: create.asyncThunk<AuthResponse, void>(
+      AppService.authenticate,
     ),
     fetchIdentity: create.asyncThunk<Identity, void>(
       async () => {
@@ -100,8 +104,13 @@ export const AppReducer = createAppSlice({
   },
 });
 
-export const { fetchIdentity, saveUserPersona, setPage, setPersonaModal } =
-  AppReducer.actions;
+export const {
+  authenticate,
+  fetchIdentity,
+  saveUserPersona,
+  setPage,
+  setPersonaModal,
+} = AppReducer.actions;
 export const {
   selectIdentity,
   selectPersona,

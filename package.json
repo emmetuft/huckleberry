@@ -29,19 +29,23 @@
     ]
   },
   "dependencies": {
+    "@appteam6/domoapps.js": "^4.2.3",
     "@domoinc/toolkit": "^2.3.0",
     "@observablehq/plot": "^0.6.17",
     "@reduxjs/toolkit": "^2.2.7",
     "@types/d3": "^7.4.3",
+    "@types/js-cookie": "^3.0.6",
     "@xyflow/react": "^12.8.1",
     "antd": "^5.26.4",
     "d3": "^7.9.0",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.23.0",
+    "js-cookie": "^3.0.5",
     "phosphor-react": "^1.4.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-redux": "^9.1.2"
+    "react-redux": "^9.1.2",
+    "ryuu.js": "^4.4.7"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^1.9.0",

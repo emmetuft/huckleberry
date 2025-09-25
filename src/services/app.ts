@@ -1,4 +1,8 @@
+import { AuthClient, AuthResponse } from '@appteam6/domoapps.js';
 import { Identity, IdentityClient } from '@domoinc/toolkit';
+
+const authenticate = async (): Promise<AuthResponse> =>
+  await AuthClient.authenticate('huckleberry');
 
 const fetchIdentity = async (): Promise<Identity> => {
   try {
@@ -10,5 +14,6 @@ const fetchIdentity = async (): Promise<Identity> => {
 };
 
 export const AppService = {
+  authenticate,
   fetchIdentity,
 };

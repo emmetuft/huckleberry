@@ -3,12 +3,14 @@
 
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import AppReducer from './app/slice';
+import OntologyReducer from './ontology/slice';
 //-- importRef
 import { useDispatch } from 'react-redux';
 
 export const store = configureStore({
   reducer: {
     app: AppReducer,
+    ontology: OntologyReducer,
     //-- reducerRef
   },
 });

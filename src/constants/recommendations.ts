@@ -20,7 +20,7 @@ export const recommendations = [
     reason: 'You recently built a revenue forecasting dashboard.',
     tags: ['Forecasting', 'AI', 'Strategy'],
     actionLabel: 'Read Article',
-    url: 'https://hbr.org/ai-forecasting',
+    url: 'https://www.netguru.com/blog/ai-based-demand-forecasting',
   },
   {
     id: 'rec-004',
