@@ -1,5 +1,5 @@
 {
-  "name": "Blueberry AI",
+  "name": "Huckleberry AI",
   "version": "0.0.1",
   "size": {
     "width": 5,
@@ -70,6 +70,80 @@
         {
           "alias": "accountId",
           "columnName": "Account_ID"
+        }
+      ]
+    },
+    {
+      "dataSetId": "26444d46-7d1d-4ca3-b75e-1b68d5f5a3b4",
+      "alias": "DomoStats_Datasets_History",
+      "fields": [
+        {
+          "alias": "executionId",
+          "columnName": "Execution ID"
+        },
+        {
+          "alias": "dataSourceId",
+          "columnName": "Data Source ID"
+        },
+        {
+          "alias": "link",
+          "columnName": "Link"
+        },
+        {
+          "alias": "dataSourceName",
+          "columnName": "Data Source Name"
+        },
+        {
+          "alias": "dataProviderKey",
+          "columnName": "Data Provider Key"
+        },
+        {
+          "alias": "status",
+          "columnName": "Status"
+        },
+        {
+          "alias": "updatedRows",
+          "columnName": "Updated Rows"
+        },
+        {
+          "alias": "bytesInserted",
+          "columnName": "Bytes Inserted"
+        },
+        {
+          "alias": "updateMethod",
+          "columnName": "Update Method"
+        },
+        {
+          "alias": "createdAt",
+          "columnName": "Created At"
+        },
+        {
+          "alias": "runTime",
+          "columnName": "Run Time"
+        },
+        {
+          "alias": "startedBy",
+          "columnName": "Started by"
+        },
+        {
+          "alias": "cancelledBy",
+          "columnName": "Cancelled by"
+        },
+        {
+          "alias": "startTime",
+          "columnName": "Start Time"
+        },
+        {
+          "alias": "endTime",
+          "columnName": "End Time"
+        },
+        {
+          "alias": "phaseType",
+          "columnName": "Phase Type"
+        },
+        {
+          "alias": "runType",
+          "columnName": "Run Type"
         }
       ]
     }
