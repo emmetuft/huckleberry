@@ -31,7 +31,6 @@
   "dependencies": {
     "@appteam6/domoapps.js": "^4.2.3",
     "@domoinc/toolkit": "^2.3.0",
-    "@observablehq/plot": "^0.6.17",
     "@reduxjs/toolkit": "^2.2.7",
     "@types/d3": "^7.4.3",
     "@types/js-cookie": "^3.0.6",
@@ -45,6 +44,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-redux": "^9.1.2",
+    "recharts": "^3.2.1",
     "ryuu.js": "^4.4.7"
   },
   "devDependencies": {

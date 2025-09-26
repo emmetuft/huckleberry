@@ -6,7 +6,74 @@
     "height": 3
   },
   "fullpage": true,
-  "mapping": [],
+  "mapping": [
+    {
+      "dataSetId": "e84589ed-2f13-4173-9601-80dfa8e9a16a",
+      "alias": "DomoStats_Datasets",
+      "fields": [
+        {
+          "alias": "id",
+          "columnName": "ID"
+        },
+        {
+          "alias": "name",
+          "columnName": "Name"
+        },
+        {
+          "alias": "link",
+          "columnName": "Link"
+        },
+        {
+          "alias": "ownerId",
+          "columnName": "Owner_User_ID"
+        },
+        {
+          "alias": "createdDate",
+          "columnName": "Created_Date"
+        },
+        {
+          "alias": "lastRunDate",
+          "columnName": "Last_Run_Date"
+        },
+        {
+          "alias": "status",
+          "columnName": "Status"
+        },
+        {
+          "alias": "schedule",
+          "columnName": "Schedule"
+        },
+        {
+          "alias": "importType",
+          "columnName": "Import_Type"
+        },
+        {
+          "alias": "dataProvider",
+          "columnName": "Data_Provider"
+        },
+        {
+          "alias": "sourceType",
+          "columnName": "Source_Type"
+        },
+        {
+          "alias": "cardsPowered",
+          "columnName": "Cards_Powered"
+        },
+        {
+          "alias": "pdpEnabled",
+          "columnName": "PDP Enabled"
+        },
+        {
+          "alias": "shared",
+          "columnName": "Shared"
+        },
+        {
+          "alias": "accountId",
+          "columnName": "Account_ID"
+        }
+      ]
+    }
+  ],
   "collections": [
     {
       "name": "UserPersona",

@@ -6,6 +6,9 @@ import { dataSourceColumns } from 'constants/data';
 import { renderVal } from 'utils/data';
 import { useSelector } from 'react-redux';
 import { selectIdentity } from 'reducers/app/slice';
+import { DataProvidersChart } from './charts/DataProviders';
+import { RecentRunsChart } from './charts/RecentRuns';
+import { DataSourceUsageTrendChart } from './charts/DataSourceUsageTrendChart';
 
 interface DataHubProps {}
 
@@ -112,9 +115,16 @@ export const DataHub: FC<DataHubProps> = ({}) => {
   return (
     <div className={styles.DataHub}>
       <div ref={topSectionRef} className={styles.topSection}>
-        <div className={styles.placeholder} />
-        <div className={styles.placeholder} />
-        <div className={styles.placeholder} />
+        <div className={styles.chartContainer}>
+          <p className={styles.chartTitle}>Top 5 Data Providers</p>
+          <DataProvidersChart height={260} />
+        </div>
+        <div className={styles.chartContainer}>
+          <RecentRunsChart height={260} />
+        </div>
+        <div className={styles.chartContainer}>
+          <DataSourceUsageTrendChart height={260} />
+        </div>
       </div>
       <Table
         dataSource={dataSourceList}
@@ -134,6 +144,7 @@ export const DataHub: FC<DataHubProps> = ({}) => {
           y: tableHeight,
         }}
         tableLayout="auto"
+        className={styles.dataTable}
       />
     </div>
   );

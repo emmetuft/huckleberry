@@ -10,3 +10,5 @@ export const nodeColors = [
   '#F75E1C',
   '#81C14B',
 ];
+
+export const chartColors = [...nodeColors, '#2792c7'];

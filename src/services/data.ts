@@ -2,7 +2,7 @@ import { Column } from 'models/interfaces/column';
 import { DataSource } from 'models/interfaces/dataSource';
 import { commonHeaders, getDatasetRequestBody } from 'utils/service';
 
-const DataSourcesUrl = '/domo/datasources/v1';
+const DATA_SOURCES_URL = '/domo/datasources/v1';
 const SCHEMA_URL = '/domo/datasources/v1/{id}/schema';
 
 interface FetchDataSourcesInput {
@@ -43,7 +43,7 @@ const buildDatasetQuery = (
   size: number,
   searchTerm: string | undefined,
 ) => {
-  const urlBuilder = new URL(DataSourcesUrl, window.location.href);
+  const urlBuilder = new URL(DATA_SOURCES_URL, window.location.href);
   urlBuilder.searchParams.append('offset', ((page - 1) * size).toString());
   urlBuilder.searchParams.append('limit', size.toString());
   if (searchTerm !== undefined && searchTerm !== null && searchTerm !== '') {
