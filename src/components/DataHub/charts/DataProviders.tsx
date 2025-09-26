@@ -1,4 +1,5 @@
 import React from 'react';
+import { Spin } from 'antd';
 import {
   PieChart,
   Pie,
@@ -7,11 +8,10 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
+import { sharedTooltipProps } from 'constants/chart';
+import { DATA_ALIAS } from 'constants/mapping';
 import { chartColors } from 'constants/styles';
 import { useChartData } from 'hooks/useChartData';
-import { DATA_ALIAS } from 'constants/mapping';
-import { Spin } from 'antd';
-import { sharedTooltipProps } from 'constants/chart';
 
 interface DataProvidersChartProps {
   height?: number;
