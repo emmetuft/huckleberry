@@ -29,6 +29,7 @@ export interface GraphData {
 export interface NodeType {
   id: string;   // entity name
   group: number; // group entities logically (e.g., all entities from the same data source or domain)
+  description?: string; // optional description of the entity
 }
 
 Rules:

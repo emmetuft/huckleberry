@@ -14,6 +14,7 @@ export interface GraphData {
 export interface NodeType extends SimulationNodeDatum {
   id: string;
   group: number;
+  description?: string;
 }
 
 export interface OntologySource {

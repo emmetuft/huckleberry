@@ -29,6 +29,8 @@ export const Ontology: FC<OntologyProps> = ({}) => {
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
   const [selectedNode, setSelectedNode] = useState<any>(null);
   const [addNode, setAddNode] = useState<boolean>(false);
+  const [addNodeSources, setAddNodeSources] = useState<string[]>([]);
+  const [addNodeTargets, setAddNodeTargets] = useState<string[]>([]);
   const [initModalOpen, setInitModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
@@ -52,8 +54,12 @@ export const Ontology: FC<OntologyProps> = ({}) => {
     [selectedNode],
   );
 
-  const handleChange = (value: string[]) => {
-    console.log(`selected ${value}`);
+  const onChangeSources = (value: string[]) => {
+    setAddNodeSources(value);
+  };
+
+  const onChangeTargets = (value: string[]) => {
+    setAddNodeTargets(value);
   };
 
   const onClickCreateNode = () => {
@@ -80,16 +86,24 @@ export const Ontology: FC<OntologyProps> = ({}) => {
               allowClear
               style={{ width: '100%' }}
               placeholder="Source nodes"
-              onChange={handleChange}
-              options={[]}
+              value={addNodeSources}
+              onChange={onChangeSources}
+              options={graphData.nodes.map((node) => ({
+                label: node.id,
+                value: node.id,
+              }))}
             />
             <Select
               mode="multiple"
               allowClear
               style={{ width: '100%' }}
               placeholder="Target nodes"
-              onChange={handleChange}
-              options={[]}
+              value={addNodeTargets}
+              onChange={onChangeTargets}
+              options={graphData.nodes.map((node) => ({
+                label: node.id,
+                value: node.id,
+              }))}
             />
           </div>
           <div className={styles.buttons}>
@@ -102,31 +116,41 @@ export const Ontology: FC<OntologyProps> = ({}) => {
     }
 
     return (
-      <>
-        <h4>Relationships</h4>
-        <List
-          dataSource={relatedLinks}
-          renderItem={(link) => (
-            <List.Item>
-              <span
-                style={{
-                  color:
-                    link.source === selectedNode?.id ? '#5a0cff' : '#2c2b2a',
-                  marginRight: '5px',
-                }}
-              >
-                {link.source === selectedNode?.id ? '→' : '←'}
-              </span>
-              {link.source === selectedNode?.id ? link.target : link.source}
-              {link.type && (
-                <span style={{ marginLeft: 8 }}>({link.type})</span>
-              )}
-            </List.Item>
-          )}
-        />
-      </>
+      <div className={styles.drawerContent}>
+        {selectedNode?.description && (
+          <div className={styles.section}>
+            <h4>Description</h4>
+            <div className={styles.description}>
+              {selectedNode?.description}
+            </div>
+          </div>
+        )}
+        <div className={styles.section}>
+          <h4>Relationships</h4>
+          <List
+            dataSource={relatedLinks}
+            renderItem={(link) => (
+              <List.Item>
+                <span
+                  style={{
+                    color:
+                      link.source === selectedNode?.id ? '#5a0cff' : '#2c2b2a',
+                    marginRight: '5px',
+                  }}
+                >
+                  {link.source === selectedNode?.id ? '→' : '←'}
+                </span>
+                {link.source === selectedNode?.id ? link.target : link.source}
+                {link.type && (
+                  <span style={{ marginLeft: 8 }}>({link.type})</span>
+                )}
+              </List.Item>
+            )}
+          />
+        </div>
+      </div>
     );
-  }, [selectedNode, addNode]);
+  }, [graphData, selectedNode, addNode, addNodeSources, addNodeTargets]);
 
   const onClickAddNode = () => {
     setAddNode(true);
@@ -140,10 +164,14 @@ export const Ontology: FC<OntologyProps> = ({}) => {
     }
   };
 
-  const selectedNodeIndex = graphData.nodes.findIndex(
-    (node) => node.id === selectedNode.id,
-  );
-  const selectedNodeColor = nodeColors[selectedNodeIndex % nodeColors.length];
+  const selectedNodeColor = useMemo(() => {
+    const groups = Array.from(new Set(graphData.nodes.map((d) => d.group)));
+    const selectedNodeIndex = groups.findIndex(
+      (group) => group === selectedNode?.group,
+    );
+    const selectedNodeColor = nodeColors[selectedNodeIndex % nodeColors.length];
+    return selectedNodeColor;
+  }, [graphData, selectedNode]);
 
   return (
     <div className={styles.Ontology}>

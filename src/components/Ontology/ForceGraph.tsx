@@ -18,28 +18,27 @@ const ForceGraph: React.FC<ForceGraphProps> = ({
 }) => {
   const ref = useRef<SVGSVGElement | null>(null);
 
-  const [tooltip, setTooltip] = useState<{
-    visible: boolean;
-    x: number;
-    y: number;
-    content: string;
-  }>({ visible: false, x: 0, y: 0, content: '' });
+  // const [tooltip, setTooltip] = useState<{
+  //   visible: boolean;
+  //   x: number;
+  //   y: number;
+  //   content: string;
+  // }>({ visible: false, x: 0, y: 0, content: '' });
 
-  const onNodeHover = (node: NodeType | null, event: any) => {
-    if (node) {
-      setTooltip({
-        visible: true,
-        x: event.pageX,
-        y: event.pageY,
-        content: node.id,
-      });
-    } else {
-      setTooltip({ ...tooltip, visible: false });
-    }
-  };
+  // const onNodeHover = (node: NodeType | null, event: any) => {
+  //   if (node) {
+  //     setTooltip({
+  //       visible: true,
+  //       x: event.pageX,
+  //       y: event.pageY,
+  //       content: node.id,
+  //     });
+  //   } else {
+  //     setTooltip({ ...tooltip, visible: false });
+  //   }
+  // };
 
   useEffect(() => {
-    console.log(data);
     if (!data) return;
 
     const color = d3
@@ -135,7 +134,7 @@ const ForceGraph: React.FC<ForceGraphProps> = ({
   return (
     <>
       <svg ref={ref}></svg>
-      {tooltip.visible && (
+      {/* {tooltip.visible && (
         <div
           style={{
             position: 'absolute',
@@ -153,7 +152,7 @@ const ForceGraph: React.FC<ForceGraphProps> = ({
         >
           {tooltip.content}
         </div>
-      )}
+      )} */}
     </>
   );
 };
