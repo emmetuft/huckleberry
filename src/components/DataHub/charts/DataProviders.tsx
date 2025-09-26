@@ -11,6 +11,7 @@ import { chartColors } from 'constants/styles';
 import { useChartData } from 'hooks/useChartData';
 import { DATA_ALIAS } from 'constants/mapping';
 import { Spin } from 'antd';
+import { sharedTooltipProps } from 'constants/chart';
 
 interface DataProvidersChartProps {
   height?: number;
@@ -57,7 +58,7 @@ export const DataProvidersChart: React.FC<DataProvidersChartProps> = ({
               />
             ))}
           </Pie>
-          <Tooltip />
+          <Tooltip {...sharedTooltipProps} />
           <Legend wrapperStyle={{ fontSize: 12 }} />
         </PieChart>
       </ResponsiveContainer>

@@ -121,9 +121,10 @@ export const DataHub: FC<DataHubProps> = ({}) => {
         </div>
         <div className={styles.chartContainer}>
           <p className={styles.chartTitle}>Current Week DataSource Runs</p>
-          <RecentRunsChart height={240} />
+          <RecentRunsChart height={260} />
         </div>
         <div className={styles.chartContainer}>
+          <p className={styles.chartTitle}>Current Week Avg Run Time</p>
           <DataSourceUsageTrendChart height={260} />
         </div>
       </div>

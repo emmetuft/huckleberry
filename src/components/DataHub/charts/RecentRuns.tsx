@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Spin } from 'antd';
 import dayjs from 'dayjs';
 import {
@@ -10,7 +10,9 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  Label,
 } from 'recharts';
+import { sharedTooltipProps } from 'constants/chart';
 import { DATA_ALIAS } from 'constants/mapping';
 import { chartColors } from 'constants/styles';
 import { useChartData } from 'hooks/useChartData';
@@ -26,7 +28,7 @@ export const RecentRunsChart: React.FC<RecentRunsChartProps> = ({
     alias: DATA_ALIAS.DOMOSTATS_DATASETS_HISTORY,
     schema: ['startTime', 'count'],
     groupBy: ["DATE_TRUNC('day', startTime)"],
-    customSelect: "DATE_TRUNC('day', startTime) AS day, COUNT(*) as count",
+    customSelect: "DATE_TRUNC('day', startTime), COUNT(*) as count",
     orderBy: ['startTime'],
     limit: 7,
   });
@@ -42,14 +44,21 @@ export const RecentRunsChart: React.FC<RecentRunsChartProps> = ({
           <XAxis
             dataKey="startTime"
             tickFormatter={(value) => dayjs(value).format('M/D/YY')}
+            tick={{ fontSize: 12 }}
           />
-          <YAxis domain={[0, 100]} />
-          <Bar dataKey="count" fill={chartColors[0]} name="Num runs" />
+          <YAxis domain={[0, 100]} tick={{ fontSize: 12 }}>
+            <Label
+              value="Num runs"
+              angle={-90}
+              position="insideLeft"
+              style={{ textAnchor: 'middle', fontSize: 13 }}
+            />
+          </YAxis>
+          <Bar dataKey="count" fill={chartColors[2]} name="Num runs" />
           <Tooltip
-            cursor={{ fill: 'rgba(0, 0, 0, 0.05)' }}
+            {...sharedTooltipProps}
             labelFormatter={(value) => dayjs(value).format('M/D/YY')}
           />
-          <Legend wrapperStyle={{ fontSize: 12 }} />
         </BarChart>
       </ResponsiveContainer>
       {loading && (

@@ -8,8 +8,13 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  Label,
 } from 'recharts';
 import { chartColors } from 'constants/styles';
+import { useChartData } from 'hooks/useChartData';
+import { DATA_ALIAS } from 'constants/mapping';
+import dayjs from 'dayjs';
+import { sharedTooltipProps } from 'constants/chart';
 
 interface DataSourceUsageTrendChartProps {
   height?: number;
@@ -18,44 +23,14 @@ interface DataSourceUsageTrendChartProps {
 export const DataSourceUsageTrendChart: React.FC<
   DataSourceUsageTrendChartProps
 > = ({ height = 300 }) => {
-  const [data] = useState([
-    {
-      week: 'Week 1',
-      queries: 1250,
-      dataVolume: 4.2,
-      users: 28,
-    },
-    {
-      week: 'Week 2',
-      queries: 1580,
-      dataVolume: 5.8,
-      users: 34,
-    },
-    {
-      week: 'Week 3',
-      queries: 1820,
-      dataVolume: 7.1,
-      users: 41,
-    },
-    {
-      week: 'Week 4',
-      queries: 2100,
-      dataVolume: 8.9,
-      users: 48,
-    },
-    {
-      week: 'Week 5',
-      queries: 1950,
-      dataVolume: 8.2,
-      users: 52,
-    },
-    {
-      week: 'Week 6',
-      queries: 2380,
-      dataVolume: 10.5,
-      users: 58,
-    },
-  ]);
+  const { data, loading, error } = useChartData<any>({
+    alias: DATA_ALIAS.DOMOSTATS_DATASETS_HISTORY,
+    schema: ['startTime', 'avgRunTime'],
+    groupBy: ["DATE_TRUNC('day', startTime)"],
+    customSelect: "DATE_TRUNC('day', startTime), AVG(TIME_TO_SEC(runTime))",
+    orderBy: ['startTime'],
+    limit: 7,
+  });
 
   return (
     <ResponsiveContainer height={height}>
@@ -64,35 +39,31 @@ export const DataSourceUsageTrendChart: React.FC<
         margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
       >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="week" />
-        <YAxis yAxisId="left" />
-        <YAxis yAxisId="right" orientation="right" />
-        <Line
-          yAxisId="left"
-          type="monotone"
-          dataKey="queries"
-          stroke={chartColors[1]}
-          strokeWidth={2}
-          name="Weekly Queries"
+        <XAxis
+          dataKey="startTime"
+          tickFormatter={(value) => dayjs(value).format('M/D/YY')}
+          tick={{ fontSize: 12 }}
         />
+        <YAxis tick={{ fontSize: 12 }}>
+          <Label
+            value="Avg run time (s)"
+            angle={-90}
+            position="insideLeft"
+            style={{ textAnchor: 'middle', fontSize: 13 }}
+          />
+        </YAxis>
         <Line
-          yAxisId="right"
           type="monotone"
-          dataKey="dataVolume"
-          stroke={chartColors[3]}
-          strokeWidth={2}
-          name="Data Volume (GB)"
-        />
-        <Line
-          yAxisId="left"
-          type="monotone"
-          dataKey="users"
+          dataKey="avgRunTime"
           stroke={chartColors[5]}
           strokeWidth={2}
-          name="Active Users"
+          name="Avg run time"
         />
-        <Tooltip />
-        <Legend wrapperStyle={{ fontSize: 12 }} />
+        <Tooltip
+          {...sharedTooltipProps}
+          labelFormatter={(value) => dayjs(value).format('M/D/YY')}
+          formatter={(value) => `${Number(value).toFixed(2)}s`}
+        />
       </LineChart>
     </ResponsiveContainer>
   );
