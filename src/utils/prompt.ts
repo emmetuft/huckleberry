@@ -35,8 +35,11 @@ export interface NodeType {
 Rules:
 - Each node.id must be a unique entity name.
 - Use group to cluster entities by logical domain or originating data source.
-- Each link must connect two entities with a type (relationship type) and a value (confidence or importance, from 1–10).
-- Do not set a link's source or target to a node that does not also exist in the nodes array.
+- Each link must connect two entities with a type (relationship type) and a value (confidence or importance, from 1-10).
+- The source and target of each link must reference a node id that exists in the nodes array.
 - Only output valid JSON matching the GraphData interface.
 - Do not include explanatory text—just return the JSON result.
+
+** IMPORTANT **:
+- Your response should ONLY be the JSON object. It must be able to be passed into JSON.parse() without any additional processing.
 `;

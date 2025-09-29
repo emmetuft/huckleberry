@@ -59,7 +59,6 @@ const fetchDataSourceSchema = async (
     const response = await fetch(SCHEMA_URL.replace('{id}', dataSourceId));
     if (response.ok) {
       const result = await response.json();
-      console.log(result);
       return result.columnList;
     }
     return [];

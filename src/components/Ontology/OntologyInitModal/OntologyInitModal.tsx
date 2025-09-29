@@ -217,7 +217,10 @@ export const OntologyInitModal: FC<OntologyInitModalProps> = ({
                 <p>{source.name}</p>
               </div>
               <Table
-                dataSource={source.sampleRows}
+                dataSource={source.sampleRows.map((row) => ({
+                  ...row,
+                  key: JSON.stringify(row),
+                }))}
                 columns={source.schema.map((col) => ({
                   key: col.name,
                   dataIndex: col.name,

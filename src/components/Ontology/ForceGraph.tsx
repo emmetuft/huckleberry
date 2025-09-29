@@ -78,6 +78,10 @@ const ForceGraph: React.FC<ForceGraphProps> = ({
       )
       .force('charge', d3.forceManyBody())
       .force('center', d3.forceCenter(width / 2, height / 2))
+      .force(
+        'collision',
+        d3.forceCollide().radius(35).strength(1), // 30 radius + small buffer
+      )
       .on('tick', ticked);
 
     const node = svg

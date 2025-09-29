@@ -1,5 +1,7 @@
-import { GraphData, OntologySource } from 'models/interfaces/ontology';
 import domo from 'ryuu.js';
+import { toast } from 'sonner';
+import { GraphData, OntologySource } from 'models/interfaces/ontology';
+import { filterInvalidLinks, isValidGraphData } from 'utils/ai';
 import { ontologySystemPrompt, ontologyTemplate } from 'utils/prompt';
 
 const TEXT_GEN_ENDPOINT = '/domo/ai/v1/text/generation';
@@ -37,8 +39,27 @@ Sample Rows: ${JSON.stringify(ds.sampleRows)}\n`,
       TEXT_GEN_ENDPOINT,
       body,
     );
-    const data = response.choices[0].output;
-    return JSON.parse(data) as GraphData;
+    const rawData = response.choices[0].output;
+
+    // Parse JSON with error handling
+    let parsedData: any;
+    try {
+      parsedData = JSON.parse(rawData);
+    } catch (parseError) {
+      toast.error('Could not generate ontology, please try again.');
+      throw new Error(
+        `Failed to parse AI response as JSON: ${parseError instanceof Error ? parseError.message : 'Unknown parse error'}`,
+      );
+    }
+
+    // Validate GraphData format
+    if (!isValidGraphData(parsedData)) {
+      toast.error('Could not generate ontology, please try again.');
+      throw new Error('AI response does not match expected GraphData format');
+    }
+
+    toast.success('Successfully generated ontology.');
+    return filterInvalidLinks(parsedData);
   } catch (error) {
     console.error('Error generating view metadata:', error);
     throw error;

@@ -112,7 +112,6 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   };
 
   const onPopupKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    console.log(event);
     if (event.key === 'Backspace' && !event.currentTarget.value) {
       event.preventDefault(); // Prevent deleting command
       setShowToolPopup(false);

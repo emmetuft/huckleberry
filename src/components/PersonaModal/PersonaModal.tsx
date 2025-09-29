@@ -36,9 +36,7 @@ export const PersonaModal: FC<PersonaModalProps> = ({}) => {
     }
   }, [isOpen, userPersona]);
 
-  const onChangeTab = (key: string) => {
-    console.log(key);
-  };
+  const onChangeTab = (key: string) => {};
 
   const onOk = () => {
     dispatch(saveUserPersona(editedPersona));

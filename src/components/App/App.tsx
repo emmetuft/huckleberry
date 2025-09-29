@@ -1,6 +1,7 @@
 import { FC, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { ConfigProvider } from 'antd';
+import { Toaster } from 'sonner';
 import styles from './App.module.scss';
 import { useAppDispatch } from 'reducers';
 import { fetchUserPersona } from 'reducers/app/actions';
@@ -82,6 +83,7 @@ export const App: FC = () => {
         <PersonaModal />
         {renderPage()}
       </div>
+      <Toaster position="top-right" theme="light" richColors />
     </ConfigProvider>
   );
 };
