@@ -75,9 +75,10 @@
   .toolPopup {
     @extend .card;
     position: absolute;
-    top: -25px;
+    top: -75px;
     height: 65px;
     box-sizing: border-box;
+    z-index: 100;
   }
 
   .actions {
