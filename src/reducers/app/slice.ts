@@ -11,6 +11,7 @@ interface State {
   identity?: Identity;
   persona?: Persona;
   page: AppPage;
+  incognitoMode: boolean;
   personaModalOpen: boolean;
   loading: {
     identity: boolean;
@@ -21,6 +22,7 @@ interface State {
 
 const initialState: State = {
   page: AppPage.HOME,
+  incognitoMode: false,
   personaModalOpen: false,
   loading: {
     identity: false,
@@ -36,6 +38,11 @@ export const AppReducer = createAppSlice({
     setPage: create.reducer((state, { payload }: { payload: AppPage }) => {
       state.page = payload;
     }),
+    setIncognitoMode: create.reducer(
+      (state, { payload }: { payload: boolean }) => {
+        state.incognitoMode = payload;
+      },
+    ),
     setPersonaModal: create.reducer(
       (state, { payload }: { payload: boolean }) => {
         state.personaModalOpen = payload;
@@ -99,6 +106,7 @@ export const AppReducer = createAppSlice({
     selectIdentity: (state) => state.identity,
     selectPersona: (state) => state.persona,
     selectPage: (state) => state.page,
+    selectIncognitoMode: (state) => state.incognitoMode,
     selectPersonaModalOpen: (state) => state.personaModalOpen,
     selectLoading: (state) => state.loading,
   },
@@ -109,12 +117,14 @@ export const {
   fetchIdentity,
   saveUserPersona,
   setPage,
+  setIncognitoMode,
   setPersonaModal,
 } = AppReducer.actions;
 export const {
   selectIdentity,
   selectPersona,
   selectPage,
+  selectIncognitoMode,
   selectPersonaModalOpen,
   selectLoading,
 } = AppReducer.selectors;

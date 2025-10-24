@@ -1,7 +1,7 @@
 @import '../../styles/variables.scss';
 
 .DataHub {
-  padding: 60px 20px 20px 102px;
+  padding: $defaultPagePadding;
 
   .topSection {
     display: flex;

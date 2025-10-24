@@ -10,6 +10,13 @@
   box-shadow: $box-shadow;
 }
 
+// Float Button
+.ant-float-btn-content .ant-float-btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 // Table
 .ant-table-pagination {
   margin: 0 !important;

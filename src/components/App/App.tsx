@@ -1,6 +1,6 @@
 import { FC, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { ConfigProvider } from 'antd';
+import { ConfigProvider, FloatButton, Tooltip } from 'antd';
 import { Toaster } from 'sonner';
 import styles from './App.module.scss';
 import { useAppDispatch } from 'reducers';
@@ -9,7 +9,9 @@ import {
   authenticate,
   fetchIdentity,
   selectIdentity,
+  selectIncognitoMode,
   selectPage,
+  setIncognitoMode,
 } from 'reducers/app/slice';
 import { AppPage } from 'models/enums/appPage';
 import { Applications } from 'components/Applications/Applications';
@@ -29,6 +31,7 @@ export const App: FC = () => {
   const dispatch = useAppDispatch();
   const identity = useSelector(selectIdentity);
   const page = useSelector(selectPage);
+  const incognitoMode = useSelector(selectIncognitoMode);
 
   useEffect(() => {
     dispatch(authenticate());
@@ -94,6 +97,22 @@ export const App: FC = () => {
         <PersonaModal />
         {renderPage()}
       </div>
+      <Tooltip title={incognitoMode ? 'Memory off' : 'Memory on'}>
+        <FloatButton
+          shape="square"
+          icon={
+            <div
+              className={styles.recordIcon}
+              style={
+                incognitoMode
+                  ? { backgroundColor: '#bfbfbf', boxShadow: 'none' }
+                  : {}
+              }
+            />
+          }
+          onClick={() => dispatch(setIncognitoMode(!incognitoMode))}
+        />
+      </Tooltip>
       <Toaster position="top-right" theme="light" richColors />
     </ConfigProvider>
   );
