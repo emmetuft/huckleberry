@@ -12,17 +12,18 @@ import {
   selectPage,
 } from 'reducers/app/slice';
 import { AppPage } from 'models/enums/appPage';
+import { Applications } from 'components/Applications/Applications';
 import Automation from 'components/Automation/Automation';
 import { Background } from 'components/Background/Background';
 import { DataHealth } from 'components/DataHealth/DataHealth';
 import { DataHub } from 'components/DataHub/DataHub';
 import { FlowCanvas } from 'components/FlowCanvas/FlowCanvas';
 import { Heading } from 'components/Heading/Heading';
+import { Integrations } from 'components/Integrations/Integrations';
 import { Nav } from 'components/Nav/Nav';
 import { Ontology } from 'components/Ontology/Ontology';
 import { PersonaModal } from 'components/PersonaModal/PersonaModal';
 import { Workspace } from 'components/Workspace/Workspace';
-import { Applications } from 'components/Applications/Applications';
 
 export const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -57,6 +58,8 @@ export const App: FC = () => {
             <Background />
           </div>
         );
+      case AppPage.INTEGRATIONS:
+        return <Integrations />;
       case AppPage.ONTOLOGY:
         return <Ontology />;
       case AppPage.WORKFLOW:

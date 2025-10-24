@@ -8,6 +8,7 @@ import {
   Heartbeat,
   Lightbulb,
   Lightning,
+  PuzzlePiece,
   SquaresFour,
   TreeStructure,
   UserCircle,
@@ -22,22 +23,11 @@ import {
   setPersonaModal,
 } from 'reducers/app/slice';
 import { sharedIconProps } from 'constants/styles';
-import { AppPage } from 'models/enums/appPage';
+import { AppPage, AppPageLabel } from 'models/enums/appPage';
 import { IconBtn } from 'components/IconBtn/IconBtn';
 import React from 'react';
 import { RecCard } from 'components/RecCard/RecCard';
 import { appList } from 'constants/applications';
-
-enum NavIcon {
-  Apps = 'Apps',
-  Atom = 'Agents',
-  Automation = 'Automations',
-  Data = 'Data',
-  Health = 'Data health',
-  Ontology = 'Ontology',
-  Recommendations = 'Recommendations',
-  Workflow = 'Workflows',
-}
 
 interface NavProps {}
 
@@ -52,58 +42,33 @@ export const Nav: FC<NavProps> = ({}) => {
     return appList.filter((app) => app.inDock);
   }, [appList]);
 
-  const onClickIcon = (icon: NavIcon) => {
-    switch (icon) {
-      case NavIcon.Apps:
-        dispatch(setPage(AppPage.APPS));
-        break;
-      case NavIcon.Atom:
-        console.log('Atom icon clicked');
-        break;
-      case NavIcon.Automation:
-        dispatch(setPage(AppPage.AUTOMATION));
-        break;
-      case NavIcon.Data:
-        dispatch(setPage(AppPage.DATA_HUB));
-        break;
-      case NavIcon.Health:
-        dispatch(setPage(AppPage.DATA_HEALTH));
-        break;
-      case NavIcon.Ontology:
-        dispatch(setPage(AppPage.ONTOLOGY));
-        break;
-      case NavIcon.Recommendations:
-        setShowRecs(true);
-        break;
-      case NavIcon.Workflow:
-        dispatch(setPage(AppPage.WORKFLOW));
-        break;
-      default:
-        console.warn(`Unknown icon: ${icon}`);
-    }
+  const onClickIcon = (page: AppPage) => {
+    dispatch(setPage(page));
   };
 
   const onClickAvatar = () => {
     dispatch(setPersonaModal(true));
   };
 
-  const navIconMap = {
-    [NavIcon.Apps]: <SquaresFour {...sharedIconProps} />,
-    [NavIcon.Atom]: <Atom {...sharedIconProps} />,
-    [NavIcon.Automation]: <Lightning {...sharedIconProps} />,
-    [NavIcon.Data]: <Database {...sharedIconProps} />,
-    [NavIcon.Health]: <Heartbeat {...sharedIconProps} />,
-    [NavIcon.Ontology]: <Graph {...sharedIconProps} />,
-    [NavIcon.Recommendations]: <Lightbulb {...sharedIconProps} />,
-    [NavIcon.Workflow]: <TreeStructure {...sharedIconProps} />,
+  const navIconMap: Record<AppPage, any> = {
+    [AppPage.APPS]: <SquaresFour {...sharedIconProps} />,
+    [AppPage.AGENTS]: <Atom {...sharedIconProps} />,
+    [AppPage.AUTOMATION]: <Lightning {...sharedIconProps} />,
+    [AppPage.DATA_HUB]: <Database {...sharedIconProps} />,
+    [AppPage.DATA_HEALTH]: <Heartbeat {...sharedIconProps} />,
+    [AppPage.HOME]: undefined,
+    [AppPage.INTEGRATIONS]: <PuzzlePiece {...sharedIconProps} />,
+    [AppPage.ONTOLOGY]: <Graph {...sharedIconProps} />,
+    [AppPage.WORKFLOW]: <TreeStructure {...sharedIconProps} />,
   };
 
-  const upperIcons = [NavIcon.Ontology, NavIcon.Data, NavIcon.Health];
-  const lowerIcons = [
-    NavIcon.Workflow,
-    NavIcon.Automation,
-    NavIcon.Atom,
-    NavIcon.Apps,
+  const upperPages = [AppPage.ONTOLOGY, AppPage.DATA_HUB, AppPage.DATA_HEALTH];
+  const lowerPages = [
+    AppPage.INTEGRATIONS,
+    AppPage.WORKFLOW,
+    AppPage.AUTOMATION,
+    AppPage.AGENTS,
+    AppPage.APPS,
   ];
 
   const avatar =
@@ -111,10 +76,15 @@ export const Nav: FC<NavProps> = ({}) => {
       ? `https://${identity.host}/api/content/v1/avatar/USER/${identity.userId}?size=100`
       : undefined;
 
-  const renderIconBtn = (icon: NavIcon) => (
-    <Tooltip key={icon} title={icon} placement="right" mouseEnterDelay={0.5}>
+  const renderIconBtn = (page: AppPage) => (
+    <Tooltip
+      key={page}
+      title={AppPageLabel[page]}
+      placement="right"
+      mouseEnterDelay={0.5}
+    >
       <div>
-        <IconBtn icon={navIconMap[icon]} onClick={() => onClickIcon(icon)} />
+        <IconBtn icon={navIconMap[page]} onClick={() => onClickIcon(page)} />
       </div>
     </Tooltip>
   );
@@ -128,14 +98,25 @@ export const Nav: FC<NavProps> = ({}) => {
         >
           <img src="/static/logo.svg" width="100%" />
         </div>
-        <div>{renderIconBtn(NavIcon.Recommendations)}</div>
+        <Tooltip
+          title="Recommendations"
+          placement="right"
+          mouseEnterDelay={0.5}
+        >
+          <div>
+            <IconBtn
+              icon={<Lightbulb {...sharedIconProps} />}
+              onClick={() => setShowRecs(true)}
+            />
+          </div>
+        </Tooltip>
         <div className={styles.divider} />
         <div className={styles.buttons}>
-          {upperIcons.map((icon) => renderIconBtn(icon))}
+          {upperPages.map((page) => renderIconBtn(page))}
         </div>
         <div className={styles.divider} />
         <div className={styles.buttons}>
-          {lowerIcons.map((icon) => renderIconBtn(icon))}
+          {lowerPages.map((page) => renderIconBtn(page))}
           {apps.map((app) => (
             <Tooltip
               key={app.id}

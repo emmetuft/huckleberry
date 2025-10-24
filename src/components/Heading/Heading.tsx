@@ -5,7 +5,7 @@ import styles from './Heading.module.scss';
 import { useAppDispatch } from 'reducers';
 import { selectPage } from 'reducers/app/slice';
 import { selectTab, setTab } from 'reducers/applications/slice';
-import { AppPage } from 'models/enums/appPage';
+import { AppPage, AppPageLabel } from 'models/enums/appPage';
 
 interface HeadingProps {}
 
@@ -23,21 +23,16 @@ export const Heading: FC<HeadingProps> = ({}) => {
               value={applicationTab}
               options={['Apps', 'Marketplace']}
               onChange={(value) => {
-                dispatch(setTab(value));
+                dispatch(setTab(value as 'Apps' | 'Marketplace'));
               }}
             />
           </div>
         );
-      case AppPage.AUTOMATION:
-        return 'Automation Rules';
-      case AppPage.DATA_HEALTH:
-        return 'Data Health';
-      case AppPage.DATA_HUB:
-        return 'Data Hub';
-      case AppPage.ONTOLOGY:
-        return 'Business Ontology';
-      default:
+      case AppPage.HOME:
+      case AppPage.WORKFLOW:
         return null;
+      default:
+        return AppPageLabel[appPage];
     }
   }, [appPage, applicationTab]);
 
