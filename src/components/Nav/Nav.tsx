@@ -1,12 +1,14 @@
-import { FC, useState } from 'react';
+import { FC, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import {
   Atom,
+  Cube,
   Database,
   Graph,
   Heartbeat,
   Lightbulb,
   Lightning,
+  SquaresFour,
   TreeStructure,
   UserCircle,
 } from 'phosphor-react';
@@ -24,8 +26,10 @@ import { AppPage } from 'models/enums/appPage';
 import { IconBtn } from 'components/IconBtn/IconBtn';
 import React from 'react';
 import { RecCard } from 'components/RecCard/RecCard';
+import { appList } from 'constants/applications';
 
 enum NavIcon {
+  Apps = 'Apps',
   Atom = 'Agents',
   Automation = 'Automations',
   Data = 'Data',
@@ -44,8 +48,15 @@ export const Nav: FC<NavProps> = ({}) => {
 
   const identity = useSelector(selectIdentity);
 
+  const apps = useMemo(() => {
+    return appList.filter((app) => app.inDock);
+  }, [appList]);
+
   const onClickIcon = (icon: NavIcon) => {
     switch (icon) {
+      case NavIcon.Apps:
+        dispatch(setPage(AppPage.APPS));
+        break;
       case NavIcon.Atom:
         console.log('Atom icon clicked');
         break;
@@ -77,6 +88,7 @@ export const Nav: FC<NavProps> = ({}) => {
   };
 
   const navIconMap = {
+    [NavIcon.Apps]: <SquaresFour {...sharedIconProps} />,
     [NavIcon.Atom]: <Atom {...sharedIconProps} />,
     [NavIcon.Automation]: <Lightning {...sharedIconProps} />,
     [NavIcon.Data]: <Database {...sharedIconProps} />,
@@ -87,7 +99,12 @@ export const Nav: FC<NavProps> = ({}) => {
   };
 
   const upperIcons = [NavIcon.Ontology, NavIcon.Data, NavIcon.Health];
-  const lowerIcons = [NavIcon.Workflow, NavIcon.Automation, NavIcon.Atom];
+  const lowerIcons = [
+    NavIcon.Workflow,
+    NavIcon.Automation,
+    NavIcon.Atom,
+    NavIcon.Apps,
+  ];
 
   const avatar =
     identity !== undefined
@@ -119,6 +136,24 @@ export const Nav: FC<NavProps> = ({}) => {
         <div className={styles.divider} />
         <div className={styles.buttons}>
           {lowerIcons.map((icon) => renderIconBtn(icon))}
+          {apps.map((app) => (
+            <Tooltip
+              key={app.id}
+              title={app.name}
+              placement="right"
+              mouseEnterDelay={0.5}
+            >
+              <button className={styles.appBtn}>
+                {app.iconUrl ? (
+                  <img src={app.iconUrl} height="100%" width="100%" />
+                ) : (
+                  <div className={styles.defaultAppIcon}>
+                    <Cube color="white" size={18} />
+                  </div>
+                )}
+              </button>
+            </Tooltip>
+          ))}
         </div>
         <div className={`${styles.buttons} ${styles.bottom}`}>
           <IconBtn

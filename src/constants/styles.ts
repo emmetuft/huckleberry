@@ -12,3 +12,9 @@ export const nodeColors = [
 ];
 
 export const chartColors = [...nodeColors, '#2792c7'];
+
+export const defaultMotionProps = {
+  initial: { opacity: 0, y: 10 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.3 },
+};

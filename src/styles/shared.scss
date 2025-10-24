@@ -27,28 +27,3 @@ svg:focus {
   box-shadow: $box-shadow;
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
-
-// Antd
-
-.ant-drawer-right > .ant-drawer-content-wrapper {
-  box-shadow: $box-shadow;
-}
-
-.ant-table-pagination {
-  background-color: #f8f8f8;
-  margin: 0 !important;
-  padding: 16px;
-  border-radius: 0 0 8px 8px;
-}
-
-.ant-table-wrapper .ant-table-thead > tr > th {
-  line-height: 14px;
-}
-
-.ant-empty-normal {
-  margin-block: unset;
-}
-
-.ant-collapse {
-  border: 1px solid $grey;
-}

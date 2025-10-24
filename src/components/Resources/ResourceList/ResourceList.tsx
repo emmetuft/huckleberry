@@ -1,13 +1,14 @@
 import { FC, useMemo } from 'react';
 import styles from './ResourceList.module.scss';
 import { motion } from 'framer-motion';
+import { useAppDispatch } from 'reducers';
+import { setPage } from 'reducers/app/slice';
 import {
   DEFAULT_AGENTS,
   DEFAULT_TEMPLATES,
   DEFAULT_WORKFLOW_STARTS,
 } from 'constants/templates';
-import { useAppDispatch } from 'reducers';
-import { setPage } from 'reducers/app/slice';
+import { defaultMotionProps } from 'constants/styles';
 import { AppPage } from 'models/enums/appPage';
 
 interface ResourceListProps {
@@ -41,11 +42,9 @@ export const ResourceList: FC<ResourceListProps> = ({ tab }) => {
     <div className={styles.TemplateList}>
       {resources.map((resource) => (
         <motion.div
+          {...defaultMotionProps}
           key={resource.id}
           className={styles.template}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
           onClick={() => onClickResource(resource)}
         >
           <div className={styles.preview} />

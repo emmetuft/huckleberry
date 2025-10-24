@@ -198,7 +198,7 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
             onInput={onInput}
             data-placeholder={
               placeholder ??
-              'Start something new: a workflow, a dashboard, an agent—your call.'
+              'Start something new: a workflow, an app, an agent—your call.'
             }
           />
         </div>

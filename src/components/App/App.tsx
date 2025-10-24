@@ -22,6 +22,7 @@ import { Nav } from 'components/Nav/Nav';
 import { Ontology } from 'components/Ontology/Ontology';
 import { PersonaModal } from 'components/PersonaModal/PersonaModal';
 import { Workspace } from 'components/Workspace/Workspace';
+import { Applications } from 'components/Applications/Applications';
 
 export const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -41,6 +42,8 @@ export const App: FC = () => {
 
   const renderPage = () => {
     switch (page) {
+      case AppPage.APPS:
+        return <Applications />;
       case AppPage.AUTOMATION:
         return <Automation />;
       case AppPage.DATA_HEALTH:
@@ -70,9 +73,14 @@ export const App: FC = () => {
           colorPrimary: '#5a0cff',
         },
         components: {
+          Menu: {
+            itemActiveBg: '#e6e9ff',
+            itemSelectedBg: '#e6e9ff',
+          },
           Table: {
             borderColor: '#f8f8f8',
-            headerBg: '#f8f8f8',
+            headerBg: '#fff',
+            footerBg: '#fff',
           },
         },
       }}

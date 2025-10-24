@@ -8,5 +8,5 @@ interface IconBtnProps {
 }
 
 export const IconBtn: FC<IconBtnProps> = ({ icon, onClick }) => (
-  <Button shape="circle" type="text" icon={icon} onClick={onClick} />
+  <Button type="text" icon={icon} onClick={onClick} />
 );

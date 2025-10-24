@@ -1,0 +1,96 @@
+@import '../../styles/shared.scss';
+@import '../../styles/variables.scss';
+
+.Applications {
+  padding: 60px 20px 20px 102px;
+
+  .tabContent {
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+
+    h2 {
+      margin-bottom: 10px;
+      font-weight: 600;
+      font-size: 20px;
+    }
+  }
+
+  .appGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 20px;
+
+    .appCard {
+      display: flex;
+      gap: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: $box-shadow;
+      transition: transform 0.3s ease;
+      cursor: pointer;
+
+      &:hover {
+        transform: translateY(-2px);
+      }
+
+      .defaultAppIcon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 40px;
+        width: 40px;
+        background-color: $purple;
+        border-radius: 6px;
+      }
+
+      .appInfo {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+
+        h4 {
+          font-weight: 600;
+        }
+        p {
+          font-size: 12px;
+        }
+      }
+    }
+  }
+}
+
+.Marketplace {
+  .heroBanner {
+    margin-bottom: 20px;
+    background-color: $purple;
+    height: 300px;
+    border-radius: 8px;
+  }
+
+  .layout {
+    display: flex;
+    gap: 20px;
+
+    .left {
+      flex: 1;
+    }
+    .right {
+      flex: 4;
+    }
+  }
+
+  .appGrid {
+    grid-template-columns: 1fr 1fr 1fr;
+
+    .appCard {
+      position: relative;
+
+      .quickAdd {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+      }
+    }
+  }
+}

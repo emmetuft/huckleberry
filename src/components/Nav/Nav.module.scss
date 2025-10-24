@@ -21,6 +21,7 @@
   .buttons {
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 20px;
   }
 
@@ -41,5 +42,29 @@
     align-items: center;
     border-radius: 50%;
     height: 30px;
+  }
+}
+
+.appBtn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 30px;
+  width: 30px;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  padding: 0;
+  object-fit: cover;
+  cursor: pointer;
+
+  .defaultAppIcon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 30px;
+    width: 30px;
+    background-color: $purple;
+    border-radius: 6px;
   }
 }
