@@ -45,6 +45,8 @@ svg:focus {
   img {
     height: 40px;
     width: 40px;
+    border-radius: 6px;
+    object-fit: cover;
   }
 
   .defaultAppIcon {

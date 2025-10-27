@@ -3,9 +3,37 @@
 .Integrations {
   padding: $defaultPagePadding;
 
+  .tabContent {
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+
+    h2 {
+      margin-bottom: 10px;
+      font-weight: 400;
+      font-size: 20px;
+    }
+  }
+
+  .layout {
+    display: flex;
+    gap: 20px;
+
+    .left {
+      flex: 1;
+    }
+    .right {
+      flex: 4;
+    }
+  }
+
   .integrationGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: 1fr 1fr 1fr 1fr;
     gap: 20px;
+
+    &.available {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
   }
 }

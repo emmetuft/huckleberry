@@ -6,3 +6,7 @@ export interface Application {
   inDock?: boolean;
   favorite?: boolean;
 }
+
+export type MarketplaceApp = Application & {
+  category: string;
+};

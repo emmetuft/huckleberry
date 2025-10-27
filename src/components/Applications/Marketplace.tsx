@@ -1,7 +1,7 @@
-import { FC } from 'react';
+import { FC, useMemo, useState } from 'react';
 import { Menu, MenuProps } from 'antd';
 import styles from './Applications.module.scss';
-import { appCategories, appList } from 'constants/applications';
+import { appCategories, marketplaceApps } from 'constants/applications';
 import { AppCard } from './AppCard';
 
 type MenuItem = Required<MenuProps>['items'][number];
@@ -9,6 +9,21 @@ type MenuItem = Required<MenuProps>['items'][number];
 interface MarketplaceProps {}
 
 export const Marketplace: FC<MarketplaceProps> = ({}) => {
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  const filteredApplications = useMemo(
+    () =>
+      marketplaceApps.filter(
+        (app) => selectedCategory === null || app.category === selectedCategory,
+      ),
+    [selectedCategory],
+  );
+
+  const onClickCategory: MenuProps['onClick'] = (e) => {
+    const category = e.key === selectedCategory ? null : e.key;
+    setSelectedCategory(category);
+  };
+
   const items: MenuItem[] = [
     {
       key: 'categories',
@@ -27,14 +42,15 @@ export const Marketplace: FC<MarketplaceProps> = ({}) => {
       <div className={styles.layout}>
         <div className={styles.left}>
           <Menu
-            //   onClick={onClick}
+            selectedKeys={selectedCategory ? [selectedCategory] : []}
+            onClick={onClickCategory}
             mode="inline"
             items={items}
           />
         </div>
         <div className={styles.right}>
           <div className={styles.appGrid}>
-            {appList.map((app) => (
+            {filteredApplications.map((app) => (
               <AppCard key={app.id} app={app} showAddBtn={true} />
             ))}
           </div>
