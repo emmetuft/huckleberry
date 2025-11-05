@@ -16,6 +16,7 @@ import { nodeColors } from 'constants/styles';
 import { NodeType } from 'models/interfaces/ontology';
 import ForceGraph from './ForceGraph';
 import { OntologyInitModal } from './OntologyInitModal/OntologyInitModal';
+import ForceGraph3DExample from './ForceGraph3d';
 
 const { TextArea } = Input;
 
@@ -185,6 +186,7 @@ export const Ontology: FC<OntologyProps> = ({}) => {
       ) : (
         <ForceGraph data={graphData} onNodeClick={onNodeClick} />
       )}
+      <ForceGraph3DExample />
 
       <FloatButton.Group shape="square">
         <FloatButton
