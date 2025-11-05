@@ -1,5 +1,7 @@
-import { FC, useMemo, useState } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { routePaths } from 'routes';
 import {
   Atom,
   Cube,
@@ -13,19 +15,18 @@ import {
   TreeStructure,
   UserCircle,
 } from 'phosphor-react';
-import { Tooltip } from 'antd';
+import { Button, Tooltip } from 'antd';
 import styles from './Nav.module.scss';
 import { useAppDispatch } from 'reducers';
 import {
   selectIdentity,
-  selectPage,
-  setPage,
+  selectIncognitoMode,
+  setIncognitoMode,
   setPersonaModal,
 } from 'reducers/app/slice';
 import { sharedIconProps } from 'constants/styles';
 import { AppPage, AppPageLabel } from 'models/enums/appPage';
 import { IconBtn } from 'components/IconBtn/IconBtn';
-import React from 'react';
 import { RecCard } from 'components/RecCard/RecCard';
 import { appList } from 'constants/applications';
 
@@ -33,7 +34,8 @@ interface NavProps {}
 
 export const Nav: FC<NavProps> = ({}) => {
   const dispatch = useAppDispatch();
-  const page = useSelector(selectPage);
+  const incognitoMode = useSelector(selectIncognitoMode);
+
   const [showRecs, setShowRecs] = useState<boolean>(false);
 
   const identity = useSelector(selectIdentity);
@@ -41,10 +43,6 @@ export const Nav: FC<NavProps> = ({}) => {
   const apps = useMemo(() => {
     return appList.filter((app) => app.inDock);
   }, [appList]);
-
-  const onClickIcon = (page: AppPage) => {
-    dispatch(setPage(page));
-  };
 
   const onClickAvatar = () => {
     dispatch(setPersonaModal(true));
@@ -83,21 +81,18 @@ export const Nav: FC<NavProps> = ({}) => {
       placement="right"
       mouseEnterDelay={0.5}
     >
-      <div>
-        <IconBtn icon={navIconMap[page]} onClick={() => onClickIcon(page)} />
-      </div>
+      <Link to={routePaths[page]}>
+        <IconBtn icon={navIconMap[page]} />
+      </Link>
     </Tooltip>
   );
 
   return (
     <React.Fragment>
       <div className={styles.Nav}>
-        <div
-          className={styles.logo}
-          onClick={() => dispatch(setPage(AppPage.HOME))}
-        >
+        <Link to={routePaths[AppPage.HOME]} className={styles.logo}>
           <img src="/static/logo.svg" width="100%" />
-        </div>
+        </Link>
         <Tooltip
           title="Recommendations"
           placement="right"
@@ -137,6 +132,21 @@ export const Nav: FC<NavProps> = ({}) => {
           ))}
         </div>
         <div className={`${styles.buttons} ${styles.bottom}`}>
+          <Tooltip title={incognitoMode ? 'Memory off' : 'Memory on'}>
+            <Button
+              icon={
+                <div
+                  className={styles.recordIcon}
+                  style={
+                    incognitoMode
+                      ? { backgroundColor: '#bfbfbf', boxShadow: 'none' }
+                      : {}
+                  }
+                />
+              }
+              onClick={() => dispatch(setIncognitoMode(!incognitoMode))}
+            />
+          </Tooltip>
           <IconBtn
             icon={
               avatar ? (

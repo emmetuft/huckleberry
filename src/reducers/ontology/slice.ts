@@ -1,18 +1,20 @@
 import { createAppSlice } from '../createAppSlice';
 import { GraphData } from 'models/interfaces/ontology';
-import { generateOntology } from './actions';
+import { generateOntology, fetchGraphFromNeo4j } from './actions';
 
 interface State {
   graphData: GraphData;
   loading: {
     initGeneration: boolean;
+    fetchGraph: boolean;
   };
 }
 
 const initialState: State = {
-  graphData: { nodes: [], links: [] },
+  graphData: { nodes: [], relationships: [] },
   loading: {
     initGeneration: false,
+    fetchGraph: false,
   },
 };
 
@@ -42,7 +44,7 @@ export const OntologySlice = createAppSlice({
   }),
   extraReducers: (builder) => {
     builder
-      // Fetch user persona
+      // Generate ontology
       .addCase(generateOntology.pending, (state) => {
         state.loading = { ...state.loading, initGeneration: true };
       })
@@ -51,6 +53,17 @@ export const OntologySlice = createAppSlice({
       })
       .addCase(generateOntology.fulfilled, (state, { payload }) => {
         state.loading = { ...state.loading, initGeneration: false };
+        state.graphData = payload;
+      })
+      // Fetch graph from Neo4j
+      .addCase(fetchGraphFromNeo4j.pending, (state) => {
+        state.loading = { ...state.loading, fetchGraph: true };
+      })
+      .addCase(fetchGraphFromNeo4j.rejected, (state) => {
+        state.loading = { ...state.loading, fetchGraph: false };
+      })
+      .addCase(fetchGraphFromNeo4j.fulfilled, (state, { payload }) => {
+        state.loading = { ...state.loading, fetchGraph: false };
         state.graphData = payload;
       });
   },

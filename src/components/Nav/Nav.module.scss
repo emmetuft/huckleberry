@@ -36,6 +36,14 @@
     margin-top: auto;
   }
 
+  .recordIcon {
+    height: 10px;
+    width: 10px;
+    border-radius: 50%;
+    background-color: $purple;
+    box-shadow: $purple 0 0 6px;
+  }
+
   .avatar {
     display: flex;
     justify-content: center;
