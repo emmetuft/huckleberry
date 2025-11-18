@@ -1,11 +1,13 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo, useRef, useEffect } from 'react';
 import ForceGraph3D from 'react-force-graph-3d';
 import SpriteText from 'three-spritetext';
 import { GraphData, Neo4jNode } from 'models/interfaces/ontology';
+import { getColorForGroup } from 'utils/styles';
 
 interface ForceGraph3DProps {
   data: GraphData;
   onNodeClick?: (node: Neo4jNode) => void;
+  highlightedNodeId?: string | null;
 }
 
 interface D3Node {
@@ -14,6 +16,9 @@ interface D3Node {
   group: number;
   labels: string[];
   properties: Record<string, any>;
+  x?: number;
+  y?: number;
+  z?: number;
 }
 
 interface D3Link {
@@ -25,7 +30,9 @@ interface D3Link {
 export const ForceGraph: React.FC<ForceGraph3DProps> = ({
   data,
   onNodeClick,
+  highlightedNodeId,
 }) => {
+  const graphRef = useRef<any>();
   // Transform Neo4j data to D3 format
   const graphData = useMemo(() => {
     // Create a map to assign group IDs based on node labels
@@ -71,22 +78,61 @@ export const ForceGraph: React.FC<ForceGraph3DProps> = ({
     }
   };
 
+  useEffect(() => {
+    if (!graphRef.current) return;
+
+    if (highlightedNodeId) {
+      // Zoom to highlighted node or reset camera when cleared
+      const node = graphData.nodes.find((n) => n.id === highlightedNodeId);
+      if (node) {
+        graphRef.current.cameraPosition(
+          {
+            x: node.x!,
+            y: node.y!,
+            z: node.z! + 250,
+          },
+          node,
+          1500,
+        );
+      }
+    } else {
+      // Zoom out to fit the entire graph
+      graphRef.current.zoomToFit(1500, 0); // duration, padding
+    }
+  }, [highlightedNodeId, graphData]);
+
+  const getNodeColor = useCallback(
+    (node: any) => {
+      const baseColor = getColorForGroup(node.group);
+
+      // Highlight the selected node and dim other nodes
+      if (highlightedNodeId) {
+        if (node.id === highlightedNodeId) return '#ff863aff';
+        return `${baseColor}66`;
+      }
+
+      return baseColor;
+    },
+    [highlightedNodeId],
+  );
+
   return (
     <ForceGraph3D
+      ref={graphRef}
       graphData={graphData}
       backgroundColor="rgba(0,0,0,0)"
-      nodeAutoColorBy="group"
+      nodeColor={getNodeColor}
       nodeThreeObjectExtend={true}
       nodeThreeObject={(node: any) => {
         const sprite = new SpriteText(node.name);
-        sprite.color = node.color || '#5a0cff';
-        sprite.textHeight = 4;
+        sprite.color = getNodeColor(node);
+        sprite.textHeight =
+          highlightedNodeId && node.id === highlightedNodeId ? 6 : 4;
         sprite.position.y = 8; // Position text above the node
         return sprite;
       }}
       onNodeClick={handleNodeClick}
       nodeLabel={(node: any) => `${node.name} (${node.labels.join(', ')})`}
-      nodeColor={(node: any) => node.color || '#5a0cff'}
       linkLabel={(link: any) => link.type}
       linkColor={() => '#000'}
       linkWidth={1}

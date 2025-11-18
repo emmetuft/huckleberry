@@ -1,0 +1,15 @@
+@import '../../../styles/variables.scss';
+
+.SearchBar {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  width: 400px;
+  max-width: 90%;
+  padding: 10px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: $box-shadow;
+}

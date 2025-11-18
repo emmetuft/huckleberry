@@ -1,7 +1,11 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Button, FloatButton, Tooltip } from 'antd';
-import { ExportOutlined, PlusSquareOutlined } from '@ant-design/icons';
+import {
+  ExportOutlined,
+  PlusSquareOutlined,
+  ReloadOutlined,
+} from '@ant-design/icons';
 import styles from './Ontology.module.scss';
 import { useAppDispatch } from 'reducers';
 import { selectGraphData, selectLoading } from 'reducers/ontology/slice';
@@ -10,6 +14,7 @@ import { Neo4jNode } from 'models/interfaces/ontology';
 import { OntologyInitModal } from './OntologyInitModal/OntologyInitModal';
 import { ForceGraph } from './ForceGraph3d';
 import { NodeDrawer } from './NodeDrawer';
+import { SearchBar } from './SearchBar/SearchBar';
 
 interface OntologyProps {}
 
@@ -19,8 +24,11 @@ export const Ontology: FC<OntologyProps> = ({}) => {
   const loading = useSelector(selectLoading);
 
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
-  const [selectedNode, setSelectedNode] = useState<any>(null);
+  const [selectedNode, setSelectedNode] = useState<string | null>(null);
   const [initModalOpen, setInitModalOpen] = useState<boolean>(false);
+  const [highlightedNodeId, setHighlightedNodeId] = useState<string | null>(
+    null,
+  );
 
   // Fetch graph from Neo4j when component mounts
   useEffect(() => {
@@ -34,12 +42,24 @@ export const Ontology: FC<OntologyProps> = ({}) => {
   }, [graphData]);
 
   const onNodeClick = useCallback((node: Neo4jNode) => {
-    setSelectedNode(node);
+    setSelectedNode(node.id);
     setDrawerOpen(true);
   }, []);
 
   const onClickAddNode = () => {
     setDrawerOpen(true);
+  };
+
+  const onRefreshGraph = () => {
+    dispatch(fetchGraphFromNeo4j({ forceRefresh: true }));
+  };
+
+  const handleNodeFound = (node: Neo4jNode) => {
+    setHighlightedNodeId(node.id);
+  };
+
+  const handleSearchClear = () => {
+    setHighlightedNodeId(null);
   };
 
   return (
@@ -56,7 +76,18 @@ export const Ontology: FC<OntologyProps> = ({}) => {
           </Button>
         </div>
       ) : (
-        <ForceGraph data={graphData} onNodeClick={onNodeClick} />
+        <>
+          <SearchBar
+            nodes={graphData.nodes}
+            onNodeFound={handleNodeFound}
+            onSearchClear={handleSearchClear}
+          />
+          <ForceGraph
+            data={graphData}
+            onNodeClick={onNodeClick}
+            highlightedNodeId={highlightedNodeId}
+          />
+        </>
       )}
 
       <FloatButton.Group shape="square" placement="top">
@@ -67,6 +98,14 @@ export const Ontology: FC<OntologyProps> = ({}) => {
             </Tooltip>
           }
           onClick={onClickAddNode}
+        />
+        <FloatButton
+          icon={
+            <Tooltip title="Refresh graph" placement="left">
+              <ReloadOutlined />
+            </Tooltip>
+          }
+          onClick={onRefreshGraph}
         />
         <FloatButton
           icon={

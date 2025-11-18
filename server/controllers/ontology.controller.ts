@@ -33,7 +33,10 @@ export async function getNodes(_req: Request, res: Response): Promise<void> {
  * GET /api/ontology/relationships
  * Get all relationships from the graph
  */
-export async function getRelationships(_req: Request, res: Response): Promise<void> {
+export async function getRelationships(
+  _req: Request,
+  res: Response,
+): Promise<void> {
   try {
     const cypher = `
       MATCH (a)-[r]->(b)
@@ -66,7 +69,7 @@ export async function getGraph(_req: Request, res: Response): Promise<void> {
     const cypher = `
       MATCH (n)-[r]->(m)
       RETURN n, r, m
-      LIMIT 500
+      LIMIT 2000
     `;
 
     const results = await neo4jService.executeRead(cypher);
@@ -78,17 +81,17 @@ export async function getGraph(_req: Request, res: Response): Promise<void> {
     results.forEach((record: any) => {
       const { n, r, m } = record;
 
-      if (n && !nodes.has(n.identity.toString())) {
-        nodes.set(n.identity.toString(), {
-          id: n.identity.toString(),
+      if (n && !nodes.has(n.identity)) {
+        nodes.set(n.identity, {
+          id: n.identity,
           labels: n.labels,
           properties: n.properties,
         });
       }
 
-      if (m && !nodes.has(m.identity.toString())) {
-        nodes.set(m.identity.toString(), {
-          id: m.identity.toString(),
+      if (m && !nodes.has(m.identity)) {
+        nodes.set(m.identity, {
+          id: m.identity,
           labels: m.labels,
           properties: m.properties,
         });
@@ -96,10 +99,10 @@ export async function getGraph(_req: Request, res: Response): Promise<void> {
 
       if (r) {
         relationships.push({
-          id: r.identity.toString(),
+          id: r.identity,
           type: r.type,
-          source: r.start.toString(),
-          target: r.end.toString(),
+          source: r.start,
+          target: r.end,
           properties: r.properties,
         });
       }

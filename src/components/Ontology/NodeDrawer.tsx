@@ -1,18 +1,17 @@
 import { FC, useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Button, Drawer, Input, List, Select } from 'antd';
+import { Button, Drawer, Input, List, Popover, Select } from 'antd';
 import styles from './Ontology.module.scss';
 import { useAppDispatch } from 'reducers';
 import { selectGraphData } from 'reducers/ontology/slice';
-import { Neo4jNode } from 'models/interfaces/ontology';
-import { nodeColors } from 'constants/styles';
+import { getColorForGroup } from 'utils/styles';
 
 const { TextArea } = Input;
 
 interface NodeDrawerProps {
-  selectedNode: Neo4jNode | null;
+  selectedNode: string | null;
   drawerOpen: boolean;
-  setSelectedNode: (node: Neo4jNode | null) => void;
+  setSelectedNode: (node: string | null) => void;
   setDrawerOpen: (open: boolean) => void;
 }
 
@@ -25,9 +24,30 @@ export const NodeDrawer: FC<NodeDrawerProps> = ({
   const dispatch = useAppDispatch();
   const graphData = useSelector(selectGraphData);
 
+  const [addNodeName, setAddNodeName] = useState<string>('');
+  const [addNodeLabel, setAddNodeLabel] = useState<string>();
   const [addNodeSources, setAddNodeSources] = useState<string[]>([]);
   const [addRelationshipType, setAddRelationshipType] = useState<string>();
   const [addNodeTargets, setAddNodeTargets] = useState<string[]>([]);
+
+  // Create label to group index mapping
+  const labelToGroupMap = useMemo(() => {
+    const map = new Map<string, number>();
+    let groupCounter = 0;
+
+    graphData.nodes.forEach((node) => {
+      const primaryLabel = node.labels[0] || 'Unknown';
+      if (!map.has(primaryLabel)) {
+        map.set(primaryLabel, groupCounter++);
+      }
+    });
+    return map;
+  }, [graphData.nodes]);
+
+  const node = useMemo(() => {
+    const node = graphData.nodes.find((n) => n.id === selectedNode);
+    return node || null;
+  }, [selectedNode]);
 
   const relationshipTypes = useMemo(() => {
     const types = Array.from(
@@ -39,12 +59,14 @@ export const NodeDrawer: FC<NodeDrawerProps> = ({
   const relatedLinks = useMemo(
     () =>
       graphData.relationships.filter(
-        (rel) =>
-          rel.source.toString() === selectedNode?.id.toString() ||
-          rel.target.toString() === selectedNode?.id.toString(),
+        (rel) => rel.source === selectedNode || rel.target === selectedNode,
       ),
     [graphData.relationships, selectedNode],
   );
+
+  const onChangeLabel = (value: string) => {
+    setAddNodeLabel(value);
+  };
 
   const onChangeSources = (value: string[]) => {
     setAddNodeSources(value);
@@ -68,19 +90,31 @@ export const NodeDrawer: FC<NodeDrawerProps> = ({
       const node = graphData.nodes.find((n) => n.id === nodeId);
       return node ? node.properties.name || node.id : nodeId;
     },
-    [graphData],
+    [graphData.nodes],
+  );
+
+  const getNodeColor = useCallback(
+    (nodeId: string) => {
+      const node = graphData.nodes.find((n) => n.id === nodeId);
+      if (!node) return '#999';
+
+      const primaryLabel = node.labels[0] || 'Unknown';
+      const groupIndex = labelToGroupMap.get(primaryLabel) ?? 0;
+      return getColorForGroup(groupIndex);
+    },
+    [graphData.nodes, labelToGroupMap],
   );
 
   const drawerContent = useMemo(() => {
-    if (selectedNode) {
+    if (node) {
       return (
         <div className={styles.drawerContent}>
           <div className={styles.section}>
             <h4>Properties</h4>
             <div className={styles.properties}>
-              {Object.keys(selectedNode.properties).map((key) => (
+              {Object.keys(node.properties).map((key) => (
                 <div key={key} className={styles.propertyItem}>
-                  <strong>{key}:</strong> {String(selectedNode.properties[key])}
+                  <strong>{key}:</strong> {String(node.properties[key])}
                 </div>
               ))}
             </div>
@@ -93,18 +127,37 @@ export const NodeDrawer: FC<NodeDrawerProps> = ({
                 <List.Item>
                   <span
                     style={{
-                      color: '#5a0cff',
+                      color: getNodeColor(link.source),
+                      cursor: 'pointer',
                     }}
+                    onClick={() => setSelectedNode(link.source)}
                   >
                     {getNodeDisplayName(link.source)}
                   </span>
                   <span>{'-'}</span>
-                  {link.type && <span>{link.type}</span>}
+                  <Popover
+                    content={
+                      <div className={styles.properties}>
+                        {Object.keys(link.properties).map((key) => (
+                          <div key={key} className={styles.propertyItem}>
+                            <strong>{key}:</strong>{' '}
+                            {String(link.properties[key])}
+                          </div>
+                        ))}
+                      </div>
+                    }
+                    title="Properties"
+                    placement="bottom"
+                  >
+                    <div>{link.type}</div>
+                  </Popover>
                   <span>{'→'}</span>
                   <span
                     style={{
-                      color: '#5a0cff',
+                      color: getNodeColor(link.target),
+                      cursor: 'pointer',
                     }}
+                    onClick={() => setSelectedNode(link.target)}
                   >
                     {getNodeDisplayName(link.target)}
                   </span>
@@ -120,11 +173,25 @@ export const NodeDrawer: FC<NodeDrawerProps> = ({
       <div className={styles.drawerContent}>
         <div className={styles.section}>
           <h4>Name</h4>
-          <Input />
+          <Input
+            value={addNodeName}
+            onChange={(e) => setAddNodeName(e.target.value)}
+          />
         </div>
-        <div className={styles.section}>
+        {/* <div className={styles.section}>
           <h4>Description</h4>
           <TextArea rows={3} />
+        </div> */}
+        <div className={styles.section}>
+          <h4>Label</h4>
+          <Select
+            value={addNodeLabel}
+            onChange={onChangeLabel}
+            options={[...labelToGroupMap.keys()].map((label) => ({
+              label,
+              value: label,
+            }))}
+          />
         </div>
         <div className={styles.section}>
           <h4>Define relationships</h4>
@@ -171,36 +238,31 @@ export const NodeDrawer: FC<NodeDrawerProps> = ({
         </div>
       </div>
     );
-  }, [graphData, selectedNode, addNodeSources, addNodeTargets]);
-
-  const selectedNodeColor = useMemo(() => {
-    // Group nodes by their first label
-    const labels = Array.from(
-      new Set(graphData.nodes.map((node) => node.labels[0] || 'Unknown')),
-    );
-    const selectedNodeLabel = selectedNode?.labels[0] || 'Unknown';
-    const selectedNodeIndex = labels.findIndex(
-      (label) => label === selectedNodeLabel,
-    );
-    const selectedNodeColor = nodeColors[selectedNodeIndex % nodeColors.length];
-    return selectedNodeColor;
-  }, [graphData, selectedNode]);
+  }, [
+    graphData,
+    node,
+    addNodeName,
+    addNodeLabel,
+    addNodeSources,
+    addNodeTargets,
+    labelToGroupMap,
+  ]);
 
   return (
     <Drawer
       title={
-        selectedNode ? (
+        node ? (
           <div className={styles.drawerHeader}>
-            {getNodeDisplayName(selectedNode.id)}
+            {getNodeDisplayName(node.id)}
             <div
-              className={styles.nodeGroup}
+              className={styles.nodeLabel}
               style={
                 {
-                  '--node-color': selectedNodeColor,
+                  '--node-color': getNodeColor(node.id),
                 } as React.CSSProperties
               }
             >
-              {selectedNode.labels[0] || 'Unknown'}
+              {node.labels[0] || 'Unknown'}
             </div>
           </div>
         ) : (
@@ -208,10 +270,11 @@ export const NodeDrawer: FC<NodeDrawerProps> = ({
         )
       }
       mask={false}
+      width={500}
       open={drawerOpen}
       onClose={() => setDrawerOpen(false)}
       afterOpenChange={(open) => {
-        if (!open && selectedNode) setSelectedNode(null);
+        if (!open && node) setSelectedNode(null);
       }}
     >
       {drawerContent}
