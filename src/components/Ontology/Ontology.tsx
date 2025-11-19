@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Button, FloatButton, Tooltip } from 'antd';
 import {
@@ -8,8 +8,15 @@ import {
 } from '@ant-design/icons';
 import styles from './Ontology.module.scss';
 import { useAppDispatch } from 'reducers';
-import { selectGraphData, selectLoading } from 'reducers/ontology/slice';
-import { fetchGraphFromNeo4j } from 'reducers/ontology/actions';
+import {
+  selectGraphData,
+  selectNodeLabels,
+  selectLoading,
+} from 'reducers/ontology/slice';
+import {
+  fetchGraphFromNeo4j,
+  fetchAllNodeLabels,
+} from 'reducers/ontology/actions';
 import { Neo4jNode } from 'models/interfaces/ontology';
 import { OntologyInitModal } from './OntologyInitModal/OntologyInitModal';
 import { ForceGraph } from './ForceGraph3d';
@@ -21,6 +28,7 @@ interface OntologyProps {}
 export const Ontology: FC<OntologyProps> = ({}) => {
   const dispatch = useAppDispatch();
   const graphData = useSelector(selectGraphData);
+  const nodeLabels = useSelector(selectNodeLabels);
   const loading = useSelector(selectLoading);
 
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
@@ -29,10 +37,16 @@ export const Ontology: FC<OntologyProps> = ({}) => {
   const [highlightedNodeId, setHighlightedNodeId] = useState<string | null>(
     null,
   );
+  const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
 
-  // Fetch graph from Neo4j when component mounts
+  // Fetch graph and nodes from Neo4j when component mounts
   useEffect(() => {
     dispatch(fetchGraphFromNeo4j());
+
+    // Only fetch node labels if they don't already exist
+    if (nodeLabels.length === 0) {
+      dispatch(fetchAllNodeLabels());
+    }
   }, []);
 
   useEffect(() => {
@@ -62,6 +76,38 @@ export const Ontology: FC<OntologyProps> = ({}) => {
     setHighlightedNodeId(null);
   };
 
+  const handleLabelFilterChange = (labels: string[]) => {
+    setSelectedLabels(labels);
+    // Clear highlighted node when filter changes to prevent issues with filtered-out nodes
+    setHighlightedNodeId(null);
+  };
+
+  // Filter graph data based on selected labels
+  const filteredGraphData = useMemo(() => {
+    if (selectedLabels.length === 0) {
+      return graphData;
+    }
+
+    // Filter nodes that have at least one of the selected labels
+    const filteredNodes = graphData.nodes.filter((node) =>
+      node.labels.some((label) => selectedLabels.includes(label)),
+    );
+
+    // Get IDs of filtered nodes
+    const filteredNodeIds = new Set(filteredNodes.map((node) => node.id));
+
+    // Filter relationships to only include those between filtered nodes
+    const filteredRelationships = graphData.relationships.filter(
+      (rel) =>
+        filteredNodeIds.has(rel.source) && filteredNodeIds.has(rel.target),
+    );
+
+    return {
+      nodes: filteredNodes,
+      relationships: filteredRelationships,
+    };
+  }, [graphData, selectedLabels]);
+
   return (
     <div className={styles.Ontology}>
       {loading.fetchGraph ? (
@@ -79,13 +125,15 @@ export const Ontology: FC<OntologyProps> = ({}) => {
         <>
           <SearchBar
             nodes={graphData.nodes}
+            highlightedNodeId={highlightedNodeId}
             onNodeFound={handleNodeFound}
             onSearchClear={handleSearchClear}
+            onLabelFilterChange={handleLabelFilterChange}
           />
           <ForceGraph
-            data={graphData}
-            onNodeClick={onNodeClick}
+            data={filteredGraphData}
             highlightedNodeId={highlightedNodeId}
+            onNodeClick={onNodeClick}
           />
         </>
       )}

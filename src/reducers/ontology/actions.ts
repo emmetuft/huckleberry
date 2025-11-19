@@ -1,5 +1,9 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { GraphData, OntologySource } from 'models/interfaces/ontology';
+import {
+  GraphData,
+  Neo4jNode,
+  OntologySource,
+} from 'models/interfaces/ontology';
 import { DomoAIService } from 'services/ai';
 import { Neo4jService } from 'services/neo4j';
 import {
@@ -41,3 +45,11 @@ export const fetchGraphFromNeo4j = createAsyncThunk<
 
   return data;
 });
+
+/**
+ * Fetch all nodes from Neo4j
+ */
+export const fetchAllNodeLabels = createAsyncThunk<string[]>(
+  'ontology/fetchAllNodeLabels',
+  Neo4jService.fetchNodeLabels,
+);

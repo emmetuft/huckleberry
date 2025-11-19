@@ -1,19 +1,27 @@
 import { createAppSlice } from '../createAppSlice';
 import { GraphData } from 'models/interfaces/ontology';
-import { generateOntology, fetchGraphFromNeo4j } from './actions';
+import {
+  generateOntology,
+  fetchGraphFromNeo4j,
+  fetchAllNodeLabels,
+} from './actions';
 
 interface State {
   graphData: GraphData;
+  nodeLabels: string[];
   loading: {
     initGeneration: boolean;
+    fetchNodeLabels: boolean;
     fetchGraph: boolean;
   };
 }
 
 const initialState: State = {
   graphData: { nodes: [], relationships: [] },
+  nodeLabels: [],
   loading: {
     initGeneration: false,
+    fetchNodeLabels: false,
     fetchGraph: false,
   },
 };
@@ -65,9 +73,21 @@ export const OntologySlice = createAppSlice({
       .addCase(fetchGraphFromNeo4j.fulfilled, (state, { payload }) => {
         state.loading = { ...state.loading, fetchGraph: false };
         state.graphData = payload;
+      })
+      // Fetch all nodes
+      .addCase(fetchAllNodeLabels.pending, (state) => {
+        state.loading = { ...state.loading, fetchNodeLabels: true };
+      })
+      .addCase(fetchAllNodeLabels.rejected, (state) => {
+        state.loading = { ...state.loading, fetchNodeLabels: false };
+      })
+      .addCase(fetchAllNodeLabels.fulfilled, (state, { payload }) => {
+        state.loading = { ...state.loading, fetchNodeLabels: false };
+        state.nodeLabels = payload;
       });
   },
   selectors: {
+    selectNodeLabels: (state: State) => state.nodeLabels,
     selectGraphData: (state: State) => state.graphData,
     selectLoading: (state: State) => state.loading,
   },
@@ -76,6 +96,7 @@ export const OntologySlice = createAppSlice({
 export const {
   /** incrementByAmount, incrementAsync */
 } = OntologySlice.actions;
-export const { selectGraphData, selectLoading } = OntologySlice.selectors;
+export const { selectNodeLabels, selectGraphData, selectLoading } =
+  OntologySlice.selectors;
 
 export default OntologySlice.reducer;

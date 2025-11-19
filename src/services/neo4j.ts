@@ -1,6 +1,29 @@
-import { GraphData, Neo4jNode } from 'models/interfaces/ontology';
+import { GraphData } from 'models/interfaces/ontology';
 
 const NEO4J_API_BASE = '/api/ontology';
+
+/**
+ * Fetch all node labels from Neo4j
+ */
+const fetchNodeLabels = async (): Promise<string[]> => {
+  try {
+    const response = await fetch(`${NEO4J_API_BASE}/labels`);
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch node labels from Neo4j');
+    }
+
+    const result = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.error || 'Unknown error');
+    }
+
+    return result.data.map((item: any) => item.label);
+  } catch (error: any) {
+    throw error;
+  }
+};
 
 /**
  * Fetch the complete graph from Neo4j
@@ -11,29 +34,6 @@ const fetchGraph = async (): Promise<GraphData> => {
 
     if (!response.ok) {
       throw new Error('Failed to fetch graph from Neo4j');
-    }
-
-    const result = await response.json();
-
-    if (!result.success) {
-      throw new Error(result.error || 'Unknown error');
-    }
-
-    return result.data;
-  } catch (error: any) {
-    throw error;
-  }
-};
-
-/**
- * Fetch all nodes from Neo4j
- */
-const fetchNodes = async (): Promise<Neo4jNode[]> => {
-  try {
-    const response = await fetch(`${NEO4J_API_BASE}/nodes`);
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch nodes from Neo4j');
     }
 
     const result = await response.json();
@@ -107,8 +107,8 @@ const executeQuery = async (cypher: string, params?: Record<string, any>) => {
 };
 
 export const Neo4jService = {
+  fetchNodeLabels,
   fetchGraph,
-  fetchNodes,
   createNode,
   executeQuery,
 };

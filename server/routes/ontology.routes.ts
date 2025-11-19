@@ -4,6 +4,7 @@ import * as ontologyController from '../controllers/ontology.controller.js';
 export const router = Router();
 
 // GET routes
+router.get('/labels', ontologyController.getLabels);
 router.get('/nodes', ontologyController.getNodes);
 router.get('/relationships', ontologyController.getRelationships);
 router.get('/graph', ontologyController.getGraph);

@@ -1,22 +1,37 @@
 import { FC, useState, useEffect, useRef } from 'react';
-import { Input } from 'antd';
+import { Input, Select } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import styles from './SearchBar.module.scss';
 import { Neo4jNode } from 'models/interfaces/ontology';
+import { useSelector } from 'react-redux';
+import { selectNodeLabels } from 'reducers/ontology/slice';
 
 interface SearchBarProps {
   nodes: Neo4jNode[];
   onNodeFound: (node: Neo4jNode) => void;
   onSearchClear: () => void;
+  onLabelFilterChange?: (labels: string[]) => void;
+  highlightedNodeId?: string | null;
 }
 
 export const SearchBar: FC<SearchBarProps> = ({
   nodes,
   onNodeFound,
   onSearchClear,
+  onLabelFilterChange,
+  highlightedNodeId,
 }) => {
+  const nodeLabels = useSelector(selectNodeLabels);
+
   const [searchValue, setSearchValue] = useState<string>('');
+  const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (!highlightedNodeId) {
+      setSearchValue('');
+    }
+  }, [highlightedNodeId]);
 
   const performSearch = (value: string) => {
     if (!value.trim()) {
@@ -68,6 +83,14 @@ export const SearchBar: FC<SearchBarProps> = ({
     }, 500); // 500ms delay
   };
 
+  // Handle label filter change
+  const handleLabelFilterChange = (labels: string[]) => {
+    setSelectedLabels(labels);
+    if (onLabelFilterChange) {
+      onLabelFilterChange(labels);
+    }
+  };
+
   // Cleanup timer on unmount
   useEffect(() => {
     return () => {
@@ -86,7 +109,17 @@ export const SearchBar: FC<SearchBarProps> = ({
         onChange={(e) => handleSearch(e.target.value)}
         allowClear
         onClear={onSearchClear}
-        size="large"
+        className={styles.searchInput}
+      />
+      <Select
+        mode="multiple"
+        placeholder="Filter by node label..."
+        value={selectedLabels}
+        onChange={handleLabelFilterChange}
+        options={nodeLabels.map((label) => ({ label, value: label }))}
+        allowClear
+        className={styles.labelSelect}
+        maxTagCount="responsive"
       />
     </div>
   );

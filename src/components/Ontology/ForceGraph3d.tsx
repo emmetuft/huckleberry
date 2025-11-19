@@ -6,8 +6,8 @@ import { getColorForGroup } from 'utils/styles';
 
 interface ForceGraph3DProps {
   data: GraphData;
-  onNodeClick?: (node: Neo4jNode) => void;
   highlightedNodeId?: string | null;
+  onNodeClick?: (node: Neo4jNode) => void;
 }
 
 interface D3Node {
@@ -29,8 +29,8 @@ interface D3Link {
 
 export const ForceGraph: React.FC<ForceGraph3DProps> = ({
   data,
-  onNodeClick,
   highlightedNodeId,
+  onNodeClick,
 }) => {
   const graphRef = useRef<any>();
   // Transform Neo4j data to D3 format
@@ -70,6 +70,29 @@ export const ForceGraph: React.FC<ForceGraph3DProps> = ({
     };
   }, [data]);
 
+  useEffect(() => {
+    if (!graphRef.current) return;
+    if (!highlightedNodeId) return resetCamera();
+    highlightNode();
+  }, [highlightedNodeId]);
+
+  const highlightNode = () => {
+    if (!graphRef.current) return;
+    // Zoom to highlighted node
+    const node = graphData.nodes.find((n) => n.id === highlightedNodeId);
+    if (node) {
+      graphRef.current.cameraPosition(
+        {
+          x: node.x!,
+          y: node.y!,
+          z: node.z! + 250,
+        },
+        node,
+        1500,
+      );
+    }
+  };
+
   const handleNodeClick = (node: any) => {
     // Find the original Neo4j node
     const neo4jNode = data.nodes.find((n) => n.id === node.id);
@@ -78,28 +101,15 @@ export const ForceGraph: React.FC<ForceGraph3DProps> = ({
     }
   };
 
-  useEffect(() => {
+  const handleEngineStop = () => {
     if (!graphRef.current) return;
+    resetCamera();
+  };
 
-    if (highlightedNodeId) {
-      // Zoom to highlighted node or reset camera when cleared
-      const node = graphData.nodes.find((n) => n.id === highlightedNodeId);
-      if (node) {
-        graphRef.current.cameraPosition(
-          {
-            x: node.x!,
-            y: node.y!,
-            z: node.z! + 250,
-          },
-          node,
-          1500,
-        );
-      }
-    } else {
-      // Zoom out to fit the entire graph
-      graphRef.current.zoomToFit(1500, 0); // duration, padding
-    }
-  }, [highlightedNodeId, graphData]);
+  const resetCamera = () => {
+    if (!graphRef.current) return;
+    graphRef.current.zoomToFit(1500, 50);
+  };
 
   const getNodeColor = useCallback(
     (node: any) => {
@@ -139,6 +149,7 @@ export const ForceGraph: React.FC<ForceGraph3DProps> = ({
       linkDirectionalParticles={2}
       linkDirectionalParticleWidth={2}
       linkDirectionalParticleSpeed={0.005}
+      onEngineStop={handleEngineStop}
     />
   );
 };

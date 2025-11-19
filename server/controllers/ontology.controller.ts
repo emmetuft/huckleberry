@@ -2,6 +2,35 @@ import { Request, Response } from 'express';
 import { neo4jService } from '../services/neo4j.service.js';
 
 /**
+ * GET /api/ontology/labels
+ * Get all node labels from the graph
+ */
+export async function getLabels(_req: Request, res: Response): Promise<void> {
+  try {
+    const cypher = `
+      CALL db.labels()
+      YIELD label
+      RETURN label
+      ORDER BY label;
+    `;
+
+    const results = await neo4jService.executeRead(cypher);
+
+    res.json({
+      success: true,
+      data: results,
+      count: results.length,
+    });
+  } catch (error) {
+    console.error('Error fetching node labels:', error);
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+}
+
+/**
  * GET /api/ontology/nodes
  * Get all nodes from the graph
  */
