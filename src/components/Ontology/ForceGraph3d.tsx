@@ -3,6 +3,8 @@ import ForceGraph3D from 'react-force-graph-3d';
 import SpriteText from 'three-spritetext';
 import { GraphData, Neo4jNode } from 'models/interfaces/ontology';
 import { getColorForGroup } from 'utils/styles';
+import { useSelector } from 'react-redux';
+import { selectNodeLabels } from 'reducers/ontology/slice';
 
 interface ForceGraph3DProps {
   data: GraphData;
@@ -13,7 +15,6 @@ interface ForceGraph3DProps {
 interface D3Node {
   id: string;
   name: string;
-  group: number;
   labels: string[];
   properties: Record<string, any>;
   x?: number;
@@ -32,25 +33,15 @@ export const ForceGraph: React.FC<ForceGraph3DProps> = ({
   highlightedNodeId,
   onNodeClick,
 }) => {
+  const nodeLabels = useSelector(selectNodeLabels);
+
   const graphRef = useRef<any>();
   // Transform Neo4j data to D3 format
   const graphData = useMemo(() => {
-    // Create a map to assign group IDs based on node labels
-    const labelToGroupMap = new Map<string, number>();
-    let groupCounter = 0;
-
     const d3Nodes: D3Node[] = data.nodes.map((node) => {
-      // Use first label as the group identifier
-      const primaryLabel = node.labels[0] || 'Unknown';
-
-      if (!labelToGroupMap.has(primaryLabel)) {
-        labelToGroupMap.set(primaryLabel, groupCounter++);
-      }
-
       return {
         id: node.id,
         name: node.properties.name || node.id,
-        group: labelToGroupMap.get(primaryLabel)!,
         labels: node.labels,
         properties: node.properties,
       };
@@ -113,7 +104,9 @@ export const ForceGraph: React.FC<ForceGraph3DProps> = ({
 
   const getNodeColor = useCallback(
     (node: any) => {
-      const baseColor = getColorForGroup(node.group);
+      const primaryLabel = node.labels[0] || 'Unknown';
+      const labelIndex = nodeLabels.indexOf(primaryLabel);
+      const baseColor = getColorForGroup(labelIndex);
 
       // Highlight the selected node and dim other nodes
       if (highlightedNodeId) {

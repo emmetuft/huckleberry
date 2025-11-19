@@ -3,10 +3,8 @@ import { useSelector } from 'react-redux';
 import { Button, Drawer, Input, List, Popover, Select } from 'antd';
 import styles from './Ontology.module.scss';
 import { useAppDispatch } from 'reducers';
-import { selectGraphData } from 'reducers/ontology/slice';
+import { selectGraphData, selectNodeLabels } from 'reducers/ontology/slice';
 import { getColorForGroup } from 'utils/styles';
-
-const { TextArea } = Input;
 
 interface NodeDrawerProps {
   selectedNode: string | null;
@@ -23,26 +21,13 @@ export const NodeDrawer: FC<NodeDrawerProps> = ({
 }) => {
   const dispatch = useAppDispatch();
   const graphData = useSelector(selectGraphData);
+  const nodeLabels = useSelector(selectNodeLabels);
 
   const [addNodeName, setAddNodeName] = useState<string>('');
   const [addNodeLabel, setAddNodeLabel] = useState<string>();
   const [addNodeSources, setAddNodeSources] = useState<string[]>([]);
   const [addRelationshipType, setAddRelationshipType] = useState<string>();
   const [addNodeTargets, setAddNodeTargets] = useState<string[]>([]);
-
-  // Create label to group index mapping
-  const labelToGroupMap = useMemo(() => {
-    const map = new Map<string, number>();
-    let groupCounter = 0;
-
-    graphData.nodes.forEach((node) => {
-      const primaryLabel = node.labels[0] || 'Unknown';
-      if (!map.has(primaryLabel)) {
-        map.set(primaryLabel, groupCounter++);
-      }
-    });
-    return map;
-  }, [graphData.nodes]);
 
   const node = useMemo(() => {
     const node = graphData.nodes.find((n) => n.id === selectedNode);
@@ -99,10 +84,10 @@ export const NodeDrawer: FC<NodeDrawerProps> = ({
       if (!node) return '#999';
 
       const primaryLabel = node.labels[0] || 'Unknown';
-      const groupIndex = labelToGroupMap.get(primaryLabel) ?? 0;
-      return getColorForGroup(groupIndex);
+      const labelIndex = nodeLabels.indexOf(primaryLabel);
+      return getColorForGroup(labelIndex);
     },
-    [graphData.nodes, labelToGroupMap],
+    [graphData.nodes],
   );
 
   const drawerContent = useMemo(() => {
@@ -178,16 +163,12 @@ export const NodeDrawer: FC<NodeDrawerProps> = ({
             onChange={(e) => setAddNodeName(e.target.value)}
           />
         </div>
-        {/* <div className={styles.section}>
-          <h4>Description</h4>
-          <TextArea rows={3} />
-        </div> */}
         <div className={styles.section}>
           <h4>Label</h4>
           <Select
             value={addNodeLabel}
             onChange={onChangeLabel}
-            options={[...labelToGroupMap.keys()].map((label) => ({
+            options={nodeLabels.map((label) => ({
               label,
               value: label,
             }))}
@@ -202,6 +183,9 @@ export const NodeDrawer: FC<NodeDrawerProps> = ({
             placeholder="Source nodes"
             value={addNodeSources}
             onChange={onChangeSources}
+            filterOption={(input, option) =>
+              (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+            }
             options={graphData.nodes.map((node) => ({
               label: node.properties.name || node.id,
               value: node.id,
@@ -245,7 +229,6 @@ export const NodeDrawer: FC<NodeDrawerProps> = ({
     addNodeLabel,
     addNodeSources,
     addNodeTargets,
-    labelToGroupMap,
   ]);
 
   return (
