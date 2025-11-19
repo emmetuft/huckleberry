@@ -25,6 +25,8 @@ export function lightenColor(color: string, percent: number): string {
  * Get color for a group index, using lighter shades when cycling through palette
  */
 export function getColorForGroup(groupIndex: number): string {
+  if (groupIndex === -1) return '#999'; // Default gray for undefined groups
+
   const baseIndex = groupIndex % nodeColors.length;
   const cycleNumber = Math.floor(groupIndex / nodeColors.length);
   const baseColor = nodeColors[baseIndex];

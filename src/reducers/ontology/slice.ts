@@ -5,6 +5,7 @@ import {
   fetchGraphFromNeo4j,
   fetchAllNodeLabels,
 } from './actions';
+import { FilterCondition } from 'models/enums/filters';
 
 interface State {
   graphData: GraphData;
@@ -13,6 +14,11 @@ interface State {
     initGeneration: boolean;
     fetchNodeLabels: boolean;
     fetchGraph: boolean;
+  };
+  controls: {
+    highlightedNodeId: string | null;
+    selectedLabels: string[];
+    propertyFilters: FilterCondition[];
   };
 }
 
@@ -24,31 +30,33 @@ const initialState: State = {
     fetchNodeLabels: false,
     fetchGraph: false,
   },
+  controls: {
+    highlightedNodeId: null,
+    selectedLabels: [],
+    propertyFilters: [],
+  },
 };
 
 export const OntologySlice = createAppSlice({
   name: 'ontology',
   initialState,
   reducers: (create) => ({
-    // // e.g. increments "value" by the given amount
-    // incrementByAmount: create.reducer<number>((state, { payload }) => {
-    //   state.value += payload;
-    // }),
-    //
-    // // e.g. increments "value" by the given amount, asynchronously
-    // incrementAsync: create.asyncThunk<number, number>(
-    //   async (amount: number) =>
-    //     await new Promise<number>((resolve) => {
-    //       setTimeout(() => {
-    //         resolve(amount);
-    //       }, 1000);
-    //     }),
-    //   {
-    //     fulfilled: (state, { payload }) => {
-    //       state.value += payload;
-    //     },
-    //   },
-    // ),
+    setHighlightedNode: create.reducer<string | null>((state, { payload }) => {
+      state.controls.highlightedNodeId = payload;
+    }),
+    clearHighlightedNode: create.reducer((state) => {
+      state.controls.highlightedNodeId = null;
+    }),
+    setLabelFilters: create.reducer<string[]>((state, { payload }) => {
+      state.controls.selectedLabels = payload;
+      // Clear highlighted node when filter changes to prevent issues with filtered-out nodes
+      state.controls.highlightedNodeId = null;
+    }),
+    setPropertyFilters: create.reducer<FilterCondition[]>(
+      (state, { payload }) => {
+        state.controls.propertyFilters = payload;
+      },
+    ),
   }),
   extraReducers: (builder) => {
     builder
@@ -90,13 +98,26 @@ export const OntologySlice = createAppSlice({
     selectNodeLabels: (state: State) => state.nodeLabels,
     selectGraphData: (state: State) => state.graphData,
     selectLoading: (state: State) => state.loading,
+    selectHighlightedNodeId: (state: State) => state.controls.highlightedNodeId,
+    selectLabelFilters: (state: State) => state.controls.selectedLabels,
+    selectPropertyFilters: (state: State) => state.controls.propertyFilters,
   },
 });
 
 export const {
-  /** incrementByAmount, incrementAsync */
+  setHighlightedNode,
+  clearHighlightedNode,
+  setLabelFilters,
+  setPropertyFilters,
 } = OntologySlice.actions;
-export const { selectNodeLabels, selectGraphData, selectLoading } =
-  OntologySlice.selectors;
+
+export const {
+  selectNodeLabels,
+  selectGraphData,
+  selectLoading,
+  selectHighlightedNodeId,
+  selectLabelFilters,
+  selectPropertyFilters,
+} = OntologySlice.selectors;
 
 export default OntologySlice.reducer;

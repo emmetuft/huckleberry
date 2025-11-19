@@ -1,14 +1,16 @@
 import React, { useCallback, useMemo, useRef, useEffect } from 'react';
 import ForceGraph3D from 'react-force-graph-3d';
 import SpriteText from 'three-spritetext';
-import { GraphData, Neo4jNode } from 'models/interfaces/ontology';
+import { Neo4jNode } from 'models/interfaces/ontology';
 import { getColorForGroup } from 'utils/styles';
 import { useSelector } from 'react-redux';
-import { selectNodeLabels } from 'reducers/ontology/slice';
+import {
+  selectNodeLabels,
+  selectHighlightedNodeId,
+} from 'reducers/ontology/slice';
+import { selectFilteredGraphData } from 'reducers/ontology/selectors';
 
 interface ForceGraph3DProps {
-  data: GraphData;
-  highlightedNodeId?: string | null;
   onNodeClick?: (node: Neo4jNode) => void;
 }
 
@@ -28,12 +30,10 @@ interface D3Link {
   type: string;
 }
 
-export const ForceGraph: React.FC<ForceGraph3DProps> = ({
-  data,
-  highlightedNodeId,
-  onNodeClick,
-}) => {
+export const ForceGraph: React.FC<ForceGraph3DProps> = ({ onNodeClick }) => {
   const nodeLabels = useSelector(selectNodeLabels);
+  const data = useSelector(selectFilteredGraphData);
+  const highlightedNodeId = useSelector(selectHighlightedNodeId);
 
   const graphRef = useRef<any>();
   // Transform Neo4j data to D3 format

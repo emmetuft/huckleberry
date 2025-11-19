@@ -1,30 +1,35 @@
 import { FC, useState, useEffect, useRef } from 'react';
-import { Input, Select } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
-import styles from './SearchBar.module.scss';
-import { Neo4jNode } from 'models/interfaces/ontology';
 import { useSelector } from 'react-redux';
-import { selectNodeLabels } from 'reducers/ontology/slice';
+import { Input, Select, Popover, Button, Badge } from 'antd';
+import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
+import styles from './SearchBar.module.scss';
+import { useAppDispatch } from 'reducers';
+import {
+  selectNodeLabels,
+  selectGraphData,
+  selectHighlightedNodeId,
+  selectLabelFilters,
+  selectPropertyFilters,
+  setHighlightedNode,
+  clearHighlightedNode,
+  setLabelFilters,
+  setPropertyFilters,
+} from 'reducers/ontology/slice';
+import { FilterCondition } from 'models/enums/filters';
+import { FilterPopup } from './FilterPopup';
 
-interface SearchBarProps {
-  nodes: Neo4jNode[];
-  onNodeFound: (node: Neo4jNode) => void;
-  onSearchClear: () => void;
-  onLabelFilterChange?: (labels: string[]) => void;
-  highlightedNodeId?: string | null;
-}
+interface SearchBarProps {}
 
-export const SearchBar: FC<SearchBarProps> = ({
-  nodes,
-  onNodeFound,
-  onSearchClear,
-  onLabelFilterChange,
-  highlightedNodeId,
-}) => {
+export const SearchBar: FC<SearchBarProps> = ({}) => {
+  const dispatch = useAppDispatch();
   const nodeLabels = useSelector(selectNodeLabels);
+  const graphData = useSelector(selectGraphData);
+  const highlightedNodeId = useSelector(selectHighlightedNodeId);
+  const selectedLabels = useSelector(selectLabelFilters);
+  const activeFilters = useSelector(selectPropertyFilters);
 
   const [searchValue, setSearchValue] = useState<string>('');
-  const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
+  const [filterPopoverOpen, setFilterPopoverOpen] = useState<boolean>(false);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -35,32 +40,32 @@ export const SearchBar: FC<SearchBarProps> = ({
 
   const performSearch = (value: string) => {
     if (!value.trim()) {
-      onSearchClear();
+      dispatch(clearHighlightedNode());
       return;
     }
 
     const searchLower = value.toLowerCase().trim();
 
     // Search by ID first (exact match)
-    const nodeById = nodes.find((node) => node.id === value);
+    const nodeById = graphData.nodes.find((node) => node.id === value);
     if (nodeById) {
-      onNodeFound(nodeById);
+      dispatch(setHighlightedNode(nodeById.id));
       return;
     }
 
     // Search by name (partial match)
-    const nodeByName = nodes.find(
+    const nodeByName = graphData.nodes.find(
       (node) =>
         node.properties.name &&
         node.properties.name.toLowerCase().includes(searchLower),
     );
     if (nodeByName) {
-      onNodeFound(nodeByName);
+      dispatch(setHighlightedNode(nodeByName.id));
       return;
     }
 
     // If no match found, clear highlight
-    onSearchClear();
+    dispatch(clearHighlightedNode());
   };
 
   const handleSearch = (value: string) => {
@@ -73,7 +78,7 @@ export const SearchBar: FC<SearchBarProps> = ({
 
     // If empty, clear immediately without debounce
     if (!value.trim()) {
-      onSearchClear();
+      dispatch(clearHighlightedNode());
       return;
     }
 
@@ -85,10 +90,13 @@ export const SearchBar: FC<SearchBarProps> = ({
 
   // Handle label filter change
   const handleLabelFilterChange = (labels: string[]) => {
-    setSelectedLabels(labels);
-    if (onLabelFilterChange) {
-      onLabelFilterChange(labels);
-    }
+    dispatch(setLabelFilters(labels));
+  };
+
+  // Handle property filter change
+  const handlePropertyFilterChange = (filters: FilterCondition[]) => {
+    dispatch(setPropertyFilters(filters));
+    setFilterPopoverOpen(false);
   };
 
   // Cleanup timer on unmount
@@ -103,17 +111,17 @@ export const SearchBar: FC<SearchBarProps> = ({
   return (
     <div className={styles.SearchBar}>
       <Input
-        placeholder="Search by node ID or name..."
+        placeholder="Search by node ID or name"
         prefix={<SearchOutlined />}
         value={searchValue}
         onChange={(e) => handleSearch(e.target.value)}
         allowClear
-        onClear={onSearchClear}
+        onClear={() => dispatch(clearHighlightedNode())}
         className={styles.searchInput}
       />
       <Select
         mode="multiple"
-        placeholder="Filter by node label..."
+        placeholder="Filter nodes by label"
         value={selectedLabels}
         onChange={handleLabelFilterChange}
         options={nodeLabels.map((label) => ({ label, value: label }))}
@@ -121,6 +129,30 @@ export const SearchBar: FC<SearchBarProps> = ({
         className={styles.labelSelect}
         maxTagCount="responsive"
       />
+      <Popover
+        content={
+          <FilterPopup
+            nodes={graphData.nodes}
+            nodeLabels={nodeLabels}
+            onApplyFilters={handlePropertyFilterChange}
+          />
+        }
+        title="Filter Graph Data"
+        trigger="click"
+        open={filterPopoverOpen}
+        onOpenChange={setFilterPopoverOpen}
+        placement="bottomRight"
+      >
+        <Badge count={activeFilters.length} offset={[-5, 5]}>
+          <Button
+            icon={<FilterOutlined />}
+            className={styles.filterButton}
+            type={activeFilters.length > 0 ? 'primary' : 'default'}
+          >
+            Filters
+          </Button>
+        </Badge>
+      </Popover>
     </div>
   );
 };
