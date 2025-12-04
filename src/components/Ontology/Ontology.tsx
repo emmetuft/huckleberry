@@ -1,27 +1,26 @@
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Button, FloatButton, Tooltip } from 'antd';
 import {
   ExportOutlined,
   PlusSquareOutlined,
-  ReloadOutlined,
+  ClearOutlined,
 } from '@ant-design/icons';
 import styles from './Ontology.module.scss';
 import { useAppDispatch } from 'reducers';
 import {
   selectGraphData,
   selectNodeLabels,
+  clearGraphData,
   selectLoading,
 } from 'reducers/ontology/slice';
-import {
-  fetchGraphFromNeo4j,
-  fetchAllNodeLabels,
-} from 'reducers/ontology/actions';
+import { fetchAllNodeLabels } from 'reducers/ontology/actions';
 import { Neo4jNode } from 'models/interfaces/ontology';
 import { OntologyInitModal } from './OntologyInitModal/OntologyInitModal';
 import { ForceGraph } from './ForceGraph3d';
 import { NodeDrawer } from './NodeDrawer';
 import { SearchBar } from './SearchBar/SearchBar';
+import LoadingAnimation from 'components/Loader/Loader';
 
 interface OntologyProps {}
 
@@ -29,16 +28,19 @@ export const Ontology: FC<OntologyProps> = ({}) => {
   const dispatch = useAppDispatch();
   const graphData = useSelector(selectGraphData);
   const nodeLabels = useSelector(selectNodeLabels);
-  const loading = useSelector(selectLoading);
+  const loading = useSelector(selectLoading).loadingNodes;
 
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
   const [initModalOpen, setInitModalOpen] = useState<boolean>(false);
 
-  // Fetch graph and nodes from Neo4j when component mounts
-  useEffect(() => {
-    dispatch(fetchGraphFromNeo4j());
+  const init = useRef<boolean>(false);
 
+  // Fetch node labels when component mounts
+  // We no longer load the full graph - users will search/explore incrementally
+  useEffect(() => {
+    if (init.current) return;
+    init.current = true;
     // Only fetch node labels if they don't already exist
     if (nodeLabels.length === 0) {
       dispatch(fetchAllNodeLabels());
@@ -60,29 +62,30 @@ export const Ontology: FC<OntologyProps> = ({}) => {
     setDrawerOpen(true);
   };
 
-  const onRefreshGraph = () => {
-    dispatch(fetchGraphFromNeo4j({ forceRefresh: true }));
+  const onClearGraph = () => {
+    dispatch(clearGraphData());
   };
 
   return (
     <div className={styles.Ontology}>
-      {loading.fetchGraph ? (
+      {loading && <LoadingAnimation />}
+      {graphData.nodes.length === 0 ? (
         <div className={styles.emptyWrapper}>
-          <h3>Loading graph from Neo4j...</h3>
-        </div>
-      ) : graphData.nodes.length === 0 ? (
-        <div className={styles.emptyWrapper}>
-          <h3>It's empty in here!</h3>
+          <h3>Search to start exploring</h3>
+          <p>
+            Use the search bar above to find nodes and build your graph view
+          </p>
           <Button type="primary" onClick={() => setInitModalOpen(true)}>
-            Let's get cooking
+            Or generate new ontology
           </Button>
         </div>
       ) : (
         <>
-          <SearchBar />
           <ForceGraph onNodeClick={onNodeClick} />
         </>
       )}
+
+      <SearchBar />
 
       <FloatButton.Group shape="square" placement="top">
         <FloatButton
@@ -95,11 +98,11 @@ export const Ontology: FC<OntologyProps> = ({}) => {
         />
         <FloatButton
           icon={
-            <Tooltip title="Refresh graph" placement="left">
-              <ReloadOutlined />
+            <Tooltip title="Clear graph view" placement="left">
+              <ClearOutlined />
             </Tooltip>
           }
-          onClick={onRefreshGraph}
+          onClick={onClearGraph}
         />
         <FloatButton
           icon={

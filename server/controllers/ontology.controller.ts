@@ -1,5 +1,8 @@
 import { Request, Response } from 'express';
+import neo4j from 'neo4j-driver';
 import { neo4jService } from '../services/neo4j.service.js';
+import { parseResponseData, buildLabelFilterConditions } from '../utils/neo4j.ts';
+import { FilterCondition } from '../../shared/models/interfaces/filters.js';
 
 /**
  * GET /api/ontology/labels
@@ -31,23 +34,72 @@ export async function getLabels(_req: Request, res: Response): Promise<void> {
 }
 
 /**
- * GET /api/ontology/nodes
- * Get all nodes from the graph
+ * POST /api/ontology/nodes
+ * Get all nodes from the graph, optionally filtered by label and properties
+ * Body:
+ *   - labels (optional) - array of labels to filter by
+ *   - filters (optional) - array of property filters
+ *   - includeRelationships (optional) - if true, also fetch relationships between nodes (default: true)
+ *   - limit (optional) - limit number of results (default: 3000)
  */
-export async function getNodes(_req: Request, res: Response): Promise<void> {
+export async function getNodes(req: Request, res: Response): Promise<void> {
   try {
-    const cypher = `
-      MATCH (n)
-      RETURN n, labels(n) as labels
-      LIMIT 100
-    `;
+    const {
+      labels = [],
+      filters = [],
+      includeRelationships = true,
+      limit = 3000,
+    } = req.body;
 
-    const results = await neo4jService.executeRead(cypher);
+    let cypher: string;
+    let params: any = { limit: neo4j.int(limit) };
+
+    // Build WHERE clause that applies property filters to specific labels
+    const whereConditions = buildLabelFilterConditions(
+      labels,
+      filters as FilterCondition[],
+      params,
+    );
+
+    if (whereConditions && includeRelationships) {
+      // Fetch nodes and relationships between them
+      cypher = `
+        MATCH (n)
+        WHERE ${whereConditions}
+        WITH COLLECT(DISTINCT n) AS nodes
+        UNWIND nodes AS n
+        OPTIONAL MATCH (n)-[r]-(m)
+        WHERE m IN nodes
+        RETURN DISTINCT n, r, m
+        LIMIT $limit
+      `;
+    } else if (whereConditions) {
+      // Fetch only nodes without relationships
+      cypher = `
+        MATCH (n)
+        WHERE ${whereConditions}
+        RETURN n
+        LIMIT $limit
+      `;
+    } else {
+      // Get all nodes (no label or filter constraints)
+      cypher = `
+        MATCH (n)
+        RETURN n
+        LIMIT $limit
+      `;
+    }
+
+    const results = await neo4jService.executeRead(cypher, params);
+    const { nodes, relationships } = parseResponseData(results);
 
     res.json({
       success: true,
-      data: results,
-      count: results.length,
+      data: {
+        nodes,
+        relationships,
+      },
+      count: nodes.length,
     });
   } catch (error) {
     console.error('Error fetching nodes:', error);
@@ -58,98 +110,172 @@ export async function getNodes(_req: Request, res: Response): Promise<void> {
   }
 }
 
-/**
- * GET /api/ontology/relationships
- * Get all relationships from the graph
- */
-export async function getRelationships(
-  _req: Request,
-  res: Response,
-): Promise<void> {
+export async function getNeighbors(req: Request, res: Response): Promise<void> {
   try {
+    const id = req.params.id;
+    const limit = parseInt(req.query.limit as string) || 200;
+
     const cypher = `
-      MATCH (a)-[r]->(b)
-      RETURN a, r, b, type(r) as relationshipType
-      LIMIT 100
+      MATCH (n)
+      WHERE id(n) = $id
+      MATCH (n)-[r]-(m)
+      RETURN n, r, m
+      LIMIT $limit
     `;
 
-    const results = await neo4jService.executeRead(cypher);
+    const results = await neo4jService.executeRead(cypher, {
+      id: neo4j.int(id),
+      limit: neo4j.int(limit),
+    });
+    const { nodes, relationships } = parseResponseData(results);
 
     res.json({
       success: true,
-      data: results,
-      count: results.length,
+      data: {
+        nodes,
+        relationships,
+      },
     });
   } catch (error) {
-    console.error('Error fetching relationships:', error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
+    console.error('Error fetching neighbors:', error);
+    res.status(500).json({ success: false, error: error });
   }
 }
 
-/**
- * GET /api/ontology/graph
- * Get a complete graph structure with nodes and relationships
- */
-export async function getGraph(_req: Request, res: Response): Promise<void> {
+export async function getSubgraph(req: Request, res: Response): Promise<void> {
   try {
+    const id = req.params.id;
+    const depth = parseInt(req.query.depth as string) || 2;
+    const limit = parseInt(req.query.limit as string) || 500;
+
     const cypher = `
-      MATCH (n)-[r]->(m)
-      RETURN n, r, m
-      LIMIT 2000
+      MATCH (start)
+      WHERE id(start) = $id
+      MATCH (start)-[r*1..${depth}]-(m)
+      RETURN DISTINCT start, m, r
+      LIMIT $limit
     `;
 
-    const results = await neo4jService.executeRead(cypher);
+    const results = await neo4jService.executeRead(cypher, {
+      id: neo4j.int(id),
+      limit: neo4j.int(limit),
+    });
+    const { nodes, relationships } = parseResponseData(results);
 
-    // Transform Neo4j results into a graph structure
-    const nodes = new Map();
-    const relationships: any[] = [];
+    res.json({
+      success: true,
+      data: {
+        nodes,
+        relationships,
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching subgraph:', error);
+    res.status(500).json({ success: false, error: error });
+  }
+}
 
-    results.forEach((record: any) => {
-      const { n, r, m } = record;
+export async function getShortestPath(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  try {
+    const from = req.query.from as string;
+    const to = req.query.to as string;
 
-      if (n && !nodes.has(n.identity)) {
-        nodes.set(n.identity, {
+    if (!from || !to) {
+      res
+        .status(400)
+        .json({ success: false, error: '`from` and `to` IDs required' });
+      return;
+    }
+
+    const cypher = `
+      MATCH (a), (b)
+      WHERE id(a) = $from AND id(b) = $to
+      MATCH p = shortestPath((a)-[*..10]-(b))
+      RETURN p
+    `;
+
+    const results = await neo4jService.executeRead(cypher, {
+      from: neo4j.int(from),
+      to: neo4j.int(to),
+    });
+
+    if (results.length === 0) {
+      res.json({ success: true, data: null });
+      return;
+    }
+
+    const path = results[0].p;
+
+    const nodes = path.segments.map((seg: any) => seg.start).concat(path.end);
+    const uniqueNodes = [
+      ...new Map(nodes.map((n: any) => [n.identity, n])).values(),
+    ];
+
+    const relationships = path.segments.map((seg: any) => seg.relationship);
+
+    res.json({
+      success: true,
+      data: {
+        nodes: uniqueNodes.map((n: any) => ({
           id: n.identity,
           labels: n.labels,
           properties: n.properties,
-        });
-      }
-
-      if (m && !nodes.has(m.identity)) {
-        nodes.set(m.identity, {
-          id: m.identity,
-          labels: m.labels,
-          properties: m.properties,
-        });
-      }
-
-      if (r) {
-        relationships.push({
+        })),
+        relationships: relationships.map((r: any) => ({
           id: r.identity,
           type: r.type,
           source: r.start,
           target: r.end,
           properties: r.properties,
-        });
-      }
+        })),
+      },
     });
+  } catch (error) {
+    console.error('Error fetching shortest path:', error);
+    res.status(500).json({ success: false, error: error });
+  }
+}
+
+export async function searchNodes(req: Request, res: Response): Promise<void> {
+  try {
+    const query = req.query.query as string;
+    const limit = parseInt(req.query.limit as string) || 20;
+
+    if (!query) {
+      res.status(400).json({ success: false, error: 'Query string required' });
+      return;
+    }
+
+    const cypher = `
+        MATCH (n)
+        WHERE toLower(toString(n.name)) CONTAINS toLower($query)
+        WITH COLLECT(DISTINCT n) AS nodes
+        UNWIND nodes AS n
+        OPTIONAL MATCH (n)-[r]-(m)
+        WHERE m IN nodes
+        RETURN DISTINCT n, r, m
+        LIMIT $limit
+    `;
+
+    const results = await neo4jService.executeRead(cypher, {
+      query,
+      limit: neo4j.int(limit),
+    });
+    const { nodes, relationships } = parseResponseData(results);
 
     res.json({
       success: true,
       data: {
-        nodes: Array.from(nodes.values()),
+        nodes,
         relationships,
       },
     });
   } catch (error) {
-    console.error('Error fetching graph:', error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
+    console.error('Error searching nodes:', error);
+    res.status(500).json({ success: false, error: error });
   }
 }
 

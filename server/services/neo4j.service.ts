@@ -121,6 +121,9 @@ class Neo4jService {
   }
 }
 
+// Export singleton instance
+export const neo4jService = new Neo4jService();
+
 // console.log(res.summary.counters.updates())
 /*
 {
@@ -137,6 +140,3 @@ class Neo4jService {
   constraintsRemoved: 0
 }
 */
-
-// Export singleton instance
-export const neo4jService = new Neo4jService();

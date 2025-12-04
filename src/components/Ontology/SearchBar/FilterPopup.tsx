@@ -11,11 +11,17 @@ import {
 } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import styles from './FilterPopup.module.scss';
-import { FilterCondition, FilterDataType } from 'models/enums/filters';
+import {
+  FilterCondition,
+  FilterDataType,
+} from '../../../../shared/models/interfaces/filters';
 import { Neo4jNode } from 'models/interfaces/ontology';
 import { getOperatorsForType, getPropertyType } from 'utils/ontology';
 import { useSelector } from 'react-redux';
-import { selectPropertyFilters } from 'reducers/ontology/slice';
+import {
+  selectLabelFilters,
+  selectPropertyFilters,
+} from 'reducers/ontology/slice';
 
 const { RangePicker } = DatePicker;
 
@@ -36,6 +42,7 @@ export const FilterPopup: FC<FilterPopupProps> = ({
   nodeLabels,
   onApplyFilters,
 }) => {
+  const labelFilters = useSelector(selectLabelFilters);
   const propertyFilters = useSelector(selectPropertyFilters);
   const [filters, setFilters] = useState<FilterCondition[]>([]);
 
@@ -197,7 +204,7 @@ export const FilterPopup: FC<FilterPopupProps> = ({
     onApplyFilters([]);
   };
 
-  const labelPropertyOptions: Option[] = nodeLabels.map((label) => ({
+  const labelPropertyOptions: Option[] = labelFilters.map((label) => ({
     value: label,
     label: label,
     children: getPropertiesForLabel(label).map((prop) => ({

@@ -5,10 +5,12 @@ export const router = Router();
 
 // GET routes
 router.get('/labels', ontologyController.getLabels);
-router.get('/nodes', ontologyController.getNodes);
-router.get('/relationships', ontologyController.getRelationships);
-router.get('/graph', ontologyController.getGraph);
+router.get('/node/:id/neighbors', ontologyController.getNeighbors);
+router.get('/subgraph/:id', ontologyController.getSubgraph);
+router.get('/path', ontologyController.getShortestPath);
+router.get('/search', ontologyController.searchNodes);
 
 // POST routes
+router.post('/nodes', ontologyController.getNodes);
 router.post('/query', ontologyController.executeQuery);
-router.post('/nodes', ontologyController.createNode);
+router.post('/node', ontologyController.createNode);

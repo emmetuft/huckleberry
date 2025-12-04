@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react';
+import { FC, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation, useRoutes } from 'react-router-dom';
 import { routes, getAppPageFromPath } from 'routes';
@@ -23,7 +23,11 @@ export const App: FC = () => {
   const identity = useSelector(selectIdentity);
   const routing = useRoutes(routes);
 
+  const init = useRef<boolean>(false);
+
   useEffect(() => {
+    if (init.current) return;
+    init.current = true;
     dispatch(authenticate());
     dispatch(fetchIdentity());
   }, []);

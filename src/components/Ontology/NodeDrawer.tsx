@@ -83,11 +83,11 @@ export const NodeDrawer: FC<NodeDrawerProps> = ({
       const node = graphData.nodes.find((n) => n.id === nodeId);
       if (!node) return '#999';
 
-      const primaryLabel = node.labels[0] || 'Unknown';
+      const primaryLabel = node.labels[0] ?? 'Unknown';
       const labelIndex = nodeLabels.indexOf(primaryLabel);
       return getColorForGroup(labelIndex);
     },
-    [graphData.nodes],
+    [graphData.nodes, nodeLabels],
   );
 
   const drawerContent = useMemo(() => {
@@ -132,7 +132,7 @@ export const NodeDrawer: FC<NodeDrawerProps> = ({
                       </div>
                     }
                     title="Properties"
-                    placement="bottom"
+                    placement="top"
                   >
                     <div>{link.type}</div>
                   </Popover>

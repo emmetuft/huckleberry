@@ -1,11 +1,15 @@
 import { createAppSlice } from '../createAppSlice';
-import { GraphData } from 'models/interfaces/ontology';
+import { GraphData, Neo4jNode } from 'models/interfaces/ontology';
 import {
   generateOntology,
-  fetchGraphFromNeo4j,
   fetchAllNodeLabels,
+  fetchNodes,
+  loadSubgraph,
+  loadNeighbors,
+  loadShortestPath,
+  searchAndLoadNodes,
 } from './actions';
-import { FilterCondition } from 'models/enums/filters';
+import { FilterCondition } from '../../../shared/models/interfaces/filters';
 
 interface State {
   graphData: GraphData;
@@ -14,6 +18,8 @@ interface State {
     initGeneration: boolean;
     fetchNodeLabels: boolean;
     fetchGraph: boolean;
+    loadingNodes: boolean; // Generic loading for incremental operations
+    searching: boolean;
   };
   controls: {
     highlightedNodeId: string | null;
@@ -29,6 +35,8 @@ const initialState: State = {
     initGeneration: false,
     fetchNodeLabels: false,
     fetchGraph: false,
+    loadingNodes: false,
+    searching: false,
   },
   controls: {
     highlightedNodeId: null,
@@ -37,10 +45,39 @@ const initialState: State = {
   },
 };
 
+/**
+ * Helper function to merge new graph data into existing graph data
+ * without duplicates
+ */
+const mergeGraphData = (
+  existing: GraphData,
+  incoming: GraphData,
+): GraphData => {
+  // Use Maps to deduplicate by ID
+  const nodesMap = new Map<string, Neo4jNode>();
+  const relationshipsMap = new Map<string, any>();
+
+  // Add existing nodes and relationships
+  existing.nodes.forEach((node) => nodesMap.set(node.id, node));
+  existing.relationships.forEach((rel) => relationshipsMap.set(rel.id, rel));
+
+  // Add incoming nodes and relationships (will overwrite if same ID)
+  incoming.nodes.forEach((node) => nodesMap.set(node.id, node));
+  incoming.relationships.forEach((rel) => relationshipsMap.set(rel.id, rel));
+
+  return {
+    nodes: Array.from(nodesMap.values()),
+    relationships: Array.from(relationshipsMap.values()),
+  };
+};
+
 export const OntologySlice = createAppSlice({
   name: 'ontology',
   initialState,
   reducers: (create) => ({
+    clearGraphData: create.reducer((state) => {
+      state.graphData = { nodes: [], relationships: [] };
+    }),
     setHighlightedNode: create.reducer<string | null>((state, { payload }) => {
       state.controls.highlightedNodeId = payload;
     }),
@@ -71,18 +108,7 @@ export const OntologySlice = createAppSlice({
         state.loading = { ...state.loading, initGeneration: false };
         state.graphData = payload;
       })
-      // Fetch graph from Neo4j
-      .addCase(fetchGraphFromNeo4j.pending, (state) => {
-        state.loading = { ...state.loading, fetchGraph: true };
-      })
-      .addCase(fetchGraphFromNeo4j.rejected, (state) => {
-        state.loading = { ...state.loading, fetchGraph: false };
-      })
-      .addCase(fetchGraphFromNeo4j.fulfilled, (state, { payload }) => {
-        state.loading = { ...state.loading, fetchGraph: false };
-        state.graphData = payload;
-      })
-      // Fetch all nodes
+      // Fetch node labels
       .addCase(fetchAllNodeLabels.pending, (state) => {
         state.loading = { ...state.loading, fetchNodeLabels: true };
       })
@@ -92,6 +118,71 @@ export const OntologySlice = createAppSlice({
       .addCase(fetchAllNodeLabels.fulfilled, (state, { payload }) => {
         state.loading = { ...state.loading, fetchNodeLabels: false };
         state.nodeLabels = payload;
+      })
+      // Fetch nodes
+      .addCase(fetchNodes.pending, (state, { meta }) => {
+        state.loading = { ...state.loading, loadingNodes: true };
+        state.controls.selectedLabels =
+          meta.arg.labels ?? state.controls.selectedLabels;
+        state.controls.propertyFilters =
+          meta.arg.filters ?? state.controls.propertyFilters;
+      })
+      .addCase(fetchNodes.rejected, (state) => {
+        state.loading = { ...state.loading, loadingNodes: false };
+      })
+      .addCase(fetchNodes.fulfilled, (state, { payload }) => {
+        state.loading = { ...state.loading, loadingNodes: false };
+
+        // Merge the fetched graph data (nodes and relationships)
+        // state.graphData = mergeGraphData(state.graphData, payload.graphData);
+        state.graphData = payload.graphData;
+
+        // Clear highlighted node when filter changes
+        state.controls.highlightedNodeId = null;
+      })
+      // Load neighbors
+      .addCase(loadNeighbors.pending, (state) => {
+        state.loading = { ...state.loading, loadingNodes: true };
+      })
+      .addCase(loadNeighbors.rejected, (state) => {
+        state.loading = { ...state.loading, loadingNodes: false };
+      })
+      .addCase(loadNeighbors.fulfilled, (state, { payload }) => {
+        state.loading = { ...state.loading, loadingNodes: false };
+        state.graphData = mergeGraphData(state.graphData, payload);
+      })
+      // Load subgraph
+      .addCase(loadSubgraph.pending, (state) => {
+        state.loading = { ...state.loading, loadingNodes: true };
+      })
+      .addCase(loadSubgraph.rejected, (state) => {
+        state.loading = { ...state.loading, loadingNodes: false };
+      })
+      .addCase(loadSubgraph.fulfilled, (state, { payload }) => {
+        state.loading = { ...state.loading, loadingNodes: false };
+        state.graphData = mergeGraphData(state.graphData, payload);
+      })
+      // Search and load nodes
+      .addCase(searchAndLoadNodes.pending, (state) => {
+        state.loading = { ...state.loading, searching: true };
+      })
+      .addCase(searchAndLoadNodes.rejected, (state) => {
+        state.loading = { ...state.loading, searching: false };
+      })
+      .addCase(searchAndLoadNodes.fulfilled, (state, { payload }) => {
+        state.loading = { ...state.loading, searching: false };
+        state.graphData = payload;
+      })
+      // Load shortest path
+      .addCase(loadShortestPath.pending, (state) => {
+        state.loading = { ...state.loading, loadingNodes: true };
+      })
+      .addCase(loadShortestPath.rejected, (state) => {
+        state.loading = { ...state.loading, loadingNodes: false };
+      })
+      .addCase(loadShortestPath.fulfilled, (state, { payload }) => {
+        state.loading = { ...state.loading, loadingNodes: false };
+        state.graphData = mergeGraphData(state.graphData, payload);
       });
   },
   selectors: {
@@ -109,6 +200,7 @@ export const {
   clearHighlightedNode,
   setLabelFilters,
   setPropertyFilters,
+  clearGraphData,
 } = OntologySlice.actions;
 
 export const {

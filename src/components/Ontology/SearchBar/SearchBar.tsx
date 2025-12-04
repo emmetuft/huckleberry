@@ -1,7 +1,7 @@
 import { FC, useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Input, Select, Popover, Button, Badge } from 'antd';
-import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
+import { FilterOutlined } from '@ant-design/icons';
 import styles from './SearchBar.module.scss';
 import { useAppDispatch } from 'reducers';
 import {
@@ -10,13 +10,15 @@ import {
   selectHighlightedNodeId,
   selectLabelFilters,
   selectPropertyFilters,
+  selectLoading,
   setHighlightedNode,
   clearHighlightedNode,
-  setLabelFilters,
-  setPropertyFilters,
 } from 'reducers/ontology/slice';
-import { FilterCondition } from 'models/enums/filters';
+import { fetchNodes, searchAndLoadNodes } from 'reducers/ontology/actions';
 import { FilterPopup } from './FilterPopup';
+import { FilterCondition } from '../../../../shared/models/interfaces/filters';
+
+const { Search } = Input;
 
 interface SearchBarProps {}
 
@@ -27,6 +29,7 @@ export const SearchBar: FC<SearchBarProps> = ({}) => {
   const highlightedNodeId = useSelector(selectHighlightedNodeId);
   const selectedLabels = useSelector(selectLabelFilters);
   const activeFilters = useSelector(selectPropertyFilters);
+  const loading = useSelector(selectLoading);
 
   const [searchValue, setSearchValue] = useState<string>('');
   const [filterPopoverOpen, setFilterPopoverOpen] = useState<boolean>(false);
@@ -38,7 +41,7 @@ export const SearchBar: FC<SearchBarProps> = ({}) => {
     }
   }, [highlightedNodeId]);
 
-  const performSearch = (value: string) => {
+  const performSearch = async (value: string) => {
     if (!value.trim()) {
       dispatch(clearHighlightedNode());
       return;
@@ -46,14 +49,13 @@ export const SearchBar: FC<SearchBarProps> = ({}) => {
 
     const searchLower = value.toLowerCase().trim();
 
-    // Search by ID first (exact match)
+    // First check if the search term matches any node already in the graph
     const nodeById = graphData.nodes.find((node) => node.id === value);
     if (nodeById) {
       dispatch(setHighlightedNode(nodeById.id));
       return;
     }
 
-    // Search by name (partial match)
     const nodeByName = graphData.nodes.find(
       (node) =>
         node.properties.name &&
@@ -64,64 +66,48 @@ export const SearchBar: FC<SearchBarProps> = ({}) => {
       return;
     }
 
-    // If no match found, clear highlight
-    dispatch(clearHighlightedNode());
+    // If not found in current graph, search Neo4j database and load results
+    dispatch(
+      searchAndLoadNodes({
+        query: searchLower,
+        limit: 20,
+      }),
+    );
   };
 
-  const handleSearch = (value: string) => {
-    setSearchValue(value);
-
-    // Clear existing timer
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current);
-    }
-
+  useEffect(() => {
     // If empty, clear immediately without debounce
-    if (!value.trim()) {
+    if (!searchValue.trim()) {
       dispatch(clearHighlightedNode());
       return;
     }
 
-    // Debounce the search
     debounceTimerRef.current = setTimeout(() => {
-      performSearch(value);
+      performSearch(searchValue);
     }, 500); // 500ms delay
-  };
 
-  // Handle label filter change
-  const handleLabelFilterChange = (labels: string[]) => {
-    dispatch(setLabelFilters(labels));
-  };
-
-  // Handle property filter change
-  const handlePropertyFilterChange = (filters: FilterCondition[]) => {
-    dispatch(setPropertyFilters(filters));
-    setFilterPopoverOpen(false);
-  };
-
-  // Cleanup timer on unmount
-  useEffect(() => {
     return () => {
       if (debounceTimerRef.current) {
         clearTimeout(debounceTimerRef.current);
       }
     };
-  }, []);
+  }, [searchValue]);
+
+  const handleLabelFilterChange = async (labels: string[]) => {
+    dispatch(fetchNodes({ labels }));
+  };
+
+  const handleApplyFilters = (filters: FilterCondition[]) => {
+    dispatch(fetchNodes({ filters }));
+    setFilterPopoverOpen(false);
+  };
 
   return (
     <div className={styles.SearchBar}>
-      <Input
-        placeholder="Search by node ID or name"
-        prefix={<SearchOutlined />}
-        value={searchValue}
-        onChange={(e) => handleSearch(e.target.value)}
-        allowClear
-        onClear={() => dispatch(clearHighlightedNode())}
-        className={styles.searchInput}
-      />
       <Select
         mode="multiple"
         placeholder="Filter nodes by label"
+        loading={loading.fetchNodeLabels}
         value={selectedLabels}
         onChange={handleLabelFilterChange}
         options={nodeLabels.map((label) => ({ label, value: label }))}
@@ -129,12 +115,21 @@ export const SearchBar: FC<SearchBarProps> = ({}) => {
         className={styles.labelSelect}
         maxTagCount="responsive"
       />
+      <Search
+        placeholder="Search by node ID or name (searches entire database)"
+        loading={loading.searching}
+        value={searchValue}
+        onChange={(e) => setSearchValue(e.target.value)}
+        allowClear
+        onClear={() => dispatch(clearHighlightedNode())}
+        className={styles.searchInput}
+      />
       <Popover
         content={
           <FilterPopup
             nodes={graphData.nodes}
             nodeLabels={nodeLabels}
-            onApplyFilters={handlePropertyFilterChange}
+            onApplyFilters={handleApplyFilters}
           />
         }
         title="Filter Graph Data"

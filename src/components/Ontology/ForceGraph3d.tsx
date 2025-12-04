@@ -1,14 +1,15 @@
 import React, { useCallback, useMemo, useRef, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import ForceGraph3D from 'react-force-graph-3d';
 import SpriteText from 'three-spritetext';
+import { useAppDispatch } from 'reducers';
 import { Neo4jNode } from 'models/interfaces/ontology';
 import { getColorForGroup } from 'utils/styles';
-import { useSelector } from 'react-redux';
 import {
   selectNodeLabels,
   selectHighlightedNodeId,
+  selectGraphData,
 } from 'reducers/ontology/slice';
-import { selectFilteredGraphData } from 'reducers/ontology/selectors';
 
 interface ForceGraph3DProps {
   onNodeClick?: (node: Neo4jNode) => void;
@@ -22,6 +23,7 @@ interface D3Node {
   x?: number;
   y?: number;
   z?: number;
+  isSearchResult?: boolean;
 }
 
 interface D3Link {
@@ -31,11 +33,13 @@ interface D3Link {
 }
 
 export const ForceGraph: React.FC<ForceGraph3DProps> = ({ onNodeClick }) => {
+  const dispatch = useAppDispatch();
   const nodeLabels = useSelector(selectNodeLabels);
-  const data = useSelector(selectFilteredGraphData);
+  const data = useSelector(selectGraphData);
   const highlightedNodeId = useSelector(selectHighlightedNodeId);
 
   const graphRef = useRef<any>();
+
   // Transform Neo4j data to D3 format
   const graphData = useMemo(() => {
     const d3Nodes: D3Node[] = data.nodes.map((node) => {
@@ -47,13 +51,19 @@ export const ForceGraph: React.FC<ForceGraph3DProps> = ({ onNodeClick }) => {
       };
     });
 
-    const d3Links: D3Link[] = data.relationships.map((rel) => {
-      return {
-        source: rel.source,
-        target: rel.target,
-        type: rel.type,
-      };
-    });
+    // Create a Set of valid node IDs for quick lookup
+    const nodeIds = new Set(d3Nodes.map((n) => n.id));
+
+    // Filter out relationships that reference non-existent nodes
+    const d3Links: D3Link[] = data.relationships
+      .filter((rel) => nodeIds.has(rel.source) && nodeIds.has(rel.target))
+      .map((rel) => {
+        return {
+          source: rel.source,
+          target: rel.target,
+          type: rel.type,
+        };
+      });
 
     return {
       nodes: d3Nodes,
@@ -71,30 +81,33 @@ export const ForceGraph: React.FC<ForceGraph3DProps> = ({ onNodeClick }) => {
     if (!graphRef.current) return;
     // Zoom to highlighted node
     const node = graphData.nodes.find((n) => n.id === highlightedNodeId);
-    if (node) {
-      graphRef.current.cameraPosition(
-        {
-          x: node.x!,
-          y: node.y!,
-          z: node.z! + 250,
-        },
-        node,
-        1500,
-      );
-    }
+    if (!node) return;
+
+    graphRef.current.cameraPosition(
+      {
+        x: node.x!,
+        y: node.y!,
+        z: node.z! + 250,
+      },
+      node,
+      1500,
+    );
   };
 
-  const handleNodeClick = (node: any) => {
-    // Find the original Neo4j node
-    const neo4jNode = data.nodes.find((n) => n.id === node.id);
-    if (neo4jNode && onNodeClick) {
-      onNodeClick(neo4jNode);
-    }
-  };
+  const handleNodeClick = useCallback(
+    (node: any, event: MouseEvent) => {
+      // Single click - open drawer
+      const neo4jNode = data.nodes.find((n) => n.id === node.id);
+      if (neo4jNode && onNodeClick) {
+        onNodeClick(neo4jNode);
+      }
+    },
+    [data.nodes, onNodeClick],
+  );
 
   const handleEngineStop = () => {
     if (!graphRef.current) return;
-    resetCamera();
+    // resetCamera();
   };
 
   const resetCamera = () => {
@@ -114,9 +127,9 @@ export const ForceGraph: React.FC<ForceGraph3DProps> = ({ onNodeClick }) => {
         return `${baseColor}66`;
       }
 
-      return baseColor;
+      return `${baseColor}aa`;
     },
-    [highlightedNodeId],
+    [highlightedNodeId, nodeLabels],
   );
 
   return (
@@ -129,13 +142,10 @@ export const ForceGraph: React.FC<ForceGraph3DProps> = ({ onNodeClick }) => {
       nodeThreeObject={(node: any) => {
         const sprite = new SpriteText(node.name);
         sprite.color = getNodeColor(node);
-        sprite.textHeight =
-          highlightedNodeId && node.id === highlightedNodeId ? 6 : 4;
         sprite.position.y = 8; // Position text above the node
         return sprite;
       }}
       onNodeClick={handleNodeClick}
-      nodeLabel={(node: any) => `${node.name} (${node.labels.join(', ')})`}
       linkLabel={(link: any) => link.type}
       linkColor={() => '#000'}
       linkWidth={1}
