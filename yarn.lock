@@ -7926,6 +7926,11 @@ setprototypeof@1.2.0:
   resolved "https://npm.labsdev.domotech.io/setprototypeof/-/setprototypeof-1.2.0.tgz"
   integrity sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw==
 
+shaders@^2.1.14:
+  version "2.1.14"
+  resolved "https://npm.labsdev.domotech.io/shaders/-/shaders-2.1.14.tgz#9e38117e259c20358bacda389aa5c9954aad0155"
+  integrity sha512-C28L5GwG95Gmv7qtPW3GB+Ml1Nu28ITRMOcqw4iB44uxdinEjDUhOqcBCUN5NJLw546EzVLw3THu8cKDwjT1QQ==
+
 shebang-command@^2.0.0:
   version "2.0.0"
   resolved "https://npm.labsdev.domotech.io/shebang-command/-/shebang-command-2.0.0.tgz"
