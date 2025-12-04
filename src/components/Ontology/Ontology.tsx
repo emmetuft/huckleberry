@@ -1,37 +1,51 @@
-import { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { Button, FloatButton, Tooltip } from 'antd';
 import {
-  Button,
-  Drawer,
-  FloatButton,
-  Input,
-  List,
-  Select,
-  Tooltip,
-} from 'antd';
-import { ExportOutlined, PlusSquareOutlined } from '@ant-design/icons';
+  ExportOutlined,
+  PlusSquareOutlined,
+  ClearOutlined,
+} from '@ant-design/icons';
 import styles from './Ontology.module.scss';
-import { selectGraphData } from 'reducers/ontology/slice';
-import { nodeColors } from 'constants/styles';
-import { NodeType } from 'models/interfaces/ontology';
-import ForceGraph from './ForceGraph';
+import { useAppDispatch } from 'reducers';
+import {
+  selectGraphData,
+  selectNodeLabels,
+  clearGraphData,
+  selectLoading,
+} from 'reducers/ontology/slice';
+import { fetchAllNodeLabels } from 'reducers/ontology/actions';
+import { Neo4jNode } from 'models/interfaces/ontology';
 import { OntologyInitModal } from './OntologyInitModal/OntologyInitModal';
-
-const { TextArea } = Input;
-
-// import graphData from './miserables.json';
+import { ForceGraph } from './ForceGraph3d';
+import { NodeDrawer } from './NodeDrawer';
+import { SearchBar } from './SearchBar/SearchBar';
+import LoadingAnimation from 'components/Loader/Loader';
 
 interface OntologyProps {}
 
 export const Ontology: FC<OntologyProps> = ({}) => {
+  const dispatch = useAppDispatch();
   const graphData = useSelector(selectGraphData);
+  const nodeLabels = useSelector(selectNodeLabels);
+  const loading = useSelector(selectLoading).loadingNodes;
 
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
-  const [selectedNode, setSelectedNode] = useState<any>(null);
-  const [addNode, setAddNode] = useState<boolean>(false);
-  const [addNodeSources, setAddNodeSources] = useState<string[]>([]);
-  const [addNodeTargets, setAddNodeTargets] = useState<string[]>([]);
+  const [selectedNode, setSelectedNode] = useState<string | null>(null);
   const [initModalOpen, setInitModalOpen] = useState<boolean>(false);
+
+  const init = useRef<boolean>(false);
+
+  // Fetch node labels when component mounts
+  // We no longer load the full graph - users will search/explore incrementally
+  useEffect(() => {
+    if (init.current) return;
+    init.current = true;
+    // Only fetch node labels if they don't already exist
+    if (nodeLabels.length === 0) {
+      dispatch(fetchAllNodeLabels());
+    }
+  }, []);
 
   useEffect(() => {
     if (graphData.nodes.length > 0 && initModalOpen) {
@@ -39,154 +53,41 @@ export const Ontology: FC<OntologyProps> = ({}) => {
     }
   }, [graphData]);
 
-  const onNodeClick = useCallback((node: NodeType) => {
-    setSelectedNode(node);
-    setAddNode(false);
+  const onNodeClick = useCallback((node: Neo4jNode) => {
+    setSelectedNode(node.id);
     setDrawerOpen(true);
   }, []);
 
-  const relatedLinks = useMemo(
-    () =>
-      graphData.links.filter(
-        (link) =>
-          link.source === selectedNode?.id || link.target === selectedNode?.id,
-      ),
-    [selectedNode],
-  );
-
-  const onChangeSources = (value: string[]) => {
-    setAddNodeSources(value);
-  };
-
-  const onChangeTargets = (value: string[]) => {
-    setAddNodeTargets(value);
-  };
-
-  const onClickCreateNode = () => {
-    // TODO: Implement node creation logic
-    setDrawerOpen(false);
-  };
-
-  const drawerContent = useMemo(() => {
-    if (addNode) {
-      return (
-        <div className={styles.drawerContent}>
-          <div className={styles.section}>
-            <h4>Name</h4>
-            <Input />
-          </div>
-          <div className={styles.section}>
-            <h4>Description</h4>
-            <TextArea rows={3} />
-          </div>
-          <div className={styles.section}>
-            <h4>Define relationships</h4>
-            <Select
-              mode="multiple"
-              allowClear
-              style={{ width: '100%' }}
-              placeholder="Source nodes"
-              value={addNodeSources}
-              onChange={onChangeSources}
-              options={graphData.nodes.map((node) => ({
-                label: node.id,
-                value: node.id,
-              }))}
-            />
-            <Select
-              mode="multiple"
-              allowClear
-              style={{ width: '100%' }}
-              placeholder="Target nodes"
-              value={addNodeTargets}
-              onChange={onChangeTargets}
-              options={graphData.nodes.map((node) => ({
-                label: node.id,
-                value: node.id,
-              }))}
-            />
-          </div>
-          <div className={styles.buttons}>
-            <Button type="primary" onClick={onClickCreateNode}>
-              Save
-            </Button>
-          </div>
-        </div>
-      );
-    }
-
-    return (
-      <div className={styles.drawerContent}>
-        {selectedNode?.description && (
-          <div className={styles.section}>
-            <h4>Description</h4>
-            <div className={styles.description}>
-              {selectedNode?.description}
-            </div>
-          </div>
-        )}
-        <div className={styles.section}>
-          <h4>Relationships</h4>
-          <List
-            dataSource={relatedLinks}
-            renderItem={(link) => (
-              <List.Item>
-                <span
-                  style={{
-                    color:
-                      link.source === selectedNode?.id ? '#5a0cff' : '#2c2b2a',
-                    marginRight: '5px',
-                  }}
-                >
-                  {link.source === selectedNode?.id ? '→' : '←'}
-                </span>
-                {link.source === selectedNode?.id ? link.target : link.source}
-                {link.type && (
-                  <span style={{ marginLeft: 8 }}>({link.type})</span>
-                )}
-              </List.Item>
-            )}
-          />
-        </div>
-      </div>
-    );
-  }, [graphData, selectedNode, addNode, addNodeSources, addNodeTargets]);
-
   const onClickAddNode = () => {
-    setAddNode(true);
     setDrawerOpen(true);
   };
 
-  const onDrawerChange = (open: boolean) => {
-    if (!open) {
-      setSelectedNode(null);
-      setAddNode(false);
-    }
+  const onClearGraph = () => {
+    dispatch(clearGraphData());
   };
-
-  const selectedNodeColor = useMemo(() => {
-    const groups = Array.from(new Set(graphData.nodes.map((d) => d.group)));
-    const selectedNodeIndex = groups.findIndex(
-      (group) => group === selectedNode?.group,
-    );
-    const selectedNodeColor = nodeColors[selectedNodeIndex % nodeColors.length];
-    return selectedNodeColor;
-  }, [graphData, selectedNode]);
 
   return (
     <div className={styles.Ontology}>
+      {loading && <LoadingAnimation />}
       {graphData.nodes.length === 0 ? (
         <div className={styles.emptyWrapper}>
-          <h3>It's empty in here!</h3>
+          <h3>Search to start exploring</h3>
+          <p>
+            Use the search bar above to find nodes and build your graph view
+          </p>
           <Button type="primary" onClick={() => setInitModalOpen(true)}>
-            Let's get cooking
+            Or generate new ontology
           </Button>
         </div>
       ) : (
-        <ForceGraph data={graphData} onNodeClick={onNodeClick} />
+        <>
+          <ForceGraph onNodeClick={onNodeClick} />
+        </>
       )}
 
-      <FloatButton.Group shape="square">
+      <SearchBar />
+
+      <FloatButton.Group shape="square" placement="top">
         <FloatButton
           icon={
             <Tooltip title="Add node" placement="left">
@@ -197,6 +98,14 @@ export const Ontology: FC<OntologyProps> = ({}) => {
         />
         <FloatButton
           icon={
+            <Tooltip title="Clear graph view" placement="left">
+              <ClearOutlined />
+            </Tooltip>
+          }
+          onClick={onClearGraph}
+        />
+        <FloatButton
+          icon={
             <Tooltip title="Export graph" placement="left">
               <ExportOutlined />
             </Tooltip>
@@ -204,33 +113,12 @@ export const Ontology: FC<OntologyProps> = ({}) => {
         />
       </FloatButton.Group>
 
-      <Drawer
-        title={
-          selectedNode ? (
-            <div className={styles.drawerHeader}>
-              {selectedNode.id}
-              <div
-                className={styles.nodeGroup}
-                style={
-                  {
-                    '--node-color': selectedNodeColor,
-                  } as React.CSSProperties
-                }
-              >
-                {selectedNode.group}
-              </div>
-            </div>
-          ) : (
-            'Add node'
-          )
-        }
-        mask={false}
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        afterOpenChange={onDrawerChange}
-      >
-        {drawerContent}
-      </Drawer>
+      <NodeDrawer
+        selectedNode={selectedNode}
+        drawerOpen={drawerOpen}
+        setDrawerOpen={setDrawerOpen}
+        setSelectedNode={setSelectedNode}
+      />
 
       <OntologyInitModal
         isOpen={initModalOpen}

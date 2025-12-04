@@ -4,10 +4,10 @@ export const sharedIconProps = {
 };
 
 export const nodeColors = [
-  '#5a0cff',
   '#01200F',
   '#439A86',
   '#F75E1C',
+  '#5a0cff',
   '#81C14B',
 ];
 

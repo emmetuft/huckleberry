@@ -1,6 +1,8 @@
-import { FC, useEffect } from 'react';
+import { FC, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import { ConfigProvider, FloatButton, Tooltip } from 'antd';
+import { useLocation, useRoutes } from 'react-router-dom';
+import { routes, getAppPageFromPath } from 'routes';
+import { ConfigProvider } from 'antd';
 import { Toaster } from 'sonner';
 import styles from './App.module.scss';
 import { useAppDispatch } from 'reducers';
@@ -9,31 +11,23 @@ import {
   authenticate,
   fetchIdentity,
   selectIdentity,
-  selectIncognitoMode,
-  selectPage,
-  setIncognitoMode,
+  setPage,
 } from 'reducers/app/slice';
-import { AppPage } from 'models/enums/appPage';
-import { Applications } from 'components/Applications/Applications';
-import Automation from 'components/Automation/Automation';
-import { Background } from 'components/Background/Background';
-import { DataHealth } from 'components/DataHealth/DataHealth';
-import { DataHub } from 'components/DataHub/DataHub';
-import { FlowCanvas } from 'components/FlowCanvas/FlowCanvas';
 import { Heading } from 'components/Heading/Heading';
-import { Integrations } from 'components/Integrations/Integrations';
 import { Nav } from 'components/Nav/Nav';
-import { Ontology } from 'components/Ontology/Ontology';
 import { PersonaModal } from 'components/PersonaModal/PersonaModal';
-import { Workspace } from 'components/Workspace/Workspace';
 
 export const App: FC = () => {
   const dispatch = useAppDispatch();
+  const location = useLocation();
   const identity = useSelector(selectIdentity);
-  const page = useSelector(selectPage);
-  const incognitoMode = useSelector(selectIncognitoMode);
+  const routing = useRoutes(routes);
+
+  const init = useRef<boolean>(false);
 
   useEffect(() => {
+    if (init.current) return;
+    init.current = true;
     dispatch(authenticate());
     dispatch(fetchIdentity());
   }, []);
@@ -44,33 +38,11 @@ export const App: FC = () => {
     }
   }, [identity]);
 
-  const renderPage = () => {
-    switch (page) {
-      case AppPage.APPS:
-        return <Applications />;
-      case AppPage.AUTOMATION:
-        return <Automation />;
-      case AppPage.DATA_HEALTH:
-        return <DataHealth />;
-      case AppPage.DATA_HUB:
-        return <DataHub />;
-      case AppPage.HOME:
-        return (
-          <div className={styles.home}>
-            <Workspace />
-            <Background />
-          </div>
-        );
-      case AppPage.INTEGRATIONS:
-        return <Integrations />;
-      case AppPage.ONTOLOGY:
-        return <Ontology />;
-      case AppPage.WORKFLOW:
-        return <FlowCanvas />;
-      default:
-        return null;
-    }
-  };
+  // Sync Redux state with current route
+  useEffect(() => {
+    const appPage = getAppPageFromPath(location.pathname);
+    dispatch(setPage(appPage));
+  }, [location.pathname]);
 
   return (
     <ConfigProvider
@@ -95,24 +67,8 @@ export const App: FC = () => {
         <Heading />
         <Nav />
         <PersonaModal />
-        {renderPage()}
+        {routing}
       </div>
-      <Tooltip title={incognitoMode ? 'Memory off' : 'Memory on'}>
-        <FloatButton
-          shape="square"
-          icon={
-            <div
-              className={styles.recordIcon}
-              style={
-                incognitoMode
-                  ? { backgroundColor: '#bfbfbf', boxShadow: 'none' }
-                  : {}
-              }
-            />
-          }
-          onClick={() => dispatch(setIncognitoMode(!incognitoMode))}
-        />
-      </Tooltip>
       <Toaster position="top-right" theme="light" richColors />
     </ConfigProvider>
   );

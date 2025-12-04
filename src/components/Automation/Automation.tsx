@@ -25,7 +25,7 @@ import { Column } from 'models/interfaces/column';
 import Condition from './Condition';
 import Action from './Action';
 
-const Automation = () => {
+export const Automation = () => {
   const dispatch = useDispatch();
   // const sources = useSelector(selectObservabilitySources);
   // const schema = useSelector(selectSchema);
@@ -378,5 +378,3 @@ const Automation = () => {
     </div>
   );
 };
-
-export default Automation;

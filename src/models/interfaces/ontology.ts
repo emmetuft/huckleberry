@@ -1,20 +1,21 @@
-import { SimulationNodeDatum } from 'd3';
 import { Column } from './column';
 
-export interface GraphData {
-  nodes: NodeType[];
-  links: {
-    source: string;
-    target: string;
-    type: string;
-    value: number;
-  }[];
+export interface Neo4jNode {
+  id: string;
+  labels: string[];
+  properties: Record<string, any>;
+}
+export interface Neo4jRelationship {
+  id: string;
+  source: string;
+  target: string;
+  type: string;
+  properties: Record<string, any>;
 }
 
-export interface NodeType extends SimulationNodeDatum {
-  id: string;
-  group: number;
-  description?: string;
+export interface GraphData {
+  nodes: Neo4jNode[];
+  relationships: Neo4jRelationship[];
 }
 
 export interface OntologySource {
