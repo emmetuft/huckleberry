@@ -7,7 +7,10 @@ import {
   isLocalTime,
   isDuration,
 } from 'neo4j-driver';
-import { FilterCondition } from '../../shared/models/interfaces/filters.js';
+import {
+  FilterCondition,
+  FilterOperator,
+} from '../../shared/models/interfaces/filters.js';
 
 export function parseResponseData(records: any[]) {
   const nodesMap = new Map();
@@ -111,43 +114,35 @@ function buildPropertyCondition(
   const property = `n.${filter.property}`;
 
   switch (filter.operator) {
-    case 'equals':
+    case FilterOperator.EQUALS:
       params[paramKey] = filter.value;
       return `${property} = $${paramKey}`;
 
-    case 'notEquals':
+    case FilterOperator.NOT_EQUALS:
       params[paramKey] = filter.value;
       return `${property} <> $${paramKey}`;
 
-    case 'contains':
+    case FilterOperator.CONTAINS:
       params[paramKey] = filter.value;
       return `toLower(toString(${property})) CONTAINS toLower($${paramKey})`;
 
-    case 'startsWith':
-      params[paramKey] = filter.value;
-      return `toLower(toString(${property})) STARTS WITH toLower($${paramKey})`;
-
-    case 'endsWith':
-      params[paramKey] = filter.value;
-      return `toLower(toString(${property})) ENDS WITH toLower($${paramKey})`;
-
-    case 'gt':
+    case FilterOperator.GT:
       params[paramKey] = filter.value;
       return `${property} > $${paramKey}`;
 
-    case 'lt':
+    case FilterOperator.LT:
       params[paramKey] = filter.value;
       return `${property} < $${paramKey}`;
 
-    case 'gte':
+    case FilterOperator.GTE:
       params[paramKey] = filter.value;
       return `${property} >= $${paramKey}`;
 
-    case 'lte':
+    case FilterOperator.LTE:
       params[paramKey] = filter.value;
       return `${property} <= $${paramKey}`;
 
-    case 'between':
+    case FilterOperator.BETWEEN:
       // Convert dates to "YYYY-MM-DD HH:mm:ss" format if dealing with date type
       if (filter.valueType === 'date') {
         params[`${paramKey}Min`] = new Date(filter.value[0])
@@ -164,7 +159,7 @@ function buildPropertyCondition(
       }
       return `${property} >= $${paramKey}Min AND ${property} <= $${paramKey}Max`;
 
-    case 'before':
+    case FilterOperator.BEFORE:
       // Convert ISO date to "YYYY-MM-DD HH:mm:ss" format
       params[paramKey] = new Date(filter.value)
         .toISOString()
@@ -172,7 +167,8 @@ function buildPropertyCondition(
         .slice(0, 19);
       return `${property} < $${paramKey}`;
 
-    case 'after':
+    case FilterOperator.AFTER:
+      // TODO: This isn't working for date values
       // Convert ISO date to "YYYY-MM-DD HH:mm:ss" format
       params[paramKey] = new Date(filter.value)
         .toISOString()

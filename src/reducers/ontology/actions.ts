@@ -67,16 +67,6 @@ export const fetchNodes = createAsyncThunk<
 );
 
 /**
- * Load neighbors of a specific node and merge into graph
- */
-export const loadNeighbors = createAsyncThunk<
-  GraphData,
-  { nodeId: string; limit?: number }
->('ontology/loadNeighbors', async ({ nodeId, limit }) => {
-  return await Neo4jService.fetchNeighbors(nodeId, limit);
-});
-
-/**
  * Load a subgraph starting from a specific node and merge into graph
  */
 export const loadSubgraph = createAsyncThunk<
@@ -134,13 +124,3 @@ export const searchAndLoadNodes = createAsyncThunk<
     return { nodes, relationships };
   },
 );
-
-/**
- * Load shortest path between two nodes
- */
-export const loadShortestPath = createAsyncThunk<
-  GraphData,
-  { fromId: string; toId: string }
->('ontology/loadShortestPath', async ({ fromId, toId }) => {
-  return await Neo4jService.fetchShortestPath(fromId, toId);
-});
