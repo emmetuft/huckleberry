@@ -128,7 +128,6 @@ export const SearchBar: FC<SearchBarProps> = ({}) => {
         content={
           <FilterPopup
             nodes={graphData.nodes}
-            nodeLabels={nodeLabels}
             onApplyFilters={handleApplyFilters}
           />
         }

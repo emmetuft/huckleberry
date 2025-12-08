@@ -160,21 +160,12 @@ function buildPropertyCondition(
       return `${property} >= $${paramKey}Min AND ${property} <= $${paramKey}Max`;
 
     case FilterOperator.BEFORE:
-      // Convert ISO date to "YYYY-MM-DD HH:mm:ss" format
-      params[paramKey] = new Date(filter.value)
-        .toISOString()
-        .replace('T', ' ')
-        .slice(0, 19);
-      return `${property} < $${paramKey}`;
+      params[paramKey] = filter.value;
+      return `${property} < datetime($${paramKey})`;
 
     case FilterOperator.AFTER:
-      // TODO: This isn't working for date values
-      // Convert ISO date to "YYYY-MM-DD HH:mm:ss" format
-      params[paramKey] = new Date(filter.value)
-        .toISOString()
-        .replace('T', ' ')
-        .slice(0, 19);
-      return `${property} > $${paramKey}`;
+      params[paramKey] = filter.value;
+      return `${property} > datetime($${paramKey})`;
 
     default:
       return '';

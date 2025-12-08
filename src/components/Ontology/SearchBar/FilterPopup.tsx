@@ -26,6 +26,7 @@ import {
 } from 'reducers/ontology/slice';
 import { Neo4jService } from 'services/neo4j';
 import { VALUE_QUERY_LIMIT } from 'constants/service';
+import { DEFAULT_FILTER } from 'constants/filters';
 
 const { RangePicker } = DatePicker;
 
@@ -37,13 +38,11 @@ interface Option {
 
 interface FilterPopupProps {
   nodes: Neo4jNode[];
-  nodeLabels: string[];
   onApplyFilters: (filters: FilterCondition[]) => void;
 }
 
 export const FilterPopup: FC<FilterPopupProps> = ({
   nodes,
-  nodeLabels,
   onApplyFilters,
 }) => {
   const labelFilters = useSelector(selectLabelFilters);
@@ -65,7 +64,17 @@ export const FilterPopup: FC<FilterPopupProps> = ({
           const key = `${filter.nodeLabel}:${filter.property}`;
 
           // Skip if already fetched
-          if (propertyValueOptions[key] !== undefined) {
+          // or data type is number/date (too many unique values)
+          const type = getPropertyType(
+            nodes,
+            filter.nodeLabel,
+            filter.property,
+          );
+          if (
+            propertyValueOptions[key] !== undefined ||
+            type === FilterDataType.NUMBER ||
+            type === FilterDataType.DATE
+          ) {
             continue;
           }
 
@@ -75,7 +84,6 @@ export const FilterPopup: FC<FilterPopupProps> = ({
               filter.property,
               50,
             );
-            console.log(values);
 
             setPropertyValueOptions((prev) => ({
               ...prev,
@@ -106,15 +114,7 @@ export const FilterPopup: FC<FilterPopupProps> = ({
   };
 
   const addFilter = () => {
-    const newFilter: FilterCondition = {
-      id: Date.now().toString(),
-      nodeLabel: '',
-      property: '',
-      operator: '',
-      value: null,
-      valueType: FilterDataType.STRING,
-    };
-    setFilters([...filters, newFilter]);
+    setFilters([...filters, DEFAULT_FILTER]);
   };
 
   const removeFilter = (id: string) => {
@@ -152,6 +152,24 @@ export const FilterPopup: FC<FilterPopupProps> = ({
     setFilters(updatedFilters);
   };
 
+  const handleApply = () => {
+    // Filter out incomplete filters
+    const validFilters = filters.filter(
+      (f) =>
+        f.nodeLabel &&
+        f.property &&
+        f.operator &&
+        f.value !== null &&
+        f.value !== '',
+    );
+    onApplyFilters(validFilters);
+  };
+
+  const handleClear = () => {
+    setFilters([]);
+    onApplyFilters([]);
+  };
+
   const getSelectableOptions = (filter: FilterCondition): any[] | null => {
     // Check if we have property value options available
     const key = `${filter.nodeLabel}:${filter.property}`;
@@ -161,6 +179,21 @@ export const FilterPopup: FC<FilterPopupProps> = ({
     if (options && options.length > 0 && options.length < VALUE_QUERY_LIMIT)
       return options;
     return null;
+  };
+
+  const getOperatorOptions = (filter: FilterCondition) => {
+    const typeOptions = getOperatorsForType(
+      filter.valueType || FilterDataType.STRING,
+    );
+
+    const valueOptions = getSelectableOptions(filter);
+
+    return typeOptions
+      .filter((opt) => (valueOptions ? opt !== FilterOperator.CONTAINS : true))
+      .map((opt) => ({
+        label: OperatorOptionMap[opt],
+        value: opt,
+      }));
   };
 
   const renderValueInput = (filter: FilterCondition) => {
@@ -263,39 +296,6 @@ export const FilterPopup: FC<FilterPopupProps> = ({
         );
       }
     }
-  };
-
-  const getOperatorOptions = (filter: FilterCondition) => {
-    const typeOptions = getOperatorsForType(
-      filter.valueType || FilterDataType.STRING,
-    );
-
-    const valueOptions = getSelectableOptions(filter);
-
-    return typeOptions
-      .filter((opt) => (valueOptions ? opt !== FilterOperator.CONTAINS : true))
-      .map((opt) => ({
-        label: OperatorOptionMap[opt],
-        value: opt,
-      }));
-  };
-
-  const handleApply = () => {
-    // Filter out incomplete filters
-    const validFilters = filters.filter(
-      (f) =>
-        f.nodeLabel &&
-        f.property &&
-        f.operator &&
-        f.value !== null &&
-        f.value !== '',
-    );
-    onApplyFilters(validFilters);
-  };
-
-  const handleClear = () => {
-    setFilters([]);
-    onApplyFilters([]);
   };
 
   const labelPropertyOptions: Option[] = labelFilters.map((label) => ({
