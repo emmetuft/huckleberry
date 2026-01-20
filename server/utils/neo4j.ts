@@ -7,7 +7,10 @@ import {
   isLocalTime,
   isDuration,
 } from 'neo4j-driver';
-import { FilterCondition } from '../../shared/models/interfaces/filters.js';
+import {
+  FilterCondition,
+  FilterOperator,
+} from '../../shared/models/interfaces/filters.js';
 
 export function parseResponseData(records: any[]) {
   const nodesMap = new Map();
@@ -111,43 +114,35 @@ function buildPropertyCondition(
   const property = `n.${filter.property}`;
 
   switch (filter.operator) {
-    case 'equals':
+    case FilterOperator.EQUALS:
       params[paramKey] = filter.value;
       return `${property} = $${paramKey}`;
 
-    case 'notEquals':
+    case FilterOperator.NOT_EQUALS:
       params[paramKey] = filter.value;
       return `${property} <> $${paramKey}`;
 
-    case 'contains':
+    case FilterOperator.CONTAINS:
       params[paramKey] = filter.value;
       return `toLower(toString(${property})) CONTAINS toLower($${paramKey})`;
 
-    case 'startsWith':
-      params[paramKey] = filter.value;
-      return `toLower(toString(${property})) STARTS WITH toLower($${paramKey})`;
-
-    case 'endsWith':
-      params[paramKey] = filter.value;
-      return `toLower(toString(${property})) ENDS WITH toLower($${paramKey})`;
-
-    case 'gt':
+    case FilterOperator.GT:
       params[paramKey] = filter.value;
       return `${property} > $${paramKey}`;
 
-    case 'lt':
+    case FilterOperator.LT:
       params[paramKey] = filter.value;
       return `${property} < $${paramKey}`;
 
-    case 'gte':
+    case FilterOperator.GTE:
       params[paramKey] = filter.value;
       return `${property} >= $${paramKey}`;
 
-    case 'lte':
+    case FilterOperator.LTE:
       params[paramKey] = filter.value;
       return `${property} <= $${paramKey}`;
 
-    case 'between':
+    case FilterOperator.BETWEEN:
       // Convert dates to "YYYY-MM-DD HH:mm:ss" format if dealing with date type
       if (filter.valueType === 'date') {
         params[`${paramKey}Min`] = new Date(filter.value[0])
@@ -164,21 +159,13 @@ function buildPropertyCondition(
       }
       return `${property} >= $${paramKey}Min AND ${property} <= $${paramKey}Max`;
 
-    case 'before':
-      // Convert ISO date to "YYYY-MM-DD HH:mm:ss" format
-      params[paramKey] = new Date(filter.value)
-        .toISOString()
-        .replace('T', ' ')
-        .slice(0, 19);
-      return `${property} < $${paramKey}`;
+    case FilterOperator.BEFORE:
+      params[paramKey] = filter.value;
+      return `${property} < datetime($${paramKey})`;
 
-    case 'after':
-      // Convert ISO date to "YYYY-MM-DD HH:mm:ss" format
-      params[paramKey] = new Date(filter.value)
-        .toISOString()
-        .replace('T', ' ')
-        .slice(0, 19);
-      return `${property} > $${paramKey}`;
+    case FilterOperator.AFTER:
+      params[paramKey] = filter.value;
+      return `${property} > datetime($${paramKey})`;
 
     default:
       return '';
@@ -238,3 +225,74 @@ export function buildLabelFilterConditions(
 
   return labelConditions.join(' OR ');
 }
+
+type GroupedSchema = {
+  type: string;
+  properties: {
+    propertyName: string;
+    propertyType: string;
+    mandatory: boolean;
+  }[];
+};
+
+type GrouperConfig<T> = {
+  getType: (record: T) => string;
+  getProperty: (record: T) => {
+    propertyName: string;
+    propertyType: string;
+    mandatory: boolean;
+  } | null;
+};
+
+function groupSchema<T>(
+  records: T[],
+  config: GrouperConfig<T>,
+): GroupedSchema[] {
+  const map = new Map<string, GroupedSchema>();
+
+  for (const record of records) {
+    const type = config.getType(record);
+
+    if (!map.has(type)) {
+      map.set(type, {
+        type,
+        properties: [],
+      });
+    }
+
+    const property = config.getProperty(record);
+    if (property) {
+      map.get(type)!.properties.push(property);
+    }
+  }
+
+  return Array.from(map.values());
+}
+
+export const parseSchemaData = (
+  nodeProperties: any[],
+  relationshipProperties: any[],
+) => {
+  const nodes = groupSchema(nodeProperties, {
+    getType: (r) => r.nodeLabels[0],
+    getProperty: (r) => ({
+      propertyName: r.propertyName,
+      propertyType: r.propertyTypes[0],
+      mandatory: r.mandatory,
+    }),
+  });
+
+  const relationships = groupSchema(relationshipProperties, {
+    getType: (r) => r.relType.replace(/[:`]/g, ''),
+    getProperty: (r) =>
+      r.propertyName && r.propertyTypes
+        ? {
+            propertyName: r.propertyName,
+            propertyType: r.propertyTypes[0],
+            mandatory: r.mandatory,
+          }
+        : null,
+  });
+
+  return { nodes, relationships };
+};

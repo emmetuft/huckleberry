@@ -1,6 +1,7 @@
 import express, { Express, Request, Response, NextFunction } from 'express';
 import { neo4jService } from './services/neo4j.service.js';
 import { router as ontologyRouter } from './routes/ontology.routes.js';
+import { router as graphRagRouter } from './routes/graphRag.routes.js';
 
 export async function setupServer(app: Express): Promise<void> {
   // Middleware
@@ -17,6 +18,7 @@ export async function setupServer(app: Express): Promise<void> {
 
   // API Routes
   app.use('/api/ontology', ontologyRouter);
+  app.use('/api/graph-rag', graphRagRouter);
 
   // Error handling middleware
   app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {

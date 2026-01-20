@@ -1,3 +1,4 @@
+import { VALUE_QUERY_LIMIT } from 'constants/service';
 import { GraphData } from 'models/interfaces/ontology';
 
 const NEO4J_API_BASE = '/api/ontology';
@@ -31,6 +32,24 @@ const fetchNodeLabels = async (): Promise<string[]> => {
   try {
     const data = await handleRequest({ url: `${NEO4J_API_BASE}/labels` });
     return data.map((item: any) => item.label);
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+/**
+ * Fetch unique property values for a given node label and property
+ */
+const fetchPropertyValues = async (
+  label: string,
+  property: string,
+  limit: number = VALUE_QUERY_LIMIT,
+): Promise<any[]> => {
+  try {
+    const data = await handleRequest({
+      url: `${NEO4J_API_BASE}/property-values/${encodeURIComponent(label)}/${encodeURIComponent(property)}?limit=${limit}`,
+    });
+    return data.map((item: any) => item.value);
   } catch (error: any) {
     throw error;
   }
@@ -102,38 +121,6 @@ const fetchSubgraph = async (
 };
 
 /**
- * Fetch neighbors of a specific node
- */
-const fetchNeighbors = async (
-  nodeId: string,
-  limit: number = 200,
-): Promise<GraphData> => {
-  try {
-    return handleRequest({
-      url: `${NEO4J_API_BASE}/node/${nodeId}/neighbors?limit=${limit}`,
-    });
-  } catch (error: any) {
-    throw error;
-  }
-};
-
-/**
- * Find shortest path between two nodes
- */
-const fetchShortestPath = async (
-  fromId: string,
-  toId: string,
-): Promise<GraphData> => {
-  try {
-    return handleRequest({
-      url: `${NEO4J_API_BASE}/path?from=${fromId}&to=${toId}`,
-    });
-  } catch (error: any) {
-    throw error;
-  }
-};
-
-/**
  * Search for nodes using full-text search
  */
 const searchNodes = async (
@@ -144,35 +131,6 @@ const searchNodes = async (
     return handleRequest({
       url: `${NEO4J_API_BASE}/search?query=${encodeURIComponent(query)}&limit=${limit}`,
     });
-  } catch (error: any) {
-    throw error;
-  }
-};
-
-/**
- * Execute a custom Cypher query
- */
-const executeQuery = async (cypher: string, params?: Record<string, any>) => {
-  try {
-    const response = await fetch(`${NEO4J_API_BASE}/query`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ cypher, params }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to execute query');
-    }
-
-    const result = await response.json();
-
-    if (!result.success) {
-      throw new Error(result.error || 'Unknown error');
-    }
-
-    return result.data;
   } catch (error: any) {
     throw error;
   }
@@ -209,11 +167,9 @@ const createNode = async (label: string, properties: Record<string, any>) => {
 
 export const Neo4jService = {
   fetchNodeLabels,
+  fetchPropertyValues,
   fetchNodes,
   fetchSubgraph,
-  fetchNeighbors,
-  fetchShortestPath,
   searchNodes,
-  executeQuery,
   createNode,
 };

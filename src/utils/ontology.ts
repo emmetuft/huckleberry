@@ -51,34 +51,30 @@ export const getPropertyType = (
 };
 
 // Get operators based on property type
-export const getOperatorsForType = (
-  type: FilterDataType,
-): Array<{ label: string; value: string }> => {
+export const getOperatorsForType = (type: FilterDataType): FilterOperator[] => {
   switch (type) {
     case FilterDataType.DATE:
       return [
-        { label: 'Between', value: FilterOperator.BETWEEN },
-        { label: 'Before', value: FilterOperator.BEFORE },
-        { label: 'After', value: FilterOperator.AFTER },
-        { label: 'Equals', value: FilterOperator.EQUALS },
+        FilterOperator.BETWEEN,
+        FilterOperator.BEFORE,
+        FilterOperator.AFTER,
+        FilterOperator.EQUALS,
       ];
     case FilterDataType.NUMBER:
       return [
-        { label: 'Equals', value: FilterOperator.EQUALS },
-        { label: 'Greater than', value: FilterOperator.GT },
-        { label: 'Less than', value: FilterOperator.LT },
-        { label: 'Greater or equal', value: FilterOperator.GTE },
-        { label: 'Less or equal', value: FilterOperator.LTE },
-        { label: 'Between', value: FilterOperator.BETWEEN },
+        FilterOperator.EQUALS,
+        FilterOperator.GT,
+        FilterOperator.LT,
+        FilterOperator.GTE,
+        FilterOperator.LTE,
+        FilterOperator.BETWEEN,
       ];
     case FilterDataType.STRING:
     default:
       return [
-        { label: 'Equals', value: FilterOperator.EQUALS },
-        { label: 'Not equals', value: FilterOperator.NOT_EQUALS },
-        { label: 'Contains', value: FilterOperator.CONTAINS },
-        { label: 'Starts with', value: FilterOperator.STARTS_WITH },
-        { label: 'Ends with', value: FilterOperator.ENDS_WITH },
+        FilterOperator.EQUALS,
+        FilterOperator.NOT_EQUALS,
+        FilterOperator.CONTAINS,
       ];
   }
 };

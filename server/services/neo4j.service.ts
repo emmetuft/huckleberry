@@ -1,6 +1,6 @@
 import neo4j, { Driver, Session, session } from 'neo4j-driver';
 import dotenv from 'dotenv';
-import { toNativeTypes } from '../utils/neo4j.ts';
+import { parseSchemaData, toNativeTypes } from '../utils/neo4j.ts';
 
 dotenv.config();
 
@@ -118,6 +118,21 @@ class Neo4jService {
       throw new Error('Neo4j driver not initialized. Call connect() first.');
     }
     return this.driver;
+  }
+
+  /**
+   * Get the graph schema including node and relationship properties
+   */
+  async getGraphSchema(): Promise<{
+    nodes: any[];
+    relationships: any[];
+  }> {
+    const [nodeProperties, relationshipProperties] = await Promise.all([
+      this.executeRead('CALL db.schema.nodeTypeProperties()'),
+      this.executeRead('CALL db.schema.relTypeProperties()'),
+    ]);
+
+    return parseSchemaData(nodeProperties, relationshipProperties);
   }
 }
 

@@ -5,8 +5,6 @@ import {
   fetchAllNodeLabels,
   fetchNodes,
   loadSubgraph,
-  loadNeighbors,
-  loadShortestPath,
   searchAndLoadNodes,
 } from './actions';
 import { FilterCondition } from '../../../shared/models/interfaces/filters';
@@ -108,6 +106,7 @@ export const OntologySlice = createAppSlice({
         state.loading = { ...state.loading, initGeneration: false };
         state.graphData = payload;
       })
+
       // Fetch node labels
       .addCase(fetchAllNodeLabels.pending, (state) => {
         state.loading = { ...state.loading, fetchNodeLabels: true };
@@ -119,6 +118,7 @@ export const OntologySlice = createAppSlice({
         state.loading = { ...state.loading, fetchNodeLabels: false };
         state.nodeLabels = payload;
       })
+
       // Fetch nodes
       .addCase(fetchNodes.pending, (state, { meta }) => {
         state.loading = { ...state.loading, loadingNodes: true };
@@ -140,17 +140,7 @@ export const OntologySlice = createAppSlice({
         // Clear highlighted node when filter changes
         state.controls.highlightedNodeId = null;
       })
-      // Load neighbors
-      .addCase(loadNeighbors.pending, (state) => {
-        state.loading = { ...state.loading, loadingNodes: true };
-      })
-      .addCase(loadNeighbors.rejected, (state) => {
-        state.loading = { ...state.loading, loadingNodes: false };
-      })
-      .addCase(loadNeighbors.fulfilled, (state, { payload }) => {
-        state.loading = { ...state.loading, loadingNodes: false };
-        state.graphData = mergeGraphData(state.graphData, payload);
-      })
+
       // Load subgraph
       .addCase(loadSubgraph.pending, (state) => {
         state.loading = { ...state.loading, loadingNodes: true };
@@ -162,6 +152,7 @@ export const OntologySlice = createAppSlice({
         state.loading = { ...state.loading, loadingNodes: false };
         state.graphData = mergeGraphData(state.graphData, payload);
       })
+
       // Search and load nodes
       .addCase(searchAndLoadNodes.pending, (state) => {
         state.loading = { ...state.loading, searching: true };
@@ -172,17 +163,6 @@ export const OntologySlice = createAppSlice({
       .addCase(searchAndLoadNodes.fulfilled, (state, { payload }) => {
         state.loading = { ...state.loading, searching: false };
         state.graphData = payload;
-      })
-      // Load shortest path
-      .addCase(loadShortestPath.pending, (state) => {
-        state.loading = { ...state.loading, loadingNodes: true };
-      })
-      .addCase(loadShortestPath.rejected, (state) => {
-        state.loading = { ...state.loading, loadingNodes: false };
-      })
-      .addCase(loadShortestPath.fulfilled, (state, { payload }) => {
-        state.loading = { ...state.loading, loadingNodes: false };
-        state.graphData = mergeGraphData(state.graphData, payload);
       });
   },
   selectors: {

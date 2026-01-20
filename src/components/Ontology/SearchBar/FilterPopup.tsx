@@ -14,6 +14,8 @@ import styles from './FilterPopup.module.scss';
 import {
   FilterCondition,
   FilterDataType,
+  FilterOperator,
+  OperatorOptionMap,
 } from '../../../../shared/models/interfaces/filters';
 import { Neo4jNode } from 'models/interfaces/ontology';
 import { getOperatorsForType, getPropertyType } from 'utils/ontology';
@@ -22,6 +24,9 @@ import {
   selectLabelFilters,
   selectPropertyFilters,
 } from 'reducers/ontology/slice';
+import { Neo4jService } from 'services/neo4j';
+import { VALUE_QUERY_LIMIT } from 'constants/service';
+import { DEFAULT_FILTER } from 'constants/filters';
 
 const { RangePicker } = DatePicker;
 
@@ -33,22 +38,70 @@ interface Option {
 
 interface FilterPopupProps {
   nodes: Neo4jNode[];
-  nodeLabels: string[];
   onApplyFilters: (filters: FilterCondition[]) => void;
 }
 
 export const FilterPopup: FC<FilterPopupProps> = ({
   nodes,
-  nodeLabels,
   onApplyFilters,
 }) => {
   const labelFilters = useSelector(selectLabelFilters);
   const propertyFilters = useSelector(selectPropertyFilters);
   const [filters, setFilters] = useState<FilterCondition[]>([]);
+  const [propertyValueOptions, setPropertyValueOptions] = useState<
+    Record<string, any[]>
+  >({});
 
   useEffect(() => {
     setFilters(propertyFilters);
   }, [propertyFilters]);
+
+  // Fetch unique property values when label/property are selected
+  useEffect(() => {
+    const fetchPropertyValues = async () => {
+      for (const filter of filters) {
+        if (filter.nodeLabel && filter.property) {
+          const key = `${filter.nodeLabel}:${filter.property}`;
+
+          // Skip if already fetched
+          // or data type is number/date (too many unique values)
+          const type = getPropertyType(
+            nodes,
+            filter.nodeLabel,
+            filter.property,
+          );
+          if (
+            propertyValueOptions[key] !== undefined ||
+            type === FilterDataType.NUMBER ||
+            type === FilterDataType.DATE
+          ) {
+            continue;
+          }
+
+          try {
+            const values = await Neo4jService.fetchPropertyValues(
+              filter.nodeLabel,
+              filter.property,
+              50,
+            );
+
+            setPropertyValueOptions((prev) => ({
+              ...prev,
+              [key]: values,
+            }));
+          } catch (error) {
+            console.error('Error fetching property values:', error);
+            setPropertyValueOptions((prev) => ({
+              ...prev,
+              [key]: [],
+            }));
+          }
+        }
+      }
+    };
+
+    fetchPropertyValues();
+  }, [filters]);
 
   // Get properties for a selected node label
   const getPropertiesForLabel = (label: string): string[] => {
@@ -61,15 +114,7 @@ export const FilterPopup: FC<FilterPopupProps> = ({
   };
 
   const addFilter = () => {
-    const newFilter: FilterCondition = {
-      id: Date.now().toString(),
-      nodeLabel: '',
-      property: '',
-      operator: '',
-      value: null,
-      valueType: FilterDataType.STRING,
-    };
-    setFilters([...filters, newFilter]);
+    setFilters([...filters, DEFAULT_FILTER]);
   };
 
   const removeFilter = (id: string) => {
@@ -105,6 +150,50 @@ export const FilterPopup: FC<FilterPopupProps> = ({
     });
 
     setFilters(updatedFilters);
+  };
+
+  const handleApply = () => {
+    // Filter out incomplete filters
+    const validFilters = filters.filter(
+      (f) =>
+        f.nodeLabel &&
+        f.property &&
+        f.operator &&
+        f.value !== null &&
+        f.value !== '',
+    );
+    onApplyFilters(validFilters);
+  };
+
+  const handleClear = () => {
+    setFilters([]);
+    onApplyFilters([]);
+  };
+
+  const getSelectableOptions = (filter: FilterCondition): any[] | null => {
+    // Check if we have property value options available
+    const key = `${filter.nodeLabel}:${filter.property}`;
+    const options = propertyValueOptions[key];
+
+    // If we have options and they're less than query limit, show a searchable select
+    if (options && options.length > 0 && options.length < VALUE_QUERY_LIMIT)
+      return options;
+    return null;
+  };
+
+  const getOperatorOptions = (filter: FilterCondition) => {
+    const typeOptions = getOperatorsForType(
+      filter.valueType || FilterDataType.STRING,
+    );
+
+    const valueOptions = getSelectableOptions(filter);
+
+    return typeOptions
+      .filter((opt) => (valueOptions ? opt !== FilterOperator.CONTAINS : true))
+      .map((opt) => ({
+        label: OperatorOptionMap[opt],
+        value: opt,
+      }));
   };
 
   const renderValueInput = (filter: FilterCondition) => {
@@ -175,7 +264,29 @@ export const FilterPopup: FC<FilterPopupProps> = ({
           />
         );
 
-      default:
+      default: {
+        const options = getSelectableOptions(filter);
+        if (options) {
+          return (
+            <Select
+              showSearch
+              placeholder="Select value"
+              value={filter.value || undefined}
+              onChange={(value) => updateFilter(filter.id, { value })}
+              options={options.map((opt) => ({
+                label: String(opt),
+                value: opt,
+              }))}
+              filterOption={(input, option) =>
+                (option?.label ?? '')
+                  .toLowerCase()
+                  .includes(input.toLowerCase())
+              }
+            />
+          );
+        }
+
+        // Otherwise show a text input
         return (
           <Input
             value={filter.value || ''}
@@ -183,25 +294,8 @@ export const FilterPopup: FC<FilterPopupProps> = ({
             placeholder="Enter value"
           />
         );
+      }
     }
-  };
-
-  const handleApply = () => {
-    // Filter out incomplete filters
-    const validFilters = filters.filter(
-      (f) =>
-        f.nodeLabel &&
-        f.property &&
-        f.operator &&
-        f.value !== null &&
-        f.value !== '',
-    );
-    onApplyFilters(validFilters);
-  };
-
-  const handleClear = () => {
-    setFilters([]);
-    onApplyFilters([]);
   };
 
   const labelPropertyOptions: Option[] = labelFilters.map((label) => ({
@@ -244,19 +338,11 @@ export const FilterPopup: FC<FilterPopupProps> = ({
                 onChange={(value) =>
                   updateFilter(filter.id, { operator: value })
                 }
-                options={
-                  filter.property
-                    ? getOperatorsForType(
-                        filter.valueType || FilterDataType.STRING,
-                      )
-                    : []
-                }
+                options={getOperatorOptions(filter)}
                 disabled={!filter.property}
               />
 
-              <div style={{ flex: '3' }}>
-                {filter.operator && renderValueInput(filter)}
-              </div>
+              <div style={{ flex: '3' }}>{renderValueInput(filter)}</div>
 
               <Button
                 type="text"

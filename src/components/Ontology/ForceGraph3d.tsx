@@ -123,7 +123,7 @@ export const ForceGraph: React.FC<ForceGraph3DProps> = ({ onNodeClick }) => {
 
       // Highlight the selected node and dim other nodes
       if (highlightedNodeId) {
-        if (node.id === highlightedNodeId) return '#ff863aff';
+        if (node.id === highlightedNodeId) return '#2fcb3fff';
         return `${baseColor}66`;
       }
 

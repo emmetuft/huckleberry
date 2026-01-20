@@ -47,14 +47,6 @@ export const selectFilteredGraphData = createSelector(
               return String(propertyValue)
                 .toLowerCase()
                 .includes(String(filter.value).toLowerCase());
-            case FilterOperator.STARTS_WITH:
-              return String(propertyValue)
-                .toLowerCase()
-                .startsWith(String(filter.value).toLowerCase());
-            case FilterOperator.ENDS_WITH:
-              return String(propertyValue)
-                .toLowerCase()
-                .endsWith(String(filter.value).toLowerCase());
             case FilterOperator.GT:
               return Number(propertyValue) > Number(filter.value);
             case FilterOperator.LT:
