@@ -5,6 +5,7 @@ import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import AppReducer from './app/slice';
 import OntologyReducer from './ontology/slice';
 import ApplicationsReducer from './applications/slice';
+import GraphRagReducer from './graphRag/slice';
 //-- importRef
 import { useDispatch } from 'react-redux';
 
@@ -13,6 +14,7 @@ export const store = configureStore({
     app: AppReducer,
     ontology: OntologyReducer,
     applications: ApplicationsReducer,
+    graphRag: GraphRagReducer,
     //-- reducerRef
   },
 });

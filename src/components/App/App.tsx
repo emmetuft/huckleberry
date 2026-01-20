@@ -16,6 +16,7 @@ import {
 import { Heading } from 'components/Heading/Heading';
 import { Nav } from 'components/Nav/Nav';
 import { PersonaModal } from 'components/PersonaModal/PersonaModal';
+import { PromptBar } from 'components/PromptBar/PromptBar';
 
 export const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -66,6 +67,7 @@ export const App: FC = () => {
       <div className={styles.App}>
         <Heading />
         <Nav />
+        {location.pathname !== '/' && <PromptBar />}
         <PersonaModal />
         {routing}
       </div>

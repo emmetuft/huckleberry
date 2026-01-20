@@ -2,16 +2,14 @@ import { FC } from 'react';
 import { useSelector } from 'react-redux';
 import { AnimatePresence, motion } from 'framer-motion';
 import styles from './Workspace.module.scss';
-import { useAppDispatch } from 'reducers';
 import { selectIdentity } from 'reducers/app/slice';
+import { IntentInput } from 'components/IntentInput/IntentInput';
 import { Resources } from 'components/Resources/Resources';
 import { getFirstName, getTimeOfDay } from 'utils/misc';
-import { IntentInput } from 'components/IntentInput/IntentInput';
 
 interface WorkspaceProps {}
 
 export const Workspace: FC<WorkspaceProps> = ({}) => {
-  const dispatch = useAppDispatch();
   const identity = useSelector(selectIdentity);
 
   return (

@@ -1,7 +1,7 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Button } from 'antd';
-import { CloseOutlined } from '@ant-design/icons';
+import { CloseOutlined, LoadingOutlined } from '@ant-design/icons';
 import {
   ArrowUp,
   CalendarBlank,
@@ -23,6 +23,8 @@ import {
   setCaretPosition,
 } from 'utils/dom';
 import { ActionType, getSuggestedActions } from 'utils/temp';
+import { queryGraphRag } from 'reducers/graphRag/actions';
+import { selectLoading } from 'reducers/graphRag/slice';
 
 interface IntentInputProps {
   placeholder?: string;
@@ -31,6 +33,7 @@ interface IntentInputProps {
 
 export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   const dispatch = useAppDispatch();
+  const requestLoading = useSelector(selectLoading);
 
   const [isEmpty, setIsEmpty] = useState<boolean>(true);
   const [suggestedActions, setSuggestedActions] = useState<
@@ -155,7 +158,30 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   };
 
   const onClickSend = () => {
-    // TODO: Implement send action
+    const el = editableRef.current;
+    if (!el || isEmpty) return;
+
+    const userInput = el.innerText.trim();
+    if (!userInput) return;
+
+    // Dispatch the graph RAG query
+    dispatch(
+      queryGraphRag({
+        userInput,
+      }),
+    );
+
+    // Clear the input
+    el.innerText = '';
+    setIsEmpty(true);
+    setSelectedTools([]);
+  };
+
+  const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      onClickSend();
+    }
   };
 
   const actionIconMap = {
@@ -192,10 +218,11 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
         )}
         <div>
           <div
-            className={`${styles.editable} ${isEmpty ? styles.empty : ''}`}
-            contentEditable
+            className={`${styles.editable} ${isEmpty ? styles.empty : ''} ${requestLoading ? styles.disabled : ''}`}
+            contentEditable={!requestLoading}
             ref={editableRef}
             onInput={onInput}
+            onKeyDown={onKeyDown}
             data-placeholder={
               placeholder ??
               'Start something new: a workflow, an app, an agent—your call.'
@@ -222,11 +249,24 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
             </AnimatePresence>
           </div>
           <Button
-            shape="circle"
             type="text"
-            icon={<ArrowUp color={isEmpty ? '#2c2b2a' : 'white'} size={16} />}
-            style={{ backgroundColor: isEmpty ? 'transparent' : '#4a23d1' }}
+            icon={
+              requestLoading ? (
+                <LoadingOutlined
+                  style={{ fontSize: 16, color: 'white' }}
+                  spin
+                />
+              ) : (
+                <ArrowUp color={isEmpty ? '#2c2b2a' : 'white'} size={16} />
+              )
+            }
+            style={{
+              backgroundColor:
+                isEmpty && !requestLoading ? 'transparent' : '#2c2b2a',
+              transition: 'background-color 0.3s ease',
+            }}
             onClick={onClickSend}
+            disabled={requestLoading}
           />
         </div>
       </div>

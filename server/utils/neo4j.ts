@@ -225,3 +225,74 @@ export function buildLabelFilterConditions(
 
   return labelConditions.join(' OR ');
 }
+
+type GroupedSchema = {
+  type: string;
+  properties: {
+    propertyName: string;
+    propertyType: string;
+    mandatory: boolean;
+  }[];
+};
+
+type GrouperConfig<T> = {
+  getType: (record: T) => string;
+  getProperty: (record: T) => {
+    propertyName: string;
+    propertyType: string;
+    mandatory: boolean;
+  } | null;
+};
+
+function groupSchema<T>(
+  records: T[],
+  config: GrouperConfig<T>,
+): GroupedSchema[] {
+  const map = new Map<string, GroupedSchema>();
+
+  for (const record of records) {
+    const type = config.getType(record);
+
+    if (!map.has(type)) {
+      map.set(type, {
+        type,
+        properties: [],
+      });
+    }
+
+    const property = config.getProperty(record);
+    if (property) {
+      map.get(type)!.properties.push(property);
+    }
+  }
+
+  return Array.from(map.values());
+}
+
+export const parseSchemaData = (
+  nodeProperties: any[],
+  relationshipProperties: any[],
+) => {
+  const nodes = groupSchema(nodeProperties, {
+    getType: (r) => r.nodeLabels[0],
+    getProperty: (r) => ({
+      propertyName: r.propertyName,
+      propertyType: r.propertyTypes[0],
+      mandatory: r.mandatory,
+    }),
+  });
+
+  const relationships = groupSchema(relationshipProperties, {
+    getType: (r) => r.relType.replace(/[:`]/g, ''),
+    getProperty: (r) =>
+      r.propertyName && r.propertyTypes
+        ? {
+            propertyName: r.propertyName,
+            propertyType: r.propertyTypes[0],
+            mandatory: r.mandatory,
+          }
+        : null,
+  });
+
+  return { nodes, relationships };
+};

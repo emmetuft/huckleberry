@@ -7,7 +7,7 @@ export const fetchUserPersona = createAsyncThunk<
   Persona,
   void,
   { state: RootState }
->('app/fetchUserPersona', async (params, { getState }) => {
+>('app/fetchUserPersona', async (_, { getState }) => {
   const { identity } = getState().app;
   if (!identity) {
     throw new Error('User identity is not available');

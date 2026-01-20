@@ -87,7 +87,7 @@ export const Ontology: FC<OntologyProps> = ({}) => {
 
       <SearchBar />
 
-      <FloatButton.Group shape="square" placement="top">
+      <FloatButton.Group shape="square">
         <FloatButton
           icon={
             <Tooltip title="Add node" placement="left">
