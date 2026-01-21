@@ -2,13 +2,20 @@ import { FC, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import Markdown from 'react-markdown';
 import styles from './MessageThread.module.scss';
-import { selectMessages } from 'reducers/graphRag/slice';
+import { selectPage } from 'reducers/app/slice';
+import { selectFullScreen, selectMessages } from 'reducers/chat/slice';
+import { AppPage } from 'models/enums/appPage';
 import { Message } from 'models/interfaces/message';
-import { fakeMessages } from 'constants/fakeData';
+import { ContextGraph } from './ContextGraph';
 import { formatMessageTimestamp, shouldShowTimestamp } from 'utils/datetime';
 
 export const MessageThread: FC = () => {
   const messages = useSelector(selectMessages);
+  const appPage = useSelector(selectPage);
+  const fullScreen = useSelector(selectFullScreen);
+
+  const isFullScreen = appPage === AppPage.HOME && fullScreen;
+
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -23,7 +30,10 @@ export const MessageThread: FC = () => {
   }
 
   return (
-    <div className={styles.MessageThread} ref={scrollRef}>
+    <div
+      className={`${styles.MessageThread} ${isFullScreen ? styles.fullScreen : ''}`}
+      ref={scrollRef}
+    >
       <div className={styles.messages}>
         {messages.map((message: Message, index: number) => (
           <div key={message.id}>
@@ -40,6 +50,14 @@ export const MessageThread: FC = () => {
               <div className={styles.content}>
                 <Markdown>{message.content}</Markdown>
               </div>
+              {message.context && (
+                <div className={styles.contextGraph}>
+                  <ContextGraph
+                    context={message.context}
+                    minify={!isFullScreen}
+                  />
+                </div>
+              )}
             </div>
           </div>
         ))}

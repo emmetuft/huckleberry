@@ -9,10 +9,10 @@ export const Background: FC<BackgroundProps> = ({}) => {
   return (
     <div className={styles.Background}>
       <Shader style={{ height: '100%', width: '100%' }}>
-        <LinearGradient colorA="#fff" colorB="#8890ff" />
+        <LinearGradient colorA="#fff" colorB="#c3c7ffff" />
         <Blob
           colorA="rgb(240, 233, 255)"
-          colorB="#5a0cff"
+          colorB="#c3c7ffff"
           deformation={0.9}
           softness={2}
         />

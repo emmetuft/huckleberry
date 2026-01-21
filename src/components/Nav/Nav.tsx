@@ -24,11 +24,12 @@ import {
   setIncognitoMode,
   setPersonaModal,
 } from 'reducers/app/slice';
+import { setFullScreen } from 'reducers/chat/slice';
+import { appList } from 'constants/applications';
 import { sharedIconProps } from 'constants/styles';
 import { AppPage, AppPageLabel } from 'models/enums/appPage';
 import { IconBtn } from 'components/IconBtn/IconBtn';
 import { RecCard } from 'components/RecCard/RecCard';
-import { appList } from 'constants/applications';
 
 interface NavProps {}
 
@@ -43,6 +44,10 @@ export const Nav: FC<NavProps> = ({}) => {
   const apps = useMemo(() => {
     return appList.filter((app) => app.inDock);
   }, [appList]);
+
+  const onClickLogo = () => {
+    dispatch(setFullScreen(false));
+  };
 
   const onClickAvatar = () => {
     dispatch(setPersonaModal(true));
@@ -90,7 +95,11 @@ export const Nav: FC<NavProps> = ({}) => {
   return (
     <React.Fragment>
       <div className={styles.Nav}>
-        <Link to={routePaths[AppPage.HOME]} className={styles.logo}>
+        <Link
+          to={routePaths[AppPage.HOME]}
+          className={styles.logo}
+          onClick={onClickLogo}
+        >
           <img src="/static/logo.svg" width="100%" />
         </Link>
         <Tooltip

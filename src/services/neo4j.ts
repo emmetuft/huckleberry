@@ -5,10 +5,18 @@ const NEO4J_API_BASE = '/api/ontology';
 
 interface HandleRequestParams {
   url: string;
+  method?: string;
+  headers?: Record<string, string>;
+  body?: Record<string, any>;
 }
 
 const handleRequest = async (params: HandleRequestParams) => {
-  const response = await fetch(params.url);
+  const { url, method = 'GET', headers = {}, body } = params;
+  const response = await fetch(url, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
+  });
 
   if (!response.ok) {
     throw new Error(
@@ -72,32 +80,19 @@ const fetchNodes = async ({
   includeRelationships,
 }: FetchNodesParams): Promise<GraphData> => {
   try {
-    const response = await fetch(`${NEO4J_API_BASE}/nodes`, {
+    return handleRequest({
+      url: `${NEO4J_API_BASE}/nodes`,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
+      body: {
         labels,
         limit,
         includeRelationships,
         filters,
-      }),
+      },
     });
-
-    if (!response.ok) {
-      throw new Error(
-        `Failed to fetch from Neo4j: ${response.status} ${response.statusText}`,
-      );
-    }
-
-    const result = await response.json();
-
-    if (!result.success) {
-      throw new Error(result.error || 'Unknown error');
-    }
-
-    return result.data;
   } catch (error: any) {
     throw error;
   }
@@ -136,34 +131,34 @@ const searchNodes = async (
   }
 };
 
-/**
- * Create a new node in Neo4j
- */
-const createNode = async (label: string, properties: Record<string, any>) => {
-  try {
-    const response = await fetch(`${NEO4J_API_BASE}/nodes`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ label, properties }),
-    });
+// /**
+//  * Create a new node in Neo4j
+//  */
+// const createNode = async (label: string, properties: Record<string, any>) => {
+//   try {
+//     const response = await fetch(`${NEO4J_API_BASE}/nodes`, {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//       body: JSON.stringify({ label, properties }),
+//     });
 
-    if (!response.ok) {
-      throw new Error('Failed to create node in Neo4j');
-    }
+//     if (!response.ok) {
+//       throw new Error('Failed to create node in Neo4j');
+//     }
 
-    const result = await response.json();
+//     const result = await response.json();
 
-    if (!result.success) {
-      throw new Error(result.error || 'Unknown error');
-    }
+//     if (!result.success) {
+//       throw new Error(result.error || 'Unknown error');
+//     }
 
-    return result.data;
-  } catch (error: any) {
-    throw error;
-  }
-};
+//     return result.data;
+//   } catch (error: any) {
+//     throw error;
+//   }
+// };
 
 export const Neo4jService = {
   fetchNodeLabels,
@@ -171,5 +166,4 @@ export const Neo4jService = {
   fetchNodes,
   fetchSubgraph,
   searchNodes,
-  createNode,
 };

@@ -23,12 +23,14 @@
   }
 }
 
-.searchInput {
-  width: 300px;
-}
-
 .popoverContent {
   display: flex;
   flex-direction: column;
   position: relative;
+
+  .fullScreenBtn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+  }
 }

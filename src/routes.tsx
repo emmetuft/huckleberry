@@ -1,4 +1,5 @@
 import { RouteObject } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { AppPage } from 'models/enums/appPage';
 import { Agents } from 'components/Agents/Agents';
 import { Applications } from 'components/Applications/Applications';
@@ -10,15 +11,20 @@ import { FlowCanvas } from 'components/FlowCanvas/FlowCanvas';
 import { Integrations } from 'components/Integrations/Integrations';
 import { Ontology } from 'components/Ontology/Ontology';
 import { Workspace } from 'components/Workspace/Workspace';
+import { selectFullScreen } from 'reducers/chat/slice';
 import styles from 'components/App/App.module.scss';
 
 // Home page component wrapper
-const HomePage = () => (
-  <div className={styles.home}>
-    <Workspace />
-    <Background />
-  </div>
-);
+const HomePage = () => {
+  const fullScreen = useSelector(selectFullScreen);
+
+  return (
+    <div className={`${styles.home} ${fullScreen ? styles.fullScreen : ''}`}>
+      <Workspace />
+      <Background />
+    </div>
+  );
+};
 
 // Route path mapping from AppPage enum
 export const routePaths: Record<AppPage, string> = {

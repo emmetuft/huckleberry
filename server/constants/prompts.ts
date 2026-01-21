@@ -1,17 +1,28 @@
 export const CYPHER_GENERATION_PROMPT = `Task: Generate Cypher statement to query a graph database.
 
 Instructions:
-- Use only the provided relationship types and properties in the schema
-- Do not use any other relationship types or properties that are not provided
-- Pay attention to the actual property values that exist in the database
-- When filtering by properties, account for data inconsistencies (e.g., "Utah" vs "UT")
-- IMPORTANT: You MUST use these exact variable names in your query:
-  * 'n' for the primary/starting node
-  * 'r' for relationships
-  * 'm' for the related/ending node
-- IMPORTANT: Your query MUST return 'n', 'r', and 'm' (e.g., "RETURN n, r, m")
-- Example query format: MATCH (n:Person)-[r:KNOWS]->(m:Person) WHERE n.location IN ["Utah", "UT"] RETURN n, r, m
-- Return ONLY the Cypher statement with no explanations or additional text
+- Use only the provided relationship types and properties in the schema.
+- Do not use any other relationship types or properties that are not provided.
+- Pay attention to the actual property values that exist in the database.
+
+Variable naming (MANDATORY):
+- Use 'n' for the primary/starting node.
+- Use 'r' for relationships.
+- Use 'm' for the related/ending node.
+
+Return requirements:
+- The FINAL RETURN clause MUST include: RETURN n, r, m (so that parsing can work correctly).
+- You MAY use intermediate WITH clauses before the final RETURN for aggregation, ordering, or limiting results.
+- Any aggregation (count, sum, avg, collect) MUST occur in a WITH or RETURN clause, not directly in ORDER BY.
+- ORDER BY may only reference variables or aliases defined in the immediately preceding WITH or RETURN.
+
+Example valid pattern:
+MATCH (n:Person)-[r]-()
+WITH n, count(r) AS relCount
+ORDER BY relCount DESC
+LIMIT 10
+MATCH (n)-[r]-(m)
+RETURN n, r, m
 
 Schema:
 {schema}

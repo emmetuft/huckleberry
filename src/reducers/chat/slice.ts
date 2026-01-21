@@ -4,20 +4,25 @@ import { queryGraphRag } from './actions';
 
 interface State {
   messages: Message[];
+  fullScreen: boolean;
   loading: boolean;
   error: string | null;
 }
 
 const initialState: State = {
   messages: [],
+  fullScreen: false,
   loading: false,
   error: null,
 };
 
-export const GraphRagSlice = createAppSlice({
-  name: 'graphRag',
+export const ChatSlice = createAppSlice({
+  name: 'chat',
   initialState,
   reducers: (create) => ({
+    setFullScreen: create.reducer((state, action: { payload: boolean }) => {
+      state.fullScreen = action.payload;
+    }),
     clearMessages: create.reducer((state) => {
       state.messages = [];
       state.error = null;
@@ -53,21 +58,22 @@ export const GraphRagSlice = createAppSlice({
           role: 'assistant',
           content: payload.output,
           timestamp: Date.now(),
-          response: payload,
+          context: payload.context,
         };
         state.messages.push(assistantMessage);
       });
   },
   selectors: {
     selectMessages: (state: State) => state.messages,
+    selectFullScreen: (state: State) => state.fullScreen,
     selectLoading: (state: State) => state.loading,
     selectError: (state: State) => state.error,
   },
 });
 
-export const { clearMessages } = GraphRagSlice.actions;
+export const { setFullScreen, clearMessages } = ChatSlice.actions;
 
-export const { selectMessages, selectLoading, selectError } =
-  GraphRagSlice.selectors;
+export const { selectMessages, selectFullScreen, selectLoading, selectError } =
+  ChatSlice.selectors;
 
-export default GraphRagSlice.reducer;
+export default ChatSlice.reducer;

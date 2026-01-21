@@ -220,6 +220,7 @@ class GraphRagService {
 
     // Step 2: Identify relevant schema elements
     const relevantSchema = await this.identifyRelevantSchema(userInput, schema);
+    console.log('Relevant Schema:', relevantSchema);
 
     // Step 3: Get actual property values from the database
     const propertyValues = await this.getPropertyValues(relevantSchema);
@@ -238,6 +239,7 @@ class GraphRagService {
         prompt,
         temperature: 0,
       });
+      console.log('Generated Cypher Query:', text);
 
       return text.trim();
     } catch (error) {

@@ -23,8 +23,10 @@ import {
   setCaretPosition,
 } from 'utils/dom';
 import { ActionType, getSuggestedActions } from 'utils/temp';
-import { queryGraphRag } from 'reducers/graphRag/actions';
-import { selectLoading } from 'reducers/graphRag/slice';
+import { queryGraphRag } from 'reducers/chat/actions';
+import { selectLoading, setFullScreen } from 'reducers/chat/slice';
+import { selectPage } from 'reducers/app/slice';
+import { AppPage } from 'models/enums/appPage';
 
 interface IntentInputProps {
   placeholder?: string;
@@ -33,6 +35,7 @@ interface IntentInputProps {
 
 export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   const dispatch = useAppDispatch();
+  const appPage = useSelector(selectPage);
   const requestLoading = useSelector(selectLoading);
 
   const [isEmpty, setIsEmpty] = useState<boolean>(true);
@@ -170,6 +173,10 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
         userInput,
       }),
     );
+
+    if (appPage === AppPage.HOME) {
+      dispatch(setFullScreen(true));
+    }
 
     // Clear the input
     el.innerText = '';
