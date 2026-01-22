@@ -1,4 +1,5 @@
 import { FC, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import dayjs from 'dayjs';
 import {
   Select,
@@ -12,21 +13,20 @@ import {
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import styles from './FilterPopup.module.scss';
 import {
+  selectLabelFilters,
+  selectPropertyFilters,
+} from 'reducers/ontology/slice';
+import { DEFAULT_FILTER } from 'constants/filters';
+import { VALUE_QUERY_LIMIT } from 'constants/service';
+import {
   FilterCondition,
   FilterDataType,
   FilterOperator,
   OperatorOptionMap,
 } from '../../../../shared/models/interfaces/filters';
 import { Neo4jNode } from 'models/interfaces/ontology';
-import { getOperatorsForType, getPropertyType } from 'utils/ontology';
-import { useSelector } from 'react-redux';
-import {
-  selectLabelFilters,
-  selectPropertyFilters,
-} from 'reducers/ontology/slice';
 import { Neo4jService } from 'services/neo4j';
-import { VALUE_QUERY_LIMIT } from 'constants/service';
-import { DEFAULT_FILTER } from 'constants/filters';
+import { getOperatorsForType, getPropertyType } from 'utils/ontology';
 
 const { RangePicker } = DatePicker;
 

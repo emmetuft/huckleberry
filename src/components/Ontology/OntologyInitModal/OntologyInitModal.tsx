@@ -1,14 +1,14 @@
 import { FC, useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Modal, Select, Table } from 'antd';
 import { Database } from 'phosphor-react';
 import styles from './OntologyInitModal.module.scss';
 import { useAppDispatch } from 'reducers';
 import { generateOntology } from 'reducers/ontology/actions';
+import { selectLoading } from 'reducers/ontology/slice';
 import { DataSource } from 'models/interfaces/dataSource';
 import { OntologySource } from 'models/interfaces/ontology';
 import { DataService } from 'services/data';
-import { useSelector } from 'react-redux';
-import { selectLoading } from 'reducers/ontology/slice';
 
 interface OntologyInitModalProps {
   isOpen: boolean;
@@ -70,10 +70,12 @@ export const OntologyInitModal: FC<OntologyInitModalProps> = ({
             let sampleRows: Record<string, any>[] = [];
             let error: string | undefined = undefined;
             try {
-              sampleRows = await DataService.fetchSampleRows(
-                source.dataSourceId,
+              sampleRows = await DataService.fetchDataSourceRows({
+                dataSourceId: source.dataSourceId,
                 schema,
-              );
+                page: 1,
+                pageSize: 3,
+              });
             } catch (err) {
               console.error(
                 `Failed to fetch sample rows for ${source.name}:`,

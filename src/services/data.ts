@@ -67,12 +67,24 @@ const fetchDataSourceSchema = async (
   }
 };
 
-const fetchSampleRows = async (dataSourceId: string, schema: Column[]) => {
+interface FetchDataParams {
+  dataSourceId: string;
+  schema: Column[];
+  page: number;
+  pageSize: number;
+}
+
+const fetchDataSourceRows = async ({
+  dataSourceId,
+  schema,
+  page,
+  pageSize,
+}: FetchDataParams) => {
   const columnNames = schema.map((column) => column.name);
 
   const requestBody = getDatasetRequestBody(columnNames);
 
-  const url = `https://domo-service.labsprod.domotech.io/api/v2/domo/datasets/${dataSourceId}/data?page=0&size=3`;
+  const url = `https://domo-service.labsprod.domotech.io/api/v2/domo/datasets/${dataSourceId}/data?page=${page - 1}&size=${pageSize}`;
   const options = {
     method: 'POST',
     headers: commonHeaders(),
@@ -102,5 +114,5 @@ const formatRowsWithKeys = (schema: Column[], rows: string[][]) =>
 export const DataService = {
   fetchDataSources,
   fetchDataSourceSchema,
-  fetchSampleRows,
+  fetchDataSourceRows,
 };

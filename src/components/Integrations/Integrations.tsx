@@ -1,10 +1,10 @@
 import { FC, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
+import { Menu, MenuProps } from 'antd';
 import styles from './Integrations.module.scss';
 import { integrationCategories, integrationList } from 'constants/integrations';
 import { defaultMotionProps } from 'constants/styles';
 import { IntegrationCard } from './IntegrationCard';
-import { Menu, MenuProps } from 'antd';
 
 type MenuItem = Required<MenuProps>['items'][number];
 

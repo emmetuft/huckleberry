@@ -9,9 +9,9 @@ import {
   selectPersonaModalOpen,
   setPersonaModal,
 } from 'reducers/app/slice';
+import { defaultPersona } from 'constants/persona';
 import { Persona } from 'models/interfaces/persona';
 import { PersonaTab } from './tabs/PersonaTab';
-import { defaultPersona } from 'constants/persona';
 import { SettingsTab } from './tabs/SettingsTab';
 import { AccountsTab } from './tabs/AccountsTab';
 

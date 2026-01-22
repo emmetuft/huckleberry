@@ -65,6 +65,7 @@ export const ChatSlice = createAppSlice({
   },
   selectors: {
     selectMessages: (state: State) => state.messages,
+    selectHasMessages: (state: State) => state.messages.length > 0,
     selectFullScreen: (state: State) => state.fullScreen,
     selectLoading: (state: State) => state.loading,
     selectError: (state: State) => state.error,
@@ -73,7 +74,12 @@ export const ChatSlice = createAppSlice({
 
 export const { setFullScreen, clearMessages } = ChatSlice.actions;
 
-export const { selectMessages, selectFullScreen, selectLoading, selectError } =
-  ChatSlice.selectors;
+export const {
+  selectMessages,
+  selectHasMessages,
+  selectFullScreen,
+  selectLoading,
+  selectError,
+} = ChatSlice.selectors;
 
 export default ChatSlice.reducer;

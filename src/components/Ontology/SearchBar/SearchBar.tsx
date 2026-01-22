@@ -15,8 +15,8 @@ import {
   clearHighlightedNode,
 } from 'reducers/ontology/slice';
 import { fetchNodes, searchAndLoadNodes } from 'reducers/ontology/actions';
-import { FilterPopup } from './FilterPopup';
 import { FilterCondition } from '../../../../shared/models/interfaces/filters';
+import { FilterPopup } from './FilterPopup';
 
 const { Search } = Input;
 

@@ -282,10 +282,15 @@ class GraphRagService {
   /**
    * Format graph context into a readable string for the LLM
    */
-  private formatGraphContext(context: GraphContext): string {
+  private formatGraphContext(
+    context: GraphContext,
+    cypherQuery: string,
+  ): string {
     const { nodes, relationships } = context;
 
     let formatted = '# Graph Context\n\n';
+
+    formatted += `**Cypher Query Used:**\n\`\`\`cypher\n${cypherQuery}\n\`\`\`\n\n`;
 
     formatted += `## Nodes (${nodes.length}):\n`;
     nodes.forEach((node) => {
@@ -310,8 +315,9 @@ class GraphRagService {
    * Generate an answer using RAG with the graph context
    */
   async query(userRequest: UserRequest): Promise<SystemResponse> {
-    const { context } = await this.retrieveGraphContext(userRequest);
-    const formattedContext = this.formatGraphContext(context);
+    const { context, cypherQuery } =
+      await this.retrieveGraphContext(userRequest);
+    const formattedContext = this.formatGraphContext(context, cypherQuery);
 
     const userPrompt = `${formattedContext}
 
@@ -341,8 +347,9 @@ Please address the request based on the context provided above.`;
    * Stream an answer using RAG with the graph context
    */
   async queryStream(userRequest: UserRequest) {
-    const { context } = await this.retrieveGraphContext(userRequest);
-    const formattedContext = this.formatGraphContext(context);
+    const { context, cypherQuery } =
+      await this.retrieveGraphContext(userRequest);
+    const formattedContext = this.formatGraphContext(context, cypherQuery);
 
     const userPrompt = `${formattedContext}
 

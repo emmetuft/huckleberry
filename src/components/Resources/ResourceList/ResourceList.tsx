@@ -1,12 +1,7 @@
 import { FC, useMemo } from 'react';
 import styles from './ResourceList.module.scss';
 import { motion } from 'framer-motion';
-import { useAppDispatch } from 'reducers';
-import {
-  DEFAULT_AGENTS,
-  DEFAULT_TEMPLATES,
-  DEFAULT_WORKFLOW_STARTS,
-} from 'constants/templates';
+import { DEFAULT_AGENTS, DEFAULT_TEMPLATES } from 'constants/templates';
 import { defaultMotionProps } from 'constants/styles';
 
 interface ResourceListProps {
@@ -14,17 +9,18 @@ interface ResourceListProps {
 }
 
 export const ResourceList: FC<ResourceListProps> = ({ tab }) => {
-  const dispatch = useAppDispatch();
-
-  const resources = useMemo(
+  const resources: {
+    id: string;
+    name: string;
+    description: string;
+    image?: string;
+  }[] = useMemo(
     () =>
       tab === 'templates'
         ? DEFAULT_TEMPLATES
         : tab === 'agents'
           ? DEFAULT_AGENTS
-          : tab === 'startSteps'
-            ? DEFAULT_WORKFLOW_STARTS
-            : [],
+          : [],
     [tab],
   );
 
@@ -43,8 +39,12 @@ export const ResourceList: FC<ResourceListProps> = ({ tab }) => {
           className={styles.template}
           onClick={() => onClickResource(resource)}
         >
-          <div className={styles.preview} />
-          <h4>{resource.name}</h4>
+          {resource.image ? (
+            <img src={resource.image} />
+          ) : (
+            <div className={styles.preview} />
+          )}
+          {/* <h4>{resource.name}</h4> */}
           <p>{resource.description}</p>
         </motion.div>
       ))}

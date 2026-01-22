@@ -2,7 +2,8 @@ import { FC, useState } from 'react';
 import { MagnifyingGlass } from 'phosphor-react';
 import styles from './Resources.module.scss';
 import { ResourceList } from './ResourceList/ResourceList';
-import { IconBtn } from 'components/IconBtn/IconBtn';
+import { IconBtn } from 'components/shared/IconBtn/IconBtn';
+import { formatCurrentDate } from 'utils/datetime';
 
 interface ResourcesProps {}
 
@@ -14,7 +15,9 @@ export const Resources: FC<ResourcesProps> = ({}) => {
   return (
     <div className={styles.Resources}>
       <div className={styles.subHeader}>
-        <div className={styles.subTabs}>
+        <div className={styles.currentDate}>{formatCurrentDate()}</div>
+        For you
+        {/* <div className={styles.subTabs}>
           <button
             style={selectedTab !== 'templates' ? { opacity: 0.3 } : {}}
             onClick={() => setSelectedTab('templates')}
@@ -30,7 +33,7 @@ export const Resources: FC<ResourcesProps> = ({}) => {
         </div>
         <div>
           <IconBtn icon={<MagnifyingGlass />} />
-        </div>
+        </div> */}
       </div>
       <ResourceList tab={selectedTab} />
     </div>

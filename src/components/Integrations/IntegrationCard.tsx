@@ -1,8 +1,8 @@
 import { FC } from 'react';
 import { Cube, Plus } from 'phosphor-react';
-import styles from './Applications.module.scss';
-import { IconBtn } from 'components/IconBtn/IconBtn';
+import styles from './Integrations.module.scss';
 import { Integration } from 'models/interfaces/integration';
+import { IconBtn } from 'components/shared/IconBtn/IconBtn';
 
 interface IntegrationCardProps {
   integration: Integration;

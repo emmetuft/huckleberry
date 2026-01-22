@@ -6,6 +6,7 @@ export enum AppPage {
   DATA_HUB = 'data_hub',
   HOME = 'home',
   INTEGRATIONS = 'integrations',
+  METRICS = 'metrics',
   ONTOLOGY = 'ontology',
   WORKFLOW = 'workflow',
 }
@@ -18,6 +19,7 @@ export const AppPageLabel = {
   [AppPage.DATA_HUB]: 'Data Hub',
   [AppPage.HOME]: 'Home',
   [AppPage.INTEGRATIONS]: 'Integrations',
+  [AppPage.METRICS]: 'Metric Catalog',
   [AppPage.ONTOLOGY]: 'Business Ontology',
   [AppPage.WORKFLOW]: 'Workflow',
 };

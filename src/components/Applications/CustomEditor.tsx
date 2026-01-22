@@ -1,9 +1,9 @@
+import { useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
 import CodeMirror, { ReactCodeMirrorRef } from '@uiw/react-codemirror';
 import { EditorView } from '@codemirror/view';
 import { javascript } from '@codemirror/lang-javascript';
 import { html } from '@codemirror/lang-html';
 import { css } from '@codemirror/lang-css';
-import { useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
 
 const customBackground = EditorView.theme(
   {

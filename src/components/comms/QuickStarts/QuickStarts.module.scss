@@ -1,0 +1,15 @@
+@import '../../../styles/shared.scss';
+@import '../../../styles/variables.scss';
+
+.QuickStarts {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  .option {
+    @extend .card;
+    font-size: 12px;
+    cursor: pointer;
+  }
+}

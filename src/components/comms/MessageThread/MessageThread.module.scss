@@ -1,0 +1,81 @@
+@import '../../../styles/shared.scss';
+@import '../../../styles/variables.scss';
+
+.MessageThread {
+  max-height: 40vh;
+  overflow-y: auto;
+  position: relative;
+  padding: 16px 0;
+
+  .messages {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0 16px;
+
+    .timestamp {
+      text-align: center;
+      font-size: 12px;
+      color: rgba(0, 0, 0, 0.4);
+      margin: 8px 0;
+      font-weight: 500;
+    }
+
+    .message {
+      display: flex;
+      flex-direction: column;
+
+      .content {
+        padding: 10px 14px;
+        border-radius: 12px;
+        font-size: 14px;
+        line-height: 1.5;
+        overflow-wrap: break-word;
+      }
+
+      &.user {
+        align-items: flex-end;
+
+        .content {
+          background-color: $grey-light;
+        }
+      }
+
+      &.assistant {
+        font-style: italic;
+      }
+    }
+  }
+
+  .contextGraph {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 8px;
+    border-radius: 8px;
+    background-color: $grey-light;
+
+    canvas {
+      border-radius: 8px;
+    }
+  }
+
+  &.fullScreen {
+    max-height: unset;
+    margin-bottom: 150px;
+
+    .contextGraph {
+      background-color: white;
+    }
+
+    .messages {
+      .message {
+        &.user {
+          .content {
+            background-color: white;
+          }
+        }
+      }
+    }
+  }
+}
