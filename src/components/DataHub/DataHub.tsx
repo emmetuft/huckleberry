@@ -114,7 +114,7 @@ export const DataHub: FC<DataHubProps> = ({}) => {
 
   return (
     <div className={styles.DataHub}>
-      <div ref={topSectionRef} className={styles.topSection}>
+      {/* <div ref={topSectionRef} className={styles.topSection}>
         <div className={styles.chartContainer}>
           <p className={styles.chartTitle}>Top 5 Data Providers</p>
           <DataProvidersChart height={260} />
@@ -127,7 +127,7 @@ export const DataHub: FC<DataHubProps> = ({}) => {
           <p className={styles.chartTitle}>Current Week Avg Run Time</p>
           <DataSourceUsageTrendChart height={260} />
         </div>
-      </div>
+      </div> */}
       <Table
         dataSource={dataSourceList}
         columns={columns}
