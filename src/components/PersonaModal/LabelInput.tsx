@@ -7,7 +7,9 @@ interface LabelInputProps {
   inputType: InputType;
   label: string;
   value: any;
+  width?: number | string;
   options?: any[];
+  readOnly?: boolean;
   onChange?: (value: any) => void;
 }
 
@@ -15,12 +17,18 @@ export const LabelInput: FC<LabelInputProps> = ({
   inputType,
   label,
   value,
-  onChange,
+  width,
   options,
+  readOnly,
+  onChange,
 }) => {
   const showLabel = inputType !== InputType.Checkbox;
 
   const renderInput = () => {
+    if (readOnly) {
+      return <span>{String(value)}</span>;
+    }
+
     switch (inputType) {
       case InputType.Checkbox:
         return (
@@ -43,13 +51,20 @@ export const LabelInput: FC<LabelInputProps> = ({
         return (
           <Input value={value} onChange={(e) => onChange?.(e.target.value)} />
         );
+      case InputType.TextArea:
+        return (
+          <Input.TextArea
+            value={value}
+            onChange={(e) => onChange?.(e.target.value)}
+          />
+        );
       default:
         return null;
     }
   };
 
   return (
-    <div className={styles.labelInput}>
+    <div className={styles.labelInput} style={{ maxWidth: width }}>
       {showLabel && <p className={styles.label}>{label}</p>}
       {renderInput()}
     </div>

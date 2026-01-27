@@ -1,7 +1,14 @@
+import { RoleLevel } from 'models/interfaces/persona';
+
 export const defaultPersona = {
   role: '',
+  level: RoleLevel.NONE,
   department: '',
+  team: '',
   focusAreas: [],
+  strengths: [],
+  weaknesses: [],
+  goals: '',
   usePersona: true,
   useActivity: true,
   useData: true,
@@ -109,4 +116,35 @@ export const focusAreas = [
   'Workflow Optimization',
   'Change Management',
   'Sales Enablement',
+];
+
+export const strengthsList = [
+  'Analytical Thinking',
+  'Problem Solving',
+  'Communication Skills',
+  'Leadership',
+  'Creativity',
+  'Adaptability',
+  'Time Management',
+  'Collaboration',
+  'Technical Expertise',
+  'Strategic Planning',
+  'Customer Focus',
+  'Project Management',
+  'Decision Making',
+  'Emotional Intelligence',
+  'Attention to Detail',
+];
+
+export const weaknessesList = [
+  'Procrastination',
+  'Public Speaking',
+  'Delegation',
+  'Impatience',
+  'Perfectionism',
+  'Taking Criticism',
+  'Overcommitting',
+  'Networking',
+  'Work-Life Balance',
+  'Asking for Help',
 ];

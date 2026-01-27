@@ -87,6 +87,7 @@ export const PersonaModal: FC<PersonaModalProps> = ({}) => {
       okText="Save"
       onOk={onOk}
       onCancel={onCancel}
+      width={800}
     >
       <Tabs defaultActiveKey="1" items={items} onChange={onChangeTab} />
     </Modal>
