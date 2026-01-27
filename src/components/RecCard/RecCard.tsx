@@ -2,7 +2,7 @@ import { FC, useEffect, useRef } from 'react';
 import { X } from 'phosphor-react';
 import styles from './RecCard.module.scss';
 import { recommendations } from 'constants/recommendations';
-import { IconBtn } from 'components/IconBtn/IconBtn';
+import { IconBtn } from 'components/shared/IconBtn/IconBtn';
 
 interface RecCardProps {
   setShowRecs: React.Dispatch<React.SetStateAction<boolean>>;

@@ -15,8 +15,8 @@ import {
   clearHighlightedNode,
 } from 'reducers/ontology/slice';
 import { fetchNodes, searchAndLoadNodes } from 'reducers/ontology/actions';
-import { FilterPopup } from './FilterPopup';
 import { FilterCondition } from '../../../../shared/models/interfaces/filters';
+import { FilterPopup } from './FilterPopup';
 
 const { Search } = Input;
 
@@ -106,7 +106,7 @@ export const SearchBar: FC<SearchBarProps> = ({}) => {
     <div className={styles.SearchBar}>
       <Select
         mode="multiple"
-        placeholder="Filter nodes by label"
+        placeholder="Select node label(s)"
         loading={loading.fetchNodeLabels}
         value={selectedLabels}
         onChange={handleLabelFilterChange}
@@ -116,7 +116,7 @@ export const SearchBar: FC<SearchBarProps> = ({}) => {
         maxTagCount="responsive"
       />
       <Search
-        placeholder="Search by node ID or name (searches entire database)"
+        placeholder="Filter by name or ID"
         loading={loading.searching}
         value={searchValue}
         onChange={(e) => setSearchValue(e.target.value)}

@@ -13,10 +13,11 @@ import {
   selectIdentity,
   setPage,
 } from 'reducers/app/slice';
-import { Heading } from 'components/Heading/Heading';
-import { Nav } from 'components/Nav/Nav';
+import { fetchMetricCatalogSchema } from 'reducers/metrics/actions';
+import { Heading } from 'components/layout/Heading/Heading';
+import { Nav } from 'components/layout/Nav/Nav';
 import { PersonaModal } from 'components/PersonaModal/PersonaModal';
-import { PromptBar } from 'components/PromptBar/PromptBar';
+import { PromptBar } from 'components/comms/PromptBar/PromptBar';
 
 export const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -36,6 +37,7 @@ export const App: FC = () => {
   useEffect(() => {
     if (identity) {
       dispatch(fetchUserPersona());
+      dispatch(fetchMetricCatalogSchema());
     }
   }, [identity]);
 

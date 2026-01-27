@@ -5,8 +5,10 @@
   width: 100%;
 
   .home {
-    display: flex;
-    justify-content: center;
     margin-top: 30vh;
+
+    &.fullScreen {
+      margin-top: 0;
+    }
   }
 }

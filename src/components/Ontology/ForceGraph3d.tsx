@@ -3,13 +3,13 @@ import { useSelector } from 'react-redux';
 import ForceGraph3D from 'react-force-graph-3d';
 import SpriteText from 'three-spritetext';
 import { useAppDispatch } from 'reducers';
-import { Neo4jNode } from 'models/interfaces/ontology';
-import { getColorForGroup } from 'utils/styles';
 import {
   selectNodeLabels,
   selectHighlightedNodeId,
   selectGraphData,
 } from 'reducers/ontology/slice';
+import { Neo4jNode } from 'models/interfaces/ontology';
+import { getColorForGroup } from 'utils/styles';
 
 interface ForceGraph3DProps {
   onNodeClick?: (node: Neo4jNode) => void;

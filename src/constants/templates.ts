@@ -25,24 +25,27 @@ export const DEFAULT_TEMPLATES = [
   {
     id: '1',
     name: 'Exception management',
-    description:
-      'Identity and act on business exceptions, with human in the loop.',
+    description: 'Development travel expenses less than expected',
+    image: '/static/resources/expenses.png',
   },
   {
     id: '2',
     name: 'Invoice approval',
-    description: 'Process and approve invoices with logging and notifications.',
+    description:
+      'Development morale is trending downward according to latest CONFIRM',
+    image: '/static/resources/morale.png',
   },
   {
     id: '3',
     name: 'Customer onboarding',
-    description: 'Send welcome emails, collect information, and assign reps.',
+    description: 'Data center costs in APAC reach 2-year high in December 2025',
+    image: '/static/resources/costs.png',
   },
   {
     id: '4',
     name: 'Automated report generation',
-    description:
-      'Run analyses, generate report files, and send to stakeholders.',
+    description: 'R&D spending is on-track with budget forecasts for Q2 2026',
+    image: '/static/resources/spending.png',
   },
 ];
 
@@ -76,44 +79,5 @@ export const DEFAULT_AGENTS = [
     id: '6',
     name: 'UX Designer',
     description: 'Designs user experiences and interfaces.',
-  },
-];
-
-export const DEFAULT_WORKFLOW_STARTS = [
-  {
-    id: '1',
-    name: 'Run on an interval',
-    description:
-      'Trigger workflow execution at regular intervals, e.g., every hour.',
-  },
-  {
-    id: '2',
-    name: 'When data is updated',
-    description:
-      'Trigger when a row or record is added, modified, or deleted in a connected data source.',
-  },
-  {
-    id: '3',
-    name: 'On webhook received',
-    description:
-      'Trigger when an HTTP request is received from an external service or app.',
-  },
-  {
-    id: '4',
-    name: 'On file upload',
-    description:
-      'Trigger when a new file is uploaded to a connected storage location (e.g., S3, Google Drive).',
-  },
-  {
-    id: '5',
-    name: 'When a form is submitted',
-    description:
-      'Trigger when a user submits a form from your website or another integrated app.',
-  },
-  {
-    id: '6',
-    name: 'Manually triggered',
-    description:
-      'Trigger the workflow on-demand via a button, script, or API call.',
   },
 ];

@@ -7865,6 +7865,15 @@ react-docgen@^7.0.0:
     loose-envify "^1.1.0"
     scheduler "^0.23.2"
 
+react-force-graph-2d@^1.29.0:
+  version "1.29.0"
+  resolved "https://npm.labsdev.domotech.io/react-force-graph-2d/-/react-force-graph-2d-1.29.0.tgz#e3aa4c2fc8851111ee215f084c2919dab6d823af"
+  integrity sha512-Xv5IIk+hsZmB3F2ibja/t6j/b0/1T9dtFOQacTUoLpgzRHrO6wPu1GtQ2LfRqI/imgtaapnXUgQaE8g8enPo5w==
+  dependencies:
+    force-graph "^1.51"
+    prop-types "15"
+    react-kapsule "^2.5"
+
 react-force-graph-3d@^1.29.0:
   version "1.29.0"
   resolved "https://npm.labsdev.domotech.io/react-force-graph-3d/-/react-force-graph-3d-1.29.0.tgz#21b009fdd61a46d138482c83fa60d9b5417edce1"

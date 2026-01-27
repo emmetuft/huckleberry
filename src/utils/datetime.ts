@@ -12,6 +12,10 @@ export function formatDateTime(date: Date | number): string {
   return format(date, 'yyyy-MM-dd HH:mm:ss');
 }
 
+export const formatCurrentDate = (): string => {
+  return format(new Date(), 'EEEE, MMMM dd, yyyy');
+};
+
 export const isValidDate = (value: string) => {
   // Reject entirely numeric strings
   if (/^\d+$/.test(value)) return false;

@@ -1,14 +1,14 @@
 import { FC, useEffect, useMemo, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Table } from 'antd';
 import styles from './DataHub.module.scss';
-import { DataService } from 'services/data';
-import { dataSourceColumns } from 'constants/data';
-import { renderVal } from 'utils/data';
-import { useSelector } from 'react-redux';
 import { selectIdentity } from 'reducers/app/slice';
+import { dataSourceColumns } from 'constants/data';
 import { DataProvidersChart } from './charts/DataProviders';
 import { RecentRunsChart } from './charts/RecentRuns';
 import { DataSourceUsageTrendChart } from './charts/DataSourceUsageTrendChart';
+import { DataService } from 'services/data';
+import { renderVal } from 'utils/data';
 
 interface DataHubProps {}
 
@@ -114,7 +114,7 @@ export const DataHub: FC<DataHubProps> = ({}) => {
 
   return (
     <div className={styles.DataHub}>
-      <div ref={topSectionRef} className={styles.topSection}>
+      {/* <div ref={topSectionRef} className={styles.topSection}>
         <div className={styles.chartContainer}>
           <p className={styles.chartTitle}>Top 5 Data Providers</p>
           <DataProvidersChart height={260} />
@@ -127,7 +127,7 @@ export const DataHub: FC<DataHubProps> = ({}) => {
           <p className={styles.chartTitle}>Current Week Avg Run Time</p>
           <DataSourceUsageTrendChart height={260} />
         </div>
-      </div>
+      </div> */}
       <Table
         dataSource={dataSourceList}
         columns={columns}

@@ -1,5 +1,6 @@
 export interface UserRequest {
   userInput: string;
+  userId?: any;
   tools?: any[];
   files?: any[];
 }

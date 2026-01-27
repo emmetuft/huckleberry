@@ -20,7 +20,7 @@ import { OntologyInitModal } from './OntologyInitModal/OntologyInitModal';
 import { ForceGraph } from './ForceGraph3d';
 import { NodeDrawer } from './NodeDrawer';
 import { SearchBar } from './SearchBar/SearchBar';
-import LoadingAnimation from 'components/Loader/Loader';
+import LoadingAnimation from 'components/shared/Loader/Loader';
 
 interface OntologyProps {}
 

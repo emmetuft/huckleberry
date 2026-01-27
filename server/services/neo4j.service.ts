@@ -9,6 +9,9 @@ class Neo4jService {
   private readonly uri: string;
   private readonly username: string;
   private readonly password: string;
+  private schemaCache: { nodes: any[]; relationships: any[] } | null = null;
+  private schemaCacheTimestamp: number = 0;
+  private readonly SCHEMA_CACHE_TTL = 5 * 60 * 1000; // 5 minutes in milliseconds
 
   constructor() {
     this.uri = process.env.NEO4J_URI || 'bolt://localhost:7687';
@@ -24,6 +27,14 @@ class Neo4jService {
       this.driver = neo4j.driver(
         this.uri,
         neo4j.auth.basic(this.username, this.password),
+        {
+          maxConnectionPoolSize: 50,
+          connectionAcquisitionTimeout: 60000, // 60 seconds
+          maxConnectionLifetime: 3600000, // 1 hour
+          connectionTimeout: 30000, // 30 seconds
+          // Keep connections alive to avoid cold starts
+          maxTransactionRetryTime: 30000,
+        }
       );
 
       // Verify connectivity
@@ -122,17 +133,40 @@ class Neo4jService {
 
   /**
    * Get the graph schema including node and relationship properties
+   * Uses caching to avoid expensive schema queries on every request
    */
   async getGraphSchema(): Promise<{
     nodes: any[];
     relationships: any[];
   }> {
+    const now = Date.now();
+
+    // Return cached schema if still valid
+    if (this.schemaCache && (now - this.schemaCacheTimestamp) < this.SCHEMA_CACHE_TTL) {
+      return this.schemaCache;
+    }
+
+    // Fetch fresh schema
     const [nodeProperties, relationshipProperties] = await Promise.all([
       this.executeRead('CALL db.schema.nodeTypeProperties()'),
       this.executeRead('CALL db.schema.relTypeProperties()'),
     ]);
 
-    return parseSchemaData(nodeProperties, relationshipProperties);
+    const schema = parseSchemaData(nodeProperties, relationshipProperties);
+
+    // Update cache
+    this.schemaCache = schema;
+    this.schemaCacheTimestamp = now;
+
+    return schema;
+  }
+
+  /**
+   * Invalidate the schema cache (call this after schema changes)
+   */
+  invalidateSchemaCache(): void {
+    this.schemaCache = null;
+    this.schemaCacheTimestamp = 0;
   }
 }
 

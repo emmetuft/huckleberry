@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Filter } from 'models/interfaces/filter';
 import { ChartService } from 'services/chart';
 
@@ -24,12 +24,14 @@ export function useChartData<T>({
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
+  const loadingRef = useRef<boolean>(false);
 
   useEffect(() => {
-    fetchData();
+    if (!loadingRef.current) fetchData();
   }, []);
 
   const fetchData = async () => {
+    loadingRef.current = true;
     setLoading(true);
     setError(null);
     try {
@@ -47,6 +49,7 @@ export function useChartData<T>({
       console.error(`Error fetching data for ${alias}:`, error);
       setError(error as Error);
     } finally {
+      loadingRef.current = false;
       setLoading(false);
     }
   };
