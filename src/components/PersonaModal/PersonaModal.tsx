@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Modal, Tabs, TabsProps } from 'antd';
-import styles from './PersonaModal.module.scss';
+// import styles from './PersonaModal.module.scss';
 import { useAppDispatch } from 'reducers';
 import {
   saveUserPersona,
@@ -87,6 +87,7 @@ export const PersonaModal: FC<PersonaModalProps> = ({}) => {
       okText="Save"
       onOk={onOk}
       onCancel={onCancel}
+      width={800}
     >
       <Tabs defaultActiveKey="1" items={items} onChange={onChangeTab} />
     </Modal>

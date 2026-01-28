@@ -2,7 +2,6 @@ import { FC, useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Button, Drawer, Input, List, Popover, Select } from 'antd';
 import styles from './Ontology.module.scss';
-import { useAppDispatch } from 'reducers';
 import { selectGraphData, selectNodeLabels } from 'reducers/ontology/slice';
 import { getColorForGroup } from 'utils/styles';
 
@@ -19,7 +18,6 @@ export const NodeDrawer: FC<NodeDrawerProps> = ({
   setSelectedNode,
   setDrawerOpen,
 }) => {
-  const dispatch = useAppDispatch();
   const graphData = useSelector(selectGraphData);
   const nodeLabels = useSelector(selectNodeLabels);
 

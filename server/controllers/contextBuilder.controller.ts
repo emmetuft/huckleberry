@@ -1,15 +1,15 @@
 import { Request, Response } from 'express';
-import { graphRagService } from '../services/graphRag.service.js';
+import { contextBuilderService } from '../services/contextBuilder.service.js';
 import { UserRequest } from '../../shared/models/interfaces/userRequest.ts';
 
 /**
- * POST /api/graph-rag/query
- * Query the graph using RAG and get a complete response
+ * POST /api/context-builder/query
+ * Build context using multiple strategies and get a complete response
  * Body:
- *   - question (required) - the question to ask
- *   - labels (optional) - array of node labels to focus on
- *   - maxNodes (optional) - maximum nodes to retrieve (default: 50)
- *   - depth (optional) - relationship depth to traverse (default: 2)
+ *   - userInput (required) - the user's question/input
+ *   - userId (optional) - the user's ID for personalized context
+ *   - tools (optional) - array of tools available
+ *   - files (optional) - array of files to consider
  */
 export async function query(req: Request, res: Response): Promise<void> {
   try {
@@ -23,14 +23,14 @@ export async function query(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    const result = await graphRagService.query(userRequest);
+    const result = await contextBuilderService.query(userRequest);
 
     res.json({
       success: true,
       data: result,
     });
   } catch (error) {
-    console.error('Error processing graph RAG query:', error);
+    console.error('Error processing context builder query:', error);
     res.status(500).json({
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
@@ -39,13 +39,13 @@ export async function query(req: Request, res: Response): Promise<void> {
 }
 
 /**
- * POST /api/graph-rag/query-stream
- * Query the graph using RAG and stream the response
+ * POST /api/context-builder/query-stream
+ * Build context using multiple strategies and stream the response
  * Body:
- *   - question (required) - the question to ask
- *   - labels (optional) - array of node labels to focus on
- *   - maxNodes (optional) - maximum nodes to retrieve (default: 50)
- *   - depth (optional) - relationship depth to traverse (default: 2)
+ *   - userInput (required) - the user's question/input
+ *   - userId (optional) - the user's ID for personalized context
+ *   - tools (optional) - array of tools available
+ *   - files (optional) - array of files to consider
  */
 export async function queryStream(req: Request, res: Response): Promise<void> {
   try {
@@ -54,19 +54,19 @@ export async function queryStream(req: Request, res: Response): Promise<void> {
     if (!userRequest.userInput) {
       res.status(400).json({
         success: false,
-        error: 'Question is required',
+        error: 'User input is required',
       });
       return;
     }
 
-    const result = await graphRagService.queryStream(userRequest);
+    const result = await contextBuilderService.queryStream(userRequest);
 
     // Set headers for streaming
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
 
-    // Send context and query first as metadata
+    // Send context first as metadata
     res.write(
       `data: ${JSON.stringify({
         type: 'metadata',
@@ -85,7 +85,7 @@ export async function queryStream(req: Request, res: Response): Promise<void> {
     res.write(`data: ${JSON.stringify({ type: 'done' })}\n\n`);
     res.end();
   } catch (error) {
-    console.error('Error processing graph RAG stream query:', error);
+    console.error('Error processing context builder stream query:', error);
     res.status(500).json({
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',

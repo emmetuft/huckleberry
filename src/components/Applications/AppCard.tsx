@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { Cube, Plus } from 'phosphor-react';
-import styles from './Applications.module.scss';
+// import styles from './Applications.module.scss';
 import { Application } from 'models/interfaces/application';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
 

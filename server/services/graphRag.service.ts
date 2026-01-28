@@ -27,141 +27,6 @@ class GraphRagService {
   }
 
   /**
-   * Get metrics available to a user based on their department
-   */
-  private async getUserMetrics(userId: string): Promise<
-    Array<{
-      metric: {
-        id: string;
-        name: string;
-        description: string;
-      };
-      datasource: {
-        id: string;
-        properties: Record<string, any>;
-      };
-      query: string;
-    }>
-  > {
-    const cypherQuery = `
-      MATCH (p:Person {id: $userId})-[:WORKS_IN]->(d:Department)
-      MATCH (d)-[:OWNS_METRIC]->(m:Metric)
-      MATCH (m)-[qf:QUERIES_FROM]->(ds:Datasource)
-      RETURN
-        m.metric_id AS metricId,
-        m.name AS metricName,
-        m.description AS metricDescription,
-        ds.datasource_id AS datasourceId,
-        properties(ds) AS datasourceProperties,
-        qf.query AS query
-    `;
-
-    try {
-      const results = await neo4jService.executeRead(cypherQuery, { userId });
-      console.log('User Metrics Results:', results);
-
-      return results.map((row: any) => ({
-        metric: {
-          id: row.metricId,
-          name: row.metricName,
-          description: row.metricDescription,
-        },
-        datasource: {
-          id: row.datasourceId,
-          properties: row.datasourceProperties,
-        },
-        query: row.query,
-      }));
-    } catch (error) {
-      console.error('Error getting user metrics:', error);
-      return [];
-    }
-  }
-
-  /**
-   * Use LLM to determine if user question matches any available metrics
-   */
-  private async matchQuestionToMetric(
-    userInput: string,
-    metrics: Array<{
-      metric: { id: string; name: string; description: string };
-    }>,
-  ): Promise<string | null> {
-    const metricsContext = metrics
-      .map(
-        (m) =>
-          `- ID: ${m.metric.id}\n  Name: ${m.metric.name}\n  Description: ${m.metric.description}`,
-      )
-      .join('\n');
-
-    const prompt = `You are analyzing a user's question to determine if they are asking about a specific metric.
-
-Available metrics:
-${metricsContext}
-
-User question: "${userInput}"
-
-If the user's question is asking about one of the available metrics, respond with ONLY the metric ID.
-If the question does not match any metric, respond with ONLY the word "NONE".
-
-You must pick the most likely metric if there is any reasonable match. Do not respond with "NONE" unless the question clearly has nothing to do with any of the metrics.
-
-Response:`;
-
-    try {
-      const { text } = await generateText({
-        model: this.model,
-        prompt,
-        temperature: 0,
-      });
-
-      const trimmedResponse = text.trim();
-      console.log('Matched Metric Response:', trimmedResponse);
-      return trimmedResponse === 'NONE' ? null : trimmedResponse;
-    } catch (error) {
-      console.error('Error matching question to metric:', error);
-      return null;
-    }
-  }
-
-  /**
-   * Execute a SQL query against a datasource
-   */
-  private async executeDatasourceQuery(
-    datasource: { id: string; properties: Record<string, any> },
-    query: string,
-  ): Promise<any> {
-    const url = `https://domo-es.domo.com/api/query/v1/execute/${datasource.id}`;
-
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'X-DOMO-Developer-Token': process.env.DEV_TOKEN,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          sql: query,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(
-          `Datasource query failed with status ${response.status}: ${errorText}`,
-        );
-      }
-
-      const result = (await response.json()) as { rows: any[] };
-      console.log('Datasource Query Result:', result);
-      return result.rows;
-    } catch (error) {
-      console.error('Error executing datasource query:', error);
-      throw error;
-    }
-  }
-
-  /**
    * Step 1: Identify relevant schema elements (nodes, relationships, properties)
    */
   private async identifyRelevantSchema(
@@ -388,84 +253,13 @@ Response:`;
    */
   async retrieveGraphContext(userRequest: UserRequest): Promise<{
     context: GraphContext;
+    formattedContext: string;
     cypherQuery: string;
-    metricResult?: any;
   }> {
-    const { userInput, userId } = userRequest;
+    const { userInput } = userRequest;
 
-    // Check for metric queries if userId is provided
-    if (userId) {
-      try {
-        const userMetrics = await this.getUserMetrics(userId);
-
-        if (userMetrics.length > 0) {
-          const matchedMetricId = await this.matchQuestionToMetric(
-            userInput,
-            userMetrics,
-          );
-
-          if (matchedMetricId) {
-            const matchedMetricData = userMetrics.find(
-              (m) => m.metric.id === matchedMetricId,
-            );
-
-            if (matchedMetricData) {
-              // Execute the datasource query
-              try {
-                const queryResult = await this.executeDatasourceQuery(
-                  matchedMetricData.datasource,
-                  matchedMetricData.query,
-                );
-
-                // Return metric-specific context
-                return {
-                  context: {
-                    nodes: [
-                      {
-                        id: matchedMetricData.metric.id,
-                        labels: ['Metric'],
-                        properties: {
-                          id: matchedMetricData.metric.id,
-                          name: matchedMetricData.metric.name,
-                          description: matchedMetricData.metric.description,
-                        },
-                      },
-                      {
-                        id: matchedMetricData.datasource.id,
-                        labels: ['Datasource'],
-                        properties: matchedMetricData.datasource.properties,
-                      },
-                    ],
-                    relationships: [
-                      {
-                        id: 'metric-datasource-rel',
-                        type: 'QUERIES_FROM',
-                        source: matchedMetricData.metric.id,
-                        target: matchedMetricData.datasource.id,
-                        properties: {
-                          query: matchedMetricData.query,
-                        },
-                      },
-                    ],
-                  },
-                  cypherQuery: `// Metric query: ${matchedMetricData.metric.name}`,
-                  metricResult: queryResult,
-                };
-              } catch (queryError) {
-                console.error('Error executing datasource query:', queryError);
-                // Fall through to normal graph RAG
-              }
-            }
-          }
-        }
-      } catch (error) {
-        console.error('Error checking for metric queries:', error);
-        // Fall through to normal graph RAG
-      }
-    }
-
-    // Normal graph RAG flow
-    let cypherQuery: string = await this.generateCypherFromText(userInput);
+    // Generate Cypher query from user input
+    const cypherQuery: string = await this.generateCypherFromText(userInput);
     const params: Record<string, any> = {
       maxNodes: neo4j.int(1000),
       depth: neo4j.int(100),
@@ -475,11 +269,15 @@ Response:`;
       const results = await neo4jService.executeRead(cypherQuery, params);
       const { nodes, relationships } = parseResponseData(results);
 
+      const context = {
+        nodes,
+        relationships,
+      };
+      const formattedContext = this.formatGraphContext(context, cypherQuery);
+
       return {
-        context: {
-          nodes,
-          relationships,
-        },
+        context,
+        formattedContext,
         cypherQuery,
       };
     } catch (error) {
@@ -490,10 +288,12 @@ Response:`;
 
   /**
    * Format graph context into a readable string for the LLM
+   * Public method so ContextBuilderService can use it
    */
-  private formatGraphContext(
+  formatGraphContext(
     context: GraphContext,
     cypherQuery: string,
+    metricResult?: any,
   ): string {
     const { nodes, relationships } = context;
 
@@ -517,95 +317,12 @@ Response:`;
       }
     });
 
+    // Add metric result if available
+    if (metricResult) {
+      formatted += `\n## Metric Query Result:\n${JSON.stringify(metricResult, null, 2)}\n`;
+    }
+
     return formatted;
-  }
-
-  /**
-   * Generate an answer using RAG with the graph context
-   */
-  async query(userRequest: UserRequest): Promise<SystemResponse> {
-    const { context, cypherQuery, metricResult } =
-      await this.retrieveGraphContext(userRequest);
-    const formattedContext = this.formatGraphContext(context, cypherQuery);
-
-    let userPrompt = `${formattedContext}
-
-User input: ${userRequest.userInput}
-
-Please address the request based on the context provided above.`;
-
-    // Add metric result data if available
-    if (metricResult) {
-      userPrompt = `${formattedContext}
-
-**Metric Query Result:**
-${JSON.stringify(metricResult, null, 2)}
-
-User input: ${userRequest.userInput}
-
-Please answer the user's question using the metric data provided above.`;
-    }
-
-    try {
-      const { text } = await generateText({
-        model: this.model,
-        system: GRAPH_RAG_PROMPT,
-        prompt: userPrompt,
-        temperature: 0.7,
-      });
-
-      return {
-        output: text,
-        context,
-      };
-    } catch (error) {
-      console.error('Error generating answer:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Stream an answer using RAG with the graph context
-   */
-  async queryStream(userRequest: UserRequest) {
-    const { context, cypherQuery, metricResult } =
-      await this.retrieveGraphContext(userRequest);
-    const formattedContext = this.formatGraphContext(context, cypherQuery);
-
-    let userPrompt = `${formattedContext}
-
-User input: ${userRequest.userInput}
-
-Please address the request based on the graph context provided above.`;
-
-    // Add metric result data if available
-    if (metricResult) {
-      userPrompt = `${formattedContext}
-
-**Metric Query Result:**
-${JSON.stringify(metricResult, null, 2)}
-
-User input: ${userRequest.userInput}
-
-Please answer the user's question using the metric data provided above.`;
-    }
-
-    try {
-      const result = await streamText({
-        model: this.model,
-        system: GRAPH_RAG_PROMPT,
-        prompt: userPrompt,
-        temperature: 0.7,
-      });
-
-      return {
-        textStream: result.textStream,
-        context,
-      };
-    } catch (error) {
-      console.error('Error streaming answer:', error);
-      throw error;
-    }
   }
 }
 

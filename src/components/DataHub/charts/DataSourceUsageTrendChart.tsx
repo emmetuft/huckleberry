@@ -23,7 +23,7 @@ interface DataSourceUsageTrendChartProps {
 export const DataSourceUsageTrendChart: React.FC<
   DataSourceUsageTrendChartProps
 > = ({ height = 300 }) => {
-  const { data, loading, error } = useChartData<any>({
+  const { data, loading } = useChartData<any>({
     alias: DATA_ALIAS.DOMOSTATS_DATASETS_HISTORY,
     schema: ['startTime', 'avgRunTime'],
     groupBy: ["DATE_TRUNC('day', startTime)"],

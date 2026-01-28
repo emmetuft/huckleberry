@@ -1,6 +1,6 @@
 import { Message } from 'models/interfaces/message';
 import { createAppSlice } from '../createAppSlice';
-import { queryGraphRag } from './actions';
+import { sendRequest } from './actions';
 
 interface State {
   messages: Message[];
@@ -30,8 +30,8 @@ export const ChatSlice = createAppSlice({
   }),
   extraReducers: (builder) => {
     builder
-      // Query graph RAG
-      .addCase(queryGraphRag.pending, (state, action) => {
+      // Send request
+      .addCase(sendRequest.pending, (state, action) => {
         state.loading = true;
         state.error = null;
 
@@ -44,11 +44,11 @@ export const ChatSlice = createAppSlice({
         };
         state.messages.push(userMessage);
       })
-      .addCase(queryGraphRag.rejected, (state, action) => {
+      .addCase(sendRequest.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || 'Failed to query graph RAG';
+        state.error = action.error.message || 'Failed to send request';
       })
-      .addCase(queryGraphRag.fulfilled, (state, { payload }) => {
+      .addCase(sendRequest.fulfilled, (state, { payload }) => {
         state.loading = false;
         state.error = null;
 

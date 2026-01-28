@@ -20,7 +20,7 @@ interface DataProvidersChartProps {
 export const DataProvidersChart: React.FC<DataProvidersChartProps> = ({
   height = 300,
 }) => {
-  const { data, loading, error } = useChartData<any>({
+  const { data, loading } = useChartData<any>({
     alias: DATA_ALIAS.DOMOSTATS_DATASETS,
     schema: ['dataProvider', 'count'],
     filters: [
@@ -51,7 +51,7 @@ export const DataProvidersChart: React.FC<DataProvidersChartProps> = ({
             paddingAngle={3}
             label={(entry) => `${entry.count}`}
           >
-            {data.map((entry, index) => (
+            {data.map((_, index) => (
               <Cell
                 key={`cell-${index}`}
                 fill={chartColors[index % chartColors.length]}

@@ -28,7 +28,9 @@ export const ResourceList: FC<ResourceListProps> = ({ tab }) => {
     id: string;
     name: string;
     description: string;
-  }) => {};
+  }) => {
+    console.log('Clicked resource:', resource);
+  };
 
   return (
     <div className={styles.TemplateList}>

@@ -4,9 +4,9 @@ import { Table } from 'antd';
 import styles from './DataHub.module.scss';
 import { selectIdentity } from 'reducers/app/slice';
 import { dataSourceColumns } from 'constants/data';
-import { DataProvidersChart } from './charts/DataProviders';
-import { RecentRunsChart } from './charts/RecentRuns';
-import { DataSourceUsageTrendChart } from './charts/DataSourceUsageTrendChart';
+// import { DataProvidersChart } from './charts/DataProviders';
+// import { RecentRunsChart } from './charts/RecentRuns';
+// import { DataSourceUsageTrendChart } from './charts/DataSourceUsageTrendChart';
 import { DataService } from 'services/data';
 import { renderVal } from 'utils/data';
 

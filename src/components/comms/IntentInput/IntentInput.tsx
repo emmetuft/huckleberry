@@ -14,7 +14,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import styles from './IntentInput.module.scss';
 import { useAppDispatch } from 'reducers';
 import { selectPage } from 'reducers/app/slice';
-import { queryGraphRag } from 'reducers/chat/actions';
+import { sendRequest } from 'reducers/chat/actions';
 import { selectLoading, setFullScreen } from 'reducers/chat/slice';
 import { COMMANDS } from 'constants/app';
 import { sharedIconProps } from 'constants/styles';
@@ -91,13 +91,13 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
       setSuggestedActions(getSuggestedActions(text));
       const highlightedHTML = getTextWithHighlights(text, styles);
       el.innerHTML = highlightedHTML;
-      controlToolPopup(text, el);
+      controlToolPopup(text);
     }
 
     setCaretPosition(el, preCaretOffset);
   };
 
-  const controlToolPopup = (text: string, el: HTMLElement) => {
+  const controlToolPopup = (text: string) => {
     // Reset popup trigger if the command was removed
     if (
       lastPopupTriggerIndex !== null &&
@@ -167,12 +167,7 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     const userInput = el.innerText.trim();
     if (!userInput) return;
 
-    // Dispatch the graph RAG query
-    dispatch(
-      queryGraphRag({
-        userInput,
-      }),
-    );
+    dispatch(sendRequest(userInput));
 
     if (appPage === AppPage.HOME) {
       dispatch(setFullScreen(true));

@@ -17,7 +17,7 @@ export const Background: FC<BackgroundProps> = ({}) => {
           softness={2}
         />
         <Liquify intensity={5} decay={1} radius={2} />
-        <DotGrid density={80} dotSize={0.1} opacity={0.3} />
+        <DotGrid density={80} dotSize={0.1} opacity={0.7} />
       </Shader>
     </div>
   );

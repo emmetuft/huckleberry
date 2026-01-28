@@ -4,14 +4,14 @@ import {
   UserRequest,
 } from '../../shared/models/interfaces/userRequest';
 
-const GRAPH_RAG_API_BASE = '/api/graph-rag';
+const CONTEXT_BUILDER_API_BASE = '/api/context';
 
 /**
- * Query the graph using RAG and get a complete response
+ * Query using context builder and get a complete response
  */
 const query = async (params: UserRequest): Promise<SystemResponse> => {
   try {
-    const response = await fetch(`${GRAPH_RAG_API_BASE}/query`, {
+    const response = await fetch(`${CONTEXT_BUILDER_API_BASE}/query`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -21,7 +21,7 @@ const query = async (params: UserRequest): Promise<SystemResponse> => {
 
     if (!response.ok) {
       throw new Error(
-        `Failed to query graph RAG: ${response.status} ${response.statusText}`,
+        `Failed to query context builder: ${response.status} ${response.statusText}`,
       );
     }
 
@@ -45,14 +45,14 @@ export interface StreamMessage {
 }
 
 /**
- * Query the graph using RAG and stream the response
+ * Query using context builder and stream the response
  * Returns an async generator that yields stream messages
  */
 const queryStream = async function* (
   params: UserRequest,
 ): AsyncGenerator<StreamMessage, void, unknown> {
   try {
-    const response = await fetch(`${GRAPH_RAG_API_BASE}/query-stream`, {
+    const response = await fetch(`${CONTEXT_BUILDER_API_BASE}/query-stream`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -62,7 +62,7 @@ const queryStream = async function* (
 
     if (!response.ok) {
       throw new Error(
-        `Failed to query graph RAG stream: ${response.status} ${response.statusText}`,
+        `Failed to query context builder stream: ${response.status} ${response.statusText}`,
       );
     }
 
@@ -102,7 +102,7 @@ const queryStream = async function* (
   }
 };
 
-export const GraphRagService = {
+export const ContextService = {
   query,
   queryStream,
 };

@@ -10,7 +10,7 @@ import {
   BackgroundVariant,
   Edge,
 } from '@xyflow/react';
-import styles from './FlowCanvas.module.scss';
+// import styles from './FlowCanvas.module.scss';
 
 import '@xyflow/react/dist/style.css';
 import { StartNode } from './Nodes/StartNode';
