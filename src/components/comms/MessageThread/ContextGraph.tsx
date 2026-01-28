@@ -91,7 +91,7 @@ export const ContextGraph: FC<ContextGraphProps> = ({ context, minify }) => {
       }}
       width={minify ? 568 : 680}
       height={300}
-      enableZoomInteraction={false}
+      // enableZoomInteraction={false}
     />
   );
 };

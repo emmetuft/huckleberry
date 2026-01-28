@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { GraphRagService } from 'services/graphRag';
+import { ContextService } from 'services/context';
 import {
   SystemResponse,
   UserRequest,
@@ -7,20 +7,20 @@ import {
 import { RootState } from '../index';
 
 /**
- * Query the graph using RAG and get a complete response
+ * Send a request using context builder to get a complete response
  */
-export const queryGraphRag = createAsyncThunk<SystemResponse, UserRequest>(
-  'graphRag/query',
-  async (query, { getState }) => {
+export const sendRequest = createAsyncThunk<SystemResponse, string>(
+  'chat/sendRequest',
+  async (userInput, { getState }) => {
     const state = getState() as RootState;
     const identity = state.app.identity;
 
     // Add userId to the query if identity exists
     const queryWithUserId: UserRequest = {
-      ...query,
+      userInput: userInput,
       userId: 810086698,
     };
 
-    return await GraphRagService.query(queryWithUserId);
+    return await ContextService.query(queryWithUserId);
   },
 );

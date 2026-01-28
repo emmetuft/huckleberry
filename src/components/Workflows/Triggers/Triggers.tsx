@@ -17,7 +17,9 @@ export const Triggers: FC = () => {
     id: string;
     name: string;
     description: string;
-  }) => {};
+  }) => {
+    console.log('Clicked trigger:', trigger);
+  };
 
   const iconMap: { [key: string]: JSX.Element } = {
     clock: <Clock {...sharedIconProps} />,

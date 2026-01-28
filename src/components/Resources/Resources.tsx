@@ -1,8 +1,8 @@
 import { FC, useState } from 'react';
-import { MagnifyingGlass } from 'phosphor-react';
+// import { MagnifyingGlass } from 'phosphor-react';
 import styles from './Resources.module.scss';
 import { ResourceList } from './ResourceList/ResourceList';
-import { IconBtn } from 'components/shared/IconBtn/IconBtn';
+// import { IconBtn } from 'components/shared/IconBtn/IconBtn';
 import { formatCurrentDate } from 'utils/datetime';
 
 interface ResourcesProps {}

@@ -1,3 +1,23 @@
+export const CONTEXT_STRATEGY_PROMPT = (
+  strategies: string,
+  userInput: string,
+) => `You are analyzing a user's request to determine which context-building strategies should be used to answer it.
+
+Available strategies:
+${strategies}
+
+User request: "${userInput}"
+
+Analyze the question and respond with a JSON array of strategy names that should be used. Only include strategies that will contribute meaningful context to answering the question.
+
+Examples:
+- "What's my revenue?" → ["metric"] (metric alone can answer this)
+- "Who is responsible for the revenue metric?" → ["metric", "graph-rag"] (need both metric info and graph relationships)
+- "What departments are in the company?" → ["graph-rag"] (pure graph query)
+- "Show me all people in sales" → ["graph-rag"] (pure graph query)
+
+Response (JSON array only):`;
+
 export const CYPHER_GENERATION_PROMPT = `Task: Generate Cypher statement to query a graph database.
 
 Instructions:

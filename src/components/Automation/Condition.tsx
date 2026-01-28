@@ -1,5 +1,5 @@
 import { FC, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+// import { useSelector } from 'react-redux';
 import { Input, Select } from 'antd';
 // import { selectIsFetchingSchema } from 'reducers/data/selectors';
 import {
@@ -22,7 +22,7 @@ const Condition: FC<Props> = ({
   draftRule,
   setDraftRule,
 }) => {
-  //   const isFetchingSchema = useSelector(selectIsFetchingSchema);
+  // const isFetchingSchema = useSelector(selectIsFetchingSchema);
 
   const selectedColumn = condition.column;
   const selectedOperator = condition.operator;

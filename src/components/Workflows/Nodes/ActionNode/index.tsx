@@ -1,14 +1,14 @@
-import { FC, useCallback } from 'react';
-import { Handle, Position } from '@xyflow/react';
+import { FC } from 'react';
+import { Position } from '@xyflow/react';
 
 import styles from './index.module.scss';
 import { CustomHandle } from 'components/Workflows/Handle';
 import { MotionWrapper } from '../MotionWrapper';
 
-export const ActionNode: FC = (props) => {
-  const onChange = useCallback((evt: any) => {
-    console.log(evt.target.value);
-  }, []);
+export const ActionNode: FC = () => {
+  // const onChange = useCallback((evt: any) => {
+  //   console.log(evt.target.value);
+  // }, []);
 
   return (
     <MotionWrapper className={styles.ActionNode}>

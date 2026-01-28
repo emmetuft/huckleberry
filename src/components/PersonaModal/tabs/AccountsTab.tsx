@@ -1,9 +1,7 @@
 import { FC } from 'react';
-import styles from './index.module.scss';
-import { InputType } from 'models/enums/inputType';
-import { Persona } from 'models/interfaces/persona';
-import { LabelInput } from '../LabelInput';
 import { Button } from 'antd';
+import styles from './index.module.scss';
+import { Persona } from 'models/interfaces/persona';
 
 interface AccountsTabProps {
   editedPersona: Persona;

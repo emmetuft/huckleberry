@@ -42,10 +42,10 @@ export const MetricsSlice = createAppSlice({
   }),
   extraReducers: (builder) => {
     builder
-      .addCase(fetchMetricCatalogSchema.pending, (state, action) => {
+      .addCase(fetchMetricCatalogSchema.pending, (state) => {
         state.loading.fetchingSchema = true;
       })
-      .addCase(fetchMetricCatalogSchema.rejected, (state, action) => {
+      .addCase(fetchMetricCatalogSchema.rejected, (state) => {
         state.loading.fetchingSchema = false;
       })
       .addCase(fetchMetricCatalogSchema.fulfilled, (state, { payload }) => {

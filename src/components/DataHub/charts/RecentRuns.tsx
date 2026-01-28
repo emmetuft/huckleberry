@@ -23,7 +23,7 @@ interface RecentRunsChartProps {
 export const RecentRunsChart: React.FC<RecentRunsChartProps> = ({
   height = 300,
 }) => {
-  const { data, loading, error } = useChartData<any>({
+  const { data, loading } = useChartData<any>({
     alias: DATA_ALIAS.DOMOSTATS_DATASETS_HISTORY,
     schema: ['startTime', 'count'],
     groupBy: ["DATE_TRUNC('day', startTime)"],
