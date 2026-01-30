@@ -1,37 +1,63 @@
-import { AppDBClient } from '@domoinc/toolkit';
-import { Persona } from 'models/interfaces/persona';
-import { extractAppDbData } from 'utils/service';
+import { Persona } from '../../shared/models/interfaces/persona';
 
-const PersonaClient = new AppDBClient.DocumentsClient<Persona>('UserPersona');
+const PERSONA_API_BASE = '/api/persona';
 
 const fetchUserPersona = async (userId: number): Promise<Persona> => {
-  const persona = extractAppDbData<Persona>(
-    await PersonaClient.get({
-      owner: userId,
-    }),
-  )[0];
-  return persona;
+  try {
+    const response = await fetch(`${PERSONA_API_BASE}/${userId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(
+        `Failed to fetch persona: ${response.status} ${response.statusText}`,
+      );
+    }
+
+    const result = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.error || 'Unknown error');
+    }
+
+    return result.data;
+  } catch (error: any) {
+    throw error;
+  }
 };
 
-const saveUserPersona = async (userPersona: Persona) => {
-  let persona: Persona = userPersona;
-  if (userPersona.id) {
-    // Update existing persona
-    const { id, ...content } = userPersona;
-    persona = extractAppDbData<Persona>(
-      await PersonaClient.update({
-        id,
-        content,
-      }),
-    )[0];
-  } else {
-    // Create new persona
-    persona = extractAppDbData<Persona>(
-      await PersonaClient.create(userPersona),
-    )[0];
-  }
+const saveUserPersona = async (
+  userId: number,
+  userPersona: Persona,
+): Promise<Persona> => {
+  try {
+    const response = await fetch(`${PERSONA_API_BASE}/${userId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userPersona),
+    });
 
-  return persona;
+    if (!response.ok) {
+      throw new Error(
+        `Failed to save persona: ${response.status} ${response.statusText}`,
+      );
+    }
+
+    const result = await response.json();
+
+    if (!result.success) {
+      throw new Error(result.error || 'Unknown error');
+    }
+
+    return result.data;
+  } catch (error: any) {
+    throw error;
+  }
 };
 
 export const StorageService = {

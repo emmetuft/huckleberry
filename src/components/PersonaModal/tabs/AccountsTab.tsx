@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { Button } from 'antd';
 import styles from './index.module.scss';
-import { Persona } from 'models/interfaces/persona';
+import { Persona } from '../../../../shared/models/interfaces/persona';
 
 interface AccountsTabProps {
   editedPersona: Persona;

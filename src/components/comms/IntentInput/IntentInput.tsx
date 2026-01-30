@@ -14,7 +14,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import styles from './IntentInput.module.scss';
 import { useAppDispatch } from 'reducers';
 import { selectPage } from 'reducers/app/slice';
-import { sendRequest } from 'reducers/chat/actions';
+import { sendStreamingRequest } from 'reducers/chat/actions';
 import { selectLoading, setFullScreen } from 'reducers/chat/slice';
 import { COMMANDS } from 'constants/app';
 import { sharedIconProps } from 'constants/styles';
@@ -167,7 +167,7 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     const userInput = el.innerText.trim();
     if (!userInput) return;
 
-    dispatch(sendRequest(userInput));
+    dispatch(sendStreamingRequest(userInput));
 
     if (appPage === AppPage.HOME) {
       dispatch(setFullScreen(true));

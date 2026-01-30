@@ -7,7 +7,10 @@ import {
   weaknessesList,
 } from 'constants/persona';
 import { InputType } from 'models/enums/inputType';
-import { Persona, RoleLevel } from 'models/interfaces/persona';
+import {
+  Persona,
+  RoleLevel,
+} from '../../../../shared/models/interfaces/persona';
 import { LabelInput } from '../LabelInput';
 
 interface PersonaTabProps {

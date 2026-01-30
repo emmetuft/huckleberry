@@ -48,13 +48,29 @@ export const selectFilteredGraphData = createSelector(
                 .toLowerCase()
                 .includes(String(filter.value).toLowerCase());
             case FilterOperator.GT:
-              return Number(propertyValue) > Number(filter.value);
+              if (filter.valueType === 'date') {
+                return new Date(propertyValue) > new Date(filter.value);
+              } else {
+                return Number(propertyValue) > Number(filter.value);
+              }
             case FilterOperator.LT:
-              return Number(propertyValue) < Number(filter.value);
+              if (filter.valueType === 'date') {
+                return new Date(propertyValue) < new Date(filter.value);
+              } else {
+                return Number(propertyValue) < Number(filter.value);
+              }
             case FilterOperator.GTE:
-              return Number(propertyValue) >= Number(filter.value);
+              if (filter.valueType === 'date') {
+                return new Date(propertyValue) >= new Date(filter.value);
+              } else {
+                return Number(propertyValue) >= Number(filter.value);
+              }
             case FilterOperator.LTE:
-              return Number(propertyValue) <= Number(filter.value);
+              if (filter.valueType === 'date') {
+                return new Date(propertyValue) <= new Date(filter.value);
+              } else {
+                return Number(propertyValue) <= Number(filter.value);
+              }
             case FilterOperator.BETWEEN:
               if (filter.valueType === 'date') {
                 const date = new Date(propertyValue);
@@ -67,10 +83,6 @@ export const selectFilteredGraphData = createSelector(
                   Number(propertyValue) <= Number(filter.value[1])
                 );
               }
-            case FilterOperator.BEFORE:
-              return new Date(propertyValue) < new Date(filter.value);
-            case FilterOperator.AFTER:
-              return new Date(propertyValue) > new Date(filter.value);
             default:
               return true;
           }
