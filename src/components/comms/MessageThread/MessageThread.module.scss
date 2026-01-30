@@ -25,6 +25,13 @@
       display: flex;
       flex-direction: column;
 
+      .processingSteps {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        margin-bottom: 8px;
+      }
+
       .content {
         padding: 10px 14px;
         border-radius: 12px;
@@ -47,17 +54,14 @@
     }
   }
 
-  .contextGraph {
+  .metricChart {
     display: flex;
     justify-content: center;
     align-items: center;
     margin-top: 8px;
+    padding: 16px;
     border-radius: 8px;
     background-color: $grey-light;
-
-    canvas {
-      border-radius: 8px;
-    }
   }
 
   &.fullScreen {
@@ -65,6 +69,10 @@
     margin-bottom: 150px;
 
     .contextGraph {
+      background-color: white;
+    }
+
+    .metricChart {
       background-color: white;
     }
 

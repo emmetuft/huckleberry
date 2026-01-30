@@ -128,19 +128,35 @@ function buildPropertyCondition(
 
     case FilterOperator.GT:
       params[paramKey] = filter.value;
-      return `${property} > $${paramKey}`;
+      if (filter.valueType === 'date') {
+        return `${property} > datetime($${paramKey})`;
+      } else {
+        return `${property} > $${paramKey}`;
+      }
 
     case FilterOperator.LT:
       params[paramKey] = filter.value;
-      return `${property} < $${paramKey}`;
+      if (filter.valueType === 'date') {
+        return `${property} < datetime($${paramKey})`;
+      } else {
+        return `${property} < $${paramKey}`;
+      }
 
     case FilterOperator.GTE:
       params[paramKey] = filter.value;
-      return `${property} >= $${paramKey}`;
+      if (filter.valueType === 'date') {
+        return `${property} >= datetime($${paramKey})`;
+      } else {
+        return `${property} >= $${paramKey}`;
+      }
 
     case FilterOperator.LTE:
       params[paramKey] = filter.value;
-      return `${property} <= $${paramKey}`;
+      if (filter.valueType === 'date') {
+        return `${property} <= datetime($${paramKey})`;
+      } else {
+        return `${property} <= $${paramKey}`;
+      }
 
     case FilterOperator.BETWEEN:
       // Convert dates to "YYYY-MM-DD HH:mm:ss" format if dealing with date type
@@ -158,14 +174,6 @@ function buildPropertyCondition(
         params[`${paramKey}Max`] = filter.value[1];
       }
       return `${property} >= $${paramKey}Min AND ${property} <= $${paramKey}Max`;
-
-    case FilterOperator.BEFORE:
-      params[paramKey] = filter.value;
-      return `${property} < datetime($${paramKey})`;
-
-    case FilterOperator.AFTER:
-      params[paramKey] = filter.value;
-      return `${property} > datetime($${paramKey})`;
 
     default:
       return '';

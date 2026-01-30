@@ -56,8 +56,8 @@ export const getOperatorsForType = (type: FilterDataType): FilterOperator[] => {
     case FilterDataType.DATE:
       return [
         FilterOperator.BETWEEN,
-        FilterOperator.BEFORE,
-        FilterOperator.AFTER,
+        FilterOperator.GT,
+        FilterOperator.LT,
         FilterOperator.EQUALS,
       ];
     case FilterDataType.NUMBER:

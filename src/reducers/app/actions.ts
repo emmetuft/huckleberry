@@ -1,7 +1,23 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import { Identity } from '@domoinc/toolkit';
+import { AuthResponse } from '@appteam6/domoapps.js';
 import { RootState } from 'reducers';
-import { Persona } from 'models/interfaces/persona';
+import { Persona } from '../../../shared/models/interfaces/persona';
 import { StorageService } from 'services/storage';
+import { AppService } from 'services/app';
+
+export const authenticate = createAsyncThunk<AuthResponse, void>(
+  'app/authenticate',
+  AppService.authenticate,
+);
+
+export const fetchIdentity = createAsyncThunk<Identity, void>(
+  'app/fetchIdentity',
+  async () => {
+    const identity = await AppService.fetchIdentity();
+    return identity;
+  },
+);
 
 export const fetchUserPersona = createAsyncThunk<
   Persona,
@@ -13,4 +29,18 @@ export const fetchUserPersona = createAsyncThunk<
     throw new Error('User identity is not available');
   }
   return StorageService.fetchUserPersona(identity.userId);
+});
+
+export const saveUserPersona = createAsyncThunk<
+  Persona,
+  Persona,
+  { state: RootState }
+>('app/saveUserPersona', async (persona: Persona, { getState }) => {
+  const state = getState() as { app: { identity?: Identity } };
+  const userId = state.app.identity?.userId;
+  if (!userId) {
+    throw new Error('User identity is not available');
+  }
+  const updatedPersona = await StorageService.saveUserPersona(userId, persona);
+  return updatedPersona;
 });

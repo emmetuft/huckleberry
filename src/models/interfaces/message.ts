@@ -1,4 +1,5 @@
 import { GraphContext } from '../../../shared/models/interfaces/userRequest';
+import { ProcessStepWithUI } from 'reducers/chat/slice';
 
 export interface Message {
   id: string;
@@ -6,4 +7,5 @@ export interface Message {
   content: string;
   timestamp: number;
   context?: GraphContext;
+  processingSteps?: ProcessStepWithUI[];
 }

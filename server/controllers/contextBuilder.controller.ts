@@ -59,19 +59,20 @@ export async function queryStream(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    const result = await contextBuilderService.queryStream(userRequest);
-
     // Set headers for streaming
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
 
-    // Send context first as metadata
-    res.write(
-      `data: ${JSON.stringify({
-        type: 'metadata',
-        context: result.context,
-      })}\n\n`,
+    // Create event emitter function
+    const emitEvent = (event: any) => {
+      res.write(`data: ${JSON.stringify(event)}\n\n`);
+    };
+
+    // Call queryStream with the event emitter
+    const result = await contextBuilderService.queryStream(
+      userRequest,
+      emitEvent,
     );
 
     // Stream the text response

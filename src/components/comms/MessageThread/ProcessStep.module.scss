@@ -1,0 +1,80 @@
+@import '../../../styles/shared.scss';
+@import '../../../styles/variables.scss';
+
+.ProcessStep {
+  margin-bottom: 8px;
+
+  .headerContent {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .spinner {
+      color: $purple;
+      animation: spin 1s linear infinite;
+    }
+
+    .check {
+      color: $success-icon;
+    }
+
+    .title {
+      font-weight: 500;
+      color: rgba(0, 0, 0, 0.85);
+    }
+  }
+
+  .details {
+    .detailsText {
+      font-size: 13px;
+    }
+
+    .graphContainer {
+      display: flex;
+      justify-content: center;
+      margin-top: 8px;
+      border-radius: 8px;
+      background-color: white;
+
+      canvas {
+        border-radius: 8px;
+      }
+    }
+
+    .metricDetails {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+
+      .metricName {
+        font-weight: 600;
+      }
+
+      .metricDescription {
+        font-size: 13px;
+      }
+
+      .metricProperties {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+
+        .property {
+          padding: 2px 8px;
+          background-color: white;
+          border-radius: 4px;
+          font-size: 12px;
+        }
+      }
+    }
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

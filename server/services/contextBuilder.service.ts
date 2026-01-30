@@ -9,8 +9,19 @@ import {
   CONTEXT_STRATEGY_PROMPT,
   GRAPH_RAG_PROMPT,
 } from '../constants/prompts.ts';
+import {
+  GRAPH_RAG_DESCRIPTION,
+  METRIC_DESCRIPTION,
+  PERSONA_DESCRIPTION,
+} from '../constants/strategies.ts';
 import { graphRagService } from './graphRag.service.js';
 import { metricService } from './metric.service.js';
+import { personaService } from './persona.service.js';
+import {
+  ContextStrategyType,
+  STRATEGY_EXP_MAP,
+} from '../../shared/models/enums/contextStrategy.ts';
+import { StreamStatus, StreamType } from '../../shared/models/enums/stream.ts';
 
 interface ContextResult {
   textContext: string;
@@ -29,9 +40,8 @@ interface ContextStrategy {
 }
 
 class GraphRagStrategy implements ContextStrategy {
-  name = 'graph-rag';
-  description =
-    'Queries the knowledge graph for entities and relationships (e.g., people, departments, connections)';
+  name = ContextStrategyType.GRAPH_RAG;
+  description = GRAPH_RAG_DESCRIPTION;
   priority = 1;
 
   async buildContext(userRequest: UserRequest): Promise<ContextResult> {
@@ -50,18 +60,46 @@ class GraphRagStrategy implements ContextStrategy {
 }
 
 class MetricStrategy implements ContextStrategy {
-  name = 'metric';
-  description =
-    'Retrieves pre-defined metrics and their data values (e.g., revenue, sales numbers)';
+  name = ContextStrategyType.METRIC;
+  description = METRIC_DESCRIPTION;
   priority = 2;
 
   async buildContext(userRequest: UserRequest): Promise<ContextResult> {
     const { userInput, userId } = userRequest;
 
-    const { textContext, metadata } = await metricService.buildMetricContext(
-      userInput,
-      userId,
-    );
+    const { textContext, graphContext, metadata } =
+      await metricService.buildMetricContext(userInput, userId);
+
+    return {
+      textContext,
+      graphContext,
+      metadata: {
+        strategyUsed: this.name,
+        ...metadata,
+      },
+    };
+  }
+}
+
+class PersonaStrategy implements ContextStrategy {
+  name = ContextStrategyType.PERSONA;
+  description = PERSONA_DESCRIPTION;
+  priority = 3;
+
+  async buildContext(userRequest: UserRequest): Promise<ContextResult> {
+    const { userId } = userRequest;
+
+    if (!userId) {
+      return {
+        textContext: '',
+        metadata: {
+          strategyUsed: this.name,
+        },
+      };
+    }
+
+    const { textContext, metadata } =
+      await personaService.buildPersonaContext(userId);
 
     return {
       textContext,
@@ -81,6 +119,7 @@ class ContextBuilderService {
     this.model = anthropic('claude-sonnet-4-20250514');
 
     // Register available strategies (sorted by priority)
+    this.registerStrategy(new PersonaStrategy());
     this.registerStrategy(new MetricStrategy());
     this.registerStrategy(new GraphRagStrategy());
   }
@@ -138,11 +177,6 @@ class ContextBuilderService {
   ): Promise<ContextResult[]> {
     // Use AI to intelligently select which strategies to run
     const strategiesToRun = await this.selectStrategies(userRequest);
-
-    console.log(
-      'Strategies to run:',
-      strategiesToRun.map((s) => s.name),
-    );
 
     // Run all selected strategies in parallel
     const results = await Promise.all(
@@ -239,18 +273,91 @@ Please address the request based on the context provided above.`;
     }
   }
 
-  async queryStream(userRequest: UserRequest) {
-    // Build context from all applicable strategies in parallel
-    const contextResults = await this.buildContextParallel(userRequest);
-
-    // Merge all context results
-    const { mergedTextContext, graphContext, metadata } =
-      this.mergeContextResults(contextResults);
-
-    // Build prompt
-    const userPrompt = this.buildPrompt(mergedTextContext, userRequest);
-
+  async queryStream(userRequest: UserRequest, emitEvent: (event: any) => void) {
     try {
+      // Step 1: Analyzing request
+      const step1Id = 'analyze-request';
+      emitEvent({
+        type: StreamType.STEP_START,
+        step: {
+          id: step1Id,
+          title: 'Analyzing your request',
+          status: StreamStatus.IN_PROGRESS,
+        },
+      });
+
+      // Use AI to intelligently select which strategies to run
+      const strategiesToRun = await this.selectStrategies(userRequest);
+
+      emitEvent({
+        type: StreamType.STEP_COMPLETE,
+        step: {
+          id: step1Id,
+          title: 'Analyzing your request',
+          status: StreamStatus.COMPLETE,
+          details: {
+            selectedStrategies: strategiesToRun.map((s) => s.name),
+          },
+        },
+      });
+
+      // Run strategies and emit progress for each
+      const results: ContextResult[] = [];
+      for (const strategy of strategiesToRun) {
+        const stepId = `strategy-${strategy.name}`;
+        emitEvent({
+          type: StreamType.STEP_START,
+          step: {
+            id: stepId,
+            title: STRATEGY_EXP_MAP[strategy.name as ContextStrategyType],
+            status: StreamStatus.IN_PROGRESS,
+          },
+        });
+
+        const result = await strategy.buildContext(userRequest);
+        results.push(result);
+
+        // Emit step completion with strategy-specific details
+        emitEvent({
+          type: StreamType.STEP_COMPLETE,
+          step: {
+            id: stepId,
+            title: STRATEGY_EXP_MAP[strategy.name as ContextStrategyType],
+            status: StreamStatus.COMPLETE,
+            details: {
+              strategyName: strategy.name,
+              graphContext: result.graphContext,
+              metadata: result.metadata,
+            },
+          },
+        });
+      }
+
+      // Step: Generating response
+      const step4Id = 'generate-response';
+      emitEvent({
+        type: StreamType.STEP_START,
+        step: {
+          id: step4Id,
+          title: 'Generating response',
+          status: StreamStatus.IN_PROGRESS,
+        },
+      });
+
+      // Merge all context results
+      const { mergedTextContext, graphContext, metadata } =
+        this.mergeContextResults(results);
+
+      // Send final graph context as metadata
+      emitEvent({
+        type: 'metadata',
+        context: graphContext,
+      });
+
+      // Build prompt
+      const userPrompt = this.buildPrompt(mergedTextContext, userRequest);
+
+      // Stream the text response
       const result = await streamText({
         model: this.model,
         system: GRAPH_RAG_PROMPT,
@@ -260,7 +367,6 @@ Please address the request based on the context provided above.`;
 
       return {
         textStream: result.textStream,
-        context: graphContext,
       };
     } catch (error) {
       console.error('Error streaming answer:', error);

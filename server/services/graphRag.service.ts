@@ -215,8 +215,14 @@ class GraphRagService {
    * Step 3: Generate Cypher query with enriched context
    */
   async generateCypherFromText(userInput: string): Promise<string> {
-    // Step 1: Get the graph schema
-    const schema = await neo4jService.getGraphSchema();
+    let schema: any;
+    try {
+      // Step 1: Get the graph schema
+      schema = await neo4jService.getGraphSchema();
+    } catch (error) {
+      console.error('Error retrieving graph schema:', error);
+      throw error;
+    }
 
     // Step 2: Identify relevant schema elements
     const relevantSchema = await this.identifyRelevantSchema(userInput, schema);

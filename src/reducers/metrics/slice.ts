@@ -19,27 +19,7 @@ const initialState: State = {
 export const MetricsSlice = createAppSlice({
   name: 'metrics',
   initialState,
-  reducers: (create) => ({
-    // // e.g. increments "value" by the given amount
-    // incrementByAmount: create.reducer<number>((state, { payload }) => {
-    //   state.value += payload;
-    // }),
-    //
-    // // e.g. increments "value" by the given amount, asynchronously
-    // incrementAsync: create.asyncThunk<number, number>(
-    //   async (amount: number) =>
-    //     await new Promise<number>((resolve) => {
-    //       setTimeout(() => {
-    //         resolve(amount);
-    //       }, 1000);
-    //     }),
-    //   {
-    //     fulfilled: (state, { payload }) => {
-    //       state.value += payload;
-    //     },
-    //   },
-    // ),
-  }),
+  reducers: (create) => ({}),
   extraReducers: (builder) => {
     builder
       .addCase(fetchMetricCatalogSchema.pending, (state) => {

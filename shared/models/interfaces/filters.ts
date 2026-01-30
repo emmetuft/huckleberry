@@ -22,8 +22,6 @@ export enum FilterOperator {
   GTE = 'gte',
   LTE = 'lte',
   BETWEEN = 'between',
-  BEFORE = 'before',
-  AFTER = 'after',
 }
 
 export const OperatorOptionMap: Record<FilterOperator, string> = {
@@ -35,6 +33,11 @@ export const OperatorOptionMap: Record<FilterOperator, string> = {
   [FilterOperator.GTE]: 'Greater than or equal to',
   [FilterOperator.LTE]: 'Less than or equal to',
   [FilterOperator.BETWEEN]: 'Between',
-  [FilterOperator.BEFORE]: 'Before',
-  [FilterOperator.AFTER]: 'After',
 };
+
+export interface TimeFilter {
+  start?: string;
+  end?: string;
+  grain?: string;
+  operator: FilterOperator;
+}

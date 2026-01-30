@@ -1,11 +1,13 @@
 import { Identity } from '@domoinc/toolkit';
 import { createAppSlice } from '../createAppSlice';
-import { fetchUserPersona } from './actions';
-import { Persona } from 'models/interfaces/persona';
-import { AppService } from 'services/app';
-import { StorageService } from 'services/storage';
+import {
+  authenticate,
+  fetchIdentity,
+  fetchUserPersona,
+  saveUserPersona,
+} from './actions';
 import { AppPage } from 'models/enums/appPage';
-import { AuthResponse } from '@appteam6/domoapps.js';
+import { Persona } from '../../../shared/models/interfaces/persona';
 
 interface State {
   identity?: Identity;
@@ -48,48 +50,20 @@ export const AppReducer = createAppSlice({
         state.personaModalOpen = payload;
       },
     ),
-    authenticate: create.asyncThunk<AuthResponse, void>(
-      AppService.authenticate,
-    ),
-    fetchIdentity: create.asyncThunk<Identity, void>(
-      async () => {
-        const identity = await AppService.fetchIdentity();
-        return identity;
-      },
-      {
-        fulfilled: (state: State, { payload }: { payload: Identity }) => {
-          state.identity = payload;
-          state.loading.identity = false;
-        },
-        pending: (state: State) => {
-          state.loading.identity = true;
-        },
-        rejected: (state: State) => {
-          state.loading.identity = false;
-        },
-      },
-    ),
-    saveUserPersona: create.asyncThunk<Persona, Persona>(
-      async (persona: Persona) => {
-        const updatedPersona = await StorageService.saveUserPersona(persona);
-        return updatedPersona;
-      },
-      {
-        fulfilled: (state: State, { payload }: { payload: Persona }) => {
-          state.persona = payload;
-          state.loading.personaUpdate = false;
-        },
-        pending: (state: State) => {
-          state.loading.personaUpdate = true;
-        },
-        rejected: (state: State) => {
-          state.loading.personaUpdate = false;
-        },
-      },
-    ),
   }),
   extraReducers: (builder) => {
     builder
+      // Fetch identity
+      .addCase(fetchIdentity.pending, (state) => {
+        state.loading.identity = true;
+      })
+      .addCase(fetchIdentity.rejected, (state) => {
+        state.loading.identity = false;
+      })
+      .addCase(fetchIdentity.fulfilled, (state, { payload }) => {
+        state.identity = payload;
+        state.loading.identity = false;
+      })
       // Fetch user persona
       .addCase(fetchUserPersona.pending, (state) => {
         state.loading = { ...state.loading, persona: true };
@@ -100,6 +74,17 @@ export const AppReducer = createAppSlice({
       .addCase(fetchUserPersona.fulfilled, (state, { payload }) => {
         state.loading = { ...state.loading, persona: false };
         state.persona = payload;
+      })
+      // Save user persona
+      .addCase(saveUserPersona.pending, (state) => {
+        state.loading.personaUpdate = true;
+      })
+      .addCase(saveUserPersona.rejected, (state) => {
+        state.loading.personaUpdate = false;
+      })
+      .addCase(saveUserPersona.fulfilled, (state, { payload }) => {
+        state.persona = payload;
+        state.loading.personaUpdate = false;
       });
   },
   selectors: {
@@ -112,14 +97,9 @@ export const AppReducer = createAppSlice({
   },
 });
 
-export const {
-  authenticate,
-  fetchIdentity,
-  saveUserPersona,
-  setPage,
-  setIncognitoMode,
-  setPersonaModal,
-} = AppReducer.actions;
+export { authenticate, fetchIdentity, fetchUserPersona, saveUserPersona };
+export const { setPage, setIncognitoMode, setPersonaModal } =
+  AppReducer.actions;
 export const {
   selectIdentity,
   selectPersona,

@@ -1,3 +1,4 @@
+import { StreamStatus, StreamType } from '../../shared/models/enums/stream';
 import {
   GraphContext,
   SystemResponse,
@@ -37,11 +38,26 @@ const query = async (params: UserRequest): Promise<SystemResponse> => {
   }
 };
 
+export interface ProcessStep {
+  id: string;
+  title: string;
+  status: StreamStatus;
+  details?: {
+    selectedStrategies?: string[];
+    strategyName?: string;
+    graphContext?: GraphContext;
+    metadata?: Record<string, any>;
+    strategiesUsed?: string[];
+  };
+}
+
 export interface StreamMessage {
-  type: 'metadata' | 'text' | 'done';
+  type: StreamType;
   content?: string;
+  message?: string;
   context?: GraphContext;
   cypherQuery?: string;
+  step?: ProcessStep;
 }
 
 /**

@@ -1,32 +1,28 @@
 import { FC, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import Markdown from 'react-markdown';
 import styles from './MessageThread.module.scss';
 import { selectPage } from 'reducers/app/slice';
-import {
-  selectFullScreen,
-  selectLoading,
-  selectMessages,
-} from 'reducers/chat/slice';
+import { selectFullScreen, selectMessages } from 'reducers/chat/slice';
 import { AppPage } from 'models/enums/appPage';
 import { Message } from 'models/interfaces/message';
-import { ContextGraph } from './ContextGraph';
-import { formatMessageTimestamp, shouldShowTimestamp } from 'utils/datetime';
+import { shouldShowTimestamp } from 'utils/datetime';
+import { MessageItem } from './MessageItem';
 
 export const MessageThread: FC = () => {
   const messages = useSelector(selectMessages);
   const appPage = useSelector(selectPage);
   const fullScreen = useSelector(selectFullScreen);
-  const requestLoading = useSelector(selectLoading);
 
   const isFullScreen = appPage === AppPage.HOME && fullScreen;
 
   const scrollRef = useRef<HTMLDivElement>(null);
+  const messageCountRef = useRef<number>(messages.length);
 
   useEffect(() => {
     // Auto-scroll to bottom when new messages arrive
-    if (scrollRef.current) {
+    if (scrollRef.current && messages.length > messageCountRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      messageCountRef.current = messages.length;
     }
   }, [messages]);
 
@@ -41,36 +37,11 @@ export const MessageThread: FC = () => {
     >
       <div className={styles.messages}>
         {messages.map((message: Message, index: number) => (
-          <div key={message.id}>
-            {shouldShowTimestamp(message, messages[index - 1]) && (
-              <div className={styles.timestamp}>
-                {formatMessageTimestamp(message.timestamp)}
-              </div>
-            )}
-            <div
-              className={`${styles.message} ${
-                message.role === 'user' ? styles.user : styles.assistant
-              }`}
-            >
-              <div className={styles.content}>
-                <Markdown>{message.content}</Markdown>
-              </div>
-              {message.context && message.context.nodes.length > 0 && (
-                <div className={styles.contextGraph}>
-                  <ContextGraph
-                    context={message.context}
-                    minify={!isFullScreen}
-                  />
-                </div>
-              )}
-            </div>
-          </div>
+          <MessageItem
+            message={message}
+            showTimestamp={shouldShowTimestamp(message, messages[index - 1])}
+          />
         ))}
-        {requestLoading && (
-          <div className={`${styles.message} ${styles.assistant}`}>
-            <div className={styles.content}>Thinking...</div>
-          </div>
-        )}
       </div>
     </div>
   );

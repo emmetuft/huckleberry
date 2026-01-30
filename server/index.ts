@@ -2,6 +2,7 @@ import express, { Express, Request, Response, NextFunction } from 'express';
 import { neo4jService } from './services/neo4j.service.js';
 import { router as ontologyRouter } from './routes/ontology.routes.js';
 import { router as contextBuilderRouter } from './routes/contextBuilder.routes.js';
+import { router as personaRouter } from './routes/persona.routes.js';
 
 export async function setupServer(app: Express): Promise<void> {
   // Middleware
@@ -19,6 +20,7 @@ export async function setupServer(app: Express): Promise<void> {
   // API Routes
   app.use('/api/ontology', ontologyRouter);
   app.use('/api/context', contextBuilderRouter);
+  app.use('/api/persona', personaRouter);
 
   // Error handling middleware
   app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {

@@ -25,7 +25,3 @@ export enum RoleLevel {
   C_LEVEL = 'C-Level',
   NONE = '',
 }
-
-// export type PersonaData = Omit<Persona, 'collaborators'> & {
-//     collaborators: string;
-//   };

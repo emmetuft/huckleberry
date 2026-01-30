@@ -2,14 +2,22 @@ import dotenv from 'dotenv';
 import { generateText } from 'ai';
 import { anthropic } from '@ai-sdk/anthropic';
 import { neo4jService } from './neo4j.service.js';
+import { GraphContext } from '../../shared/models/interfaces/userRequest.ts';
+import { TimeFilter } from '../../shared/models/interfaces/filters.ts';
+import {
+  buildWhereClause,
+  addTimeColumnToSelect,
+  addWhereClauseToQuery,
+} from '../utils/sql.ts';
 
 dotenv.config();
+
+const BASE_URL = process.env.DOMO_INSTANCE_URL || 'https://domo-es.domo.com';
 
 interface UserMetric {
   metric: {
     id: string;
-    name: string;
-    description: string;
+    properties: Record<string, any>;
   };
   datasource: {
     id: string;
@@ -24,7 +32,10 @@ interface UserMetric {
  */
 class MetricService {
   private model;
-  private userMetricsCache: Map<string, { metrics: UserMetric[]; timestamp: number }>;
+  private userMetricsCache: Map<
+    string,
+    { metrics: UserMetric[]; timestamp: number }
+  >;
   private readonly CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
   constructor() {
@@ -50,8 +61,7 @@ class MetricService {
       MATCH (m)-[qf:QUERIES_FROM]->(ds:Datasource)
       RETURN
         m.metric_id AS metricId,
-        m.name AS metricName,
-        m.description AS metricDescription,
+        properties(m) AS metricProperties,
         ds.datasource_id AS datasourceId,
         properties(ds) AS datasourceProperties,
         qf.query AS query
@@ -59,13 +69,11 @@ class MetricService {
 
     try {
       const results = await neo4jService.executeRead(cypherQuery, { userId });
-      console.log('User Metrics Results:', results);
 
       const metrics = results.map((row: any) => ({
         metric: {
           id: row.metricId,
-          name: row.metricName,
-          description: row.metricDescription,
+          properties: row.metricProperties,
         },
         datasource: {
           id: row.datasourceId,
@@ -101,7 +109,7 @@ class MetricService {
     const metricsContext = metrics
       .map(
         (m) =>
-          `- ID: ${m.metric.id}\n  Name: ${m.metric.name}\n  Description: ${m.metric.description}`,
+          `- ID: ${m.metric.id}\n  Name: ${m.metric.properties.name}\n  Description: ${m.metric.properties.description}`,
       )
       .join('\n');
 
@@ -127,10 +135,68 @@ Response:`;
       });
 
       const trimmedResponse = text.trim();
-      console.log('Matched Metric Response:', trimmedResponse);
       return trimmedResponse === 'NONE' ? null : trimmedResponse;
     } catch (error) {
       console.error('Error matching question to metric:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Use AI to generate time filter from user request and metric time properties
+   */
+  async generateTimeFilter(
+    userInput: string,
+    timeColumn: string,
+    timeGrain: string,
+    timeType: 'event_time' | 'snapshot',
+  ): Promise<TimeFilter | null> {
+    const prompt = `You are analyzing a user's question to determine what time range they are asking about.
+
+Metric time properties:
+- Time column: ${timeColumn}
+- Time grain: ${timeGrain}
+- Time type: ${timeType}
+
+User question: "${userInput}"
+
+Based on the user's question, generate a time filter object with these fields:
+- start (optional): ISO date string (YYYY-MM-DD) for the start of the range
+- end (optional): ISO date string (YYYY-MM-DD) for the end of the range
+- grain (optional): time granularity (day, week, month, quarter, year)
+- operator (required): one of "between", "gt", "gte", "lt", "lte", "equals"
+
+Rules:
+1. If the user mentions a specific date range, use "between" with start and end
+2. If the user mentions "last X days/weeks/months", calculate the date range
+3. If the user mentions "since X", use "gte" with start date
+4. If the user mentions "before X", use "lt" with end date
+5. If the user mentions a specific date, use "equals" with start date
+6. Use today's date (${new Date().toISOString().split('T')[0]}) as reference for relative dates
+7. If no time information is mentioned, return null
+
+Respond with ONLY a valid JSON object or the word "null".
+
+Response:`;
+
+    try {
+      const { text } = await generateText({
+        model: this.model,
+        prompt,
+        temperature: 0,
+      });
+
+      const trimmedResponse = text.trim();
+      if (trimmedResponse === 'null') {
+        return null;
+      }
+
+      const cleanedText = trimmedResponse.replace(/```json\n?|\n?```/g, '');
+      const timeFilter: TimeFilter = JSON.parse(cleanedText);
+
+      return timeFilter;
+    } catch (error) {
+      console.error('Error generating time filter:', error);
       return null;
     }
   }
@@ -142,7 +208,9 @@ Response:`;
     datasource: { id: string; properties: Record<string, any> },
     query: string,
   ): Promise<any> {
-    const url = `https://domo-es.domo.com/api/query/v1/execute/${datasource.id}`;
+    const url = `${BASE_URL}/api/query/v1/execute/${datasource.id}`;
+
+    console.log('Executing SQL query:', query);
 
     try {
       const response = await fetch(url, {
@@ -163,9 +231,20 @@ Response:`;
         );
       }
 
-      const result = (await response.json()) as { rows: any[] };
-      console.log('Datasource Query Result:', result);
-      return result.rows;
+      const result = (await response.json()) as {
+        columns: string[];
+        rows: any[][];
+      };
+
+      const formattedRows = result.rows.map((row) => {
+        const rowObj: Record<string, any> = {};
+        result.columns.forEach((columnName, index) => {
+          rowObj[columnName] = row[index];
+        });
+        return rowObj;
+      });
+
+      return formattedRows;
     } catch (error) {
       console.error('Error executing datasource query:', error);
       throw error;
@@ -195,6 +274,7 @@ Response:`;
     userId: string,
   ): Promise<{
     textContext: string;
+    graphContext?: GraphContext;
     metadata: Record<string, any>;
   }> {
     try {
@@ -240,21 +320,66 @@ Response:`;
         };
       }
 
+      // Build the SQL query with time filtering if applicable
+      let finalQuery = matchedMetric.query;
+      let timeFilter: TimeFilter | null = null;
+
+      const { time_column, time_grain, time_type } =
+        matchedMetric.metric.properties;
+
+      if (time_column && time_grain && time_type) {
+        // Add time column to SELECT if not already present
+        finalQuery = addTimeColumnToSelect(finalQuery, time_column);
+
+        // Generate time filter based on user input
+        timeFilter = await this.generateTimeFilter(
+          userInput,
+          time_column,
+          time_grain,
+          time_type,
+        );
+
+        if (timeFilter) {
+          const whereClause = buildWhereClause(timeFilter, time_column);
+          // Add WHERE clause to query
+          finalQuery = addWhereClauseToQuery(finalQuery, whereClause);
+        }
+      }
+
       // Execute the datasource query
       const queryResult = await this.executeDatasourceQuery(
         matchedMetric.datasource,
-        matchedMetric.query,
+        finalQuery,
       );
+
+      console.log('Datasource query result:', queryResult);
 
       // Format the metric context
       const textContext = this.formatMetricContext(matchedMetric, queryResult);
 
+      // Build graph context with metric node and query data
+      const graphContext = {
+        nodes: [
+          {
+            id: matchedMetric.metric.id,
+            labels: ['Metric'],
+            properties: {
+              ...matchedMetric.metric.properties,
+              queryData: queryResult,
+            },
+          },
+        ],
+        relationships: [],
+      };
+
       return {
         textContext,
+        graphContext,
         metadata: {
           metricId: matchedMetric.metric.id,
-          metricName: matchedMetric.metric.name,
+          metricName: matchedMetric.metric.properties.name,
           matched: true,
+          timeFilter: timeFilter || undefined,
         },
       };
     } catch (error) {
@@ -271,13 +396,10 @@ Response:`;
   /**
    * Format metric data into readable context for the LLM
    */
-  private formatMetricContext(
-    metric: UserMetric,
-    queryResult: any,
-  ): string {
+  private formatMetricContext(metric: UserMetric, queryResult: any): string {
     let formatted = '# Metric Data\n\n';
-    formatted += `**Metric:** ${metric.metric.name}\n`;
-    formatted += `**Description:** ${metric.metric.description}\n\n`;
+    formatted += `**Metric:** ${metric.metric.properties.name}\n`;
+    formatted += `**Description:** ${metric.metric.properties.description}\n\n`;
     formatted += `**Query Result:**\n`;
     formatted += `\`\`\`json\n${JSON.stringify(queryResult, null, 2)}\n\`\`\`\n`;
     return formatted;
