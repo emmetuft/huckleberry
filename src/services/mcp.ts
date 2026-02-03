@@ -68,7 +68,9 @@ export const updateServer = async (
   return handleResponse<MCPServerConfig>(response);
 };
 
-export const deleteServer = async (id: string): Promise<{ deleted: boolean }> => {
+export const deleteServer = async (
+  id: string,
+): Promise<{ deleted: boolean }> => {
   const response = await fetch(`${MCP_API_BASE}/servers/${id}`, {
     method: 'DELETE',
   });
@@ -90,7 +92,9 @@ export const syncServerTools = async (
   const response = await fetch(`${MCP_API_BASE}/servers/${id}/sync`, {
     method: 'POST',
   });
-  return handleResponse<{ server: MCPServerConfig; toolCount: number }>(response);
+  return handleResponse<{ server: MCPServerConfig; toolCount: number }>(
+    response,
+  );
 };
 
 export const toggleServer = async (

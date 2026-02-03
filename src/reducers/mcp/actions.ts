@@ -22,12 +22,12 @@ export const fetchTools = createAsyncThunk<MCPToolDefinition[]>(
   },
 );
 
-export const addServer = createAsyncThunk<MCPServerConfig, MCPServerCreateInput>(
-  'mcp/addServer',
-  async (input) => {
-    return MCPService.createServer(input);
-  },
-);
+export const addServer = createAsyncThunk<
+  MCPServerConfig,
+  MCPServerCreateInput
+>('mcp/addServer', async (input) => {
+  return MCPService.createServer(input);
+});
 
 export const editServer = createAsyncThunk<
   MCPServerConfig,

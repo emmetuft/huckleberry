@@ -19,6 +19,7 @@ interface ProcessStepProps {
 export const ProcessStep: FC<ProcessStepProps> = ({ step, onToggle }) => {
   const { id, title, status, details, isOpen } = step;
   const [showSaveMetricModal, setShowSaveMetricModal] = useState(false);
+  console.log('[ProcessStep] renderDetails for step:', id, 'details:', details);
 
   const renderDetails = () => {
     if (!details) return null;
@@ -117,7 +118,8 @@ export const ProcessStep: FC<ProcessStepProps> = ({ step, onToggle }) => {
 
     // Show MCP tool executions
     if (
-      details.strategyName === ContextStrategyType.MCP_TOOL &&
+      (details.strategyName === ContextStrategyType.MCP_TOOL ||
+        details.strategyName === 'mcp-tool') &&
       details.toolExecutions &&
       details.toolExecutions.length > 0
     ) {

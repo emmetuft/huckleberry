@@ -101,7 +101,9 @@ export const MCPSlice = createAppSlice({
       })
       .addCase(editServer.fulfilled, (state, action) => {
         state.loading = false;
-        const index = state.servers.findIndex((s) => s.id === action.payload.id);
+        const index = state.servers.findIndex(
+          (s) => s.id === action.payload.id,
+        );
         if (index !== -1) {
           state.servers[index] = action.payload;
         }
@@ -160,7 +162,9 @@ export const MCPSlice = createAppSlice({
       })
       // Toggle server enabled
       .addCase(toggleServerEnabled.fulfilled, (state, action) => {
-        const index = state.servers.findIndex((s) => s.id === action.payload.id);
+        const index = state.servers.findIndex(
+          (s) => s.id === action.payload.id,
+        );
         if (index !== -1) {
           state.servers[index] = action.payload;
         }

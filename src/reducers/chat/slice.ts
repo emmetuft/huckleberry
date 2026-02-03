@@ -90,9 +90,21 @@ export const ChatSlice = createAppSlice({
               ) {
                 message.processingSteps.splice(index, 1);
               } else {
+                const existingStep = message.processingSteps[index];
+                // Merge details to preserve toolExecutions added via TOOL_START events
+                const mergedDetails = {
+                  ...existingStep.details,
+                  ...action.payload.details,
+                };
+                // Preserve toolExecutions if they exist in the current step
+                if (existingStep.details?.toolExecutions) {
+                  mergedDetails.toolExecutions =
+                    existingStep.details.toolExecutions;
+                }
                 message.processingSteps[index] = {
-                  ...message.processingSteps[index],
+                  ...existingStep,
                   ...action.payload,
+                  details: mergedDetails,
                 };
               }
             }
@@ -130,15 +142,22 @@ export const ChatSlice = createAppSlice({
     addToolExecution: create.reducer(
       (state, action: { payload: ToolEventData }) => {
         // Add tool execution to the MCP strategy step
+        console.log('[Reducer] addToolExecution called:', action.payload);
         if (state.streamingMessageId) {
           const message = state.messages.find(
             (m) => m.id === state.streamingMessageId,
           );
+          console.log('[Reducer] Found message:', !!message);
           if (message?.processingSteps) {
-            // Find the MCP tool strategy step
-            const mcpStep = message.processingSteps.find(
-              (s) => s.id === 'strategy-MCP_TOOL',
+            console.log(
+              '[Reducer] Processing steps:',
+              message.processingSteps.map((s) => s.id),
             );
+            // Find the MCP tool strategy step (step ID is 'strategy-mcp-tool')
+            const mcpStep = message.processingSteps.find(
+              (s) => s.id === 'strategy-mcp-tool',
+            );
+            console.log('[Reducer] Found MCP step:', !!mcpStep);
             if (mcpStep) {
               if (!mcpStep.details) {
                 mcpStep.details = {};
@@ -154,6 +173,10 @@ export const ChatSlice = createAppSlice({
                 status: 'running',
               };
               mcpStep.details.toolExecutions.push(toolExec);
+              console.log(
+                '[Reducer] Added tool execution, total:',
+                mcpStep.details.toolExecutions.length,
+              );
             }
           }
         }
@@ -173,7 +196,7 @@ export const ChatSlice = createAppSlice({
           );
           if (message?.processingSteps) {
             const mcpStep = message.processingSteps.find(
-              (s) => s.id === 'strategy-MCP_TOOL',
+              (s) => s.id === 'strategy-mcp-tool',
             );
             if (mcpStep?.details?.toolExecutions) {
               const toolExec = mcpStep.details.toolExecutions.find(

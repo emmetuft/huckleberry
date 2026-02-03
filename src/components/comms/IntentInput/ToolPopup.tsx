@@ -68,7 +68,10 @@ export const ToolPopup: FC<ToolPopupProps> = ({
         options={selectOptions}
         style={{ width: 300 }}
         filterOption={(input, option) =>
-          (option?.label ?? '').toString().toLowerCase().includes(input.toLowerCase())
+          (option?.label ?? '')
+            .toString()
+            .toLowerCase()
+            .includes(input.toLowerCase())
         }
         onInputKeyDown={onPopupKeyDown}
         onSelect={handleSelect}
