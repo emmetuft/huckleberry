@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { Dropdown, Upload, message } from 'antd';
 import type { MenuProps, UploadProps } from 'antd';
-import { Plus, UploadSimple } from 'phosphor-react';
+import { Plus, UploadSimple, Database } from 'phosphor-react';
 import { sharedIconProps } from 'constants/styles';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
 import {
@@ -11,10 +11,12 @@ import {
 
 interface AddContextButtonProps {
   onFileUpload?: (file: File) => void;
+  onDataSourceClick?: () => void;
 }
 
 export const AddContextButton: FC<AddContextButtonProps> = ({
   onFileUpload,
+  onDataSourceClick,
 }) => {
   const validateFile = (file: File): boolean | Promise<boolean> => {
     // Check file type
@@ -63,6 +65,18 @@ export const AddContextButton: FC<AddContextButtonProps> = ({
             <span>Upload PDF</span>
           </div>
         </Upload>
+      ),
+    },
+    {
+      key: 'connect-datasource',
+      label: (
+        <div
+          style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+          onClick={onDataSourceClick}
+        >
+          <Database {...sharedIconProps} size={16} />
+          <span>Connect Datasource</span>
+        </div>
       ),
     },
   ];

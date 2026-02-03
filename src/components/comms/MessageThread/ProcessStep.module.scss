@@ -6,21 +6,29 @@
 
   .headerContent {
     display: flex;
-    align-items: center;
-    gap: 8px;
+    justify-content: space-between;
 
-    .spinner {
-      color: $purple;
-      animation: spin 1s linear infinite;
+    .details {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .spinner {
+        color: $purple;
+        animation: spin 1s linear infinite;
+      }
+
+      .check {
+        color: $success-icon;
+      }
+
+      .title {
+        font-weight: 500;
+        color: rgba(0, 0, 0, 0.85);
+      }
     }
 
-    .check {
-      color: $success-icon;
-    }
-
-    .title {
-      font-weight: 500;
-      color: rgba(0, 0, 0, 0.85);
+    .actions {
     }
   }
 
@@ -65,6 +73,47 @@
           border-radius: 4px;
           font-size: 12px;
         }
+      }
+    }
+
+    .datasourceDetails {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+
+      .querySection {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+
+        .sectionLabel {
+          font-weight: 500;
+          font-size: 13px;
+          margin: 0;
+        }
+
+        .sqlQuery {
+          margin: 0;
+          padding: 12px;
+          background-color: #f6f8fa;
+          border: 1px solid #e1e4e8;
+          border-radius: 6px;
+          overflow-x: auto;
+          font-size: 12px;
+          font-family:
+            'SF Mono', 'Monaco', 'Inconsolata', 'Fira Mono', 'Droid Sans Mono',
+            'Source Code Pro', monospace;
+          line-height: 1.5;
+
+          code {
+            color: #24292e;
+          }
+        }
+      }
+
+      .property {
+        font-size: 12px;
+        font-weight: 500;
       }
     }
   }

@@ -24,44 +24,6 @@ function validateAndFilterRequestFiles(userRequest: UserRequest): void {
 }
 
 /**
- * POST /api/context-builder/query
- * Build context using multiple strategies and get a complete response
- * Body:
- *   - userInput (required) - the user's question/input
- *   - userId (optional) - the user's ID for personalized context
- *   - tools (optional) - array of tools available
- *   - files (optional) - array of files to consider
- */
-export async function query(req: Request, res: Response): Promise<void> {
-  try {
-    const userRequest: UserRequest = req.body;
-
-    if (!userRequest.userInput) {
-      res.status(400).json({
-        success: false,
-        error: 'User input is required',
-      });
-      return;
-    }
-
-    validateAndFilterRequestFiles(userRequest);
-
-    const result = await contextBuilderService.query(userRequest);
-
-    res.json({
-      success: true,
-      data: result,
-    });
-  } catch (error) {
-    console.error('Error processing context builder query:', error);
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
-  }
-}
-
-/**
  * POST /api/context-builder/query-stream
  * Build context using multiple strategies and stream the response
  * Body:

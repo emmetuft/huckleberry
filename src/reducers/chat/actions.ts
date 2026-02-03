@@ -9,36 +9,16 @@ import { ProcessedFile } from '../../../shared/models/interfaces/files';
 import { ContextService } from 'services/context';
 
 /**
- * Send a request using context builder to get a complete response
- */
-export const sendRequest = createAsyncThunk<
-  SystemResponse,
-  { userInput: string; files?: ProcessedFile[] }
->('chat/sendRequest', async ({ userInput, files }, { getState }) => {
-  const state = getState() as RootState;
-  const identity = state.app.identity;
-
-  // Add userId and files to the query if they exist
-  const queryWithUserId: UserRequest = {
-    userInput,
-    userId: identity?.userId,
-    files,
-  };
-
-  return await ContextService.query(queryWithUserId);
-});
-
-/**
  * Send a streaming request using context builder
  * This action dispatches intermediate updates as the stream progresses
  */
 export const sendStreamingRequest = createAsyncThunk<
   SystemResponse,
-  { userInput: string; files?: ProcessedFile[] },
+  { userInput: string; files?: ProcessedFile[]; dataSources?: any[] },
   { state: RootState }
 >(
   'chat/sendStreamingRequest',
-  async ({ userInput, files }, { getState, dispatch }) => {
+  async ({ userInput, files, dataSources }, { getState, dispatch }) => {
     const state = getState();
     const identity = state.app.identity;
 
@@ -47,6 +27,7 @@ export const sendStreamingRequest = createAsyncThunk<
       userInput,
       userId: identity?.userId,
       files,
+      dataSources,
     };
 
     let context: any = undefined;

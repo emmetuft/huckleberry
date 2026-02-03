@@ -3,6 +3,7 @@ export interface UserRequest {
   userId: any;
   tools?: any[];
   files?: any[];
+  dataSources?: any[];
 }
 
 export interface SystemResponse {
