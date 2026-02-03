@@ -1,8 +1,8 @@
 import dotenv from 'dotenv';
 import { generateText } from 'ai';
-import { anthropic } from '@ai-sdk/anthropic';
 import { neo4jService } from './neo4j.service.js';
 import { datasourceService } from './datasource.service.js';
+import { models } from '../config/models.js';
 import { GraphContext } from '../../shared/models/interfaces/userRequest.ts';
 import { TimeFilter } from '../../shared/models/interfaces/filters.ts';
 import {
@@ -38,7 +38,7 @@ class MetricService {
   private readonly CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
   constructor() {
-    this.model = anthropic('claude-sonnet-4-20250514');
+    this.model = models.metric;
     this.userMetricsCache = new Map();
   }
 

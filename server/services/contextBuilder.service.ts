@@ -1,9 +1,9 @@
 import { generateText, streamText } from 'ai';
-import { anthropic } from '@ai-sdk/anthropic';
 import {
   GraphContext,
   UserRequest,
 } from '../../shared/models/interfaces/userRequest.ts';
+import { models } from '../config/models.js';
 import {
   ContextStrategyType,
   STRATEGY_EXP_MAP,
@@ -107,7 +107,7 @@ class ContextBuilderService {
   private strategies: ContextStrategy[] = [];
 
   constructor() {
-    this.model = anthropic('claude-sonnet-4-20250514');
+    this.model = models.contextBuilder;
 
     // Register available strategies (sorted by priority)
     this.registerStrategy(new PersonaStrategy());

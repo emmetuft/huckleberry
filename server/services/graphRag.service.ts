@@ -1,9 +1,8 @@
 import dotenv from 'dotenv';
 import { generateText } from 'ai';
-import { openai } from '@ai-sdk/openai';
-import { anthropic } from '@ai-sdk/anthropic';
 import neo4j from 'neo4j-driver';
 import { neo4jService } from './neo4j.service.js';
+import { models } from '../config/models.js';
 import {
   GraphContext,
   UserRequest,
@@ -20,8 +19,7 @@ class GraphRagService {
   private model;
 
   constructor() {
-    this.model = anthropic('claude-sonnet-4-20250514');
-    // this.model = openai('gpt-4o-mini');
+    this.model = models.graphRag;
   }
 
   /**

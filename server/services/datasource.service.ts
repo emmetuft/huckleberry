@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import { generateText } from 'ai';
-import { anthropic } from '@ai-sdk/anthropic';
+import { models } from '../config/models.js';
 
 dotenv.config();
 
@@ -14,7 +14,7 @@ class DatasourceService {
   private model;
 
   constructor() {
-    this.model = anthropic('claude-sonnet-4-20250514');
+    this.model = models.datasource;
   }
 
   /**
