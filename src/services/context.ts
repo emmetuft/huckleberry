@@ -1,42 +1,10 @@
 import { StreamStatus, StreamType } from '../../shared/models/enums/stream';
 import {
   GraphContext,
-  SystemResponse,
   UserRequest,
 } from '../../shared/models/interfaces/userRequest';
 
 const CONTEXT_BUILDER_API_BASE = '/api/context';
-
-/**
- * Query using context builder and get a complete response
- */
-const query = async (params: UserRequest): Promise<SystemResponse> => {
-  try {
-    const response = await fetch(`${CONTEXT_BUILDER_API_BASE}/query`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(params),
-    });
-
-    if (!response.ok) {
-      throw new Error(
-        `Failed to query context builder: ${response.status} ${response.statusText}`,
-      );
-    }
-
-    const result = await response.json();
-
-    if (!result.success) {
-      throw new Error(result.error || 'Unknown error');
-    }
-
-    return result.data;
-  } catch (error: any) {
-    throw error;
-  }
-};
 
 export interface ProcessStep {
   id: string;
@@ -47,6 +15,9 @@ export interface ProcessStep {
     strategyName?: string;
     graphContext?: GraphContext;
     metadata?: Record<string, any>;
+    datasourceId?: string;
+    query?: string;
+    resultCount?: number;
   };
 }
 
@@ -118,6 +89,5 @@ const queryStream = async function* (
 };
 
 export const ContextService = {
-  query,
   queryStream,
 };

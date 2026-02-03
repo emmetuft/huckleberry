@@ -10,37 +10,21 @@ import { MCPToolCall } from '../../../shared/models/interfaces/mcpServer';
 import { ContextService } from 'services/context';
 
 /**
- * Send a request using context builder to get a complete response
- */
-export const sendRequest = createAsyncThunk<
-  SystemResponse,
-  { userInput: string; files?: ProcessedFile[]; tools?: MCPToolCall[] }
->('chat/sendRequest', async ({ userInput, files, tools }, { getState }) => {
-  const state = getState() as RootState;
-  const identity = state.app.identity;
-
-  // Add userId, files, and tools to the query if they exist
-  const queryWithUserId: UserRequest = {
-    userInput,
-    userId: identity?.userId,
-    files,
-    tools,
-  };
-
-  return await ContextService.query(queryWithUserId);
-});
-
-/**
  * Send a streaming request using context builder
  * This action dispatches intermediate updates as the stream progresses
  */
 export const sendStreamingRequest = createAsyncThunk<
   SystemResponse,
-  { userInput: string; files?: ProcessedFile[]; tools?: MCPToolCall[] },
+  {
+    userInput: string;
+    files?: ProcessedFile[];
+    tools?: MCPToolCall[];
+    dataSources?: any;
+  },
   { state: RootState }
 >(
   'chat/sendStreamingRequest',
-  async ({ userInput, files, tools }, { getState, dispatch }) => {
+  async ({ userInput, files, tools, dataSources }, { getState, dispatch }) => {
     const state = getState();
     const identity = state.app.identity;
 
@@ -50,6 +34,7 @@ export const sendStreamingRequest = createAsyncThunk<
       userId: identity?.userId,
       files,
       tools,
+      dataSources,
     };
 
     let context: any = undefined;

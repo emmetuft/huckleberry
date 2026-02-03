@@ -1,7 +1,8 @@
 import dotenv from 'dotenv';
 import { generateText } from 'ai';
-import { anthropic } from '@ai-sdk/anthropic';
 import { neo4jService } from './neo4j.service.js';
+import { datasourceService } from './datasource.service.js';
+import { models } from '../config/models.js';
 import { GraphContext } from '../../shared/models/interfaces/userRequest.ts';
 import { TimeFilter } from '../../shared/models/interfaces/filters.ts';
 import {
@@ -11,8 +12,6 @@ import {
 } from '../utils/sql.ts';
 
 dotenv.config();
-
-const BASE_URL = process.env.DOMO_INSTANCE_URL || 'https://domo-es.domo.com';
 
 interface UserMetric {
   metric: {
@@ -28,7 +27,7 @@ interface UserMetric {
 
 /**
  * Metric Service
- * Handles user metrics retrieval, matching, and datasource queries
+ * Handles user metrics retrieval and matching
  */
 class MetricService {
   private model;
@@ -39,13 +38,12 @@ class MetricService {
   private readonly CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
   constructor() {
-    this.model = anthropic('claude-sonnet-4-20250514');
+    this.model = models.metric;
     this.userMetricsCache = new Map();
   }
 
   /**
    * Get metrics available to a user based on their department
-   * Results are cached for 5 minutes per user
    */
   async getUserMetrics(userId: string): Promise<UserMetric[]> {
     // Check cache first
@@ -202,56 +200,6 @@ Response:`;
   }
 
   /**
-   * Execute a SQL query against a datasource
-   */
-  async executeDatasourceQuery(
-    datasource: { id: string; properties: Record<string, any> },
-    query: string,
-  ): Promise<any> {
-    const url = `${BASE_URL}/api/query/v1/execute/${datasource.id}`;
-
-    console.log('Executing SQL query:', query);
-
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'X-DOMO-Developer-Token': process.env.DEV_TOKEN,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          sql: query,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(
-          `Datasource query failed with status ${response.status}: ${errorText}`,
-        );
-      }
-
-      const result = (await response.json()) as {
-        columns: string[];
-        rows: any[][];
-      };
-
-      const formattedRows = result.rows.map((row) => {
-        const rowObj: Record<string, any> = {};
-        result.columns.forEach((columnName, index) => {
-          rowObj[columnName] = row[index];
-        });
-        return rowObj;
-      });
-
-      return formattedRows;
-    } catch (error) {
-      console.error('Error executing datasource query:', error);
-      throw error;
-    }
-  }
-
-  /**
    * Invalidate the cache for a specific user (useful after metrics are updated)
    */
   invalidateUserMetricsCache(userId: string): void {
@@ -347,8 +295,8 @@ Response:`;
       }
 
       // Execute the datasource query
-      const queryResult = await this.executeDatasourceQuery(
-        matchedMetric.datasource,
+      const queryResult = await datasourceService.executeDatasourceQuery(
+        matchedMetric.datasource.id,
         finalQuery,
       );
 

@@ -54,6 +54,14 @@
     "@ai-sdk/provider-utils" "4.0.5"
     "@vercel/oidc" "3.1.0"
 
+"@ai-sdk/google@^3.0.20":
+  version "3.0.20"
+  resolved "https://npm.labsdev.domotech.io/@ai-sdk%2fgoogle/-/google-3.0.20.tgz#608ec12a13371439a6a06992fb7e7d1d4d029432"
+  integrity sha512-bVGsulEr6JiipAFlclo9bjL5WaUV0iCSiiekLt+PY6pwmtJeuU2GaD9DoE3OqR8LN2W779mU13IhVEzlTupf8g==
+  dependencies:
+    "@ai-sdk/provider" "3.0.7"
+    "@ai-sdk/provider-utils" "4.0.13"
+
 "@ai-sdk/openai@^3.0.9":
   version "3.0.9"
   resolved "https://npm.labsdev.domotech.io/@ai-sdk%2fopenai/-/openai-3.0.9.tgz#5707ab10b8e9931ea609b173b983f4215e641b42"
@@ -61,6 +69,15 @@
   dependencies:
     "@ai-sdk/provider" "3.0.2"
     "@ai-sdk/provider-utils" "4.0.5"
+
+"@ai-sdk/provider-utils@4.0.13":
+  version "4.0.13"
+  resolved "https://npm.labsdev.domotech.io/@ai-sdk%2fprovider-utils/-/provider-utils-4.0.13.tgz#d2240b0c4d701eef8a4273ade71585a691e34e04"
+  integrity sha512-HHG72BN4d+OWTcq2NwTxOm/2qvk1duYsnhCDtsbYwn/h/4zeqURu1S0+Cn0nY2Ysq9a9HGKvrYuMn9bgFhR2Og==
+  dependencies:
+    "@ai-sdk/provider" "3.0.7"
+    "@standard-schema/spec" "^1.1.0"
+    eventsource-parser "^3.0.6"
 
 "@ai-sdk/provider-utils@4.0.5":
   version "4.0.5"
@@ -91,6 +108,13 @@
   version "3.0.4"
   resolved "https://npm.labsdev.domotech.io/@ai-sdk%2fprovider/-/provider-3.0.4.tgz#5c62671ac904e4a7c47d5b8621769ca617120d55"
   integrity sha512-5KXyBOSEX+l67elrEa+wqo/LSsSTtrPj9Uoh3zMbe/ceQX4ucHI3b9nUEfNkGF3Ry1svv90widAt+aiKdIJasQ==
+  dependencies:
+    json-schema "^0.4.0"
+
+"@ai-sdk/provider@3.0.7":
+  version "3.0.7"
+  resolved "https://npm.labsdev.domotech.io/@ai-sdk%2fprovider/-/provider-3.0.7.tgz#470bb8f9e46ec9d8d62b07b4c1f5737b991ebe83"
+  integrity sha512-VkPLrutM6VdA924/mG8OS+5frbVTcu6e046D2bgDo00tehBANR1QBJ/mPcZ9tXMFOsVcm6SQArOregxePzTFPw==
   dependencies:
     json-schema "^0.4.0"
 

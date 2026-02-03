@@ -9,8 +9,6 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
-  ResponsiveContainer,
 } from 'recharts';
 
 interface MetricChartProps {
@@ -64,6 +62,8 @@ export const MetricChart: FC<MetricChartProps> = ({
   const commonProps = {
     data: sortedData,
     margin: { top: 20, right: 30, left: 20, bottom: 20 },
+    width: chartWidth,
+    height: chartHeight,
   };
 
   const sharedComponents = (
@@ -80,24 +80,22 @@ export const MetricChart: FC<MetricChartProps> = ({
       {metricName && (
         <h4 style={{ marginBottom: '10px', fontSize: '14px' }}>{metricName}</h4>
       )}
-      <ResponsiveContainer width={chartWidth} height={chartHeight}>
-        {visType === 'line' ? (
-          <LineChart {...commonProps}>
-            {sharedComponents}
-            <Line
-              type="monotone"
-              dataKey={yAxisKey}
-              stroke="#8884d8"
-              strokeWidth={2}
-            />
-          </LineChart>
-        ) : (
-          <BarChart {...commonProps}>
-            {sharedComponents}
-            <Bar dataKey={yAxisKey} fill="#8884d8" />
-          </BarChart>
-        )}
-      </ResponsiveContainer>
+      {visType === 'line' ? (
+        <LineChart {...commonProps}>
+          {sharedComponents}
+          <Line
+            type="monotone"
+            dataKey={yAxisKey}
+            stroke="#8884d8"
+            strokeWidth={2}
+          />
+        </LineChart>
+      ) : (
+        <BarChart {...commonProps}>
+          {sharedComponents}
+          <Bar dataKey={yAxisKey} fill="#8884d8" />
+        </BarChart>
+      )}
     </div>
   );
 };

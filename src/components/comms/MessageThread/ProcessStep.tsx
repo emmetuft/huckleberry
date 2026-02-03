@@ -1,11 +1,12 @@
-import { FC } from 'react';
-import { Collapse } from 'antd';
+import { FC, useState } from 'react';
+import { Collapse, Button } from 'antd';
 import { CheckCircle, CircleNotch } from 'phosphor-react';
 import styles from './ProcessStep.module.scss';
 import { ContextStrategyType } from '../../../../shared/models/enums/contextStrategy';
 import { StreamStatus } from '../../../../shared/models/enums/stream';
 import { ContextGraph } from './ContextGraph';
 import { ProcessStep as ProcessStepType } from 'services/context';
+import { SaveMetricModal } from '../../SaveMetricModal/SaveMetricModal';
 
 interface ProcessStepProps {
   step: ProcessStepType & { isOpen: boolean };
@@ -14,6 +15,7 @@ interface ProcessStepProps {
 
 export const ProcessStep: FC<ProcessStepProps> = ({ step, onToggle }) => {
   const { id, title, status, details, isOpen } = step;
+  const [showSaveMetricModal, setShowSaveMetricModal] = useState(false);
 
   const renderDetails = () => {
     if (!details) return null;
@@ -91,17 +93,50 @@ export const ProcessStep: FC<ProcessStepProps> = ({ step, onToggle }) => {
       );
     }
 
+    // Show datasource query details
+    if (details.datasourceId && details.query) {
+      return (
+        <div className={styles.details}>
+          <div className={styles.datasourceDetails}>
+            <div className={styles.querySection}>
+              <p className={styles.sectionLabel}>Generated SQL Query:</p>
+              <pre className={styles.sqlQuery}>
+                <code>{details.query}</code>
+              </pre>
+            </div>
+            <span className={styles.property}>
+              Results: {details.resultCount} rows
+            </span>
+          </div>
+        </div>
+      );
+    }
+
     return null;
   };
 
   const header = (
     <div className={styles.headerContent}>
-      {status === StreamStatus.IN_PROGRESS ? (
-        <CircleNotch size={16} weight="bold" className={styles.spinner} />
-      ) : (
-        <CheckCircle size={16} weight="fill" className={styles.check} />
-      )}
-      <span className={styles.title}>{title}</span>
+      <div className={styles.details}>
+        {status === StreamStatus.IN_PROGRESS ? (
+          <CircleNotch size={16} weight="bold" className={styles.spinner} />
+        ) : (
+          <CheckCircle size={16} weight="fill" className={styles.check} />
+        )}
+        <span className={styles.title}>{title}</span>
+      </div>
+      <div className={styles.actions}>
+        {details?.datasourceId && details?.query && (
+          <Button
+            // type="primary"
+            style={{ background: 'rgba(255, 255, 255, 0.339)' }}
+            size="small"
+            onClick={() => setShowSaveMetricModal(true)}
+          >
+            Catalog metric
+          </Button>
+        )}
+      </div>
     </div>
   );
 
@@ -112,11 +147,22 @@ export const ProcessStep: FC<ProcessStepProps> = ({ step, onToggle }) => {
         onChange={() => onToggle(id)}
         className={styles.collapse}
         bordered={false}
-      >
-        <Collapse.Panel header={header} key={id}>
-          <div className={styles.content}>{renderDetails()}</div>
-        </Collapse.Panel>
-      </Collapse>
+        items={[
+          {
+            key: id,
+            label: header,
+            children: <div className={styles.content}>{renderDetails()}</div>,
+          },
+        ]}
+      />
+      {details?.datasourceId && details?.query && (
+        <SaveMetricModal
+          isOpen={showSaveMetricModal}
+          onClose={() => setShowSaveMetricModal(false)}
+          datasourceId={details.datasourceId}
+          query={details.query}
+        />
+      )}
     </div>
   );
 };

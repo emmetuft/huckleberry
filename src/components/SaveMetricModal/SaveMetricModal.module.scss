@@ -1,0 +1,46 @@
+@import '../../styles/shared.scss';
+@import '../../styles/variables.scss';
+
+.modalContent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .description {
+    color: rgba(0, 0, 0, 0.65);
+    font-size: 14px;
+    margin: 0;
+  }
+
+  .queryPreview {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .label {
+      font-weight: 500;
+      font-size: 14px;
+      margin: 0;
+    }
+
+    .query {
+      margin: 0;
+      padding: 12px;
+      background-color: #f6f8fa;
+      border: 1px solid #e1e4e8;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-size: 12px;
+      font-family:
+        'SF Mono', 'Monaco', 'Inconsolata', 'Fira Mono', 'Droid Sans Mono',
+        'Source Code Pro', monospace;
+      line-height: 1.5;
+      max-height: 200px;
+      overflow-y: auto;
+
+      code {
+        color: #24292e;
+      }
+    }
+  }
+}

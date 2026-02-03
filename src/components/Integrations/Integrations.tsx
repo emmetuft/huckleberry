@@ -1,7 +1,15 @@
 import { FC, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
-import { Button, Menu, MenuProps, Tabs, Modal, Popconfirm, Switch, message } from 'antd';
+import {
+  Button,
+  Menu,
+  MenuProps,
+  Tabs,
+  Popconfirm,
+  Switch,
+  message,
+} from 'antd';
 import { PlusOutlined, SyncOutlined, ApiOutlined } from '@ant-design/icons';
 import styles from './Integrations.module.scss';
 import { integrationCategories, integrationList } from 'constants/integrations';
@@ -35,7 +43,9 @@ export const Integrations: FC<IntegrationsProps> = () => {
   const dispatch = useAppDispatch();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [addModalOpen, setAddModalOpen] = useState(false);
-  const [editingServer, setEditingServer] = useState<MCPServerConfig | null>(null);
+  const [editingServer, setEditingServer] = useState<MCPServerConfig | null>(
+    null,
+  );
 
   const servers = useSelector(selectServers);
   const selectedServerId = useSelector(selectSelectedServerId);
@@ -94,7 +104,9 @@ export const Integrations: FC<IntegrationsProps> = () => {
   const handleTestConnection = async (id: string) => {
     const result = await dispatch(testConnection(id)).unwrap();
     if (result.success) {
-      message.success(`Connected: ${result.tools?.length || 0} tools available`);
+      message.success(
+        `Connected: ${result.tools?.length || 0} tools available`,
+      );
     } else {
       message.error(`Connection failed: ${result.message}`);
     }
@@ -116,7 +128,9 @@ export const Integrations: FC<IntegrationsProps> = () => {
   };
 
   const handleServerClick = (server: MCPServerConfig) => {
-    dispatch(setSelectedServer(server.id === selectedServerId ? null : server.id));
+    dispatch(
+      setSelectedServer(server.id === selectedServerId ? null : server.id),
+    );
   };
 
   const handleModalClose = () => {
@@ -158,7 +172,9 @@ export const Integrations: FC<IntegrationsProps> = () => {
 
       {servers.length === 0 ? (
         <div className={styles.emptyState}>
-          <ApiOutlined style={{ fontSize: 48, opacity: 0.3, marginBottom: 16 }} />
+          <ApiOutlined
+            style={{ fontSize: 48, opacity: 0.3, marginBottom: 16 }}
+          />
           <h3>No MCP Servers Connected</h3>
           <p>Connect external MCP servers to use their tools in chat.</p>
           <Button type="primary" onClick={handleAddServer}>
@@ -202,10 +218,15 @@ export const Integrations: FC<IntegrationsProps> = () => {
                     {server.tools?.length || 0} tools available
                   </div>
 
-                  <div className={styles.cardActions} onClick={(e) => e.stopPropagation()}>
+                  <div
+                    className={styles.cardActions}
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <Switch
                       checked={server.enabled}
-                      onChange={(checked) => handleToggleEnabled(server.id, checked)}
+                      onChange={(checked) =>
+                        handleToggleEnabled(server.id, checked)
+                      }
                       size="small"
                     />
                     <Button
@@ -223,7 +244,10 @@ export const Integrations: FC<IntegrationsProps> = () => {
                     >
                       Sync
                     </Button>
-                    <Button size="small" onClick={() => handleEditServer(server)}>
+                    <Button
+                      size="small"
+                      onClick={() => handleEditServer(server)}
+                    >
                       Edit
                     </Button>
                     <Popconfirm
@@ -331,9 +355,6 @@ export const Integrations: FC<IntegrationsProps> = () => {
 
   return (
     <div className={styles.Integrations}>
-      <div className={styles.header}>
-        <h1>Integrations</h1>
-      </div>
       <Tabs items={tabItems} defaultActiveKey="mcp" />
       <AddServerModal
         open={addModalOpen}

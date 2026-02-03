@@ -1,6 +1,6 @@
 import { Message } from 'models/interfaces/message';
 import { createAppSlice } from '../createAppSlice';
-import { sendRequest, sendStreamingRequest } from './actions';
+import { sendStreamingRequest } from './actions';
 import { ProcessStep } from 'services/context';
 
 export interface ProcessStepWithUI extends ProcessStep {
@@ -130,39 +130,6 @@ export const ChatSlice = createAppSlice({
   }),
   extraReducers: (builder) => {
     builder
-      // Send request
-      .addCase(sendRequest.pending, (state, action) => {
-        state.loading = true;
-        state.error = null;
-
-        // Add user message to the thread
-        const userMessage: Message = {
-          id: `user-${Date.now()}`,
-          role: 'user',
-          content: action.meta.arg.userInput,
-          timestamp: Date.now(),
-          files: action.meta.arg.files,
-        };
-        state.messages.push(userMessage);
-      })
-      .addCase(sendRequest.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message || 'Failed to send request';
-      })
-      .addCase(sendRequest.fulfilled, (state, { payload }) => {
-        state.loading = false;
-        state.error = null;
-
-        // Add assistant message to the thread
-        const assistantMessage: Message = {
-          id: `assistant-${Date.now()}`,
-          role: 'assistant',
-          content: payload.output,
-          timestamp: Date.now(),
-          context: payload.context,
-        };
-        state.messages.push(assistantMessage);
-      })
       // Send streaming request
       .addCase(sendStreamingRequest.pending, (state, action) => {
         state.loading = true;

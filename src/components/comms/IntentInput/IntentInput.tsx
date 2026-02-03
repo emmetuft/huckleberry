@@ -1,7 +1,11 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Button, Tooltip } from 'antd';
-import { CloseOutlined, LoadingOutlined, ToolOutlined } from '@ant-design/icons';
+import {
+  CloseOutlined,
+  LoadingOutlined,
+  ToolOutlined,
+} from '@ant-design/icons';
 import {
   ArrowUp,
   CalendarBlank,
@@ -21,9 +25,11 @@ import { fetchTools } from 'reducers/mcp/actions';
 import { COMMANDS } from 'constants/app';
 import { sharedIconProps } from 'constants/styles';
 import { AppPage } from 'models/enums/appPage';
+import { DataSource } from 'models/interfaces/dataSource';
 import { ToolPopup } from './ToolPopup';
 import { AddContextButton } from './AddContextButton';
 import { ToolBrowser } from '../ToolBrowser/ToolBrowser';
+import { DataSourceModal } from 'components/DataSourceModal/DataSourceModal';
 import {
   getCaretCharacterOffsetWithin,
   getTextWithHighlights,
@@ -31,7 +37,10 @@ import {
 } from 'utils/dom';
 import { ActionType, getSuggestedActions } from 'utils/temp';
 import { processFiles } from 'utils/file';
-import { MCPToolDefinition, MCPToolCall } from '../../../../shared/models/interfaces/mcpServer';
+import {
+  MCPToolDefinition,
+  MCPToolCall,
+} from '../../../../shared/models/interfaces/mcpServer';
 
 interface IntentInputProps {
   placeholder?: string;
@@ -59,6 +68,11 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   useEffect(() => {
     dispatch(fetchTools());
   }, [dispatch]);
+  const [selectedDataSources, setSelectedDataSources] = useState<DataSource[]>(
+    [],
+  );
+  const [showDataSourceModal, setShowDataSourceModal] =
+    useState<boolean>(false);
 
   const editableRef = useRef<HTMLDivElement>(null);
   const popupRef = useRef<HTMLDivElement>(null);
@@ -148,7 +162,12 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
 
   const onSelectTool = (tool: MCPToolDefinition) => {
     // Add tool to selectedTools, avoiding duplicates
-    if (selectedTools.some((t) => t.name === tool.name && t.serverId === tool.serverId)) return;
+    if (
+      selectedTools.some(
+        (t) => t.name === tool.name && t.serverId === tool.serverId,
+      )
+    )
+      return;
     setSelectedTools([...selectedTools, tool]);
     setShowToolPopup(false);
 
@@ -169,7 +188,11 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   };
 
   const onRemoveTool = (tool: MCPToolDefinition) => {
-    setSelectedTools(selectedTools.filter((t) => !(t.name === tool.name && t.serverId === tool.serverId)));
+    setSelectedTools(
+      selectedTools.filter(
+        (t) => !(t.name === tool.name && t.serverId === tool.serverId),
+      ),
+    );
   };
 
   const handleFileUpload = (file: File) => {
@@ -179,6 +202,25 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
 
   const onRemoveFile = (fileName: string) => {
     setUploadedFiles(uploadedFiles.filter((f) => f.name !== fileName));
+  };
+
+  const handleDataSourceClick = () => {
+    setShowDataSourceModal(true);
+  };
+
+  const handleDataSourceModalConfirm = (dataSources: DataSource[]) => {
+    setSelectedDataSources([...selectedDataSources, ...dataSources]);
+    setShowDataSourceModal(false);
+  };
+
+  const handleDataSourceModalCancel = () => {
+    setShowDataSourceModal(false);
+  };
+
+  const onRemoveDataSource = (dataSourceId: string) => {
+    setSelectedDataSources(
+      selectedDataSources.filter((ds) => ds.id !== dataSourceId),
+    );
   };
 
   const onClickSend = async () => {
@@ -201,12 +243,18 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
             params: {},
           }))
         : undefined;
+    // Process datasources to send only id and name
+    const processedDataSources =
+      selectedDataSources.length > 0
+        ? selectedDataSources.map((ds) => ({ id: ds.id, name: ds.name }))
+        : undefined;
 
     dispatch(
       sendStreamingRequest({
         userInput,
         files: processedFiles,
         tools: toolCalls,
+        dataSources: processedDataSources,
       }),
     );
 
@@ -219,6 +267,7 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     setIsEmpty(true);
     setSelectedTools([]);
     setUploadedFiles([]);
+    setSelectedDataSources([]);
   };
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -237,6 +286,11 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
 
   return (
     <div className={styles.IntentInput}>
+      <DataSourceModal
+        open={showDataSourceModal}
+        onCancel={handleDataSourceModalCancel}
+        onConfirm={handleDataSourceModalConfirm}
+      />
       {showToolPopup && (
         <ToolPopup
           popupRef={popupRef}
@@ -258,7 +312,10 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
         {selectedTools.length > 0 && (
           <div className={styles.selectedTools}>
             {selectedTools.map((tool) => (
-              <div key={`${tool.serverId}-${tool.name}`} className={styles.tool}>
+              <div
+                key={`${tool.serverId}-${tool.name}`}
+                className={styles.tool}
+              >
                 <p>{tool.name}</p>
                 <button onClick={() => onRemoveTool(tool)}>
                   <CloseOutlined className={styles.closeIcon} />
@@ -282,7 +339,10 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
         </div>
         <div className={styles.actions}>
           <div className={styles.buttons}>
-            <AddContextButton onFileUpload={handleFileUpload} />
+            <AddContextButton
+              onFileUpload={handleFileUpload}
+              onDataSourceClick={handleDataSourceClick}
+            />
             <Tooltip title="Browse Tools">
               <Button
                 type="text"
@@ -296,6 +356,15 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
                 <File {...sharedIconProps} size={14} />
                 <span className={styles.fileName}>{file.name}</span>
                 <button onClick={() => onRemoveFile(file.name)}>
+                  <CloseOutlined className={styles.closeIcon} />
+                </button>
+              </div>
+            ))}
+            {selectedDataSources.map((dataSource) => (
+              <div key={dataSource.id} className={styles.uploadedFile}>
+                <Database {...sharedIconProps} size={14} />
+                <span className={styles.fileName}>{dataSource.name}</span>
+                <button onClick={() => onRemoveDataSource(dataSource.id)}>
                   <CloseOutlined className={styles.closeIcon} />
                 </button>
               </div>
