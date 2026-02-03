@@ -5,9 +5,9 @@ import { router as contextBuilderRouter } from './routes/contextBuilder.routes.j
 import { router as personaRouter } from './routes/persona.routes.js';
 
 export async function setupServer(app: Express): Promise<void> {
-  // Middleware
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
+  // Middleware - increased limit to support file uploads (up to 15MB)
+  app.use(express.json({ limit: '15mb' }));
+  app.use(express.urlencoded({ extended: true, limit: '15mb' }));
 
   // Initialize Neo4j connection
   try {

@@ -5,6 +5,7 @@ import {
   fetchIdentity,
   fetchUserPersona,
   saveUserPersona,
+  swapPersona,
 } from './actions';
 import { AppPage } from 'models/enums/appPage';
 import { Persona } from '../../../shared/models/interfaces/persona';
@@ -85,6 +86,18 @@ export const AppReducer = createAppSlice({
       .addCase(saveUserPersona.fulfilled, (state, { payload }) => {
         state.persona = payload;
         state.loading.personaUpdate = false;
+      })
+      // Swap persona
+      .addCase(swapPersona.fulfilled, (state, { meta, payload }) => {
+        state.persona = payload;
+        const identity = state.identity;
+        if (!identity) {
+          return;
+        }
+        state.identity = {
+          ...identity,
+          userId: meta.arg,
+        };
       });
   },
   selectors: {

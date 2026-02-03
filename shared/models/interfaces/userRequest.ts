@@ -7,13 +7,13 @@ export interface UserRequest {
 
 export interface SystemResponse {
   output: string;
-  context: GraphContext;
+  context?: GraphContext;
 }
 
 export interface SystemStreamResponse {
   textStream: ReadableStream<string>;
-  context: GraphContext;
-  cypherQuery: string;
+  context?: GraphContext;
+  cypherQuery?: string;
 }
 
 export interface GraphContext {

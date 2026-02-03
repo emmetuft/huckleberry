@@ -7,7 +7,7 @@ import {
 } from '../../shared/models/interfaces/userRequest.ts';
 import {
   CONTEXT_STRATEGY_PROMPT,
-  GRAPH_RAG_PROMPT,
+  ULTIMATE_PROMPT,
 } from '../constants/prompts.ts';
 import {
   GRAPH_RAG_DESCRIPTION,
@@ -17,6 +17,7 @@ import {
 import { graphRagService } from './graphRag.service.js';
 import { metricService } from './metric.service.js';
 import { personaService } from './persona.service.js';
+import { fileService } from './file.service.js';
 import {
   ContextStrategyType,
   STRATEGY_EXP_MAP,
@@ -27,7 +28,6 @@ interface ContextResult {
   textContext: string;
   graphContext?: GraphContext;
   metadata: {
-    strategyUsed: string;
     [key: string]: any;
   };
 }
@@ -52,7 +52,7 @@ class GraphRagStrategy implements ContextStrategy {
       textContext: formattedContext,
       graphContext: context,
       metadata: {
-        strategyUsed: this.name,
+        strategy: this.name,
         cypherQuery,
       },
     };
@@ -74,7 +74,7 @@ class MetricStrategy implements ContextStrategy {
       textContext,
       graphContext,
       metadata: {
-        strategyUsed: this.name,
+        strategy: this.name,
         ...metadata,
       },
     };
@@ -89,22 +89,13 @@ class PersonaStrategy implements ContextStrategy {
   async buildContext(userRequest: UserRequest): Promise<ContextResult> {
     const { userId } = userRequest;
 
-    if (!userId) {
-      return {
-        textContext: '',
-        metadata: {
-          strategyUsed: this.name,
-        },
-      };
-    }
-
     const { textContext, metadata } =
       await personaService.buildPersonaContext(userId);
 
     return {
       textContext,
       metadata: {
-        strategyUsed: this.name,
+        strategy: this.name,
         ...metadata,
       },
     };
@@ -156,16 +147,15 @@ class ContextBuilderService {
       const selectedNames: string[] = JSON.parse(cleanedText);
       console.log('AI selected strategies:', selectedNames);
 
-      // Filter to only selected strategies
       const selected = this.strategies.filter((s) =>
         selectedNames.includes(s.name),
       );
 
-      // Fallback: if no strategies selected or invalid response, use all
-      return selected.length > 0 ? selected : this.strategies;
+      // Fallback: if no strategies selected or invalid response, use none
+      return selected.length > 0 ? selected : [];
     } catch (error) {
-      console.error('Error selecting strategies, using all:', error);
-      return this.strategies;
+      console.error('Error selecting strategies:', error);
+      return [];
     }
   }
 
@@ -191,19 +181,18 @@ class ContextBuilderService {
   /**
    * Merge multiple context results into a single unified context
    */
-  private mergeContextResults(results: ContextResult[]): {
-    mergedTextContext: string;
-    graphContext: GraphContext;
-    metadata: any;
-  } {
+  private mergeContextResults(results: ContextResult[]): ContextResult {
     if (results.length === 0) {
-      throw new Error('No context results to merge');
+      return {
+        textContext: '',
+        metadata: {},
+      };
     }
 
     let mergedTextContext = '';
-    let graphContext: GraphContext = { nodes: [], relationships: [] };
+    let graphContext: GraphContext | undefined = undefined;
     const metadata: any = {
-      strategiesUsed: results.map((r) => r.metadata.strategyUsed),
+      strategy: results.map((r) => r.metadata.strategy),
     };
 
     // Merge all text contexts
@@ -220,28 +209,51 @@ class ContextBuilderService {
 
       // Merge metadata
       Object.keys(result.metadata).forEach((key) => {
-        if (key !== 'strategyUsed') {
+        if (key !== 'strategy') {
           metadata[key] = result.metadata[key];
         }
       });
     });
 
     return {
-      mergedTextContext,
+      textContext: mergedTextContext,
       graphContext,
       metadata,
     };
   }
 
-  private buildPrompt(
+  private buildMessages(
     mergedTextContext: string,
     userRequest: UserRequest,
-  ): string {
-    return `${mergedTextContext}
+  ): Array<{ role: 'user'; content: any }> {
+    const content: any[] = [];
 
-User input: ${userRequest.userInput}
+    // Add context as text
+    if (mergedTextContext) {
+      content.push({
+        type: 'text',
+        text: `${mergedTextContext}\n\nPlease address the request based on the context provided above.`,
+      });
+    }
 
-Please address the request based on the context provided above.`;
+    // Add user input as text
+    content.push({
+      type: 'text',
+      text: `User input: ${userRequest.userInput}`,
+    });
+
+    // Add files as file parts if provided
+    if (userRequest.files && userRequest.files.length > 0) {
+      const fileParts = fileService.buildFilePartsForAI(userRequest.files);
+      content.push(...fileParts);
+    }
+
+    return [
+      {
+        role: 'user',
+        content,
+      },
+    ];
   }
 
   async query(userRequest: UserRequest): Promise<SystemResponse> {
@@ -249,17 +261,17 @@ Please address the request based on the context provided above.`;
     const contextResults = await this.buildContextParallel(userRequest);
 
     // Merge all context results
-    const { mergedTextContext, graphContext, metadata } =
+    const { textContext, graphContext, metadata } =
       this.mergeContextResults(contextResults);
 
-    // Build prompt
-    const userPrompt = this.buildPrompt(mergedTextContext, userRequest);
+    // Build messages with files
+    const messages = this.buildMessages(textContext, userRequest);
 
     try {
       const { text } = await generateText({
         model: this.model,
-        system: GRAPH_RAG_PROMPT,
-        prompt: userPrompt,
+        system: ULTIMATE_PROMPT,
+        messages,
         temperature: 0.7,
       });
 
@@ -345,7 +357,7 @@ Please address the request based on the context provided above.`;
       });
 
       // Merge all context results
-      const { mergedTextContext, graphContext, metadata } =
+      const { textContext, graphContext, metadata } =
         this.mergeContextResults(results);
 
       // Send final graph context as metadata
@@ -354,14 +366,14 @@ Please address the request based on the context provided above.`;
         context: graphContext,
       });
 
-      // Build prompt
-      const userPrompt = this.buildPrompt(mergedTextContext, userRequest);
+      // Build messages with files
+      const messages = this.buildMessages(textContext, userRequest);
 
       // Stream the text response
       const result = await streamText({
         model: this.model,
-        system: GRAPH_RAG_PROMPT,
-        prompt: userPrompt,
+        system: ULTIMATE_PROMPT,
+        messages,
         temperature: 0.7,
       });
 

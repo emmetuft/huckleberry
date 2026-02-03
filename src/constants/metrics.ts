@@ -1,4 +1,4 @@
-export const metricCatalogDatasourceId = 'e223d77c-84fd-4cf4-b57d-515f29847306';
+export const metricCatalogDatasourceId = '9f5cb77e-21bc-413b-aea1-47bfed74952d';
 
 export const departmentColors: Record<
   string,

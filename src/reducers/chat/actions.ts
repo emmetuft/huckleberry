@@ -5,26 +5,28 @@ import {
   SystemResponse,
   UserRequest,
 } from '../../../shared/models/interfaces/userRequest';
+import { ProcessedFile } from '../../../shared/models/interfaces/files';
 import { ContextService } from 'services/context';
 
 /**
  * Send a request using context builder to get a complete response
  */
-export const sendRequest = createAsyncThunk<SystemResponse, string>(
-  'chat/sendRequest',
-  async (userInput, { getState }) => {
-    const state = getState() as RootState;
-    const identity = state.app.identity;
+export const sendRequest = createAsyncThunk<
+  SystemResponse,
+  { userInput: string; files?: ProcessedFile[] }
+>('chat/sendRequest', async ({ userInput, files }, { getState }) => {
+  const state = getState() as RootState;
+  const identity = state.app.identity;
 
-    // Add userId to the query if identity exists
-    const queryWithUserId: UserRequest = {
-      userInput: userInput,
-      userId: identity?.userId,
-    };
+  // Add userId and files to the query if they exist
+  const queryWithUserId: UserRequest = {
+    userInput,
+    userId: identity?.userId,
+    files,
+  };
 
-    return await ContextService.query(queryWithUserId);
-  },
-);
+  return await ContextService.query(queryWithUserId);
+});
 
 /**
  * Send a streaming request using context builder
@@ -32,60 +34,64 @@ export const sendRequest = createAsyncThunk<SystemResponse, string>(
  */
 export const sendStreamingRequest = createAsyncThunk<
   SystemResponse,
-  string,
+  { userInput: string; files?: ProcessedFile[] },
   { state: RootState }
->('chat/sendStreamingRequest', async (userInput, { getState, dispatch }) => {
-  const state = getState();
-  const identity = state.app.identity;
+>(
+  'chat/sendStreamingRequest',
+  async ({ userInput, files }, { getState, dispatch }) => {
+    const state = getState();
+    const identity = state.app.identity;
 
-  // Add userId to the query if identity exists
-  const queryWithUserId: UserRequest = {
-    userInput: userInput,
-    userId: identity?.userId,
-  };
+    // Add userId and files to the query if they exist
+    const queryWithUserId: UserRequest = {
+      userInput,
+      userId: identity?.userId,
+      files,
+    };
 
-  let context: any = undefined;
-  let fullText = '';
+    let context: any = undefined;
+    let fullText = '';
 
-  // Stream the response
-  for await (const message of ContextService.queryStream(queryWithUserId)) {
-    if (message.type === StreamType.STATUS) {
-      dispatch({
-        type: 'chat/updateStreamStatus',
-        payload: message.message,
-      });
-    } else if (message.type === StreamType.STEP_START && message.step) {
-      dispatch({
-        type: 'chat/addProcessStep',
-        payload: message.step,
-      });
-    } else if (message.type === StreamType.STEP_COMPLETE && message.step) {
-      dispatch({
-        type: 'chat/updateProcessStep',
-        payload: message.step,
-      });
-    } else if (message.type === StreamType.METADATA && message.context) {
-      context = message.context;
-    } else if (message.type === StreamType.TEXT && message.content) {
-      fullText += message.content;
-      dispatch({
-        type: 'chat/appendStreamText',
-        payload: message.content,
-      });
-    } else if (message.type === StreamType.DONE) {
-      dispatch({
-        type: 'chat/updateProcessStep',
-        payload: {
-          id: 'generate-response',
-          title: 'Generating response',
-          status: StreamStatus.COMPLETE,
-        },
-      });
+    // Stream the response
+    for await (const message of ContextService.queryStream(queryWithUserId)) {
+      if (message.type === StreamType.STATUS) {
+        dispatch({
+          type: 'chat/updateStreamStatus',
+          payload: message.message,
+        });
+      } else if (message.type === StreamType.STEP_START && message.step) {
+        dispatch({
+          type: 'chat/addProcessStep',
+          payload: message.step,
+        });
+      } else if (message.type === StreamType.STEP_COMPLETE && message.step) {
+        dispatch({
+          type: 'chat/updateProcessStep',
+          payload: message.step,
+        });
+      } else if (message.type === StreamType.METADATA && message.context) {
+        context = message.context;
+      } else if (message.type === StreamType.TEXT && message.content) {
+        fullText += message.content;
+        dispatch({
+          type: 'chat/appendStreamText',
+          payload: message.content,
+        });
+      } else if (message.type === StreamType.DONE) {
+        dispatch({
+          type: 'chat/updateProcessStep',
+          payload: {
+            id: 'generate-response',
+            title: 'Generating response',
+            status: StreamStatus.COMPLETE,
+          },
+        });
+      }
     }
-  }
 
-  return {
-    output: fullText,
-    context,
-  };
-});
+    return {
+      output: fullText,
+      context,
+    };
+  },
+);

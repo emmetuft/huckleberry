@@ -1,17 +1,15 @@
 import dotenv from 'dotenv';
-import { generateText, streamText } from 'ai';
+import { generateText } from 'ai';
 import { openai } from '@ai-sdk/openai';
 import { anthropic } from '@ai-sdk/anthropic';
 import neo4j from 'neo4j-driver';
 import { neo4jService } from './neo4j.service.js';
 import {
   GraphContext,
-  SystemResponse,
   UserRequest,
 } from '../../shared/models/interfaces/userRequest.ts';
 import {
   CYPHER_GENERATION_PROMPT,
-  GRAPH_RAG_PROMPT,
   SCHEMA_IDENTIFICATION_PROMPT,
 } from '../constants/prompts.ts';
 import { parseResponseData } from '../utils/neo4j.ts';

@@ -3,9 +3,9 @@ import { Collapse } from 'antd';
 import { CheckCircle, CircleNotch } from 'phosphor-react';
 import styles from './ProcessStep.module.scss';
 import { ContextStrategyType } from '../../../../shared/models/enums/contextStrategy';
+import { StreamStatus } from '../../../../shared/models/enums/stream';
 import { ContextGraph } from './ContextGraph';
 import { ProcessStep as ProcessStepType } from 'services/context';
-import { StreamStatus } from '../../../../shared/models/enums/stream';
 
 interface ProcessStepProps {
   step: ProcessStepType & { isOpen: boolean };
@@ -20,10 +20,14 @@ export const ProcessStep: FC<ProcessStepProps> = ({ step, onToggle }) => {
 
     // Show selected strategies
     if (details.selectedStrategies) {
+      const strategyText =
+        details.selectedStrategies.length > 0
+          ? details.selectedStrategies.join(', ')
+          : 'using provided context';
       return (
         <div className={styles.details}>
           <p className={styles.detailsText}>
-            Selected strategies: {details.selectedStrategies.join(', ')}
+            Context strategies: {strategyText}
           </p>
         </div>
       );
