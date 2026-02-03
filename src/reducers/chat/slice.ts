@@ -139,8 +139,9 @@ export const ChatSlice = createAppSlice({
         const userMessage: Message = {
           id: `user-${Date.now()}`,
           role: 'user',
-          content: action.meta.arg,
+          content: action.meta.arg.userInput,
           timestamp: Date.now(),
+          files: action.meta.arg.files,
         };
         state.messages.push(userMessage);
       })
@@ -173,8 +174,9 @@ export const ChatSlice = createAppSlice({
         const userMessage: Message = {
           id: `user-${Date.now()}`,
           role: 'user',
-          content: action.meta.arg,
+          content: action.meta.arg.userInput,
           timestamp: Date.now(),
+          files: action.meta.arg.files,
         };
         state.messages.push(userMessage);
 

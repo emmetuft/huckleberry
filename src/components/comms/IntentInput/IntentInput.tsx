@@ -7,8 +7,8 @@ import {
   CalendarBlank,
   ChartLine,
   Database,
+  File,
   PaperPlaneTilt,
-  Plus,
 } from 'phosphor-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import styles from './IntentInput.module.scss';
@@ -19,14 +19,15 @@ import { selectLoading, setFullScreen } from 'reducers/chat/slice';
 import { COMMANDS } from 'constants/app';
 import { sharedIconProps } from 'constants/styles';
 import { AppPage } from 'models/enums/appPage';
-import { IconBtn } from 'components/shared/IconBtn/IconBtn';
 import { ToolPopup } from './ToolPopup';
+import { AddContextButton } from './AddContextButton';
 import {
   getCaretCharacterOffsetWithin,
   getTextWithHighlights,
   setCaretPosition,
 } from 'utils/dom';
 import { ActionType, getSuggestedActions } from 'utils/temp';
+import { processFiles } from 'utils/file';
 
 interface IntentInputProps {
   placeholder?: string;
@@ -47,6 +48,7 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     number | null
   >(null);
   const [selectedTools, setSelectedTools] = useState<string[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
   const editableRef = useRef<HTMLDivElement>(null);
   const popupRef = useRef<HTMLDivElement>(null);
@@ -160,14 +162,32 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     setSelectedTools(selectedTools.filter((t) => t !== tool));
   };
 
-  const onClickSend = () => {
+  const handleFileUpload = (file: File) => {
+    // TODO: Process the uploaded file and add to context
+    setUploadedFiles([...uploadedFiles, file]);
+  };
+
+  const onRemoveFile = (fileName: string) => {
+    setUploadedFiles(uploadedFiles.filter((f) => f.name !== fileName));
+  };
+
+  const onClickSend = async () => {
     const el = editableRef.current;
     if (!el || isEmpty) return;
 
     const userInput = el.innerText.trim();
     if (!userInput) return;
 
-    dispatch(sendStreamingRequest(userInput));
+    // Process files before dispatching to avoid non-serializable values in Redux
+    const processedFiles =
+      uploadedFiles.length > 0 ? await processFiles(uploadedFiles) : undefined;
+
+    dispatch(
+      sendStreamingRequest({
+        userInput,
+        files: processedFiles,
+      }),
+    );
 
     if (appPage === AppPage.HOME) {
       dispatch(setFullScreen(true));
@@ -177,6 +197,7 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     el.innerText = '';
     setIsEmpty(true);
     setSelectedTools([]);
+    setUploadedFiles([]);
   };
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -233,7 +254,16 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
         </div>
         <div className={styles.actions}>
           <div className={styles.buttons}>
-            <IconBtn icon={<Plus {...sharedIconProps} size={16} />} />
+            <AddContextButton onFileUpload={handleFileUpload} />
+            {uploadedFiles.map((file) => (
+              <div key={file.name} className={styles.uploadedFile}>
+                <File {...sharedIconProps} size={14} />
+                <span className={styles.fileName}>{file.name}</span>
+                <button onClick={() => onRemoveFile(file.name)}>
+                  <CloseOutlined className={styles.closeIcon} />
+                </button>
+              </div>
+            ))}
             <AnimatePresence>
               {suggestedActions.map((action) => (
                 <motion.div

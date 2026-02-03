@@ -5,6 +5,7 @@ import { RootState } from 'reducers';
 import { Persona } from '../../../shared/models/interfaces/persona';
 import { StorageService } from 'services/storage';
 import { AppService } from 'services/app';
+import { defaultPersona } from 'constants/persona';
 
 export const authenticate = createAsyncThunk<AuthResponse, void>(
   'app/authenticate',
@@ -43,4 +44,16 @@ export const saveUserPersona = createAsyncThunk<
   }
   const updatedPersona = await StorageService.saveUserPersona(userId, persona);
   return updatedPersona;
+});
+
+export const swapPersona = createAsyncThunk<
+  Persona,
+  number,
+  { state: RootState }
+>('app/swapPersona', async (userId, { getState }) => {
+  const persona = await StorageService.fetchUserPersona(userId);
+  if (!persona) {
+    return defaultPersona;
+  }
+  return persona;
 });

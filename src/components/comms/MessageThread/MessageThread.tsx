@@ -38,6 +38,7 @@ export const MessageThread: FC = () => {
       <div className={styles.messages}>
         {messages.map((message: Message, index: number) => (
           <MessageItem
+            key={message.id}
             message={message}
             showTimestamp={shouldShowTimestamp(message, messages[index - 1])}
           />

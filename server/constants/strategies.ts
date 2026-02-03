@@ -12,4 +12,4 @@ export const METRIC_DESCRIPTION = `
 Use when the user is asking for quantitative, analytical, or performance-related information. Retrieves relevant pre-defined business metrics based on the user’s role or department, then queries the underlying data sources to return current or historical values. Best for questions involving KPIs, totals, trends, comparisons, or “how are we doing” type requests, rather than descriptive knowledge or relationships.`;
 
 export const PERSONA_DESCRIPTION = `
-Use when the response should be tailored to the user’s role, responsibilities, goals, or expertise. Retrieves profile and behavioral context (e.g., role, department, focus areas, strengths, priorities) to shape tone, depth, framing, and recommendations—rather than to supply factual or metric data.`;
+Use when the response should be tailored to the user's role, responsibilities, goals, or expertise. Retrieves profile and behavioral context (e.g., role, department, focus areas, strengths, priorities) to shape tone, depth, framing, and recommendations—rather than to supply factual or metric data.`;

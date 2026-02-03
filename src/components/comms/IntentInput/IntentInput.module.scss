@@ -90,6 +90,39 @@
     .buttons {
       display: flex;
       gap: 5px;
+      align-items: center;
+
+      .uploadedFile {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 12px;
+        padding: 4px 8px;
+        border: 1px solid $grey;
+        border-radius: 6px;
+        max-width: 150px;
+
+        .fileName {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 100px;
+        }
+
+        button {
+          padding: 0;
+          background-color: transparent;
+          border: none;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          flex-shrink: 0;
+        }
+
+        .closeIcon {
+          font-size: 10px;
+        }
+      }
     }
   }
 }

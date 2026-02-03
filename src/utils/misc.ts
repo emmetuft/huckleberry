@@ -2,6 +2,7 @@ import { Identity } from '@domoinc/toolkit';
 
 export const getFirstName = (identity: Identity | undefined) => {
   if (!identity) return '';
+  if (identity.userId === 1250228141) return 'Mark'; // TODO: Remove later
   const firstName = identity.userName?.split(' ')[0];
   return firstName || '';
 };

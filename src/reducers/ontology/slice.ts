@@ -75,6 +75,11 @@ export const OntologySlice = createAppSlice({
   reducers: (create) => ({
     clearGraphData: create.reducer((state) => {
       state.graphData = { nodes: [], relationships: [] };
+      state.controls = {
+        highlightedNodeId: null,
+        selectedLabels: [],
+        propertyFilters: [],
+      };
     }),
     setHighlightedNode: create.reducer<string | null>((state, { payload }) => {
       state.controls.highlightedNodeId = payload;

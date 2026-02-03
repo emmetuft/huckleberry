@@ -1,6 +1,27 @@
 import { Request, Response } from 'express';
 import { contextBuilderService } from '../services/contextBuilder.service.js';
+import { fileService } from '../services/file.service.js';
 import { UserRequest } from '../../shared/models/interfaces/userRequest.ts';
+
+/**
+ * Validate and filter files in the user request
+ * Updates the request in place with only valid files
+ */
+function validateAndFilterRequestFiles(userRequest: UserRequest): void {
+  if (userRequest.files && userRequest.files.length > 0) {
+    const { validFiles, warnings } = fileService.validateAndFilterFiles(
+      userRequest.files,
+    );
+
+    // Log warnings for filtered files
+    if (warnings.length > 0) {
+      console.warn('File validation warnings:', warnings);
+    }
+
+    // Update request with only valid files
+    userRequest.files = validFiles;
+  }
+}
 
 /**
  * POST /api/context-builder/query
@@ -22,6 +43,8 @@ export async function query(req: Request, res: Response): Promise<void> {
       });
       return;
     }
+
+    validateAndFilterRequestFiles(userRequest);
 
     const result = await contextBuilderService.query(userRequest);
 
@@ -58,6 +81,8 @@ export async function queryStream(req: Request, res: Response): Promise<void> {
       });
       return;
     }
+
+    validateAndFilterRequestFiles(userRequest);
 
     // Set headers for streaming
     res.setHeader('Content-Type', 'text/event-stream');

@@ -1,20 +1,32 @@
 export const CONTEXT_STRATEGY_PROMPT = (
   strategies: string,
   userInput: string,
-) => `You are analyzing a user's request to determine which context-building strategies should be used to answer it.
+) => `You are analyzing a user's request to determine which context-building strategies
+are REQUIRED to answer it.
 
-Available strategies:
+IMPORTANT RULE:
+If the request can be fully answered using ONLY the content already provided
+(e.g. summarizing, rewriting, extracting, translating, or analyzing a file or text),
+you MUST return an empty array [].
+Do NOT select any strategies in these cases.
+
+Available strategies (use ONLY if required):
 ${strategies}
 
 User request: "${userInput}"
 
-Analyze the question and respond with a JSON array of strategy names that should be used. Only include strategies that will contribute meaningful context to answering the question.
+Decision process:
+1. Determine whether answering the request requires external or additional context.
+2. If not, return [].
+3. If yes, return the minimal set of strategy names needed.
 
 Examples:
-- "What's my revenue?" → ["metric"] (metric alone can answer this)
-- "Who is responsible for the revenue metric?" → ["metric", "graph-rag"] (need both metric info and graph relationships)
-- "What departments are in the company?" → ["graph-rag"] (pure graph query)
-- "Show me all people in sales" → ["graph-rag"] (pure graph query)
+- "What's my revenue?" → ["metric"]
+- "Who owns the revenue metric?" → ["metric", "graph-rag"]
+- "What departments are in the company?" → ["graph-rag"]
+- "What should I work on today?" → ["persona"]
+- "Summarize this file" → []
+- "Give me key takeaways from this document" → []
 
 Response (JSON array only):`;
 
@@ -77,27 +89,30 @@ Instructions:
 Schema:
 {schema}`;
 
-export const GRAPH_RAG_PROMPT = `You are a helpful assistant that answers questions using the provided graph database context. 
+export const ULTIMATE_PROMPT = `You are a helpful assistant that answers questions using the provided contextual information.
 
-The graph contains nodes and relationships, each with properties.
-In a previous step, a subset of relevant nodes and relationships was retrieved from the full graph.
-**You are not being given all of the data**, only a subset.
-Use this subset as context to answer the user's question.
+In a previous step, one or more context strategies selected and retrieved information relevant to the user's question.
+**You are not being given all available information**, only a curated subset chosen to help answer the question.
+Use only this context when forming your response.
 
 You must follow these rules:
 
 1. Be concise.
 - Do not be verbose
 - Do not hallucinate information
-- Stick to the facts provided in the context
+- Do not introduce facts, numbers, or claims that are not supported by the context
 
-2. Do not include technical details.
-- Do not mention the graph
-- Do not mention the database
-- Do not mention nodes or relationships
-- Do not use phrases like "based on the provided content" or "according to the graph data" or "in the data"
+2. Do not reference internal systems or implementation details.
+- Do not mention graphs, databases, metrics, schemas, or strategies
+- Do not refer to how the information was retrieved
+- Do not use phrases like "based on the provided context" or "according to the data"
 
-3. Use **Markdown**
+3. Answer at the appropriate level.
+- If the context contains factual information, state it directly
+- If the context supports multiple interpretations, acknowledge uncertainty
+- If the context is insufficient to fully answer the question, say so clearly
+
+4. Use **Markdown**
 - Format your answer using Markdown syntax
 - Use lists, headings, and code blocks where appropriate
 `;

@@ -47,7 +47,6 @@ export interface ProcessStep {
     strategyName?: string;
     graphContext?: GraphContext;
     metadata?: Record<string, any>;
-    strategiesUsed?: string[];
   };
 }
 
