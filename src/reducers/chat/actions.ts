@@ -57,6 +57,24 @@ export const sendStreamingRequest = createAsyncThunk<
           type: 'chat/updateProcessStep',
           payload: message.step,
         });
+      } else if (message.type === StreamType.TOOL_START && message.tool) {
+        // Add tool execution when tool starts
+        dispatch({
+          type: 'chat/addToolExecution',
+          payload: message.tool,
+        });
+      } else if (message.type === StreamType.TOOL_RESULT && message.tool) {
+        // Update tool execution with result
+        dispatch({
+          type: 'chat/updateToolExecution',
+          payload: message.tool,
+        });
+      } else if (message.type === StreamType.TOOL_ERROR && message.tool) {
+        // Update tool execution with error
+        dispatch({
+          type: 'chat/updateToolExecution',
+          payload: { ...message.tool, success: false },
+        });
       } else if (message.type === StreamType.METADATA && message.context) {
         context = message.context;
       } else if (message.type === StreamType.TEXT && message.content) {

@@ -6,6 +6,17 @@ import {
 
 const CONTEXT_BUILDER_API_BASE = '/api/context';
 
+export interface ToolExecution {
+  name: string;
+  serverId: string;
+  serverName?: string;
+  params?: Record<string, unknown>;
+  status: 'pending' | 'running' | 'success' | 'error';
+  executionTime?: number;
+  content?: unknown;
+  error?: string;
+}
+
 export interface ProcessStep {
   id: string;
   title: string;
@@ -18,7 +29,19 @@ export interface ProcessStep {
     datasourceId?: string;
     query?: string;
     resultCount?: number;
+    toolExecutions?: ToolExecution[];
   };
+}
+
+export interface ToolEventData {
+  name: string;
+  serverId: string;
+  serverName?: string;
+  params?: Record<string, unknown>;
+  success?: boolean;
+  executionTime?: number;
+  content?: unknown;
+  error?: string;
 }
 
 export interface StreamMessage {
@@ -28,6 +51,7 @@ export interface StreamMessage {
   context?: GraphContext;
   cypherQuery?: string;
   step?: ProcessStep;
+  tool?: ToolEventData;
 }
 
 /**

@@ -2,6 +2,19 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { MCPHttpClient } from '../../services/mcpHttpClient.js';
 import { MCPServerConfig } from '../../../shared/models/interfaces/mcpServer.js';
 
+// Helper to create mock response with headers
+const createMockResponse = (ok: boolean, data?: any, status = 200, statusText = 'OK') => ({
+  ok,
+  status,
+  statusText,
+  headers: {
+    get: (name: string) => name === 'Mcp-Session-Id' ? 'mock-session-id' : null,
+    entries: () => [['content-type', 'application/json']],
+  },
+  json: async () => data,
+  text: async () => JSON.stringify(data) || '',
+});
+
 describe('MCPHttpClient', () => {
   const mockServerConfig: MCPServerConfig = {
     id: 'test-server-id',
@@ -82,14 +95,9 @@ describe('MCPHttpClient', () => {
 
   describe('connect', () => {
     it('should connect with bearer auth', async () => {
-      fetchMock.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockInitializeResponse,
-      });
-      fetchMock.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ jsonrpc: '2.0', id: 2 }),
-      });
+      // Initialize request + notification request
+      fetchMock.mockResolvedValueOnce(createMockResponse(true, mockInitializeResponse));
+      fetchMock.mockResolvedValueOnce(createMockResponse(true, {})); // notification
 
       const client = new MCPHttpClient(mockServerConfig);
       await client.connect();
@@ -115,14 +123,9 @@ describe('MCPHttpClient', () => {
         authToken: 'api-key-123',
       };
 
-      fetchMock.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockInitializeResponse,
-      });
-      fetchMock.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ jsonrpc: '2.0', id: 2 }),
-      });
+      // Initialize request + notification request
+      fetchMock.mockResolvedValueOnce(createMockResponse(true, mockInitializeResponse));
+      fetchMock.mockResolvedValueOnce(createMockResponse(true, {})); // notification
 
       const client = new MCPHttpClient(apiKeyConfig);
       await client.connect();
@@ -138,11 +141,7 @@ describe('MCPHttpClient', () => {
     });
 
     it('should handle auth failure gracefully', async () => {
-      fetchMock.mockResolvedValueOnce({
-        ok: false,
-        status: 401,
-        statusText: 'Unauthorized',
-      });
+      fetchMock.mockResolvedValueOnce(createMockResponse(false, null, 401, 'Unauthorized'));
 
       const client = new MCPHttpClient(mockServerConfig);
 
@@ -152,18 +151,9 @@ describe('MCPHttpClient', () => {
 
   describe('listTools', () => {
     it('should discover tools from server', async () => {
-      fetchMock.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockInitializeResponse,
-      });
-      fetchMock.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ jsonrpc: '2.0', id: 2 }),
-      });
-      fetchMock.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockListToolsResponse,
-      });
+      fetchMock.mockResolvedValueOnce(createMockResponse(true, mockInitializeResponse));
+      fetchMock.mockResolvedValueOnce(createMockResponse(true, {})); // notification
+      fetchMock.mockResolvedValueOnce(createMockResponse(true, mockListToolsResponse));
 
       const client = new MCPHttpClient(mockServerConfig);
       const tools = await client.listTools();
@@ -178,18 +168,9 @@ describe('MCPHttpClient', () => {
     });
 
     it('should auto-connect if not connected', async () => {
-      fetchMock.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockInitializeResponse,
-      });
-      fetchMock.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ jsonrpc: '2.0', id: 2 }),
-      });
-      fetchMock.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockListToolsResponse,
-      });
+      fetchMock.mockResolvedValueOnce(createMockResponse(true, mockInitializeResponse));
+      fetchMock.mockResolvedValueOnce(createMockResponse(true, {})); // notification
+      fetchMock.mockResolvedValueOnce(createMockResponse(true, mockListToolsResponse));
 
       const client = new MCPHttpClient(mockServerConfig);
       expect(client.isConnected()).toBe(false);
@@ -202,18 +183,9 @@ describe('MCPHttpClient', () => {
 
   describe('executeTool', () => {
     it('should execute tool and return result', async () => {
-      fetchMock.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockInitializeResponse,
-      });
-      fetchMock.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ jsonrpc: '2.0', id: 2 }),
-      });
-      fetchMock.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockCallToolResponse,
-      });
+      fetchMock.mockResolvedValueOnce(createMockResponse(true, mockInitializeResponse));
+      fetchMock.mockResolvedValueOnce(createMockResponse(true, {})); // notification
+      fetchMock.mockResolvedValueOnce(createMockResponse(true, mockCallToolResponse));
 
       const client = new MCPHttpClient(mockServerConfig);
       const result = await client.executeTool('queryDatabase', {
@@ -226,25 +198,16 @@ describe('MCPHttpClient', () => {
     });
 
     it('should handle tool execution error', async () => {
-      fetchMock.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockInitializeResponse,
-      });
-      fetchMock.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ jsonrpc: '2.0', id: 2 }),
-      });
-      fetchMock.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({
-          jsonrpc: '2.0',
-          id: 3,
-          error: {
-            code: -32000,
-            message: 'Tool execution failed',
-          },
-        }),
-      });
+      fetchMock.mockResolvedValueOnce(createMockResponse(true, mockInitializeResponse));
+      fetchMock.mockResolvedValueOnce(createMockResponse(true, {})); // notification
+      fetchMock.mockResolvedValueOnce(createMockResponse(true, {
+        jsonrpc: '2.0',
+        id: 3,
+        error: {
+          code: -32000,
+          message: 'Tool execution failed',
+        },
+      }));
 
       const client = new MCPHttpClient(mockServerConfig);
       const result = await client.executeTool('queryDatabase', {
@@ -258,18 +221,9 @@ describe('MCPHttpClient', () => {
 
   describe('testConnection', () => {
     it('should return success with tools on successful connection', async () => {
-      fetchMock.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockInitializeResponse,
-      });
-      fetchMock.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ jsonrpc: '2.0', id: 2 }),
-      });
-      fetchMock.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockListToolsResponse,
-      });
+      fetchMock.mockResolvedValueOnce(createMockResponse(true, mockInitializeResponse));
+      fetchMock.mockResolvedValueOnce(createMockResponse(true, {})); // notification
+      fetchMock.mockResolvedValueOnce(createMockResponse(true, mockListToolsResponse));
 
       const client = new MCPHttpClient(mockServerConfig);
       const result = await client.testConnection();
@@ -294,14 +248,8 @@ describe('MCPHttpClient', () => {
 
   describe('disconnect', () => {
     it('should reset connection state', async () => {
-      fetchMock.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockInitializeResponse,
-      });
-      fetchMock.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ jsonrpc: '2.0', id: 2 }),
-      });
+      fetchMock.mockResolvedValueOnce(createMockResponse(true, mockInitializeResponse));
+      fetchMock.mockResolvedValueOnce(createMockResponse(true, {})); // notification
 
       const client = new MCPHttpClient(mockServerConfig);
       await client.connect();

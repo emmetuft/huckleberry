@@ -1,7 +1,7 @@
 import { Message } from 'models/interfaces/message';
 import { createAppSlice } from '../createAppSlice';
 import { sendStreamingRequest } from './actions';
-import { ProcessStep } from 'services/context';
+import { ProcessStep, ToolExecution, ToolEventData } from 'services/context';
 
 export interface ProcessStepWithUI extends ProcessStep {
   isOpen: boolean;
@@ -127,6 +127,71 @@ export const ChatSlice = createAppSlice({
     clearProcessingSteps: create.reducer((state) => {
       state.processingSteps = [];
     }),
+    addToolExecution: create.reducer(
+      (state, action: { payload: ToolEventData }) => {
+        // Add tool execution to the MCP strategy step
+        if (state.streamingMessageId) {
+          const message = state.messages.find(
+            (m) => m.id === state.streamingMessageId,
+          );
+          if (message?.processingSteps) {
+            // Find the MCP tool strategy step
+            const mcpStep = message.processingSteps.find(
+              (s) => s.id === 'strategy-MCP_TOOL',
+            );
+            if (mcpStep) {
+              if (!mcpStep.details) {
+                mcpStep.details = {};
+              }
+              if (!mcpStep.details.toolExecutions) {
+                mcpStep.details.toolExecutions = [];
+              }
+              const toolExec: ToolExecution = {
+                name: action.payload.name,
+                serverId: action.payload.serverId,
+                serverName: action.payload.serverName,
+                params: action.payload.params,
+                status: 'running',
+              };
+              mcpStep.details.toolExecutions.push(toolExec);
+            }
+          }
+        }
+      },
+    ),
+    updateToolExecution: create.reducer(
+      (
+        state,
+        action: {
+          payload: ToolEventData & { success?: boolean };
+        },
+      ) => {
+        // Update tool execution in the MCP strategy step
+        if (state.streamingMessageId) {
+          const message = state.messages.find(
+            (m) => m.id === state.streamingMessageId,
+          );
+          if (message?.processingSteps) {
+            const mcpStep = message.processingSteps.find(
+              (s) => s.id === 'strategy-MCP_TOOL',
+            );
+            if (mcpStep?.details?.toolExecutions) {
+              const toolExec = mcpStep.details.toolExecutions.find(
+                (t) =>
+                  t.name === action.payload.name &&
+                  t.serverId === action.payload.serverId,
+              );
+              if (toolExec) {
+                toolExec.status = action.payload.success ? 'success' : 'error';
+                toolExec.executionTime = action.payload.executionTime;
+                toolExec.content = action.payload.content;
+                toolExec.error = action.payload.error;
+              }
+            }
+          }
+        }
+      },
+    ),
   }),
   extraReducers: (builder) => {
     builder
@@ -212,6 +277,8 @@ export const {
   toggleProcessStep,
   collapseAllSteps,
   clearProcessingSteps,
+  addToolExecution,
+  updateToolExecution,
 } = ChatSlice.actions;
 
 export const {

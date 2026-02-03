@@ -1,11 +1,14 @@
 import { FC, useState } from 'react';
-import { Collapse, Button } from 'antd';
-import { CheckCircle, CircleNotch } from 'phosphor-react';
+import { Collapse, Button, Tag } from 'antd';
+import { CheckCircle, CircleNotch, Warning } from 'phosphor-react';
 import styles from './ProcessStep.module.scss';
 import { ContextStrategyType } from '../../../../shared/models/enums/contextStrategy';
 import { StreamStatus } from '../../../../shared/models/enums/stream';
 import { ContextGraph } from './ContextGraph';
-import { ProcessStep as ProcessStepType } from 'services/context';
+import {
+  ProcessStep as ProcessStepType,
+  ToolExecution,
+} from 'services/context';
 import { SaveMetricModal } from '../../SaveMetricModal/SaveMetricModal';
 
 interface ProcessStepProps {
@@ -107,6 +110,76 @@ export const ProcessStep: FC<ProcessStepProps> = ({ step, onToggle }) => {
             <span className={styles.property}>
               Results: {details.resultCount} rows
             </span>
+          </div>
+        </div>
+      );
+    }
+
+    // Show MCP tool executions
+    if (
+      details.strategyName === ContextStrategyType.MCP_TOOL &&
+      details.toolExecutions &&
+      details.toolExecutions.length > 0
+    ) {
+      return (
+        <div className={styles.details}>
+          <div className={styles.toolExecutions}>
+            {details.toolExecutions.map(
+              (tool: ToolExecution, index: number) => (
+                <div
+                  key={`${tool.serverId}-${tool.name}-${index}`}
+                  className={styles.toolExecution}
+                >
+                  <div className={styles.toolHeader}>
+                    <div className={styles.toolStatus}>
+                      {tool.status === 'running' && (
+                        <CircleNotch
+                          size={14}
+                          weight="bold"
+                          className={styles.spinner}
+                        />
+                      )}
+                      {tool.status === 'success' && (
+                        <CheckCircle
+                          size={14}
+                          weight="fill"
+                          className={styles.checkSmall}
+                        />
+                      )}
+                      {tool.status === 'error' && (
+                        <Warning
+                          size={14}
+                          weight="fill"
+                          className={styles.errorIcon}
+                        />
+                      )}
+                    </div>
+                    <span className={styles.toolName}>{tool.name}</span>
+                    {tool.serverName && (
+                      <Tag className={styles.serverTag}>{tool.serverName}</Tag>
+                    )}
+                    {tool.executionTime !== undefined && (
+                      <span className={styles.executionTime}>
+                        {tool.executionTime}ms
+                      </span>
+                    )}
+                  </div>
+                  {tool.params && Object.keys(tool.params).length > 0 && (
+                    <div className={styles.toolParams}>
+                      <p className={styles.sectionLabel}>Parameters:</p>
+                      <pre className={styles.paramsCode}>
+                        <code>{JSON.stringify(tool.params, null, 2)}</code>
+                      </pre>
+                    </div>
+                  )}
+                  {tool.error && (
+                    <div className={styles.toolError}>
+                      <p className={styles.errorText}>{tool.error}</p>
+                    </div>
+                  )}
+                </div>
+              ),
+            )}
           </div>
         </div>
       );

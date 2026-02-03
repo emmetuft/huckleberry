@@ -192,15 +192,18 @@
   }
 
   .selectedServerPanel {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: white;
+    border: 1px solid $grey-border;
     border-radius: 12px;
     padding: 20px;
+    max-height: 500px;
+    overflow-y: auto;
 
     h3 {
       margin: 0 0 16px 0;
       font-size: 18px;
       font-weight: 500;
+      color: $grey-dark;
     }
 
     .toolsList {
@@ -209,8 +212,8 @@
       gap: 12px;
 
       .toolItem {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: $grey-bg;
+        border: 1px solid $grey-border;
         border-radius: 8px;
         padding: 12px;
 
@@ -223,14 +226,14 @@
 
         .toolDescription {
           font-size: 13px;
-          color: rgba(255, 255, 255, 0.6);
+          color: $grey-text;
           line-height: 1.4;
         }
       }
     }
 
     .noTools {
-      color: rgba(255, 255, 255, 0.5);
+      color: $grey-text;
       font-style: italic;
     }
   }

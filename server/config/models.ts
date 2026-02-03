@@ -25,4 +25,7 @@ export const models = {
 
   // Datasource Service - Used for SQL query generation
   datasource: openaiModel,
+
+  // Fast model - Used for quick tasks like parameter generation
+  fast: openaiModel,
 };
