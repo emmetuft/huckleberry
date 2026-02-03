@@ -1,7 +1,7 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Button } from 'antd';
-import { CloseOutlined, LoadingOutlined } from '@ant-design/icons';
+import { Button, Tooltip } from 'antd';
+import { CloseOutlined, LoadingOutlined, ToolOutlined } from '@ant-design/icons';
 import {
   ArrowUp,
   CalendarBlank,
@@ -16,11 +16,14 @@ import { useAppDispatch } from 'reducers';
 import { selectPage } from 'reducers/app/slice';
 import { sendStreamingRequest } from 'reducers/chat/actions';
 import { selectLoading, setFullScreen } from 'reducers/chat/slice';
+import { selectTools } from 'reducers/mcp/slice';
+import { fetchTools } from 'reducers/mcp/actions';
 import { COMMANDS } from 'constants/app';
 import { sharedIconProps } from 'constants/styles';
 import { AppPage } from 'models/enums/appPage';
 import { ToolPopup } from './ToolPopup';
 import { AddContextButton } from './AddContextButton';
+import { ToolBrowser } from '../ToolBrowser/ToolBrowser';
 import {
   getCaretCharacterOffsetWithin,
   getTextWithHighlights,
@@ -28,6 +31,7 @@ import {
 } from 'utils/dom';
 import { ActionType, getSuggestedActions } from 'utils/temp';
 import { processFiles } from 'utils/file';
+import { MCPToolDefinition, MCPToolCall } from '../../../../shared/models/interfaces/mcpServer';
 
 interface IntentInputProps {
   placeholder?: string;
@@ -38,6 +42,7 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   const dispatch = useAppDispatch();
   const appPage = useSelector(selectPage);
   const requestLoading = useSelector(selectLoading);
+  const mcpTools = useSelector(selectTools);
 
   const [isEmpty, setIsEmpty] = useState<boolean>(true);
   const [suggestedActions, setSuggestedActions] = useState<
@@ -47,8 +52,13 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   const [lastPopupTriggerIndex, setLastPopupTriggerIndex] = useState<
     number | null
   >(null);
-  const [selectedTools, setSelectedTools] = useState<string[]>([]);
+  const [selectedTools, setSelectedTools] = useState<MCPToolDefinition[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [showToolBrowser, setShowToolBrowser] = useState<boolean>(false);
+
+  useEffect(() => {
+    dispatch(fetchTools());
+  }, [dispatch]);
 
   const editableRef = useRef<HTMLDivElement>(null);
   const popupRef = useRef<HTMLDivElement>(null);
@@ -136,10 +146,10 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     }
   };
 
-  const onSelectTool = (value: string) => {
-    // Add value to selectedTools, avoiding duplicates
-    if (selectedTools.includes(value)) return;
-    setSelectedTools([...selectedTools, value]);
+  const onSelectTool = (tool: MCPToolDefinition) => {
+    // Add tool to selectedTools, avoiding duplicates
+    if (selectedTools.some((t) => t.name === tool.name && t.serverId === tool.serverId)) return;
+    setSelectedTools([...selectedTools, tool]);
     setShowToolPopup(false);
 
     // Remove command from the editable content
@@ -158,8 +168,8 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     setCaretPosition(el, newText.length);
   };
 
-  const onRemoveTool = (tool: string) => {
-    setSelectedTools(selectedTools.filter((t) => t !== tool));
+  const onRemoveTool = (tool: MCPToolDefinition) => {
+    setSelectedTools(selectedTools.filter((t) => !(t.name === tool.name && t.serverId === tool.serverId)));
   };
 
   const handleFileUpload = (file: File) => {
@@ -182,10 +192,21 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     const processedFiles =
       uploadedFiles.length > 0 ? await processFiles(uploadedFiles) : undefined;
 
+    // Convert selected tools to MCPToolCall format
+    const toolCalls: MCPToolCall[] | undefined =
+      selectedTools.length > 0
+        ? selectedTools.map((tool) => ({
+            toolName: tool.name,
+            serverId: tool.serverId,
+            params: {},
+          }))
+        : undefined;
+
     dispatch(
       sendStreamingRequest({
         userInput,
         files: processedFiles,
+        tools: toolCalls,
       }),
     );
 
@@ -220,18 +241,25 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
         <ToolPopup
           popupRef={popupRef}
           inputRef={popupInputRef}
+          tools={mcpTools}
           onPopupKeyDown={onPopupKeyDown}
           onSelectTool={onSelectTool}
         />
       )}
+      <ToolBrowser
+        open={showToolBrowser}
+        onClose={() => setShowToolBrowser(false)}
+        selectedTools={selectedTools}
+        onToolsChange={setSelectedTools}
+      />
       <div
         className={`${styles.inputWrapper} ${animate ? styles.animate : ''}`}
       >
         {selectedTools.length > 0 && (
           <div className={styles.selectedTools}>
             {selectedTools.map((tool) => (
-              <div key={tool} className={styles.tool}>
-                <p>{tool}</p>
+              <div key={`${tool.serverId}-${tool.name}`} className={styles.tool}>
+                <p>{tool.name}</p>
                 <button onClick={() => onRemoveTool(tool)}>
                   <CloseOutlined className={styles.closeIcon} />
                 </button>
@@ -255,6 +283,14 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
         <div className={styles.actions}>
           <div className={styles.buttons}>
             <AddContextButton onFileUpload={handleFileUpload} />
+            <Tooltip title="Browse Tools">
+              <Button
+                type="text"
+                icon={<ToolOutlined />}
+                onClick={() => setShowToolBrowser(true)}
+                size="small"
+              />
+            </Tooltip>
             {uploadedFiles.map((file) => (
               <div key={file.name} className={styles.uploadedFile}>
                 <File {...sharedIconProps} size={14} />

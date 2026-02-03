@@ -13,11 +13,15 @@ import {
   GRAPH_RAG_DESCRIPTION,
   METRIC_DESCRIPTION,
   PERSONA_DESCRIPTION,
+  MCP_TOOL_DESCRIPTION,
 } from '../constants/strategies.ts';
 import { graphRagService } from './graphRag.service.js';
 import { metricService } from './metric.service.js';
 import { personaService } from './persona.service.js';
 import { fileService } from './file.service.js';
+import { mcpRegistryService } from './mcpRegistry.service.js';
+import { getMCPClient } from './mcpHttpClient.js';
+import { MCPToolCall, MCPToolResult } from '../../shared/models/interfaces/mcpServer.js';
 import {
   ContextStrategyType,
   STRATEGY_EXP_MAP,
@@ -102,6 +106,118 @@ class PersonaStrategy implements ContextStrategy {
   }
 }
 
+class MCPToolStrategy implements ContextStrategy {
+  name = ContextStrategyType.MCP_TOOL;
+  description = MCP_TOOL_DESCRIPTION;
+  priority = 0;
+
+  async buildContext(userRequest: UserRequest): Promise<ContextResult> {
+    const { tools } = userRequest;
+
+    if (!tools || tools.length === 0) {
+      return {
+        textContext: '',
+        metadata: {
+          strategy: this.name,
+          toolsExecuted: [],
+        },
+      };
+    }
+
+    const toolResults: Array<{
+      toolName: string;
+      serverId: string;
+      serverName?: string;
+      result: MCPToolResult;
+    }> = [];
+
+    for (const tool of tools as MCPToolCall[]) {
+      try {
+        const server = await mcpRegistryService.getServerById(tool.serverId);
+        if (!server || !server.enabled) {
+          toolResults.push({
+            toolName: tool.toolName,
+            serverId: tool.serverId,
+            result: {
+              success: false,
+              error: 'Server not found or disabled',
+            },
+          });
+          continue;
+        }
+
+        const client = getMCPClient(server);
+        const result = await client.executeTool(tool.toolName, tool.params || {});
+
+        toolResults.push({
+          toolName: tool.toolName,
+          serverId: tool.serverId,
+          serverName: server.name,
+          result,
+        });
+      } catch (error) {
+        toolResults.push({
+          toolName: tool.toolName,
+          serverId: tool.serverId,
+          result: {
+            success: false,
+            error: error instanceof Error ? error.message : 'Unknown error',
+          },
+        });
+      }
+    }
+
+    const textContext = this.formatToolResults(toolResults);
+
+    return {
+      textContext,
+      metadata: {
+        strategy: this.name,
+        toolsExecuted: toolResults.map((r) => ({
+          toolName: r.toolName,
+          serverId: r.serverId,
+          serverName: r.serverName,
+          success: r.result.success,
+          executionTime: r.result.executionTime,
+        })),
+        toolResults,
+      },
+    };
+  }
+
+  private formatToolResults(
+    toolResults: Array<{
+      toolName: string;
+      serverId: string;
+      serverName?: string;
+      result: MCPToolResult;
+    }>,
+  ): string {
+    if (toolResults.length === 0) {
+      return '';
+    }
+
+    const sections = toolResults.map((tr) => {
+      const header = `## Tool: ${tr.toolName}${tr.serverName ? ` (from ${tr.serverName})` : ''}`;
+
+      if (!tr.result.success) {
+        return `${header}\nError: ${tr.result.error}`;
+      }
+
+      let contentStr: string;
+      if (typeof tr.result.content === 'string') {
+        contentStr = tr.result.content;
+      } else {
+        contentStr = JSON.stringify(tr.result.content, null, 2);
+      }
+
+      return `${header}\n${contentStr}`;
+    });
+
+    return `# MCP Tool Results\n\n${sections.join('\n\n---\n\n')}`;
+  }
+}
+
 class ContextBuilderService {
   private model;
   private strategies: ContextStrategy[] = [];
@@ -113,6 +229,7 @@ class ContextBuilderService {
     this.registerStrategy(new PersonaStrategy());
     this.registerStrategy(new MetricStrategy());
     this.registerStrategy(new GraphRagStrategy());
+    this.registerStrategy(new MCPToolStrategy());
   }
 
   registerStrategy(strategy: ContextStrategy): void {
@@ -127,14 +244,19 @@ class ContextBuilderService {
   private async selectStrategies(
     userRequest: UserRequest,
   ): Promise<ContextStrategy[]> {
-    const { userInput } = userRequest;
+    const { userInput, tools } = userRequest;
 
-    // Build strategy descriptions for the AI
-    const strategyDescriptions = this.strategies
+    // Build strategy descriptions for the AI (excluding MCP_TOOL which is auto-selected)
+    const aiSelectableStrategies = this.strategies.filter(
+      (s) => s.name !== ContextStrategyType.MCP_TOOL,
+    );
+    const strategyDescriptions = aiSelectableStrategies
       .map((s) => `- ${s.name}: ${s.description}`)
       .join('\n');
 
     const prompt = CONTEXT_STRATEGY_PROMPT(strategyDescriptions, userInput);
+
+    let selected: ContextStrategy[] = [];
 
     try {
       const { text } = await generateText({
@@ -147,16 +269,24 @@ class ContextBuilderService {
       const selectedNames: string[] = JSON.parse(cleanedText);
       console.log('AI selected strategies:', selectedNames);
 
-      const selected = this.strategies.filter((s) =>
+      selected = this.strategies.filter((s) =>
         selectedNames.includes(s.name),
       );
-
-      // Fallback: if no strategies selected or invalid response, use none
-      return selected.length > 0 ? selected : [];
     } catch (error) {
       console.error('Error selecting strategies:', error);
-      return [];
     }
+
+    // Auto-include MCP_TOOL strategy if tools are provided
+    if (tools && tools.length > 0) {
+      const mcpStrategy = this.strategies.find(
+        (s) => s.name === ContextStrategyType.MCP_TOOL,
+      );
+      if (mcpStrategy && !selected.includes(mcpStrategy)) {
+        selected.unshift(mcpStrategy);
+      }
+    }
+
+    return selected;
   }
 
   /**
@@ -261,7 +391,7 @@ class ContextBuilderService {
     const contextResults = await this.buildContextParallel(userRequest);
 
     // Merge all context results
-    const { textContext, graphContext, metadata } =
+    const { textContext, graphContext } =
       this.mergeContextResults(contextResults);
 
     // Build messages with files
@@ -357,7 +487,7 @@ class ContextBuilderService {
       });
 
       // Merge all context results
-      const { textContext, graphContext, metadata } =
+      const { textContext, graphContext } =
         this.mergeContextResults(results);
 
       // Send final graph context as metadata

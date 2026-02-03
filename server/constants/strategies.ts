@@ -13,3 +13,6 @@ Use when the user is asking for quantitative, analytical, or performance-related
 
 export const PERSONA_DESCRIPTION = `
 Use when the response should be tailored to the user's role, responsibilities, goals, or expertise. Retrieves profile and behavioral context (e.g., role, department, focus areas, strengths, priorities) to shape tone, depth, framing, and recommendations—rather than to supply factual or metric data.`;
+
+export const MCP_TOOL_DESCRIPTION = `
+Use when the user has explicitly selected MCP tools to use, indicated by tool names in the request. Executes the selected external MCP server tools and incorporates their results into the context. These tools can perform operations like querying databases, fetching external data, executing workflows, or calling custom APIs. Only use this strategy when tools are explicitly provided in the request.`;

@@ -10,4 +10,7 @@ export enum StreamType {
   STEP_START = 'step_start',
   STEP_COMPLETE = 'step_complete',
   TEXT = 'text',
+  TOOL_START = 'tool_start',
+  TOOL_RESULT = 'tool_result',
+  TOOL_ERROR = 'tool_error',
 }

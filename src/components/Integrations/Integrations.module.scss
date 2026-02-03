@@ -3,6 +3,19 @@
 .Integrations {
   padding: $defaultPagePadding;
 
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+
+    h1 {
+      font-size: 24px;
+      font-weight: 500;
+      margin: 0;
+    }
+  }
+
   .tabContent {
     display: flex;
     flex-direction: column;
@@ -34,6 +47,191 @@
 
     &.available {
       grid-template-columns: 1fr 1fr 1fr;
+    }
+  }
+
+  // MCP Servers Section
+  .mcpSection {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+
+    .sectionHeader {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      h2 {
+        margin: 0;
+        font-weight: 400;
+        font-size: 20px;
+      }
+    }
+  }
+
+  .serverGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+  }
+
+  .serverCard {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    &.selected {
+      border-color: $purple;
+      background: rgba($purple, 0.1);
+    }
+
+    .cardHeader {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+
+      .serverInfo {
+        flex: 1;
+        min-width: 0;
+
+        h3 {
+          margin: 0 0 4px 0;
+          font-size: 16px;
+          font-weight: 500;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .serverUrl {
+          font-size: 12px;
+          color: rgba(255, 255, 255, 0.5);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+
+      .statusBadge {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        padding: 4px 8px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.1);
+
+        .statusDot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+
+          &.connected {
+            background: #52c41a;
+          }
+          &.disconnected {
+            background: #ff4d4f;
+          }
+          &.error {
+            background: #faad14;
+          }
+          &.unknown {
+            background: #8c8c8c;
+          }
+        }
+      }
+    }
+
+    .cardDescription {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .toolCount {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+      margin-bottom: 12px;
+    }
+
+    .cardActions {
+      display: flex;
+      gap: 8px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  .emptyState {
+    text-align: center;
+    padding: 48px 24px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px dashed rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+
+    h3 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    p {
+      margin: 0 0 16px 0;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 14px;
+    }
+  }
+
+  .selectedServerPanel {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+
+    h3 {
+      margin: 0 0 16px 0;
+      font-size: 18px;
+      font-weight: 500;
+    }
+
+    .toolsList {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+
+      .toolItem {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        padding: 12px;
+
+        .toolName {
+          font-weight: 500;
+          font-size: 14px;
+          margin-bottom: 4px;
+          color: $purple;
+        }
+
+        .toolDescription {
+          font-size: 13px;
+          color: rgba(255, 255, 255, 0.6);
+          line-height: 1.4;
+        }
+      }
+    }
+
+    .noTools {
+      color: rgba(255, 255, 255, 0.5);
+      font-style: italic;
     }
   }
 }

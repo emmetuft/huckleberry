@@ -6,6 +6,7 @@ import {
   UserRequest,
 } from '../../../shared/models/interfaces/userRequest';
 import { ProcessedFile } from '../../../shared/models/interfaces/files';
+import { MCPToolCall } from '../../../shared/models/interfaces/mcpServer';
 import { ContextService } from 'services/context';
 
 /**
@@ -13,16 +14,17 @@ import { ContextService } from 'services/context';
  */
 export const sendRequest = createAsyncThunk<
   SystemResponse,
-  { userInput: string; files?: ProcessedFile[] }
->('chat/sendRequest', async ({ userInput, files }, { getState }) => {
+  { userInput: string; files?: ProcessedFile[]; tools?: MCPToolCall[] }
+>('chat/sendRequest', async ({ userInput, files, tools }, { getState }) => {
   const state = getState() as RootState;
   const identity = state.app.identity;
 
-  // Add userId and files to the query if they exist
+  // Add userId, files, and tools to the query if they exist
   const queryWithUserId: UserRequest = {
     userInput,
     userId: identity?.userId,
     files,
+    tools,
   };
 
   return await ContextService.query(queryWithUserId);
@@ -34,19 +36,20 @@ export const sendRequest = createAsyncThunk<
  */
 export const sendStreamingRequest = createAsyncThunk<
   SystemResponse,
-  { userInput: string; files?: ProcessedFile[] },
+  { userInput: string; files?: ProcessedFile[]; tools?: MCPToolCall[] },
   { state: RootState }
 >(
   'chat/sendStreamingRequest',
-  async ({ userInput, files }, { getState, dispatch }) => {
+  async ({ userInput, files, tools }, { getState, dispatch }) => {
     const state = getState();
     const identity = state.app.identity;
 
-    // Add userId and files to the query if they exist
+    // Add userId, files, and tools to the query if they exist
     const queryWithUserId: UserRequest = {
       userInput,
       userId: identity?.userId,
       files,
+      tools,
     };
 
     let context: any = undefined;
