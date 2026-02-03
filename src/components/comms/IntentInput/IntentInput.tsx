@@ -19,8 +19,10 @@ import { selectLoading, setFullScreen } from 'reducers/chat/slice';
 import { COMMANDS } from 'constants/app';
 import { sharedIconProps } from 'constants/styles';
 import { AppPage } from 'models/enums/appPage';
+import { DataSource } from 'models/interfaces/dataSource';
 import { ToolPopup } from './ToolPopup';
 import { AddContextButton } from './AddContextButton';
+import { DataSourceModal } from 'components/DataSourceModal/DataSourceModal';
 import {
   getCaretCharacterOffsetWithin,
   getTextWithHighlights,
@@ -49,6 +51,11 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   >(null);
   const [selectedTools, setSelectedTools] = useState<string[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [selectedDataSources, setSelectedDataSources] = useState<DataSource[]>(
+    [],
+  );
+  const [showDataSourceModal, setShowDataSourceModal] =
+    useState<boolean>(false);
 
   const editableRef = useRef<HTMLDivElement>(null);
   const popupRef = useRef<HTMLDivElement>(null);
@@ -171,6 +178,25 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     setUploadedFiles(uploadedFiles.filter((f) => f.name !== fileName));
   };
 
+  const handleDataSourceClick = () => {
+    setShowDataSourceModal(true);
+  };
+
+  const handleDataSourceModalConfirm = (dataSources: DataSource[]) => {
+    setSelectedDataSources([...selectedDataSources, ...dataSources]);
+    setShowDataSourceModal(false);
+  };
+
+  const handleDataSourceModalCancel = () => {
+    setShowDataSourceModal(false);
+  };
+
+  const onRemoveDataSource = (dataSourceId: string) => {
+    setSelectedDataSources(
+      selectedDataSources.filter((ds) => ds.id !== dataSourceId),
+    );
+  };
+
   const onClickSend = async () => {
     const el = editableRef.current;
     if (!el || isEmpty) return;
@@ -182,10 +208,17 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     const processedFiles =
       uploadedFiles.length > 0 ? await processFiles(uploadedFiles) : undefined;
 
+    // Process datasources to send only id and name
+    const processedDataSources =
+      selectedDataSources.length > 0
+        ? selectedDataSources.map((ds) => ({ id: ds.id, name: ds.name }))
+        : undefined;
+
     dispatch(
       sendStreamingRequest({
         userInput,
         files: processedFiles,
+        dataSources: processedDataSources,
       }),
     );
 
@@ -198,6 +231,7 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     setIsEmpty(true);
     setSelectedTools([]);
     setUploadedFiles([]);
+    setSelectedDataSources([]);
   };
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -216,6 +250,11 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
 
   return (
     <div className={styles.IntentInput}>
+      <DataSourceModal
+        open={showDataSourceModal}
+        onCancel={handleDataSourceModalCancel}
+        onConfirm={handleDataSourceModalConfirm}
+      />
       {showToolPopup && (
         <ToolPopup
           popupRef={popupRef}
@@ -254,12 +293,24 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
         </div>
         <div className={styles.actions}>
           <div className={styles.buttons}>
-            <AddContextButton onFileUpload={handleFileUpload} />
+            <AddContextButton
+              onFileUpload={handleFileUpload}
+              onDataSourceClick={handleDataSourceClick}
+            />
             {uploadedFiles.map((file) => (
               <div key={file.name} className={styles.uploadedFile}>
                 <File {...sharedIconProps} size={14} />
                 <span className={styles.fileName}>{file.name}</span>
                 <button onClick={() => onRemoveFile(file.name)}>
+                  <CloseOutlined className={styles.closeIcon} />
+                </button>
+              </div>
+            ))}
+            {selectedDataSources.map((dataSource) => (
+              <div key={dataSource.id} className={styles.uploadedFile}>
+                <Database {...sharedIconProps} size={14} />
+                <span className={styles.fileName}>{dataSource.name}</span>
+                <button onClick={() => onRemoveDataSource(dataSource.id)}>
                   <CloseOutlined className={styles.closeIcon} />
                 </button>
               </div>

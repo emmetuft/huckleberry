@@ -2,9 +2,13 @@ import { generateText, streamText } from 'ai';
 import { anthropic } from '@ai-sdk/anthropic';
 import {
   GraphContext,
-  SystemResponse,
   UserRequest,
 } from '../../shared/models/interfaces/userRequest.ts';
+import {
+  ContextStrategyType,
+  STRATEGY_EXP_MAP,
+} from '../../shared/models/enums/contextStrategy.ts';
+import { StreamStatus, StreamType } from '../../shared/models/enums/stream.ts';
 import {
   CONTEXT_STRATEGY_PROMPT,
   ULTIMATE_PROMPT,
@@ -18,11 +22,7 @@ import { graphRagService } from './graphRag.service.js';
 import { metricService } from './metric.service.js';
 import { personaService } from './persona.service.js';
 import { fileService } from './file.service.js';
-import {
-  ContextStrategyType,
-  STRATEGY_EXP_MAP,
-} from '../../shared/models/enums/contextStrategy.ts';
-import { StreamStatus, StreamType } from '../../shared/models/enums/stream.ts';
+import { datasourceService } from './datasource.service.js';
 
 interface ContextResult {
   textContext: string;
@@ -127,6 +127,11 @@ class ContextBuilderService {
   private async selectStrategies(
     userRequest: UserRequest,
   ): Promise<ContextStrategy[]> {
+    if (userRequest.dataSources && userRequest.dataSources.length > 0) {
+      // If specific datasources are requested, skip strategy selection
+      return [];
+    }
+
     const { userInput } = userRequest;
 
     // Build strategy descriptions for the AI
@@ -157,25 +162,6 @@ class ContextBuilderService {
       console.error('Error selecting strategies:', error);
       return [];
     }
-  }
-
-  /**
-   * Build context by running multiple strategies in parallel
-   */
-  private async buildContextParallel(
-    userRequest: UserRequest,
-  ): Promise<ContextResult[]> {
-    // Use AI to intelligently select which strategies to run
-    const strategiesToRun = await this.selectStrategies(userRequest);
-
-    // Run all selected strategies in parallel
-    const results = await Promise.all(
-      strategiesToRun.map((strategy) => strategy.buildContext(userRequest)),
-    );
-
-    console.log('Context results from strategies:', results);
-
-    return results;
   }
 
   /**
@@ -256,134 +242,202 @@ class ContextBuilderService {
     ];
   }
 
-  async query(userRequest: UserRequest): Promise<SystemResponse> {
-    // Build context from all applicable strategies in parallel
-    const contextResults = await this.buildContextParallel(userRequest);
+  async queryStream(userRequest: UserRequest, emitEvent: (event: any) => void) {
+    // 1. Analyze request
+    const strategiesToRun = await this.runStep(
+      emitEvent,
+      { id: 'analyze-request', title: 'Analyzing your request' },
+      () => this.selectStrategies(userRequest),
+      (strategies) => ({
+        selectedStrategies: strategies.map((s) => s.name),
+      }),
+    );
 
-    // Merge all context results
-    const { textContext, graphContext, metadata } =
-      this.mergeContextResults(contextResults);
+    // 2. Run strategies + datasources in parallel
+    const results = await Promise.all([
+      ...strategiesToRun.map((s) =>
+        this.runStrategy(s, userRequest, emitEvent),
+      ),
+      ...(userRequest.dataSources || []).map((ds) =>
+        this.runDatasource(ds, userRequest, emitEvent),
+      ),
+    ]);
 
-    // Build messages with files
+    // 3. Generate response
+    const { textContext, graphContext } = this.mergeContextResults(results);
+
+    emitEvent({ type: 'metadata', context: graphContext });
+
     const messages = this.buildMessages(textContext, userRequest);
 
-    try {
-      const { text } = await generateText({
-        model: this.model,
-        system: ULTIMATE_PROMPT,
-        messages,
-        temperature: 0.7,
-      });
+    // Step: Generating response
+    emitEvent({
+      type: StreamType.STEP_START,
+      step: {
+        id: 'generate-response',
+        title: 'Generating response',
+        status: StreamStatus.IN_PROGRESS,
+      },
+    });
 
-      return {
-        output: text,
-        context: graphContext,
-      };
-    } catch (error) {
-      console.error('Error generating answer:', error);
-      throw error;
-    }
+    const result = streamText({
+      model: this.model,
+      system: ULTIMATE_PROMPT,
+      messages,
+      temperature: 0.7,
+    });
+
+    emitEvent({
+      type: StreamType.STEP_COMPLETE,
+      step: {
+        id: 'generate-response',
+        title: 'Generating response',
+        status: StreamStatus.COMPLETE,
+      },
+    });
+
+    return {
+      textStream: result.textStream,
+    };
   }
 
-  async queryStream(userRequest: UserRequest, emitEvent: (event: any) => void) {
-    try {
-      // Step 1: Analyzing request
-      const step1Id = 'analyze-request';
-      emitEvent({
-        type: StreamType.STEP_START,
-        step: {
-          id: step1Id,
-          title: 'Analyzing your request',
-          status: StreamStatus.IN_PROGRESS,
-        },
-      });
+  async runStep<T>(
+    emitEvent: (event: any) => void,
+    step: { id: string; title: string },
+    work: () => Promise<T>,
+    details?: (result: T) => any,
+  ): Promise<T> {
+    emitEvent({
+      type: StreamType.STEP_START,
+      step: { ...step, status: StreamStatus.IN_PROGRESS },
+    });
 
-      // Use AI to intelligently select which strategies to run
-      const strategiesToRun = await this.selectStrategies(userRequest);
+    try {
+      const result = await work();
 
       emitEvent({
         type: StreamType.STEP_COMPLETE,
         step: {
-          id: step1Id,
-          title: 'Analyzing your request',
+          ...step,
+          status: StreamStatus.COMPLETE,
+          details: details?.(result),
+        },
+      });
+
+      return result;
+    } catch (error) {
+      emitEvent({
+        type: StreamType.STEP_COMPLETE,
+        step: {
+          ...step,
           status: StreamStatus.COMPLETE,
           details: {
-            selectedStrategies: strategiesToRun.map((s) => s.name),
+            error: error instanceof Error ? error.message : 'Unknown error',
           },
         },
       });
 
-      // Run strategies and emit progress for each
-      const results: ContextResult[] = [];
-      for (const strategy of strategiesToRun) {
-        const stepId = `strategy-${strategy.name}`;
-        emitEvent({
-          type: StreamType.STEP_START,
-          step: {
-            id: stepId,
-            title: STRATEGY_EXP_MAP[strategy.name as ContextStrategyType],
-            status: StreamStatus.IN_PROGRESS,
-          },
-        });
-
-        const result = await strategy.buildContext(userRequest);
-        results.push(result);
-
-        // Emit step completion with strategy-specific details
-        emitEvent({
-          type: StreamType.STEP_COMPLETE,
-          step: {
-            id: stepId,
-            title: STRATEGY_EXP_MAP[strategy.name as ContextStrategyType],
-            status: StreamStatus.COMPLETE,
-            details: {
-              strategyName: strategy.name,
-              graphContext: result.graphContext,
-              metadata: result.metadata,
-            },
-          },
-        });
-      }
-
-      // Step: Generating response
-      const step4Id = 'generate-response';
-      emitEvent({
-        type: StreamType.STEP_START,
-        step: {
-          id: step4Id,
-          title: 'Generating response',
-          status: StreamStatus.IN_PROGRESS,
-        },
-      });
-
-      // Merge all context results
-      const { textContext, graphContext, metadata } =
-        this.mergeContextResults(results);
-
-      // Send final graph context as metadata
-      emitEvent({
-        type: 'metadata',
-        context: graphContext,
-      });
-
-      // Build messages with files
-      const messages = this.buildMessages(textContext, userRequest);
-
-      // Stream the text response
-      const result = await streamText({
-        model: this.model,
-        system: ULTIMATE_PROMPT,
-        messages,
-        temperature: 0.7,
-      });
-
-      return {
-        textStream: result.textStream,
-      };
-    } catch (error) {
-      console.error('Error streaming answer:', error);
       throw error;
     }
+  }
+
+  private async runStrategy(
+    strategy: ContextStrategy,
+    userRequest: UserRequest,
+    emitEvent: (event: any) => void,
+  ) {
+    const stepId = `strategy-${strategy.name}`;
+    const title = STRATEGY_EXP_MAP[strategy.name as ContextStrategyType];
+
+    try {
+      return await this.runStep(
+        emitEvent,
+        { id: stepId, title },
+        () => strategy.buildContext(userRequest),
+        (result) => ({
+          strategyName: strategy.name,
+          graphContext: result.graphContext,
+          metadata: result.metadata,
+        }),
+      );
+    } catch (error) {
+      return {
+        textContext: '',
+        metadata: {
+          strategy: strategy.name,
+          error: error instanceof Error ? error.message : 'Unknown error',
+        },
+      };
+    }
+  }
+
+  private async runDatasource(
+    datasource: { id: string; name?: string },
+    userRequest: UserRequest,
+    emitEvent: (event: any) => void,
+  ) {
+    const stepId = `datasource-${datasource.id}`;
+    const title = `Querying datasource: ${datasource.name || datasource.id}`;
+
+    try {
+      return await this.runStep(
+        emitEvent,
+        { id: stepId, title },
+        async () => {
+          const { data, query } = await datasourceService.queryDatasource(
+            userRequest.userInput,
+            datasource,
+          );
+
+          return { data, query };
+        },
+        ({ data, query }) => ({
+          datasourceId: datasource.id,
+          query,
+          resultCount: data.length,
+        }),
+      ).then(({ data, query }) => ({
+        textContext: this.formatDatasourceContext(datasource, data, query),
+        metadata: {
+          datasourceId: datasource.id,
+          datasourceName: datasource.name || datasource.id,
+          query,
+          resultCount: data.length,
+        },
+      }));
+    } catch (error) {
+      return {
+        textContext: `# Datasource: ${datasource.name || datasource.id}\n\nError querying datasource: ${
+          error instanceof Error ? error.message : 'Unknown error'
+        }`,
+        metadata: {
+          datasourceId: datasource.id,
+          error: error instanceof Error ? error.message : 'Unknown error',
+        },
+      };
+    }
+  }
+
+  private formatDatasourceContext(
+    datasource: { id: string; name?: string },
+    data: unknown[],
+    query: string,
+  ): string {
+    const name = datasource.name || datasource.id;
+
+    return [
+      `# Datasource: ${name}`,
+      ``,
+      `**SQL Query:**`,
+      '```sql',
+      query,
+      '```',
+      ``,
+      `**Query Results (${data.length} rows):**`,
+      '```json',
+      JSON.stringify(data, null, 2),
+      '```',
+    ].join('\n');
   }
 }
 
