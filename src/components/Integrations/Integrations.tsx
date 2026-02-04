@@ -16,6 +16,7 @@ import { integrationCategories, integrationList } from 'constants/integrations';
 import { defaultMotionProps } from 'constants/styles';
 import { IntegrationCard } from './IntegrationCard';
 import { AddServerModal } from './AddServerModal';
+import { OAuth2Status } from './OAuth2Status';
 import { useAppDispatch } from 'reducers';
 import {
   fetchServers,
@@ -24,6 +25,7 @@ import {
   testConnection,
   syncTools,
   toggleServerEnabled,
+  editServer,
 } from 'reducers/mcp/actions';
 import {
   selectServers,
@@ -56,6 +58,24 @@ export const Integrations: FC<IntegrationsProps> = () => {
   useEffect(() => {
     dispatch(fetchServers());
     dispatch(fetchTools());
+  }, [dispatch]);
+
+  // Handle OAuth2 callback URL params
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const oauthSuccess = params.get('oauth_success');
+    const oauthError = params.get('oauth_error');
+
+    if (oauthSuccess === 'true') {
+      message.success('OAuth2 authorization successful');
+      dispatch(fetchServers());
+      // Clean up URL params
+      window.history.replaceState({}, '', window.location.pathname);
+    } else if (oauthError) {
+      message.error(`OAuth2 error: ${oauthError}`);
+      // Clean up URL params
+      window.history.replaceState({}, '', window.location.pathname);
+    }
   }, [dispatch]);
 
   const filteredIntegrations = useMemo(
@@ -107,6 +127,24 @@ export const Integrations: FC<IntegrationsProps> = () => {
       message.success(
         `Connected: ${result.tools?.length || 0} tools available`,
       );
+    } else if (result.requiresOAuth2 && result.oauth2DiscoveredConfig) {
+      // OAuth2 required - update server with discovered config
+      const server = servers.find((s) => s.id === id);
+      if (server) {
+        await dispatch(
+          editServer({
+            id,
+            input: {
+              oauth2DiscoveredConfig: result.oauth2DiscoveredConfig,
+              oauth2Status: 'pending',
+            },
+          }),
+        );
+        dispatch(fetchServers());
+        message.info(
+          'OAuth2 authorization required. Click "Authorize" to connect.',
+        );
+      }
     } else {
       message.error(`Connection failed: ${result.message}`);
     }
@@ -217,6 +255,12 @@ export const Integrations: FC<IntegrationsProps> = () => {
                   <div className={styles.toolCount}>
                     {server.tools?.length || 0} tools available
                   </div>
+
+                  {server.authType === 'oauth2' && (
+                    <div className={styles.oauth2Status}>
+                      <OAuth2Status server={server} />
+                    </div>
+                  )}
 
                   <div
                     className={styles.cardActions}

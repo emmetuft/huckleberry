@@ -4,7 +4,23 @@ import {
   MCPToolResult,
   MCPTestConnectionResult,
   JSONSchema,
+  OAuth2DiscoveredConfig,
 } from '../../shared/models/interfaces/mcpServer.js';
+import { oauth2Service } from './oauth2.service.js';
+
+/**
+ * Error thrown when OAuth2 authorization is required
+ * Contains the discovered config for the caller to handle
+ */
+export class OAuth2AuthorizationRequiredError extends Error {
+  constructor(
+    public serverId: string,
+    public discoveredConfig: OAuth2DiscoveredConfig,
+  ) {
+    super('OAuth2 authorization required');
+    this.name = 'OAuth2AuthorizationRequiredError';
+  }
+}
 
 interface MCPRequest {
   jsonrpc: '2.0';
@@ -71,17 +87,10 @@ export class MCPHttpClient {
     return ++this.requestId;
   }
 
-  private getAuthHeaders(): Record<string, string> {
+  private getBaseHeaders(): Record<string, string> {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
     };
-
-    if (this.config.authType === 'bearer' && this.config.authToken) {
-      headers['Authorization'] = `Bearer ${this.config.authToken}`;
-    } else if (this.config.authType === 'api-key' && this.config.authToken) {
-      const headerName = this.config.authHeader || 'X-API-Key';
-      headers[headerName] = this.config.authToken;
-    }
 
     // Include session ID if we have one (per MCP Streamable HTTP spec)
     if (this.sessionId) {
@@ -91,9 +100,45 @@ export class MCPHttpClient {
     return headers;
   }
 
-  private async sendRequest(request: MCPRequest): Promise<MCPResponse> {
+  private async getAuthHeaders(skipOAuth2 = false): Promise<Record<string, string>> {
+    const headers = this.getBaseHeaders();
+
+    if (this.config.authType === 'bearer' && this.config.authToken) {
+      headers['Authorization'] = `Bearer ${this.config.authToken}`;
+    } else if (this.config.authType === 'api-key' && this.config.authToken) {
+      const headerName = this.config.authHeader || 'X-API-Key';
+      headers[headerName] = this.config.authToken;
+    } else if (this.config.authType === 'oauth2' && !skipOAuth2) {
+      // Try discovered config first, fall back to legacy config
+      const discoveredConfig = this.config.oauth2DiscoveredConfig;
+      const legacyConfig = this.config.oauth2Config;
+
+      let accessToken: string | null = null;
+
+      if (discoveredConfig?.clientId) {
+        accessToken = await oauth2Service.getValidAccessTokenWithDiscoveredConfig(
+          this.config.id,
+          discoveredConfig,
+        );
+      } else if (legacyConfig) {
+        accessToken = await oauth2Service.getValidAccessToken(
+          this.config.id,
+          legacyConfig,
+        );
+      }
+
+      if (accessToken) {
+        headers['Authorization'] = `Bearer ${accessToken}`;
+      }
+      // Don't throw here - let the request proceed and handle 401 for discovery
+    }
+
+    return headers;
+  }
+
+  private async sendRequest(request: MCPRequest, skipOAuth2Discovery = false): Promise<MCPResponse> {
     const url = this.config.url;
-    const headers = this.getAuthHeaders();
+    const headers = await this.getAuthHeaders(skipOAuth2Discovery);
 
     // Log request details (mask sensitive values)
     const safeHeaders = { ...headers };
@@ -128,6 +173,52 @@ export class MCPHttpClient {
       // Log all response headers for debugging
       console.log(`[MCP] Response headers:`, Object.fromEntries(response.headers.entries()));
 
+      // Handle 401 Unauthorized - trigger OAuth2 discovery if applicable
+      if (response.status === 401 && this.config.authType === 'oauth2' && !skipOAuth2Discovery) {
+        const wwwAuth = response.headers.get('WWW-Authenticate');
+        console.log(`[MCP] 401 received, WWW-Authenticate: ${wwwAuth}`);
+
+        if (wwwAuth) {
+          // Try to discover OAuth2 config from the response
+          const discoveredConfig = await oauth2Service.discoverFromWWWAuthenticate(
+            this.config.url,
+            wwwAuth,
+          );
+
+          if (discoveredConfig) {
+            // Preserve any existing client credentials
+            if (this.config.oauth2DiscoveredConfig?.clientId && !discoveredConfig.clientId) {
+              discoveredConfig.clientId = this.config.oauth2DiscoveredConfig.clientId;
+            }
+            if (this.config.oauth2DiscoveredConfig?.clientSecret && !discoveredConfig.clientSecret) {
+              discoveredConfig.clientSecret = this.config.oauth2DiscoveredConfig.clientSecret;
+            }
+
+            throw new OAuth2AuthorizationRequiredError(this.config.id, discoveredConfig);
+          }
+        }
+
+        // If no WWW-Authenticate or discovery failed, try direct discovery for OAuth2 servers
+        try {
+          const discoveredConfig = await oauth2Service.discoverOAuth2Config(this.config.url);
+
+          // Preserve any existing client credentials
+          if (this.config.oauth2DiscoveredConfig?.clientId && !discoveredConfig.clientId) {
+            discoveredConfig.clientId = this.config.oauth2DiscoveredConfig.clientId;
+          }
+          if (this.config.oauth2DiscoveredConfig?.clientSecret && !discoveredConfig.clientSecret) {
+            discoveredConfig.clientSecret = this.config.oauth2DiscoveredConfig.clientSecret;
+          }
+
+          throw new OAuth2AuthorizationRequiredError(this.config.id, discoveredConfig);
+        } catch (error) {
+          if (error instanceof OAuth2AuthorizationRequiredError) {
+            throw error;
+          }
+          console.log(`[MCP] OAuth2 discovery failed, returning 401 error`);
+        }
+      }
+
       if (!response.ok) {
         const errorBody = await response.text().catch(() => '');
         console.log(`[MCP] Error body:`, errorBody);
@@ -138,6 +229,9 @@ export class MCPHttpClient {
       console.log(`[MCP] Response body:`, JSON.stringify(data, null, 2));
       return data as MCPResponse;
     } catch (error) {
+      if (error instanceof OAuth2AuthorizationRequiredError) {
+        throw error;
+      }
       if (error instanceof Error) {
         if (error.name === 'TimeoutError' || error.name === 'AbortError') {
           throw new Error('Connection timeout');
@@ -181,9 +275,10 @@ export class MCPHttpClient {
       jsonrpc: '2.0',
       method: 'notifications/initialized',
     };
+    const notifyHeaders = await this.getAuthHeaders();
     await fetch(this.config.url, {
       method: 'POST',
-      headers: this.getAuthHeaders(),
+      headers: notifyHeaders,
       body: JSON.stringify(notifyRequest),
     }).catch(() => {
       // Notifications don't require responses
@@ -307,6 +402,16 @@ export class MCPHttpClient {
         },
       };
     } catch (error) {
+      // Handle OAuth2 authorization required
+      if (error instanceof OAuth2AuthorizationRequiredError) {
+        return {
+          success: false,
+          message: 'OAuth2 authorization required',
+          requiresOAuth2: true,
+          oauth2DiscoveredConfig: error.discoveredConfig,
+        };
+      }
+
       return {
         success: false,
         message: error instanceof Error ? error.message : 'Connection failed',
@@ -325,6 +430,20 @@ export class MCPHttpClient {
 
   isConnected(): boolean {
     return this.initialized;
+  }
+
+  /**
+   * Update the server config (e.g., after OAuth2 discovery)
+   */
+  updateConfig(config: MCPServerConfig): void {
+    this.config = config;
+  }
+
+  /**
+   * Get the current config
+   */
+  getConfig(): MCPServerConfig {
+    return this.config;
   }
 }
 

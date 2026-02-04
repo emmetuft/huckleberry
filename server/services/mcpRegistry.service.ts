@@ -47,11 +47,24 @@ class MCPRegistryService {
       url: input.url,
       transport: input.transport || 'http',
       authType: input.authType || 'none',
+      authHeader: input.authHeader,
       authToken: input.authToken,
       enabled: input.enabled !== false,
       createdAt: now,
       connectionStatus: 'unknown',
       tools: [],
+      // Legacy OAuth2 config (deprecated)
+      oauth2Config: input.oauth2Config,
+      // For OAuth2, initialize discovered config with user-provided client credentials if any
+      oauth2DiscoveredConfig: input.authType === 'oauth2' && (input.oauth2ClientId || input.oauth2ClientSecret)
+        ? {
+            authorizationServers: [],
+            scopesSupported: [],
+            clientId: input.oauth2ClientId,
+            clientSecret: input.oauth2ClientSecret,
+          }
+        : undefined,
+      oauth2Status: input.authType === 'oauth2' ? 'not_configured' : undefined,
     };
 
     try {

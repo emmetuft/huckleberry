@@ -1,5 +1,10 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { MCPService } from '../../services/mcp';
+import {
+  MCPService,
+  OAuth2AuthorizationResponse,
+  OAuth2StatusResponse,
+  OAuth2DiscoveryResponse,
+} from '../../services/mcp';
 import {
   MCPServerConfig,
   MCPServerCreateInput,
@@ -62,4 +67,35 @@ export const toggleServerEnabled = createAsyncThunk<
   { id: string; enabled: boolean }
 >('mcp/toggleServerEnabled', async ({ id, enabled }) => {
   return MCPService.toggleServer(id, enabled);
+});
+
+// OAuth2 thunks
+export const initiateOAuth2Authorization = createAsyncThunk<
+  OAuth2AuthorizationResponse,
+  string
+>('mcp/initiateOAuth2', async (serverId) => {
+  return MCPService.initiateOAuth2(serverId);
+});
+
+export const revokeOAuth2Authorization = createAsyncThunk<
+  { revoked: boolean },
+  string
+>('mcp/revokeOAuth2', async (serverId) => {
+  return MCPService.revokeOAuth2(serverId);
+});
+
+export const fetchOAuth2Status = createAsyncThunk<
+  { serverId: string; status: OAuth2StatusResponse },
+  string
+>('mcp/fetchOAuth2Status', async (serverId) => {
+  const status = await MCPService.getOAuth2Status(serverId);
+  return { serverId, status };
+});
+
+export const triggerOAuth2Discovery = createAsyncThunk<
+  { serverId: string; discovery: OAuth2DiscoveryResponse },
+  string
+>('mcp/triggerOAuth2Discovery', async (serverId) => {
+  const discovery = await MCPService.discoverOAuth2(serverId);
+  return { serverId, discovery };
 });

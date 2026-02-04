@@ -8,12 +8,17 @@ import {
   testConnection,
   syncTools,
   toggleServerEnabled,
+  initiateOAuth2Authorization,
+  revokeOAuth2Authorization,
+  fetchOAuth2Status,
+  triggerOAuth2Discovery,
 } from './actions';
 import {
   MCPServerConfig,
   MCPToolDefinition,
   MCPTestConnectionResult,
 } from '../../../shared/models/interfaces/mcpServer';
+import { OAuth2StatusResponse } from '../../services/mcp';
 
 interface MCPState {
   servers: MCPServerConfig[];
@@ -24,6 +29,9 @@ interface MCPState {
   testingServerId: string | null;
   testResult: MCPTestConnectionResult | null;
   syncingServerId: string | null;
+  authorizingServerId: string | null;
+  discoveringServerId: string | null;
+  oauth2Status: Record<string, OAuth2StatusResponse>;
 }
 
 const initialState: MCPState = {
@@ -35,6 +43,9 @@ const initialState: MCPState = {
   testingServerId: null,
   testResult: null,
   syncingServerId: null,
+  authorizingServerId: null,
+  discoveringServerId: null,
+  oauth2Status: {},
 };
 
 export const MCPSlice = createAppSlice({
@@ -168,6 +179,73 @@ export const MCPSlice = createAppSlice({
         if (index !== -1) {
           state.servers[index] = action.payload;
         }
+      })
+      // OAuth2 authorization
+      .addCase(initiateOAuth2Authorization.pending, (state, action) => {
+        state.authorizingServerId = action.meta.arg;
+      })
+      .addCase(initiateOAuth2Authorization.fulfilled, (state) => {
+        state.authorizingServerId = null;
+      })
+      .addCase(initiateOAuth2Authorization.rejected, (state, action) => {
+        state.authorizingServerId = null;
+        state.error = action.error.message || 'Failed to initiate OAuth2';
+      })
+      // OAuth2 revoke
+      .addCase(revokeOAuth2Authorization.fulfilled, (state, action) => {
+        const serverId = action.meta.arg;
+        const serverIndex = state.servers.findIndex((s) => s.id === serverId);
+        if (serverIndex !== -1) {
+          state.servers[serverIndex].oauth2Status = 'not_configured';
+          state.servers[serverIndex].oauth2AuthorizedAt = undefined;
+          state.servers[serverIndex].oauth2Error = undefined;
+        }
+        delete state.oauth2Status[serverId];
+      })
+      // OAuth2 status
+      .addCase(fetchOAuth2Status.fulfilled, (state, action) => {
+        const { serverId, status } = action.payload;
+        state.oauth2Status[serverId] = status;
+      })
+      // OAuth2 discovery
+      .addCase(triggerOAuth2Discovery.pending, (state, action) => {
+        state.discoveringServerId = action.meta.arg;
+        // Update oauth2Status map to show discovering state
+        state.oauth2Status[action.meta.arg] = {
+          status: 'discovering',
+        };
+      })
+      .addCase(triggerOAuth2Discovery.fulfilled, (state, action) => {
+        state.discoveringServerId = null;
+        const { serverId, discovery } = action.payload;
+        const serverIndex = state.servers.findIndex((s) => s.id === serverId);
+        if (serverIndex !== -1) {
+          state.servers[serverIndex].oauth2DiscoveredConfig =
+            discovery.discoveredConfig;
+          state.servers[serverIndex].oauth2Status = 'pending';
+        }
+        // Update oauth2Status map so component sees the change
+        state.oauth2Status[serverId] = {
+          status: 'pending',
+          discoveredConfig: discovery.discoveredConfig,
+          scopesSupported: discovery.discoveredConfig.scopesSupported,
+          hasClientId: !!discovery.discoveredConfig.clientId,
+        };
+      })
+      .addCase(triggerOAuth2Discovery.rejected, (state, action) => {
+        state.discoveringServerId = null;
+        const serverId = action.meta.arg;
+        const serverIndex = state.servers.findIndex((s) => s.id === serverId);
+        if (serverIndex !== -1) {
+          state.servers[serverIndex].oauth2Status = 'discovery_failed';
+          state.servers[serverIndex].oauth2Error =
+            action.error.message || 'Discovery failed';
+        }
+        // Update oauth2Status map
+        state.oauth2Status[serverId] = {
+          status: 'discovery_failed',
+          error: action.error.message || 'Discovery failed',
+        };
       });
   },
   selectors: {
@@ -193,6 +271,9 @@ export const MCPSlice = createAppSlice({
     selectTestingServerId: (state: MCPState) => state.testingServerId,
     selectTestResult: (state: MCPState) => state.testResult,
     selectSyncingServerId: (state: MCPState) => state.syncingServerId,
+    selectAuthorizingServerId: (state: MCPState) => state.authorizingServerId,
+    selectDiscoveringServerId: (state: MCPState) => state.discoveringServerId,
+    selectOAuth2Status: (state: MCPState) => state.oauth2Status,
   },
 });
 
@@ -211,6 +292,9 @@ export const {
   selectTestingServerId,
   selectTestResult,
   selectSyncingServerId,
+  selectAuthorizingServerId,
+  selectDiscoveringServerId,
+  selectOAuth2Status,
 } = MCPSlice.selectors;
 
 export default MCPSlice.reducer;

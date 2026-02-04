@@ -1,5 +1,5 @@
 import { FC, useEffect } from 'react';
-import { Modal, Form, Input, Select, Switch, message } from 'antd';
+import { Modal, Form, Input, Select, Switch, message, Typography } from 'antd';
 import { useAppDispatch } from 'reducers';
 import { addServer, editServer } from 'reducers/mcp/actions';
 import {
@@ -7,7 +7,10 @@ import {
   MCPServerCreateInput,
   MCPAuthType,
   MCPTransportType,
+  OAuth2DiscoveredConfig,
 } from '../../../shared/models/interfaces/mcpServer';
+
+const { Text } = Typography;
 
 interface AddServerModalProps {
   open: boolean;
@@ -38,6 +41,12 @@ export const AddServerModal: FC<AddServerModalProps> = ({
           authHeader: server.authHeader || '',
           authToken: '', // Don't pre-fill token for security
           enabled: server.enabled,
+          // OAuth2 fields - simplified to just optional client credentials
+          oauth2ClientId:
+            server.oauth2DiscoveredConfig?.clientId ||
+            server.oauth2Config?.clientId ||
+            '',
+          oauth2ClientSecret: '', // Don't pre-fill secret for security
         });
       } else {
         form.resetFields();
@@ -63,9 +72,49 @@ export const AddServerModal: FC<AddServerModalProps> = ({
         authHeader: values.authHeader || undefined,
         authToken: values.authToken || undefined,
         enabled: values.enabled,
+        // For OAuth2, only pass optional client credentials
+        // The rest will be auto-discovered
+        oauth2ClientId:
+          values.authType === 'oauth2'
+            ? values.oauth2ClientId || undefined
+            : undefined,
+        oauth2ClientSecret:
+          values.authType === 'oauth2'
+            ? values.oauth2ClientSecret || undefined
+            : undefined,
       };
 
       if (isEditing && server) {
+        // Build updated OAuth2 discovered config if needed
+        let oauth2DiscoveredConfig: OAuth2DiscoveredConfig | undefined =
+          undefined;
+        if (
+          values.authType === 'oauth2' &&
+          (values.oauth2ClientId ||
+            values.oauth2ClientSecret ||
+            server.oauth2DiscoveredConfig)
+        ) {
+          oauth2DiscoveredConfig = {
+            authorizationServers:
+              server.oauth2DiscoveredConfig?.authorizationServers || [],
+            scopesSupported:
+              server.oauth2DiscoveredConfig?.scopesSupported || [],
+            resourceMetadataUrl:
+              server.oauth2DiscoveredConfig?.resourceMetadataUrl,
+            authorizationEndpoint:
+              server.oauth2DiscoveredConfig?.authorizationEndpoint,
+            tokenEndpoint: server.oauth2DiscoveredConfig?.tokenEndpoint,
+            registrationEndpoint:
+              server.oauth2DiscoveredConfig?.registrationEndpoint,
+            discoveredAt: server.oauth2DiscoveredConfig?.discoveredAt,
+            clientId:
+              values.oauth2ClientId || server.oauth2DiscoveredConfig?.clientId,
+            clientSecret:
+              values.oauth2ClientSecret ||
+              server.oauth2DiscoveredConfig?.clientSecret,
+          };
+        }
+
         await dispatch(
           editServer({
             id: server.id,
@@ -73,6 +122,7 @@ export const AddServerModal: FC<AddServerModalProps> = ({
               ...input,
               // Only include authToken if it was changed
               authToken: values.authToken || undefined,
+              oauth2DiscoveredConfig,
             },
           }),
         ).unwrap();
@@ -148,6 +198,7 @@ export const AddServerModal: FC<AddServerModalProps> = ({
             <Select.Option value="none">None</Select.Option>
             <Select.Option value="bearer">Bearer Token</Select.Option>
             <Select.Option value="api-key">API Key</Select.Option>
+            <Select.Option value="oauth2">OAuth2</Select.Option>
           </Select>
         </Form.Item>
 
@@ -161,7 +212,7 @@ export const AddServerModal: FC<AddServerModalProps> = ({
           </Form.Item>
         )}
 
-        {authType && authType !== 'none' && (
+        {authType && authType !== 'none' && authType !== 'oauth2' && (
           <Form.Item
             name="authToken"
             label={authType === 'bearer' ? 'Bearer Token' : 'API Key'}
@@ -179,6 +230,47 @@ export const AddServerModal: FC<AddServerModalProps> = ({
               }
             />
           </Form.Item>
+        )}
+
+        {authType === 'oauth2' && (
+          <>
+            <div
+              style={{
+                marginBottom: 16,
+                padding: '8px 12px',
+                background: '#f5f5f5',
+                borderRadius: 4,
+              }}
+            >
+              <Text type="secondary" style={{ fontSize: 12 }}>
+                OAuth2 endpoints will be auto-discovered from the MCP server.
+                Only provide client credentials if the authorization server
+                doesn't support automatic client registration.
+              </Text>
+            </div>
+
+            <Form.Item
+              name="oauth2ClientId"
+              label="Client ID"
+              tooltip="Optional: Only required if the auth server doesn't support Dynamic Client Registration (DCR)"
+            >
+              <Input placeholder="Leave empty to use automatic registration" />
+            </Form.Item>
+
+            <Form.Item
+              name="oauth2ClientSecret"
+              label="Client Secret"
+              tooltip="Optional: Only required for confidential clients"
+            >
+              <Input.Password
+                placeholder={
+                  isEditing
+                    ? 'Leave empty to keep existing secret'
+                    : 'Leave empty for public clients (PKCE)'
+                }
+              />
+            </Form.Item>
+          </>
         )}
 
         <Form.Item name="enabled" label="Enabled" valuePropName="checked">

@@ -5,6 +5,8 @@ import {
   MCPToolDefinition,
   MCPTestConnectionResult,
   MCPToolResult,
+  OAuth2AuthStatus,
+  OAuth2DiscoveredConfig,
 } from '../../shared/models/interfaces/mcpServer';
 
 const MCP_API_BASE = '/api/mcp';
@@ -127,6 +129,58 @@ export const executeTool = async (
   return handleResponse<MCPToolResult>(response);
 };
 
+// OAuth2 API methods
+export interface OAuth2AuthorizationResponse {
+  authorizationUrl: string;
+  state: string;
+}
+
+export interface OAuth2StatusResponse {
+  status: OAuth2AuthStatus;
+  authorizedAt?: string;
+  error?: string;
+  discoveredConfig?: OAuth2DiscoveredConfig;
+  hasClientId?: boolean;
+  scopesSupported?: string[];
+}
+
+export interface OAuth2DiscoveryResponse {
+  discoveredConfig: OAuth2DiscoveredConfig;
+  message: string;
+}
+
+export const initiateOAuth2 = async (
+  serverId: string,
+): Promise<OAuth2AuthorizationResponse> => {
+  const response = await fetch(`${MCP_API_BASE}/oauth2/authorize/${serverId}`);
+  return handleResponse<OAuth2AuthorizationResponse>(response);
+};
+
+export const revokeOAuth2 = async (
+  serverId: string,
+): Promise<{ revoked: boolean }> => {
+  const response = await fetch(`${MCP_API_BASE}/oauth2/revoke/${serverId}`, {
+    method: 'POST',
+  });
+  return handleResponse<{ revoked: boolean }>(response);
+};
+
+export const getOAuth2Status = async (
+  serverId: string,
+): Promise<OAuth2StatusResponse> => {
+  const response = await fetch(`${MCP_API_BASE}/oauth2/status/${serverId}`);
+  return handleResponse<OAuth2StatusResponse>(response);
+};
+
+export const discoverOAuth2 = async (
+  serverId: string,
+): Promise<OAuth2DiscoveryResponse> => {
+  const response = await fetch(`${MCP_API_BASE}/oauth2/discover/${serverId}`, {
+    method: 'POST',
+  });
+  return handleResponse<OAuth2DiscoveryResponse>(response);
+};
+
 export const MCPService = {
   createServer,
   getServers,
@@ -138,4 +192,8 @@ export const MCPService = {
   toggleServer,
   getTools,
   executeTool,
+  initiateOAuth2,
+  revokeOAuth2,
+  getOAuth2Status,
+  discoverOAuth2,
 };
