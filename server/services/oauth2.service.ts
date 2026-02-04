@@ -773,17 +773,30 @@ class OAuth2Service {
     // Clean up expired states
     this.cleanupExpiredStates();
 
+    // Build scopes - use discovered scopes or empty string if none
+    const scopes = discoveredConfig.scopesSupported?.length > 0
+      ? discoveredConfig.scopesSupported.join(' ')
+      : '';
+
+    console.log(`[OAuth2] Building auth URL with scopes: "${scopes}"`);
+    console.log(`[OAuth2] Discovered config:`, JSON.stringify(discoveredConfig, null, 2));
+
     const params = new URLSearchParams({
       response_type: 'code',
       client_id: discoveredConfig.clientId,
       redirect_uri: redirectUri,
-      scope: discoveredConfig.scopesSupported.join(' '),
       state,
       code_challenge: codeChallenge,
       code_challenge_method: 'S256',
     });
 
+    // Only add scope if we have scopes
+    if (scopes) {
+      params.set('scope', scopes);
+    }
+
     const authUrl = `${discoveredConfig.authorizationEndpoint}?${params.toString()}`;
+    console.log(`[OAuth2] Auth URL: ${authUrl}`);
 
     return { authUrl, state };
   }

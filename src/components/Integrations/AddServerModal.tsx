@@ -47,6 +47,8 @@ export const AddServerModal: FC<AddServerModalProps> = ({
             server.oauth2Config?.clientId ||
             '',
           oauth2ClientSecret: '', // Don't pre-fill secret for security
+          oauth2Scopes:
+            server.oauth2DiscoveredConfig?.scopesSupported?.join(' ') || '',
         });
       } else {
         form.resetFields();
@@ -92,13 +94,18 @@ export const AddServerModal: FC<AddServerModalProps> = ({
           values.authType === 'oauth2' &&
           (values.oauth2ClientId ||
             values.oauth2ClientSecret ||
+            values.oauth2Scopes ||
             server.oauth2DiscoveredConfig)
         ) {
+          // Parse user-provided scopes or use discovered ones
+          const scopesSupported = values.oauth2Scopes
+            ? values.oauth2Scopes.split(/\s+/).filter(Boolean)
+            : server.oauth2DiscoveredConfig?.scopesSupported || [];
+
           oauth2DiscoveredConfig = {
             authorizationServers:
               server.oauth2DiscoveredConfig?.authorizationServers || [],
-            scopesSupported:
-              server.oauth2DiscoveredConfig?.scopesSupported || [],
+            scopesSupported,
             resourceMetadataUrl:
               server.oauth2DiscoveredConfig?.resourceMetadataUrl,
             authorizationEndpoint:
@@ -269,6 +276,14 @@ export const AddServerModal: FC<AddServerModalProps> = ({
                     : 'Leave empty for public clients (PKCE)'
                 }
               />
+            </Form.Item>
+
+            <Form.Item
+              name="oauth2Scopes"
+              label="Scopes"
+              tooltip="Optional: Override auto-discovered scopes (space-separated)"
+            >
+              <Input placeholder="Leave empty to use discovered scopes" />
             </Form.Item>
           </>
         )}
