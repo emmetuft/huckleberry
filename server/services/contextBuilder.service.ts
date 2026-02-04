@@ -23,12 +23,8 @@ import { graphRagService } from './graphRag.service.js';
 import { metricService } from './metric.service.js';
 import { personaService } from './persona.service.js';
 import { fileService } from './file.service.js';
-import { mcpRegistryService } from './mcpRegistry.service.js';
-import { getMCPClient } from './mcpHttpClient.js';
-import {
-  MCPToolCall,
-  MCPToolResult,
-} from '../../shared/models/interfaces/mcpServer.js';
+import { mcpToolService } from './mcpTool.service.js';
+import { MCPToolCall } from '../../shared/models/interfaces/mcpServer.js';
 import { datasourceService } from './datasource.service.js';
 
 interface ContextResult {
@@ -43,7 +39,7 @@ interface ContextStrategy {
   name: string;
   description: string;
   priority: number;
-  buildContext(userRequest: UserRequest, emitEvent?: (event: any) => void): Promise<ContextResult>;
+  buildContext(userRequest: UserRequest): Promise<ContextResult>;
 }
 
 class GraphRagStrategy implements ContextStrategy {
@@ -109,280 +105,26 @@ class PersonaStrategy implements ContextStrategy {
   }
 }
 
+/**
+ * MCPToolStrategy is registered so the AI can select it, but actual execution
+ * happens in runMCPTools() to preserve event streaming. This strategy returns
+ * empty context - the real work is done separately.
+ */
 class MCPToolStrategy implements ContextStrategy {
   name = ContextStrategyType.MCP_TOOL;
   description = MCP_TOOL_DESCRIPTION;
-  priority = 0;
+  priority = 0; // Lowest priority
 
-  async buildContext(userRequest: UserRequest, emitEvent?: (event: any) => void): Promise<ContextResult> {
-    const { tools, userInput } = userRequest;
-
-    console.log(`[MCP Strategy] buildContext called with ${tools?.length || 0} tools, userInput: "${userInput?.substring(0, 50)}..."`);
-
-    if (!tools || tools.length === 0) {
-      console.log('[MCP Strategy] No tools provided, skipping');
-      return {
-        textContext: '',
-        metadata: {
-          strategy: this.name,
-          toolsExecuted: [],
-        },
-      };
-    }
-
-    console.log('[MCP Strategy] Tools:', JSON.stringify(tools, null, 2));
-
-    // Get tool definitions for LLM parameter generation
-    const toolDefinitions = await this.getToolDefinitions(tools as MCPToolCall[]);
-
-    // Use LLM to generate parameters for each tool based on user's question
-    const toolsWithParams = await this.generateToolParameters(
-      userInput,
-      tools as MCPToolCall[],
-      toolDefinitions,
-    );
-
-    const toolResults: Array<{
-      toolName: string;
-      serverId: string;
-      serverName?: string;
-      params?: Record<string, unknown>;
-      result: MCPToolResult;
-    }> = [];
-
-    for (const tool of toolsWithParams) {
-      try {
-        const server = await mcpRegistryService.getServerById(tool.serverId);
-        if (!server || !server.enabled) {
-          // Emit error for disabled/missing server
-          emitEvent?.({
-            type: StreamType.TOOL_ERROR,
-            tool: {
-              name: tool.toolName,
-              serverId: tool.serverId,
-              error: 'Server not found or disabled',
-            },
-          });
-          toolResults.push({
-            toolName: tool.toolName,
-            serverId: tool.serverId,
-            params: tool.params,
-            result: {
-              success: false,
-              error: 'Server not found or disabled',
-            },
-          });
-          continue;
-        }
-
-        // Emit TOOL_START event with tool info and generated params
-        emitEvent?.({
-          type: StreamType.TOOL_START,
-          tool: {
-            name: tool.toolName,
-            serverId: tool.serverId,
-            serverName: server.name,
-            params: tool.params || {},
-          },
-        });
-
-        console.log(`[MCP Strategy] Executing ${tool.toolName} with params:`, JSON.stringify(tool.params, null, 2));
-
-        const client = getMCPClient(server);
-        const result = await client.executeTool(
-          tool.toolName,
-          tool.params || {},
-        );
-
-        // Emit TOOL_RESULT event with execution result
-        emitEvent?.({
-          type: StreamType.TOOL_RESULT,
-          tool: {
-            name: tool.toolName,
-            serverId: tool.serverId,
-            serverName: server.name,
-            params: tool.params || {},
-            success: result.success,
-            executionTime: result.executionTime,
-            content: result.content,
-            error: result.error,
-          },
-        });
-
-        toolResults.push({
-          toolName: tool.toolName,
-          serverId: tool.serverId,
-          serverName: server.name,
-          params: tool.params,
-          result,
-        });
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-
-        // Emit TOOL_ERROR event
-        emitEvent?.({
-          type: StreamType.TOOL_ERROR,
-          tool: {
-            name: tool.toolName,
-            serverId: tool.serverId,
-            params: tool.params || {},
-            error: errorMessage,
-          },
-        });
-
-        toolResults.push({
-          toolName: tool.toolName,
-          serverId: tool.serverId,
-          params: tool.params,
-          result: {
-            success: false,
-            error: errorMessage,
-          },
-        });
-      }
-    }
-
-    const textContext = this.formatToolResults(toolResults);
-
+  async buildContext(_userRequest: UserRequest): Promise<ContextResult> {
+    // This is a marker strategy - actual tool execution happens in runMCPTools
+    // which has access to emitEvent for proper event streaming
     return {
-      textContext,
+      textContext: '',
       metadata: {
         strategy: this.name,
-        toolsExecuted: toolResults.map((r) => ({
-          toolName: r.toolName,
-          serverId: r.serverId,
-          serverName: r.serverName,
-          params: r.params,
-          success: r.result.success,
-          executionTime: r.result.executionTime,
-        })),
-        toolResults,
+        note: 'Tool execution handled separately for event streaming',
       },
     };
-  }
-
-  private async getToolDefinitions(
-    tools: MCPToolCall[],
-  ): Promise<Map<string, { description: string; inputSchema: any }>> {
-    const definitions = new Map<string, { description: string; inputSchema: any }>();
-
-    for (const tool of tools) {
-      const server = await mcpRegistryService.getServerById(tool.serverId);
-      if (server?.tools) {
-        const toolDef = server.tools.find((t) => t.name === tool.toolName);
-        if (toolDef) {
-          definitions.set(`${tool.serverId}:${tool.toolName}`, {
-            description: toolDef.description,
-            inputSchema: toolDef.inputSchema,
-          });
-        }
-      }
-    }
-
-    return definitions;
-  }
-
-  private async generateToolParameters(
-    userInput: string,
-    tools: MCPToolCall[],
-    toolDefinitions: Map<string, { description: string; inputSchema: any }>,
-  ): Promise<MCPToolCall[]> {
-    // Build a prompt for the LLM to generate parameters
-    const toolDescriptions = tools
-      .map((tool) => {
-        const def = toolDefinitions.get(`${tool.serverId}:${tool.toolName}`);
-        if (!def) return null;
-        return `Tool: ${tool.toolName}
-Description: ${def.description}
-Input Schema: ${JSON.stringify(def.inputSchema, null, 2)}`;
-      })
-      .filter(Boolean)
-      .join('\n\n');
-
-    const prompt = `You are a tool parameter generator. Given a user's question and a list of tools with their schemas, generate the appropriate parameters for each tool.
-
-User's Question: "${userInput}"
-
-Available Tools:
-${toolDescriptions}
-
-For each tool, output a JSON object with the tool name and its parameters. The parameters must match the input schema exactly.
-
-Output format (JSON array):
-[
-  {
-    "toolName": "ToolName",
-    "params": { ... parameters matching the schema ... }
-  }
-]
-
-Only output the JSON array, nothing else. If a tool doesn't need to be called based on the user's question, still include it with sensible default parameters based on the question.`;
-
-    try {
-      const { text } = await generateText({
-        model: models.fast,
-        prompt,
-        temperature: 0,
-      });
-
-      console.log('[MCP Strategy] LLM generated parameters:', text);
-
-      // Parse the LLM response
-      const jsonMatch = text.match(/\[[\s\S]*\]/);
-      if (!jsonMatch) {
-        console.error('[MCP Strategy] Could not parse LLM response as JSON array');
-        return tools; // Return original tools without params
-      }
-
-      const generatedParams = JSON.parse(jsonMatch[0]) as Array<{
-        toolName: string;
-        params: Record<string, unknown>;
-      }>;
-
-      // Merge generated params back into tools
-      return tools.map((tool) => {
-        const generated = generatedParams.find((g) => g.toolName === tool.toolName);
-        return {
-          ...tool,
-          params: generated?.params || tool.params || {},
-        };
-      });
-    } catch (error) {
-      console.error('[MCP Strategy] Error generating tool parameters:', error);
-      return tools; // Return original tools on error
-    }
-  }
-
-  private formatToolResults(
-    toolResults: Array<{
-      toolName: string;
-      serverId: string;
-      serverName?: string;
-      result: MCPToolResult;
-    }>,
-  ): string {
-    if (toolResults.length === 0) {
-      return '';
-    }
-
-    const sections = toolResults.map((tr) => {
-      const header = `## Tool: ${tr.toolName}${tr.serverName ? ` (from ${tr.serverName})` : ''}`;
-
-      if (!tr.result.success) {
-        return `${header}\nError: ${tr.result.error}`;
-      }
-
-      let contentStr: string;
-      if (typeof tr.result.content === 'string') {
-        contentStr = tr.result.content;
-      } else {
-        contentStr = JSON.stringify(tr.result.content, null, 2);
-      }
-
-      return `${header}\n${contentStr}`;
-    });
-
-    return `# MCP Tool Results\n\n${sections.join('\n\n---\n\n')}`;
   }
 }
 
@@ -419,11 +161,7 @@ class ContextBuilderService {
 
     const { userInput, tools } = userRequest;
 
-    // Build strategy descriptions for the AI (excluding MCP_TOOL which is auto-selected)
-    const aiSelectableStrategies = this.strategies.filter(
-      (s) => s.name !== ContextStrategyType.MCP_TOOL,
-    );
-    const strategyDescriptions = aiSelectableStrategies
+    const strategyDescriptions = this.strategies
       .map((s) => `- ${s.name}: ${s.description}`)
       .join('\n');
 
@@ -447,15 +185,14 @@ class ContextBuilderService {
       console.error('Error selecting strategies:', error);
     }
 
-    // Auto-include MCP_TOOL strategy if tools are provided
-    console.log(`[Strategy Selection] tools in request:`, tools);
+    // Auto-include MCP_TOOL strategy if user provided tools
     if (tools && tools.length > 0) {
-      console.log(`[Strategy Selection] Auto-including MCP_TOOL strategy for ${tools.length} tools`);
       const mcpStrategy = this.strategies.find(
         (s) => s.name === ContextStrategyType.MCP_TOOL,
       );
       if (mcpStrategy && !selected.includes(mcpStrategy)) {
-        selected.unshift(mcpStrategy);
+        console.log(`[Strategy Selection] Auto-including MCP_TOOL for ${tools.length} user-provided tools`);
+        selected.push(mcpStrategy);
       }
     }
 
@@ -552,18 +289,36 @@ class ContextBuilderService {
       }),
     );
 
-    // 2. Run strategies + datasources in parallel
+    // Check if MCP_TOOL strategy was selected (by AI or auto-included for user tools)
+    const mcpToolSelected = strategiesToRun.some(
+      (s) => s.name === ContextStrategyType.MCP_TOOL
+    );
+
+    // Filter out MCP_TOOL from regular strategies - it's handled separately for event streaming
+    const nonToolStrategies = strategiesToRun.filter(
+      (s) => s.name !== ContextStrategyType.MCP_TOOL
+    );
+
+    // 2. Run strategies + datasources + MCP tools in parallel
     const results = await Promise.all([
-      ...strategiesToRun.map((s) =>
+      ...nonToolStrategies.map((s) =>
         this.runStrategy(s, userRequest, emitEvent),
       ),
       ...(userRequest.dataSources || []).map((ds) =>
         this.runDatasource(ds, userRequest, emitEvent),
       ),
+      this.runMCPTools(
+        userRequest.tools as MCPToolCall[],
+        userRequest,
+        emitEvent,
+        mcpToolSelected, // Pass whether AI selected the strategy
+      ),
     ]);
 
-    // 3. Generate response
-    const { textContext, graphContext } = this.mergeContextResults(results);
+    // 3. Generate response (filter out null results from tools)
+    const { textContext, graphContext } = this.mergeContextResults(
+      results.filter((r): r is ContextResult => r !== null)
+    );
 
     emitEvent({ type: 'metadata', context: graphContext });
 
@@ -652,7 +407,7 @@ class ContextBuilderService {
       return await this.runStep(
         emitEvent,
         { id: stepId, title },
-        () => strategy.buildContext(userRequest, emitEvent),
+        () => strategy.buildContext(userRequest),
         (result) => ({
           strategyName: strategy.name,
           graphContext: result.graphContext,
@@ -664,6 +419,95 @@ class ContextBuilderService {
         textContext: '',
         metadata: {
           strategy: strategy.name,
+          error: error instanceof Error ? error.message : 'Unknown error',
+        },
+      };
+    }
+  }
+
+  private async runMCPTools(
+    userTools: MCPToolCall[] | undefined,
+    userRequest: UserRequest,
+    emitEvent: (event: any) => void,
+    aiSelectedStrategy: boolean,
+  ): Promise<ContextResult | null> {
+    const hasUserTools = userTools && userTools.length > 0;
+
+    console.log(`[runMCPTools] Called with userTools: ${hasUserTools ? userTools.length : 0}, aiSelectedStrategy: ${aiSelectedStrategy}`);
+
+    // Skip if no user tools AND AI didn't select the strategy
+    if (!hasUserTools && !aiSelectedStrategy) {
+      console.log(`[runMCPTools] No tools and strategy not selected, skipping`);
+      return null;
+    }
+
+    const stepId = 'strategy-mcp-tool';
+    const title = hasUserTools ? 'Executing MCP tools' : 'Selecting and executing MCP tools';
+
+    try {
+      return await this.runStep(
+        emitEvent,
+        { id: stepId, title },
+        async () => {
+          let toolsToExecute: MCPToolCall[];
+
+          if (hasUserTools) {
+            // Use user-provided tools
+            console.log(`[runMCPTools] Using ${userTools.length} user-provided tools`);
+            toolsToExecute = userTools;
+          } else {
+            // AI selected the strategy - use AI to pick which tools to use
+            console.log(`[runMCPTools] AI selected MCP strategy, using AI to select tools`);
+            toolsToExecute = await mcpToolService.selectToolsForQuery(userRequest.userInput);
+
+            if (toolsToExecute.length === 0) {
+              console.log(`[runMCPTools] AI selected no tools for this query`);
+              return { textContext: '', toolResults: [] };
+            }
+            console.log(`[runMCPTools] AI selected ${toolsToExecute.length} tools`);
+          }
+
+          const { textContext, toolResults } = await mcpToolService.executeTools(
+            toolsToExecute,
+            userRequest.userInput,
+            emitEvent,
+          );
+
+          return { textContext, toolResults };
+        },
+        ({ toolResults }) => ({
+          strategyName: ContextStrategyType.MCP_TOOL,
+          toolExecutions: toolResults.map((r) => ({
+            toolName: r.toolName,
+            serverId: r.serverId,
+            serverName: r.serverName,
+            params: r.params,
+            success: r.result.success,
+            executionTime: r.result.executionTime,
+          })),
+        }),
+      ).then(({ textContext, toolResults }) => ({
+        textContext,
+        metadata: {
+          strategy: ContextStrategyType.MCP_TOOL,
+          toolsExecuted: toolResults.map((r) => ({
+            toolName: r.toolName,
+            serverId: r.serverId,
+            serverName: r.serverName,
+            params: r.params,
+            success: r.result.success,
+            executionTime: r.result.executionTime,
+          })),
+          toolResults,
+        },
+      }));
+    } catch (error) {
+      return {
+        textContext: `# MCP Tools\n\nError executing tools: ${
+          error instanceof Error ? error.message : 'Unknown error'
+        }`,
+        metadata: {
+          strategy: ContextStrategyType.MCP_TOOL,
           error: error instanceof Error ? error.message : 'Unknown error',
         },
       };

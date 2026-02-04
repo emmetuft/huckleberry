@@ -25,6 +25,10 @@ Examples:
 - "Who owns the revenue metric?" → ["metric", "graph-rag"]
 - "What departments are in the company?" → ["graph-rag"]
 - "What should I work on today?" → ["persona"]
+- "Query the database for recent orders" → ["mcp-tool"]
+- "What's the weather like?" → ["mcp-tool"]
+- "Fetch data from the API" → ["mcp-tool"]
+- "Run the sales report tool" → ["mcp-tool"]
 - "Summarize this file" → []
 - "Give me key takeaways from this document" → []
 

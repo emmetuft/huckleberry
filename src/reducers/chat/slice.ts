@@ -2,6 +2,7 @@ import { Message } from 'models/interfaces/message';
 import { createAppSlice } from '../createAppSlice';
 import { sendStreamingRequest } from './actions';
 import { ProcessStep, ToolExecution, ToolEventData } from 'services/context';
+import { ToolExecutionStatus } from '../../../shared/models/enums/toolExecution';
 
 export interface ProcessStepWithUI extends ProcessStep {
   isOpen: boolean;
@@ -170,7 +171,7 @@ export const ChatSlice = createAppSlice({
                 serverId: action.payload.serverId,
                 serverName: action.payload.serverName,
                 params: action.payload.params,
-                status: 'running',
+                status: ToolExecutionStatus.RUNNING,
               };
               mcpStep.details.toolExecutions.push(toolExec);
               console.log(
@@ -205,7 +206,9 @@ export const ChatSlice = createAppSlice({
                   t.serverId === action.payload.serverId,
               );
               if (toolExec) {
-                toolExec.status = action.payload.success ? 'success' : 'error';
+                toolExec.status = action.payload.success
+                  ? ToolExecutionStatus.SUCCESS
+                  : ToolExecutionStatus.ERROR;
                 toolExec.executionTime = action.payload.executionTime;
                 toolExec.content = action.payload.content;
                 toolExec.error = action.payload.error;

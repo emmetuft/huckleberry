@@ -1,4 +1,5 @@
 import { StreamStatus, StreamType } from '../../shared/models/enums/stream';
+import { ToolExecutionStatus } from '../../shared/models/enums/toolExecution';
 import {
   GraphContext,
   UserRequest,
@@ -11,7 +12,7 @@ export interface ToolExecution {
   serverId: string;
   serverName?: string;
   params?: Record<string, unknown>;
-  status: 'pending' | 'running' | 'success' | 'error';
+  status: ToolExecutionStatus;
   executionTime?: number;
   content?: unknown;
   error?: string;

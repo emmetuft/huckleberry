@@ -4,6 +4,7 @@ import { CheckCircle, CircleNotch, Warning } from 'phosphor-react';
 import styles from './ProcessStep.module.scss';
 import { ContextStrategyType } from '../../../../shared/models/enums/contextStrategy';
 import { StreamStatus } from '../../../../shared/models/enums/stream';
+import { ToolExecutionStatus } from '../../../../shared/models/enums/toolExecution';
 import { ContextGraph } from './ContextGraph';
 import {
   ProcessStep as ProcessStepType,
@@ -134,21 +135,21 @@ export const ProcessStep: FC<ProcessStepProps> = ({ step, onToggle }) => {
                 >
                   <div className={styles.toolHeader}>
                     <div className={styles.toolStatus}>
-                      {tool.status === 'running' && (
+                      {tool.status === ToolExecutionStatus.RUNNING && (
                         <CircleNotch
                           size={14}
                           weight="bold"
                           className={styles.spinner}
                         />
                       )}
-                      {tool.status === 'success' && (
+                      {tool.status === ToolExecutionStatus.SUCCESS && (
                         <CheckCircle
                           size={14}
                           weight="fill"
                           className={styles.checkSmall}
                         />
                       )}
-                      {tool.status === 'error' && (
+                      {tool.status === ToolExecutionStatus.ERROR && (
                         <Warning
                           size={14}
                           weight="fill"

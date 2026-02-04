@@ -172,3 +172,57 @@ export interface MCPTestConnectionResult {
   /** Discovered OAuth2 config when requiresOAuth2 is true */
   oauth2DiscoveredConfig?: OAuth2DiscoveredConfig;
 }
+
+/**
+ * MCP JSON-RPC Protocol Interfaces
+ * Based on the Model Context Protocol specification
+ */
+
+export interface MCPRequest {
+  jsonrpc: '2.0';
+  id: number | string;
+  method: string;
+  params?: Record<string, unknown>;
+}
+
+export interface MCPResponse {
+  jsonrpc: '2.0';
+  id: number | string;
+  result?: unknown;
+  error?: {
+    code: number;
+    message: string;
+    data?: unknown;
+  };
+}
+
+export interface MCPInitializeResult {
+  protocolVersion: string;
+  capabilities: {
+    tools?: Record<string, unknown>;
+    resources?: Record<string, unknown>;
+    prompts?: Record<string, unknown>;
+  };
+  serverInfo: {
+    name: string;
+    version: string;
+  };
+}
+
+export interface MCPListToolsResult {
+  tools: Array<{
+    name: string;
+    description?: string;
+    inputSchema: JSONSchema;
+  }>;
+}
+
+export interface MCPCallToolResult {
+  content: Array<{
+    type: string;
+    text?: string;
+    data?: string;
+    mimeType?: string;
+  }>;
+  isError?: boolean;
+}

@@ -3,73 +3,14 @@ import {
   MCPToolDefinition,
   MCPToolResult,
   MCPTestConnectionResult,
-  JSONSchema,
-  OAuth2DiscoveredConfig,
+  MCPRequest,
+  MCPResponse,
+  MCPInitializeResult,
+  MCPListToolsResult,
+  MCPCallToolResult,
 } from '../../shared/models/interfaces/mcpServer.js';
+import { OAuth2AuthorizationRequiredError } from '../../shared/models/errors/oauth2.error.js';
 import { oauth2Service } from './oauth2.service.js';
-
-/**
- * Error thrown when OAuth2 authorization is required
- * Contains the discovered config for the caller to handle
- */
-export class OAuth2AuthorizationRequiredError extends Error {
-  constructor(
-    public serverId: string,
-    public discoveredConfig: OAuth2DiscoveredConfig,
-  ) {
-    super('OAuth2 authorization required');
-    this.name = 'OAuth2AuthorizationRequiredError';
-  }
-}
-
-interface MCPRequest {
-  jsonrpc: '2.0';
-  id: number | string;
-  method: string;
-  params?: Record<string, unknown>;
-}
-
-interface MCPResponse {
-  jsonrpc: '2.0';
-  id: number | string;
-  result?: unknown;
-  error?: {
-    code: number;
-    message: string;
-    data?: unknown;
-  };
-}
-
-interface MCPInitializeResult {
-  protocolVersion: string;
-  capabilities: {
-    tools?: Record<string, unknown>;
-    resources?: Record<string, unknown>;
-    prompts?: Record<string, unknown>;
-  };
-  serverInfo: {
-    name: string;
-    version: string;
-  };
-}
-
-interface MCPListToolsResult {
-  tools: Array<{
-    name: string;
-    description?: string;
-    inputSchema: JSONSchema;
-  }>;
-}
-
-interface MCPCallToolResult {
-  content: Array<{
-    type: string;
-    text?: string;
-    data?: string;
-    mimeType?: string;
-  }>;
-  isError?: boolean;
-}
 
 export class MCPHttpClient {
   private config: MCPServerConfig;
