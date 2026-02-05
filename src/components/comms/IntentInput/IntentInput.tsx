@@ -22,7 +22,8 @@ import { AppPage } from 'models/enums/appPage';
 import { DataSource } from 'models/interfaces/dataSource';
 import { ToolPopup } from './ToolPopup';
 import { AddContextButton } from './AddContextButton';
-import { DataSourceModal } from 'components/DataSourceModal/DataSourceModal';
+import { DataSourceModal } from 'components/modals/DataSourceModal/DataSourceModal';
+import { SendModal, SendData } from 'components/modals/SendModal/SendModal';
 import {
   getCaretCharacterOffsetWithin,
   getTextWithHighlights,
@@ -56,6 +57,7 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   );
   const [showDataSourceModal, setShowDataSourceModal] =
     useState<boolean>(false);
+  const [showSendModal, setShowSendModal] = useState<boolean>(false);
 
   const editableRef = useRef<HTMLDivElement>(null);
   const popupRef = useRef<HTMLDivElement>(null);
@@ -84,6 +86,13 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     };
   }, []);
 
+  useEffect(() => {
+    const el = editableRef.current;
+    if (!el) return;
+    const text = el.innerText;
+    setSuggestedActions(getSuggestedActions(text, selectedDataSources));
+  }, [selectedDataSources]);
+
   const onInput = () => {
     const el = editableRef.current;
     if (!el) return;
@@ -97,7 +106,7 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     if (isNowEmpty) {
       el.innerHTML = '';
     } else {
-      setSuggestedActions(getSuggestedActions(text));
+      setSuggestedActions(getSuggestedActions(text, selectedDataSources));
       const highlightedHTML = getTextWithHighlights(text, styles);
       el.innerHTML = highlightedHTML;
       controlToolPopup(text);
@@ -197,6 +206,29 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     );
   };
 
+  const onClickAction = (action: { type: ActionType; text: string }) => {
+    switch (action.type) {
+      case ActionType.DATASET:
+        handleDataSourceClick();
+        break;
+      case ActionType.SEND:
+        setShowSendModal(true);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleSendModalConfirm = (data: SendData) => {
+    // TODO: Handle sending the message
+    console.log('Send data:', data);
+    setShowSendModal(false);
+  };
+
+  const handleSendModalCancel = () => {
+    setShowSendModal(false);
+  };
+
   const onClickSend = async () => {
     const el = editableRef.current;
     if (!el || isEmpty) return;
@@ -254,6 +286,11 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
         open={showDataSourceModal}
         onCancel={handleDataSourceModalCancel}
         onConfirm={handleDataSourceModalConfirm}
+      />
+      <SendModal
+        open={showSendModal}
+        onCancel={handleSendModalCancel}
+        onConfirm={handleSendModalConfirm}
       />
       {showToolPopup && (
         <ToolPopup
@@ -324,7 +361,11 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
                   exit={{ opacity: 0, y: -6 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <Button type="text" icon={actionIconMap[action.type]}>
+                  <Button
+                    type="text"
+                    icon={actionIconMap[action.type]}
+                    onClick={() => onClickAction(action)}
+                  >
                     {action.text}
                   </Button>
                 </motion.div>
