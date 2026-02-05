@@ -243,7 +243,9 @@ class GraphRagService {
       });
       console.log('Generated Cypher Query:', text);
 
-      return text.trim();
+      // Remove markdown code fence formatting
+      const cleanedText = text.trim().replace(/```cypher\n?|\n?```/g, '');
+      return cleanedText.trim();
     } catch (error) {
       console.error('Error generating Cypher query:', error);
       throw error;
