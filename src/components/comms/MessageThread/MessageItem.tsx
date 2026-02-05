@@ -1,6 +1,7 @@
 import { FC, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import Markdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import styles from './MessageThread.module.scss';
 import { useAppDispatch } from 'reducers';
 import { selectPage } from 'reducers/app/slice';
@@ -67,7 +68,7 @@ export const MessageItem: FC<MessageItemProps> = ({
           </div>
         )}
         <div className={styles.content}>
-          <Markdown>{message.content}</Markdown>
+          <Markdown remarkPlugins={[remarkGfm]}>{message.content}</Markdown>
         </div>
         {metricNode && (
           <div className={styles.metricChart}>
