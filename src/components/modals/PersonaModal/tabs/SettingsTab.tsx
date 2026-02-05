@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import styles from './index.module.scss';
 import { InputType } from 'models/enums/inputType';
-import { Persona } from '../../../../shared/models/interfaces/persona';
+import { Persona } from '../../../../../shared/models/interfaces/persona';
 import { LabelInput } from '../LabelInput';
 
 interface SettingsTabProps {

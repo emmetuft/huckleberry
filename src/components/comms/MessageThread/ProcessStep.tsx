@@ -6,7 +6,7 @@ import { ContextStrategyType } from '../../../../shared/models/enums/contextStra
 import { StreamStatus } from '../../../../shared/models/enums/stream';
 import { ContextGraph } from './ContextGraph';
 import { ProcessStep as ProcessStepType } from 'services/context';
-import { SaveMetricModal } from '../../SaveMetricModal/SaveMetricModal';
+import { SaveMetricModal } from '../../modals/SaveMetricModal/SaveMetricModal';
 
 interface ProcessStepProps {
   step: ProcessStepType & { isOpen: boolean };
@@ -133,7 +133,7 @@ export const ProcessStep: FC<ProcessStepProps> = ({ step, onToggle }) => {
             size="small"
             onClick={() => setShowSaveMetricModal(true)}
           >
-            Catalog metric
+            Save metric
           </Button>
         )}
       </div>

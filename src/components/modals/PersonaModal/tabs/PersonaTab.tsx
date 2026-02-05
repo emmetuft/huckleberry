@@ -10,7 +10,7 @@ import { InputType } from 'models/enums/inputType';
 import {
   Persona,
   RoleLevel,
-} from '../../../../shared/models/interfaces/persona';
+} from '../../../../../shared/models/interfaces/persona';
 import { LabelInput } from '../LabelInput';
 
 interface PersonaTabProps {
