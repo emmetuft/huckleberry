@@ -9,6 +9,7 @@ export const ENTITIES = [
   'dashboard',
   'chart',
   'automation',
+  'alert',
 ];
 
 export const mcpTools = [
