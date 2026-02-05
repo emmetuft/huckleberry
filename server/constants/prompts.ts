@@ -93,6 +93,43 @@ Instructions:
 Schema:
 {schema}`;
 
+export const TOOL_SELECTION_PROMPT = `You are a tool selection assistant. Given a user's question and a list of available tools, determine which tools would be helpful to answer the question.
+
+Instructions:
+1. Analyze what the user is trying to accomplish
+2. Consider the WORKFLOW - some tools need information from other tools first
+3. If the user needs to find/search/discover something before using it, select the search/find tool FIRST
+4. If a query tool requires IDs or references, select a tool to find those IDs first
+5. Order matters - select prerequisite tools before tools that depend on their output
+
+Examples of correct tool ordering:
+- To query a dataset: First use a "search" or "find" tool to get the dataset ID, then use the query tool
+- To get details about something: First use a "list" or "search" tool, then use a "get details" tool
+
+Output format (JSON array of selected tools IN ORDER of execution):
+[
+  {
+    "toolName": "ToolName",
+    "serverId": "server-id"
+  }
+]
+
+Only output the JSON array, nothing else. Select tools in the order they should be executed.`;
+
+export const TOOL_PARAMS_PROMPT = `You are a tool parameter generator. Given a user's question and a list of tools with their schemas, generate the appropriate parameters for each tool.
+
+For each tool, output a JSON object with the tool name and its parameters. The parameters must match the input schema exactly.
+
+Output format (JSON array):
+[
+  {
+    "toolName": "ToolName",
+    "params": { ... parameters matching the schema ... }
+  }
+]
+
+Only output the JSON array, nothing else. If a tool doesn't need to be called based on the user's question, still include it with sensible default parameters based on the question.`;
+
 export const ULTIMATE_PROMPT = `You are a helpful assistant that answers questions using the provided contextual information.
 
 In a previous step, one or more context strategies selected and retrieved information relevant to the user's question.

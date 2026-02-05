@@ -84,7 +84,11 @@ export type OAuth2AuthStatus =
   | 'expired'
   | 'error';
 
-export type MCPConnectionStatus = 'connected' | 'disconnected' | 'error' | 'unknown';
+export type MCPConnectionStatus =
+  | 'connected'
+  | 'disconnected'
+  | 'error'
+  | 'unknown';
 
 export interface MCPToolDefinition {
   name: string;
@@ -121,7 +125,7 @@ export interface MCPToolResult {
 export interface MCPToolCall {
   toolName: string;
   serverId: string;
-  params: Record<string, unknown>;
+  params?: Record<string, unknown>;
 }
 
 export interface MCPServerCreateInput {

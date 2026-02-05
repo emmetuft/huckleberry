@@ -3,6 +3,7 @@ export enum ContextStrategyType {
   METRIC = 'metric',
   PERSONA = 'persona',
   MCP_TOOL = 'mcp-tool',
+  DATASOURCE = 'datasource',
 }
 
 export const STRATEGY_EXP_MAP: Record<ContextStrategyType, string> = {
@@ -11,4 +12,5 @@ export const STRATEGY_EXP_MAP: Record<ContextStrategyType, string> = {
   [ContextStrategyType.METRIC]: 'Matching and retrieving relevant metrics',
   [ContextStrategyType.PERSONA]: 'Adapting response based on user persona',
   [ContextStrategyType.MCP_TOOL]: 'Executing selected MCP tools',
+  [ContextStrategyType.DATASOURCE]: 'Querying datasources',
 };

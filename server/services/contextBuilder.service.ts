@@ -3,6 +3,7 @@ import {
   GraphContext,
   UserRequest,
 } from '../../shared/models/interfaces/userRequest.ts';
+import { ContextResult } from '../../shared/models/interfaces/context.ts';
 import { models } from '../config/models.js';
 import {
   ContextStrategyType,
@@ -18,28 +19,24 @@ import {
   METRIC_DESCRIPTION,
   PERSONA_DESCRIPTION,
   MCP_TOOL_DESCRIPTION,
+  DATASOURCE_DESCRIPTION,
 } from '../constants/strategies.ts';
 import { graphRagService } from './graphRag.service.js';
 import { metricService } from './metric.service.js';
 import { personaService } from './persona.service.js';
 import { fileService } from './file.service.js';
 import { mcpToolService } from './mcpTool.service.js';
-import { MCPToolCall } from '../../shared/models/interfaces/mcpServer.js';
 import { datasourceService } from './datasource.service.js';
-
-interface ContextResult {
-  textContext: string;
-  graphContext?: GraphContext;
-  metadata: {
-    [key: string]: any;
-  };
-}
+import { stripCodeBlockMarkers } from '../utils/aiResponse.js';
 
 interface ContextStrategy {
   name: string;
   description: string;
   priority: number;
-  buildContext(userRequest: UserRequest): Promise<ContextResult>;
+  buildContext(
+    userRequest: UserRequest,
+    emitEvent?: (event: any) => void,
+  ): Promise<ContextResult>;
 }
 
 class GraphRagStrategy implements ContextStrategy {
@@ -105,26 +102,40 @@ class PersonaStrategy implements ContextStrategy {
   }
 }
 
-/**
- * MCPToolStrategy is registered so the AI can select it, but actual execution
- * happens in runMCPTools() to preserve event streaming. This strategy returns
- * empty context - the real work is done separately.
- */
 class MCPToolStrategy implements ContextStrategy {
   name = ContextStrategyType.MCP_TOOL;
   description = MCP_TOOL_DESCRIPTION;
-  priority = 0; // Lowest priority
+  priority = 2;
 
-  async buildContext(_userRequest: UserRequest): Promise<ContextResult> {
-    // This is a marker strategy - actual tool execution happens in runMCPTools
-    // which has access to emitEvent for proper event streaming
+  async buildContext(
+    userRequest: UserRequest,
+    emitEvent?: (event: any) => void,
+  ): Promise<ContextResult> {
+    const { textContext, metadata } = await mcpToolService.buildMcpToolContext(
+      userRequest,
+      emitEvent,
+    );
+
     return {
-      textContext: '',
+      textContext,
       metadata: {
         strategy: this.name,
-        note: 'Tool execution handled separately for event streaming',
+        ...metadata,
       },
     };
+  }
+}
+
+class DatasourceStrategy implements ContextStrategy {
+  name = ContextStrategyType.DATASOURCE;
+  description = DATASOURCE_DESCRIPTION;
+  priority = 2;
+
+  async buildContext(
+    userRequest: UserRequest,
+    emitEvent?: (event: any) => void,
+  ): Promise<ContextResult> {
+    return datasourceService.buildDatasourceContext(userRequest, emitEvent);
   }
 }
 
@@ -135,11 +146,11 @@ class ContextBuilderService {
   constructor() {
     this.model = models.contextBuilder;
 
-    // Register available strategies (sorted by priority)
-    this.registerStrategy(new PersonaStrategy());
-    this.registerStrategy(new MetricStrategy());
     this.registerStrategy(new GraphRagStrategy());
+    this.registerStrategy(new MetricStrategy());
+    this.registerStrategy(new PersonaStrategy());
     this.registerStrategy(new MCPToolStrategy());
+    this.registerStrategy(new DatasourceStrategy());
   }
 
   registerStrategy(strategy: ContextStrategy): void {
@@ -149,17 +160,29 @@ class ContextBuilderService {
   }
 
   /**
+   * Auto-include a strategy if user provided specific items
+   */
+  private autoIncludeStrategy(
+    strategyType: ContextStrategyType,
+    selected: ContextStrategy[],
+    items: any[] | undefined,
+  ): void {
+    if (items && items.length > 0) {
+      const strategy = this.strategies.find((s) => s.name === strategyType);
+      if (strategy && !selected.includes(strategy)) {
+        console.log(`[Strategy Selection] Auto-including ${strategyType}`);
+        selected.push(strategy);
+      }
+    }
+  }
+
+  /**
    * Use AI to intelligently select which strategies should be used for this request
    */
   private async selectStrategies(
     userRequest: UserRequest,
   ): Promise<ContextStrategy[]> {
-    if (userRequest.dataSources && userRequest.dataSources.length > 0) {
-      // If specific datasources are requested, skip strategy selection
-      return [];
-    }
-
-    const { userInput, tools } = userRequest;
+    const { userInput, tools, dataSources } = userRequest;
 
     const strategyDescriptions = this.strategies
       .map((s) => `- ${s.name}: ${s.description}`)
@@ -176,27 +199,25 @@ class ContextBuilderService {
         temperature: 0,
       });
 
-      const cleanedText = text.trim().replace(/```json\n?|\n?```/g, '');
+      const cleanedText = stripCodeBlockMarkers(text);
       const selectedNames: string[] = JSON.parse(cleanedText);
-      console.log('AI selected strategies:', selectedNames);
-
       selected = this.strategies.filter((s) => selectedNames.includes(s.name));
     } catch (error) {
       console.error('Error selecting strategies:', error);
     }
 
-    // Auto-include MCP_TOOL strategy if user provided tools
-    if (tools && tools.length > 0) {
-      const mcpStrategy = this.strategies.find(
-        (s) => s.name === ContextStrategyType.MCP_TOOL,
-      );
-      if (mcpStrategy && !selected.includes(mcpStrategy)) {
-        console.log(`[Strategy Selection] Auto-including MCP_TOOL for ${tools.length} user-provided tools`);
-        selected.push(mcpStrategy);
-      }
-    }
+    // Auto-include strategies if user provided specific items
+    this.autoIncludeStrategy(ContextStrategyType.MCP_TOOL, selected, tools);
+    this.autoIncludeStrategy(
+      ContextStrategyType.DATASOURCE,
+      selected,
+      dataSources,
+    );
 
-    console.log(`[Strategy Selection] Final strategies:`, selected.map(s => s.name));
+    console.log(
+      `[Strategy Selection] Final strategies:`,
+      selected.map((s) => s.name),
+    );
     return selected;
   }
 
@@ -281,44 +302,21 @@ class ContextBuilderService {
   async queryStream(userRequest: UserRequest, emitEvent: (event: any) => void) {
     // 1. Analyze request
     const strategiesToRun = await this.runStep(
-      emitEvent,
       { id: 'analyze-request', title: 'Analyzing your request' },
       () => this.selectStrategies(userRequest),
+      emitEvent,
       (strategies) => ({
         selectedStrategies: strategies.map((s) => s.name),
       }),
     );
 
-    // Check if MCP_TOOL strategy was selected (by AI or auto-included for user tools)
-    const mcpToolSelected = strategiesToRun.some(
-      (s) => s.name === ContextStrategyType.MCP_TOOL
+    // 2. Run strategies in parallel
+    const results = await Promise.all(
+      strategiesToRun.map((s) => this.runStrategy(s, userRequest, emitEvent)),
     );
 
-    // Filter out MCP_TOOL from regular strategies - it's handled separately for event streaming
-    const nonToolStrategies = strategiesToRun.filter(
-      (s) => s.name !== ContextStrategyType.MCP_TOOL
-    );
-
-    // 2. Run strategies + datasources + MCP tools in parallel
-    const results = await Promise.all([
-      ...nonToolStrategies.map((s) =>
-        this.runStrategy(s, userRequest, emitEvent),
-      ),
-      ...(userRequest.dataSources || []).map((ds) =>
-        this.runDatasource(ds, userRequest, emitEvent),
-      ),
-      this.runMCPTools(
-        userRequest.tools as MCPToolCall[],
-        userRequest,
-        emitEvent,
-        mcpToolSelected, // Pass whether AI selected the strategy
-      ),
-    ]);
-
-    // 3. Generate response (filter out null results from tools)
-    const { textContext, graphContext } = this.mergeContextResults(
-      results.filter((r): r is ContextResult => r !== null)
-    );
+    // 3. Generate response
+    const { textContext, graphContext } = this.mergeContextResults(results);
 
     emitEvent({ type: 'metadata', context: graphContext });
 
@@ -356,12 +354,12 @@ class ContextBuilderService {
   }
 
   async runStep<T>(
-    emitEvent: (event: any) => void,
     step: { id: string; title: string },
     work: () => Promise<T>,
+    emitEvent?: (event: any) => void,
     details?: (result: T) => any,
   ): Promise<T> {
-    emitEvent({
+    emitEvent?.({
       type: StreamType.STEP_START,
       step: { ...step, status: StreamStatus.IN_PROGRESS },
     });
@@ -369,7 +367,7 @@ class ContextBuilderService {
     try {
       const result = await work();
 
-      emitEvent({
+      emitEvent?.({
         type: StreamType.STEP_COMPLETE,
         step: {
           ...step,
@@ -380,7 +378,7 @@ class ContextBuilderService {
 
       return result;
     } catch (error) {
-      emitEvent({
+      emitEvent?.({
         type: StreamType.STEP_COMPLETE,
         step: {
           ...step,
@@ -402,12 +400,16 @@ class ContextBuilderService {
   ) {
     const stepId = `strategy-${strategy.name}`;
     const title = STRATEGY_EXP_MAP[strategy.name as ContextStrategyType];
+    const skipEvents = [
+      ContextStrategyType.MCP_TOOL,
+      ContextStrategyType.DATASOURCE,
+    ].includes(strategy.name as ContextStrategyType);
 
     try {
       return await this.runStep(
-        emitEvent,
         { id: stepId, title },
-        () => strategy.buildContext(userRequest),
+        () => strategy.buildContext(userRequest, emitEvent),
+        skipEvents ? undefined : emitEvent,
         (result) => ({
           strategyName: strategy.name,
           graphContext: result.graphContext,
@@ -423,164 +425,6 @@ class ContextBuilderService {
         },
       };
     }
-  }
-
-  private async runMCPTools(
-    userTools: MCPToolCall[] | undefined,
-    userRequest: UserRequest,
-    emitEvent: (event: any) => void,
-    aiSelectedStrategy: boolean,
-  ): Promise<ContextResult | null> {
-    const hasUserTools = userTools && userTools.length > 0;
-
-    console.log(`[runMCPTools] Called with userTools: ${hasUserTools ? userTools.length : 0}, aiSelectedStrategy: ${aiSelectedStrategy}`);
-
-    // Skip if no user tools AND AI didn't select the strategy
-    if (!hasUserTools && !aiSelectedStrategy) {
-      console.log(`[runMCPTools] No tools and strategy not selected, skipping`);
-      return null;
-    }
-
-    const stepId = 'strategy-mcp-tool';
-    const title = hasUserTools ? 'Executing MCP tools' : 'Selecting and executing MCP tools';
-
-    try {
-      return await this.runStep(
-        emitEvent,
-        { id: stepId, title },
-        async () => {
-          let toolsToExecute: MCPToolCall[];
-
-          if (hasUserTools) {
-            // Use user-provided tools
-            console.log(`[runMCPTools] Using ${userTools.length} user-provided tools`);
-            toolsToExecute = userTools;
-          } else {
-            // AI selected the strategy - use AI to pick which tools to use
-            console.log(`[runMCPTools] AI selected MCP strategy, using AI to select tools`);
-            toolsToExecute = await mcpToolService.selectToolsForQuery(userRequest.userInput);
-
-            if (toolsToExecute.length === 0) {
-              console.log(`[runMCPTools] AI selected no tools for this query`);
-              return { textContext: '', toolResults: [] };
-            }
-            console.log(`[runMCPTools] AI selected ${toolsToExecute.length} tools`);
-          }
-
-          const { textContext, toolResults } = await mcpToolService.executeTools(
-            toolsToExecute,
-            userRequest.userInput,
-            emitEvent,
-          );
-
-          return { textContext, toolResults };
-        },
-        ({ toolResults }) => ({
-          strategyName: ContextStrategyType.MCP_TOOL,
-          toolExecutions: toolResults.map((r) => ({
-            toolName: r.toolName,
-            serverId: r.serverId,
-            serverName: r.serverName,
-            params: r.params,
-            success: r.result.success,
-            executionTime: r.result.executionTime,
-          })),
-        }),
-      ).then(({ textContext, toolResults }) => ({
-        textContext,
-        metadata: {
-          strategy: ContextStrategyType.MCP_TOOL,
-          toolsExecuted: toolResults.map((r) => ({
-            toolName: r.toolName,
-            serverId: r.serverId,
-            serverName: r.serverName,
-            params: r.params,
-            success: r.result.success,
-            executionTime: r.result.executionTime,
-          })),
-          toolResults,
-        },
-      }));
-    } catch (error) {
-      return {
-        textContext: `# MCP Tools\n\nError executing tools: ${
-          error instanceof Error ? error.message : 'Unknown error'
-        }`,
-        metadata: {
-          strategy: ContextStrategyType.MCP_TOOL,
-          error: error instanceof Error ? error.message : 'Unknown error',
-        },
-      };
-    }
-  }
-
-  private async runDatasource(
-    datasource: { id: string; name?: string },
-    userRequest: UserRequest,
-    emitEvent: (event: any) => void,
-  ) {
-    const stepId = `datasource-${datasource.id}`;
-    const title = `Querying datasource: ${datasource.name || datasource.id}`;
-
-    try {
-      return await this.runStep(
-        emitEvent,
-        { id: stepId, title },
-        async () => {
-          const { data, query } = await datasourceService.queryDatasource(
-            userRequest.userInput,
-            datasource,
-          );
-
-          return { data, query };
-        },
-        ({ data, query }) => ({
-          datasourceId: datasource.id,
-          query,
-          resultCount: data.length,
-        }),
-      ).then(({ data, query }) => ({
-        textContext: this.formatDatasourceContext(datasource, data, query),
-        metadata: {
-          datasourceId: datasource.id,
-          datasourceName: datasource.name || datasource.id,
-          query,
-          resultCount: data.length,
-        },
-      }));
-    } catch (error) {
-      return {
-        textContext: `# Datasource: ${datasource.name || datasource.id}\n\nError querying datasource: ${
-          error instanceof Error ? error.message : 'Unknown error'
-        }`,
-        metadata: {
-          datasourceId: datasource.id,
-          error: error instanceof Error ? error.message : 'Unknown error',
-        },
-      };
-    }
-  }
-
-  private formatDatasourceContext(
-    datasource: { id: string; name?: string },
-    data: unknown[],
-    query: string,
-  ): string {
-    const name = datasource.name || datasource.id;
-
-    return [
-      `# Datasource: ${name}`,
-      ``,
-      `**SQL Query:**`,
-      '```sql',
-      query,
-      '```',
-      ``,
-      `**Query Results (${data.length} rows):**`,
-      '```json',
-      JSON.stringify(data, null, 2),
-      '```',
-    ].join('\n');
   }
 }
 

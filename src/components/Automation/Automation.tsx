@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+// import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import { Button, Collapse, CollapseProps, Input, Select, Switch } from 'antd';
 import {
@@ -26,7 +26,7 @@ import Condition from './Condition';
 import Action from './Action';
 
 export const Automation = () => {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   // const sources = useSelector(selectObservabilitySources);
   // const schema = useSelector(selectSchema);
   // const creatingRule = useSelector(selectCreatingRule);
