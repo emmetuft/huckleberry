@@ -2,10 +2,10 @@ import { FC, useState } from 'react';
 import { Collapse, Button } from 'antd';
 import { CheckCircle, CircleNotch } from 'phosphor-react';
 import styles from './ProcessStep.module.scss';
-import { StreamStatus } from '../../../../../shared/models/enums/stream';
-import { SaveMetricModal } from '../../../SaveMetricModal/SaveMetricModal';
-import { ProcessStepWithUI } from 'models/interfaces/processStep';
 import { ContextStrategyType } from '../../../../../shared/models/enums/contextStrategy';
+import { StreamStatus } from '../../../../../shared/models/enums/stream';
+import { ProcessStepWithUI } from 'models/interfaces/processStep';
+import { SaveMetricModal } from '../../../modals/SaveMetricModal/SaveMetricModal';
 import { StepDetails } from './StepDetails';
 
 interface ProcessStepProps {

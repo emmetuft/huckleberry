@@ -1,5 +1,5 @@
 export const COMMANDS = {
-  TOOL: '@',
+  TOOL: '/',
 };
 
 export const ENTITIES = [

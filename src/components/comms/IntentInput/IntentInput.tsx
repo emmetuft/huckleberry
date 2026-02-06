@@ -26,10 +26,10 @@ import { COMMANDS } from 'constants/app';
 import { sharedIconProps } from 'constants/styles';
 import { AppPage } from 'models/enums/appPage';
 import { DataSource } from 'models/interfaces/dataSource';
-import { ToolPopup } from './ToolPopup';
-import { AddContextButton } from './AddContextButton';
 import { DataSourceModal } from 'components/modals/DataSourceModal/DataSourceModal';
 import { SendModal, SendData } from 'components/modals/SendModal/SendModal';
+import { AddContextButton } from './AddContextButton';
+import { ToolPopup } from './ToolPopup';
 import { ToolBrowser } from '../ToolBrowser/ToolBrowser';
 import {
   getCaretCharacterOffsetWithin,
@@ -62,6 +62,8 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   const [lastPopupTriggerIndex, setLastPopupTriggerIndex] = useState<
     number | null
   >(null);
+  const [toolSearchQuery, setToolSearchQuery] = useState<string>('');
+  const [selectedToolIndex, setSelectedToolIndex] = useState<number>(0);
   const [selectedTools, setSelectedTools] = useState<MCPToolDefinition[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [showToolBrowser, setShowToolBrowser] = useState<boolean>(false);
@@ -78,7 +80,6 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
 
   const editableRef = useRef<HTMLDivElement>(null);
   const popupRef = useRef<HTMLDivElement>(null);
-  const popupInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -110,6 +111,11 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     setSuggestedActions(getSuggestedActions(text, selectedDataSources));
   }, [selectedDataSources]);
 
+  // Reset selected tool index when filtered tools change
+  useEffect(() => {
+    setSelectedToolIndex(0);
+  }, [toolSearchQuery]);
+
   const onInput = () => {
     const el = editableRef.current;
     if (!el) return;
@@ -122,6 +128,10 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
 
     if (isNowEmpty) {
       el.innerHTML = '';
+      setLastPopupTriggerIndex(null);
+      setShowToolPopup(false);
+      setToolSearchQuery('');
+      setSelectedToolIndex(0);
     } else {
       setSuggestedActions(getSuggestedActions(text, selectedDataSources));
       const highlightedHTML = getTextWithHighlights(text, styles);
@@ -133,41 +143,35 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   };
 
   const controlToolPopup = (text: string) => {
-    // Reset popup trigger if the command was removed
-    if (
-      lastPopupTriggerIndex !== null &&
-      (text.length < lastPopupTriggerIndex ||
-        text[lastPopupTriggerIndex] !== COMMANDS.TOOL)
-    ) {
-      setLastPopupTriggerIndex(null);
-    }
-
-    // Check if user typed tool command and trigger popup
     const atIndex = text.lastIndexOf(COMMANDS.TOOL);
-    if (atIndex === -1 || atIndex === lastPopupTriggerIndex) return;
 
-    setShowToolPopup(true);
-    setLastPopupTriggerIndex(atIndex);
-
-    setTimeout(() => popupInputRef.current?.focus(), 0);
-  };
-
-  const onPopupKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Backspace' && !event.currentTarget.value) {
-      event.preventDefault(); // Prevent deleting command
-      setShowToolPopup(false);
-
-      const el = editableRef.current;
-      if (el) {
-        el.focus();
-        const text = el.innerText;
-        const atIndex = text.lastIndexOf(COMMANDS.TOOL);
-        if (atIndex !== -1) {
-          setCaretPosition(el, atIndex + 1);
-        }
+    // If "/" was deleted, close the popup
+    if (atIndex === -1) {
+      if (showToolPopup) {
+        setLastPopupTriggerIndex(null);
+        setShowToolPopup(false);
+        setToolSearchQuery('');
+        setSelectedToolIndex(0);
       }
+      return;
+    }
+
+    // Extract search query after the "/"
+    const searchQuery = text.slice(atIndex + 1);
+    setToolSearchQuery(searchQuery);
+
+    // Show popup if it's a new trigger
+    if (atIndex !== lastPopupTriggerIndex) {
+      setShowToolPopup(true);
+      setLastPopupTriggerIndex(atIndex);
+      setSelectedToolIndex(0);
     }
   };
+
+  // Filter tools based on search query
+  const filteredTools = mcpTools.filter((tool) =>
+    tool.name.toLowerCase().includes(toolSearchQuery.toLowerCase()),
+  );
 
   const onSelectTool = (tool: MCPToolDefinition) => {
     // Add tool to selectedTools, avoiding duplicates
@@ -179,21 +183,22 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
       return;
     setSelectedTools([...selectedTools, tool]);
     setShowToolPopup(false);
+    setToolSearchQuery('');
+    setLastPopupTriggerIndex(null);
 
-    // Remove command from the editable content
+    // Remove command and search query from the editable content
     const el = editableRef.current;
     if (!el) return;
     const text = el.innerText;
     const atIndex = text.lastIndexOf(COMMANDS.TOOL);
     if (atIndex !== -1) {
-      el.innerText = text.slice(0, atIndex) + text.slice(atIndex + 1);
+      // Remove the "/" and everything after it (the search query)
+      const newText = text.slice(0, atIndex) + ' ';
+      el.innerText = newText;
+      setCaretPosition(el, newText.length);
     }
     // Refocus the editable element
     el.focus();
-    // Set caret position after the inserted tool
-    const newText = el.innerText + ' ';
-    el.innerText = newText;
-    setCaretPosition(el, newText.length);
   };
 
   const onRemoveTool = (tool: MCPToolDefinition) => {
@@ -303,6 +308,46 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   };
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    // Handle tool popup keyboard navigation
+    if (showToolPopup && filteredTools.length > 0) {
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        setSelectedToolIndex((prev) =>
+          prev < filteredTools.length - 1 ? prev + 1 : prev,
+        );
+        return;
+      }
+      if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        setSelectedToolIndex((prev) => (prev > 0 ? prev - 1 : prev));
+        return;
+      }
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        onSelectTool(filteredTools[selectedToolIndex]);
+        return;
+      }
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        setShowToolPopup(false);
+        setToolSearchQuery('');
+        setLastPopupTriggerIndex(null);
+
+        // Remove the "/" and search query from the input
+        const el = editableRef.current;
+        if (el) {
+          const text = el.innerText;
+          const atIndex = text.lastIndexOf(COMMANDS.TOOL);
+          if (atIndex !== -1) {
+            el.innerText = text.slice(0, atIndex);
+            setCaretPosition(el, atIndex);
+          }
+        }
+        return;
+      }
+    }
+
+    // Normal enter key handling for sending messages
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
       onClickSend();
@@ -328,12 +373,11 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
         onCancel={handleSendModalCancel}
         onConfirm={handleSendModalConfirm}
       />
-      {showToolPopup && (
+      {showToolPopup && filteredTools.length > 0 && (
         <ToolPopup
           popupRef={popupRef}
-          inputRef={popupInputRef}
-          tools={mcpTools}
-          onPopupKeyDown={onPopupKeyDown}
+          tools={filteredTools}
+          selectedIndex={selectedToolIndex}
           onSelectTool={onSelectTool}
         />
       )}
