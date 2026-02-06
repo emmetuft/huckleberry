@@ -90,9 +90,6 @@ export const ToolBrowser: FC<ToolBrowserProps> = ({
     } else {
       onToolsChange([...selectedTools, tool]);
     }
-  };
-
-  const handleApply = () => {
     onClose();
   };
 
@@ -100,10 +97,10 @@ export const ToolBrowser: FC<ToolBrowserProps> = ({
     ([serverId, { serverName, tools: serverTools }]) => ({
       key: serverId,
       label: (
-        <span className={styles.serverLabel}>
-          {serverName}{' '}
-          <span className={styles.toolCount}>({serverTools.length} tools)</span>
-        </span>
+        <div className={styles.header}>
+          <span className={styles.serverLabel}>{serverName} </span>
+          <span className={styles.toolCount}>{serverTools.length} tools</span>
+        </div>
       ),
       children: (
         <div className={styles.toolList}>
@@ -112,26 +109,25 @@ export const ToolBrowser: FC<ToolBrowserProps> = ({
             return (
               <div
                 key={`${tool.serverId}-${tool.name}`}
-                className={`${styles.toolItem} ${selected ? styles.selected : ''}`}
-                onClick={() => handleToggleTool(tool)}
+                className={styles.toolItem}
               >
-                <div className={styles.toolInfo}>
+                <div className={styles.toolHeader}>
                   <div className={styles.toolName}>{tool.name}</div>
-                  <div className={styles.toolDescription}>
-                    {tool.description || 'No description'}
-                  </div>
+                  <Button
+                    type={selected ? 'primary' : 'default'}
+                    size="small"
+                    icon={selected ? <CheckOutlined /> : <PlusOutlined />}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleToggleTool(tool);
+                    }}
+                  >
+                    {selected ? 'Added' : 'Add'}
+                  </Button>
                 </div>
-                <Button
-                  type={selected ? 'primary' : 'default'}
-                  size="small"
-                  icon={selected ? <CheckOutlined /> : <PlusOutlined />}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleToggleTool(tool);
-                  }}
-                >
-                  {selected ? 'Added' : 'Add'}
-                </Button>
+                <div className={styles.toolDescription}>
+                  {tool.description || 'No description'}
+                </div>
               </div>
             );
           })}
@@ -142,13 +138,12 @@ export const ToolBrowser: FC<ToolBrowserProps> = ({
 
   return (
     <Modal
+      className={styles.toolBrowserModal}
       title="Browse Tools"
+      width={600}
       open={open}
       onCancel={onClose}
-      onOk={handleApply}
-      okText="Apply"
-      width={600}
-      className={styles.toolBrowserModal}
+      footer={null}
     >
       <div className={styles.searchContainer}>
         <Input
@@ -174,13 +169,6 @@ export const ToolBrowser: FC<ToolBrowserProps> = ({
           defaultActiveKey={Object.keys(filteredToolsByServer)}
           className={styles.serverCollapse}
         />
-      )}
-
-      {selectedTools.length > 0 && (
-        <div className={styles.selectedSummary}>
-          <strong>Selected:</strong>{' '}
-          {selectedTools.map((t) => t.name).join(', ')}
-        </div>
       )}
     </Modal>
   );
