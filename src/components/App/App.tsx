@@ -16,8 +16,8 @@ import {
 import { fetchMetricCatalogSchema } from 'reducers/metrics/actions';
 import { Heading } from 'components/layout/Heading/Heading';
 import { Nav } from 'components/layout/Nav/Nav';
-import { PersonaModal } from 'components/PersonaModal/PersonaModal';
 import { PromptBar } from 'components/comms/PromptBar/PromptBar';
+import { PersonaModal } from 'components/modals/PersonaModal/PersonaModal';
 
 export const App: FC = () => {
   const dispatch = useAppDispatch();

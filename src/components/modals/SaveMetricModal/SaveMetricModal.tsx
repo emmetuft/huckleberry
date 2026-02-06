@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useState, useEffect } from 'react';
 import { Modal, Input, Form, message } from 'antd';
 import styles from './SaveMetricModal.module.scss';
 
@@ -20,6 +20,12 @@ export const SaveMetricModal: FC<SaveMetricModalProps> = ({
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    if (isOpen) {
+      form.setFieldsValue({ query });
+    }
+  }, [isOpen, query, form]);
+
   const onOk = async () => {
     try {
       const values = await form.validateFields();
@@ -30,7 +36,7 @@ export const SaveMetricModal: FC<SaveMetricModalProps> = ({
       //   name: values.name,
       //   description: values.description,
       //   datasourceId,
-      //   query,
+      //   query: values.query,
       // });
 
       message.success('Metric saved successfully!');
@@ -91,13 +97,18 @@ export const SaveMetricModal: FC<SaveMetricModalProps> = ({
               placeholder="Describe what this metric measures and when to use it"
             />
           </Form.Item>
+          <Form.Item
+            label="SQL Query"
+            name="query"
+            rules={[{ required: true, message: 'Please enter a SQL query' }]}
+          >
+            <TextArea
+              rows={8}
+              placeholder="Enter your SQL query"
+              style={{ fontFamily: 'monospace' }}
+            />
+          </Form.Item>
         </Form>
-        <div className={styles.queryPreview}>
-          <p className={styles.label}>SQL Query:</p>
-          <pre className={styles.query}>
-            <code>{query}</code>
-          </pre>
-        </div>
       </div>
     </Modal>
   );

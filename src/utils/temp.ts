@@ -1,3 +1,5 @@
+import { DataSource } from 'models/interfaces/dataSource';
+
 export enum ActionType {
   SCHEDULE = 'schedule',
   CHART = 'chart',
@@ -7,6 +9,7 @@ export enum ActionType {
 
 export function getSuggestedActions(
   input: string,
+  dataSources: DataSource[] = [],
 ): { type: ActionType; text: string }[] {
   const actions: { type: ActionType; text: string }[] = [];
   const text = input.toLowerCase();
@@ -18,7 +21,9 @@ export function getSuggestedActions(
   )
     actions.push({ type: ActionType.SCHEDULE, text: 'Set schedule' });
   if (text.includes('report') || text.includes('dashboard'))
-    actions.push({ type: ActionType.DATASET, text: 'Select data' });
+    if (dataSources.length === 0) {
+      actions.push({ type: ActionType.DATASET, text: 'Select data' });
+    }
   if (text.includes('chart') || text.includes('visualize'))
     actions.push({ type: ActionType.CHART, text: 'Pick chart' });
   if (text.includes('send') || text.includes('email') || text.includes('slack'))

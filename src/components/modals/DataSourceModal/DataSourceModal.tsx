@@ -143,6 +143,7 @@ export const DataSourceModal: FC<DataSourceModalProps> = ({
         <Input
           placeholder="Search datasources..."
           prefix={<SearchOutlined />}
+          suffix={loading && page === 1 ? <Spin size="small" /> : null}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className={styles.searchInput}

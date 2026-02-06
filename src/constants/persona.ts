@@ -1,14 +1,18 @@
 import { RoleLevel } from '../../shared/models/interfaces/persona';
 
 export const defaultPersona = {
-  role: '',
-  level: RoleLevel.NONE,
-  department: '',
-  team: '',
-  focusAreas: [],
-  strengths: [],
-  weaknesses: [],
-  goals: '',
+  role: 'Chief Marketing Officer',
+  level: RoleLevel.C_LEVEL,
+  department: 'Marketing',
+  team: 'Marketing',
+  focusAreas: [
+    'Campaign Performance',
+    'Customer Segmentation',
+    'Time to Market',
+  ],
+  strengths: ['Leadership', 'Collaboration', 'Decision Making'],
+  weaknesses: ['Overcommitting'],
+  goals: 'Attract 3 major news publishers for Domopalooza 2026',
   usePersona: true,
   useActivity: true,
   useData: true,

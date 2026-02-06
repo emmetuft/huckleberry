@@ -1,36 +1,37 @@
 export const recommendations = [
   {
     id: 'rec-001',
-    title: 'Automate Lead Follow-Up Emails',
+    title: 'Automate Report Generation',
     description:
-      'Based on your recent CRM activity, this workflow can auto-send emails to uncontacted leads.',
+      'Based on your recent activity, this workflow can auto-send your Active Customers report each month.',
     type: 'workflow',
     source: 'Huckleberry AI',
-    reason: 'You’ve connected Salesforce and explored lead conversion data.',
-    tags: ['Sales', 'Automation', 'CRM'],
+    reason: "You've generated the same report multiple times recently.",
+    tags: ['Analytics', 'Automation'],
     actionLabel: 'Create Workflow',
   },
   {
     id: 'rec-003',
-    title: 'Why AI-Driven Forecasting Beats Gut Instinct',
+    title: 'MCP Apps - Bringing UI Capabilities To MCP Clients',
     description:
-      'Learn how high-performing teams are using AI to make more accurate, agile decisions.',
+      'Learn how to build powerful UI experiences in customer AI clients.',
     type: 'article',
-    source: 'Harvard Business Review',
-    reason: 'You recently built a revenue forecasting dashboard.',
-    tags: ['Forecasting', 'AI', 'Strategy'],
+    source: 'Model Context Protocol Blog',
+    reason:
+      'You’ve shown interest in leveraging AI for enhanced user experiences.',
+    tags: ['AI', 'Apps', 'Strategy'],
     actionLabel: 'Read Article',
-    url: 'https://www.netguru.com/blog/ai-based-demand-forecasting',
+    url: 'https://blog.modelcontextprotocol.io/posts/2026-01-26-mcp-apps/',
   },
   {
     id: 'rec-004',
-    title: 'Connect with James in Ops',
+    title: 'Connect with Jake Heaps in Marketing',
     description:
-      'James recently connected supply chain data and may have insights relevant to your project.',
+      'Jake recently connected survey data that could enhance your org tree graph.',
     type: 'contact',
     source: 'Huckleberry AI',
-    reason: 'You’re both working with logistics and efficiency data.',
-    tags: ['Collaboration', 'Operations'],
+    reason: 'You’re both working on graph databases.',
+    tags: ['Collaboration', 'Marketing'],
     actionLabel: 'Send Message',
   },
 ];
