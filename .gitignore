@@ -13,6 +13,7 @@ dist-ssr
 *.local
 /.pnp
 .pnp.js
+.spec-workflow
 
 # Editor directories and files
 .vscode/*

@@ -1,11 +1,7 @@
-import { Message } from 'models/interfaces/message';
 import { createAppSlice } from '../createAppSlice';
 import { sendStreamingRequest } from './actions';
-import { ProcessStep } from 'services/context';
-
-export interface ProcessStepWithUI extends ProcessStep {
-  isOpen: boolean;
-}
+import { Message } from 'models/interfaces/message';
+import { ProcessStep, ProcessStepWithUI } from 'models/interfaces/processStep';
 
 interface State {
   messages: Message[];
@@ -90,9 +86,16 @@ export const ChatSlice = createAppSlice({
               ) {
                 message.processingSteps.splice(index, 1);
               } else {
+                const existingStep = message.processingSteps[index];
+                // Merge details
+                const mergedDetails = {
+                  ...existingStep.details,
+                  ...action.payload.details,
+                };
                 message.processingSteps[index] = {
-                  ...message.processingSteps[index],
+                  ...existingStep,
                   ...action.payload,
+                  details: mergedDetails,
                 };
               }
             }

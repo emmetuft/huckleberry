@@ -6,6 +6,7 @@ import {
   UserRequest,
 } from '../../../shared/models/interfaces/userRequest';
 import { ProcessedFile } from '../../../shared/models/interfaces/files';
+import { MCPToolCall } from '../../../shared/models/interfaces/mcpServer';
 import { ContextService } from 'services/context';
 
 /**
@@ -14,19 +15,25 @@ import { ContextService } from 'services/context';
  */
 export const sendStreamingRequest = createAsyncThunk<
   SystemResponse,
-  { userInput: string; files?: ProcessedFile[]; dataSources?: any[] },
+  {
+    userInput: string;
+    files?: ProcessedFile[];
+    tools?: MCPToolCall[];
+    dataSources?: any;
+  },
   { state: RootState }
 >(
   'chat/sendStreamingRequest',
-  async ({ userInput, files, dataSources }, { getState, dispatch }) => {
+  async ({ userInput, files, tools, dataSources }, { getState, dispatch }) => {
     const state = getState();
     const identity = state.app.identity;
 
-    // Add userId and files to the query if they exist
+    // Add userId, files, and tools to the query if they exist
     const queryWithUserId: UserRequest = {
       userInput,
       userId: identity?.userId,
       files,
+      tools,
       dataSources,
     };
 

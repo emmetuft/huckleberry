@@ -12,6 +12,7 @@ import {
   SCHEMA_IDENTIFICATION_PROMPT,
 } from '../constants/prompts.ts';
 import { parseResponseData } from '../utils/neo4j.ts';
+import { stripCodeBlockMarkers } from '../utils/aiResponse.js';
 
 dotenv.config();
 
@@ -44,7 +45,7 @@ class GraphRagService {
       });
 
       // Parse the JSON response
-      const cleanedText = text.trim().replace(/```json\n?|\n?```/g, '');
+      const cleanedText = stripCodeBlockMarkers(text);
       const result = JSON.parse(cleanedText);
 
       return {
@@ -243,9 +244,7 @@ class GraphRagService {
       });
       console.log('Generated Cypher Query:', text);
 
-      // Remove markdown code fence formatting
-      const cleanedText = text.trim().replace(/```cypher\n?|\n?```/g, '');
-      return cleanedText.trim();
+      return stripCodeBlockMarkers(text);
     } catch (error) {
       console.error('Error generating Cypher query:', error);
       throw error;
