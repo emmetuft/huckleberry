@@ -57,27 +57,6 @@ export const sendStreamingRequest = createAsyncThunk<
           type: 'chat/updateProcessStep',
           payload: message.step,
         });
-      } else if (message.type === StreamType.TOOL_START && message.tool) {
-        // Add tool execution when tool starts
-        console.log('[Chat] TOOL_START received:', message.tool);
-        dispatch({
-          type: 'chat/addToolExecution',
-          payload: message.tool,
-        });
-      } else if (message.type === StreamType.TOOL_RESULT && message.tool) {
-        // Update tool execution with result
-        console.log('[Chat] TOOL_RESULT received:', message.tool);
-        dispatch({
-          type: 'chat/updateToolExecution',
-          payload: message.tool,
-        });
-      } else if (message.type === StreamType.TOOL_ERROR && message.tool) {
-        // Update tool execution with error
-        console.log('[Chat] TOOL_ERROR received:', message.tool);
-        dispatch({
-          type: 'chat/updateToolExecution',
-          payload: { ...message.tool, success: false },
-        });
       } else if (message.type === StreamType.METADATA && message.context) {
         context = message.context;
       } else if (message.type === StreamType.TEXT && message.content) {

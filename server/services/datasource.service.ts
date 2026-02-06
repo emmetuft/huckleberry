@@ -5,6 +5,10 @@ import { UserRequest } from '../../shared/models/interfaces/userRequest.ts';
 import { ContextStrategyType } from '../../shared/models/enums/contextStrategy.ts';
 import { ContextResult } from '../../shared/models/interfaces/context.ts';
 import { StreamStatus, StreamType } from '../../shared/models/enums/stream.ts';
+import {
+  StepType,
+  StepTypeTitles,
+} from '../../shared/models/enums/stepType.ts';
 
 dotenv.config();
 
@@ -221,8 +225,8 @@ SQL Query:`;
     for (const datasource of dataSources) {
       const datasourceName = datasource.name || datasource.id;
 
-      const stepId = `datasource-${datasource.id}`;
-      const title = `Querying datasource: ${datasourceName}`;
+      const stepId = `${StepType.QUERY_DATASOURCE}-${datasource.id}`;
+      const title = `${StepTypeTitles[StepType.QUERY_DATASOURCE]}: ${datasourceName}`;
       const step = { id: stepId, title };
 
       try {
@@ -242,9 +246,12 @@ SQL Query:`;
             ...step,
             status: StreamStatus.COMPLETE,
             details: {
-              datasourceId: datasource.id,
-              query,
-              resultCount: data.length,
+              strategyName: ContextStrategyType.DATASOURCE,
+              metadata: {
+                datasourceId: datasource.id,
+                query,
+                data,
+              },
             },
           },
         });
@@ -267,6 +274,7 @@ SQL Query:`;
             ...step,
             status: StreamStatus.COMPLETE,
             details: {
+              strategyName: ContextStrategyType.DATASOURCE,
               error: error instanceof Error ? error.message : 'Unknown error',
             },
           },

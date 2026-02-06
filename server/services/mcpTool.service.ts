@@ -6,7 +6,7 @@ import {
   MCPToolCall,
   MCPToolResult,
 } from '../../shared/models/interfaces/mcpServer.js';
-import { StreamType } from '../../shared/models/enums/stream.js';
+import { StreamStatus, StreamType } from '../../shared/models/enums/stream.js';
 import { UserRequest } from '../../shared/models/interfaces/userRequest.ts';
 import { ContextResult } from '../../shared/models/interfaces/context.ts';
 import {
@@ -14,6 +14,12 @@ import {
   TOOL_SELECTION_PROMPT,
 } from '../constants/prompts.ts';
 import { parseJsonArrayFromResponse } from '../utils/aiResponse.js';
+import {
+  StepType,
+  StepTypeTitles,
+} from '../../shared/models/enums/stepType.ts';
+import { ContextStrategyType } from '../../shared/models/enums/contextStrategy.ts';
+import { ToolStatus } from '../../shared/models/enums/toolStatus.ts';
 
 interface ToolExecutionResult {
   toolName: string;
@@ -117,15 +123,32 @@ async function executeTools(
   const toolResults: ToolExecutionResult[] = [];
 
   for (const tool of toolsWithParams) {
+    const stepId = `${StepType.USE_TOOL}-${tool.serverId}-${tool.toolName}`;
+    const stepTitle = `${StepTypeTitles[StepType.USE_TOOL]}: ${tool.toolName}`;
+    const sharedToolExecutionPart = {
+      toolName: tool.toolName,
+      serverId: tool.serverId,
+      params: tool.params || {},
+    };
+
     try {
       const server = await mcpRegistryService.getServerById(tool.serverId);
+
       if (!server || !server.enabled) {
         emitEvent?.({
-          type: StreamType.TOOL_ERROR,
-          tool: {
-            name: tool.toolName,
-            serverId: tool.serverId,
-            error: 'Server not found or disabled',
+          type: StreamType.STEP_COMPLETE,
+          step: {
+            id: stepId,
+            title: stepTitle,
+            status: StreamStatus.COMPLETE,
+            details: {
+              strategyName: ContextStrategyType.MCP_TOOL,
+              toolExecution: {
+                ...sharedToolExecutionPart,
+                status: ToolStatus.ERROR,
+                error: 'Server not found or disabled',
+              },
+            },
           },
         });
         toolResults.push({
@@ -140,14 +163,20 @@ async function executeTools(
         continue;
       }
 
-      // Emit TOOL_START event with tool info and generated params
       emitEvent?.({
-        type: StreamType.TOOL_START,
-        tool: {
-          name: tool.toolName,
-          serverId: tool.serverId,
-          serverName: server.name,
-          params: tool.params || {},
+        type: StreamType.STEP_START,
+        step: {
+          id: stepId,
+          title: stepTitle,
+          status: StreamStatus.IN_PROGRESS,
+          details: {
+            strategyName: ContextStrategyType.MCP_TOOL,
+            toolExecution: {
+              ...sharedToolExecutionPart,
+              serverName: server.name,
+              status: ToolStatus.RUNNING,
+            },
+          },
         },
       });
 
@@ -159,47 +188,53 @@ async function executeTools(
       const client = getMCPClient(server);
       const result = await client.executeTool(tool.toolName, tool.params || {});
 
-      // Emit TOOL_RESULT event with execution result
       emitEvent?.({
-        type: StreamType.TOOL_RESULT,
-        tool: {
-          name: tool.toolName,
-          serverId: tool.serverId,
-          serverName: server.name,
-          params: tool.params || {},
-          success: result.success,
-          executionTime: result.executionTime,
-          content: result.content,
-          error: result.error,
+        type: StreamType.STEP_COMPLETE,
+        step: {
+          id: stepId,
+          title: stepTitle,
+          status: StreamStatus.COMPLETE,
+          details: {
+            strategyName: ContextStrategyType.MCP_TOOL,
+            toolExecution: {
+              ...sharedToolExecutionPart,
+              serverName: server.name,
+              status: ToolStatus.SUCCESS,
+              executionTime: result.executionTime,
+              content: result.content,
+            },
+          },
         },
       });
 
       toolResults.push({
-        toolName: tool.toolName,
-        serverId: tool.serverId,
-        serverName: server.name,
-        params: tool.params,
+        ...sharedToolExecutionPart,
         result,
       });
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
+      const errorStepTitle = tool.toolName;
 
-      // Emit TOOL_ERROR event
       emitEvent?.({
-        type: StreamType.TOOL_ERROR,
-        tool: {
-          name: tool.toolName,
-          serverId: tool.serverId,
-          params: tool.params || {},
-          error: errorMessage,
+        type: StreamType.STEP_COMPLETE,
+        step: {
+          id: stepId,
+          title: errorStepTitle,
+          status: StreamStatus.COMPLETE,
+          details: {
+            strategyName: ContextStrategyType.MCP_TOOL,
+            toolExecution: {
+              ...sharedToolExecutionPart,
+              status: ToolStatus.ERROR,
+              error: errorMessage,
+            },
+          },
         },
       });
 
       toolResults.push({
-        toolName: tool.toolName,
-        serverId: tool.serverId,
-        params: tool.params,
+        ...sharedToolExecutionPart,
         result: {
           success: false,
           error: errorMessage,

@@ -1,49 +1,12 @@
-import { StreamStatus, StreamType } from '../../shared/models/enums/stream';
-import { ToolExecutionStatus } from '../../shared/models/enums/toolExecution';
+import { ProcessStep } from 'models/interfaces/processStep';
+import { StreamType } from '../../shared/models/enums/stream';
 import {
   GraphContext,
   UserRequest,
 } from '../../shared/models/interfaces/userRequest';
+import { ToolEventData } from 'models/interfaces/tool';
 
 const CONTEXT_BUILDER_API_BASE = '/api/context';
-
-export interface ToolExecution {
-  name: string;
-  serverId: string;
-  serverName?: string;
-  params?: Record<string, unknown>;
-  status: ToolExecutionStatus;
-  executionTime?: number;
-  content?: unknown;
-  error?: string;
-}
-
-export interface ProcessStep {
-  id: string;
-  title: string;
-  status: StreamStatus;
-  details?: {
-    selectedStrategies?: string[];
-    strategyName?: string;
-    graphContext?: GraphContext;
-    metadata?: Record<string, any>;
-    datasourceId?: string;
-    query?: string;
-    resultCount?: number;
-    toolExecutions?: ToolExecution[];
-  };
-}
-
-export interface ToolEventData {
-  name: string;
-  serverId: string;
-  serverName?: string;
-  params?: Record<string, unknown>;
-  success?: boolean;
-  executionTime?: number;
-  content?: unknown;
-  error?: string;
-}
 
 export interface StreamMessage {
   type: StreamType;

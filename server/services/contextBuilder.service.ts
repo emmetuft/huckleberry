@@ -28,6 +28,10 @@ import { fileService } from './file.service.js';
 import { mcpToolService } from './mcpTool.service.js';
 import { datasourceService } from './datasource.service.js';
 import { stripCodeBlockMarkers } from '../utils/aiResponse.js';
+import {
+  StepType,
+  StepTypeTitles,
+} from '../../shared/models/enums/stepType.ts';
 
 interface ContextStrategy {
   name: string;
@@ -302,11 +306,14 @@ class ContextBuilderService {
   async queryStream(userRequest: UserRequest, emitEvent: (event: any) => void) {
     // 1. Analyze request
     const strategiesToRun = await this.runStep(
-      { id: 'analyze-request', title: 'Analyzing your request' },
+      {
+        id: StepType.ANALYZE_REQUEST,
+        title: StepTypeTitles[StepType.ANALYZE_REQUEST],
+      },
       () => this.selectStrategies(userRequest),
       emitEvent,
       (strategies) => ({
-        selectedStrategies: strategies.map((s) => s.name),
+        strategyName: strategies.map((s) => s.name).toString(),
       }),
     );
 
@@ -318,16 +325,15 @@ class ContextBuilderService {
     // 3. Generate response
     const { textContext, graphContext } = this.mergeContextResults(results);
 
-    emitEvent({ type: 'metadata', context: graphContext });
+    emitEvent({ type: StreamType.METADATA, context: graphContext });
 
     const messages = this.buildMessages(textContext, userRequest);
 
-    // Step: Generating response
     emitEvent({
       type: StreamType.STEP_START,
       step: {
-        id: 'generate-response',
-        title: 'Generating response',
+        id: StepType.GENERATE_RESPONSE,
+        title: StepTypeTitles[StepType.GENERATE_RESPONSE],
         status: StreamStatus.IN_PROGRESS,
       },
     });
@@ -342,8 +348,8 @@ class ContextBuilderService {
     emitEvent({
       type: StreamType.STEP_COMPLETE,
       step: {
-        id: 'generate-response',
-        title: 'Generating response',
+        id: StepType.GENERATE_RESPONSE,
+        title: StepTypeTitles[StepType.GENERATE_RESPONSE],
         status: StreamStatus.COMPLETE,
       },
     });

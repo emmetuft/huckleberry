@@ -1,12 +1,7 @@
-import { Message } from 'models/interfaces/message';
 import { createAppSlice } from '../createAppSlice';
 import { sendStreamingRequest } from './actions';
-import { ProcessStep, ToolExecution, ToolEventData } from 'services/context';
-import { ToolExecutionStatus } from '../../../shared/models/enums/toolExecution';
-
-export interface ProcessStepWithUI extends ProcessStep {
-  isOpen: boolean;
-}
+import { Message } from 'models/interfaces/message';
+import { ProcessStep, ProcessStepWithUI } from 'models/interfaces/processStep';
 
 interface State {
   messages: Message[];
@@ -92,16 +87,11 @@ export const ChatSlice = createAppSlice({
                 message.processingSteps.splice(index, 1);
               } else {
                 const existingStep = message.processingSteps[index];
-                // Merge details to preserve toolExecutions added via TOOL_START events
+                // Merge details
                 const mergedDetails = {
                   ...existingStep.details,
                   ...action.payload.details,
                 };
-                // Preserve toolExecutions if they exist in the current step
-                if (existingStep.details?.toolExecutions) {
-                  mergedDetails.toolExecutions =
-                    existingStep.details.toolExecutions;
-                }
                 message.processingSteps[index] = {
                   ...existingStep,
                   ...action.payload,
@@ -140,84 +130,6 @@ export const ChatSlice = createAppSlice({
     clearProcessingSteps: create.reducer((state) => {
       state.processingSteps = [];
     }),
-    addToolExecution: create.reducer(
-      (state, action: { payload: ToolEventData }) => {
-        // Add tool execution to the MCP strategy step
-        console.log('[Reducer] addToolExecution called:', action.payload);
-        if (state.streamingMessageId) {
-          const message = state.messages.find(
-            (m) => m.id === state.streamingMessageId,
-          );
-          console.log('[Reducer] Found message:', !!message);
-          if (message?.processingSteps) {
-            console.log(
-              '[Reducer] Processing steps:',
-              message.processingSteps.map((s) => s.id),
-            );
-            // Find the MCP tool strategy step (step ID is 'strategy-mcp-tool')
-            const mcpStep = message.processingSteps.find(
-              (s) => s.id === 'strategy-mcp-tool',
-            );
-            console.log('[Reducer] Found MCP step:', !!mcpStep);
-            if (mcpStep) {
-              if (!mcpStep.details) {
-                mcpStep.details = {};
-              }
-              if (!mcpStep.details.toolExecutions) {
-                mcpStep.details.toolExecutions = [];
-              }
-              const toolExec: ToolExecution = {
-                name: action.payload.name,
-                serverId: action.payload.serverId,
-                serverName: action.payload.serverName,
-                params: action.payload.params,
-                status: ToolExecutionStatus.RUNNING,
-              };
-              mcpStep.details.toolExecutions.push(toolExec);
-              console.log(
-                '[Reducer] Added tool execution, total:',
-                mcpStep.details.toolExecutions.length,
-              );
-            }
-          }
-        }
-      },
-    ),
-    updateToolExecution: create.reducer(
-      (
-        state,
-        action: {
-          payload: ToolEventData & { success?: boolean };
-        },
-      ) => {
-        // Update tool execution in the MCP strategy step
-        if (state.streamingMessageId) {
-          const message = state.messages.find(
-            (m) => m.id === state.streamingMessageId,
-          );
-          if (message?.processingSteps) {
-            const mcpStep = message.processingSteps.find(
-              (s) => s.id === 'strategy-mcp-tool',
-            );
-            if (mcpStep?.details?.toolExecutions) {
-              const toolExec = mcpStep.details.toolExecutions.find(
-                (t) =>
-                  t.name === action.payload.name &&
-                  t.serverId === action.payload.serverId,
-              );
-              if (toolExec) {
-                toolExec.status = action.payload.success
-                  ? ToolExecutionStatus.SUCCESS
-                  : ToolExecutionStatus.ERROR;
-                toolExec.executionTime = action.payload.executionTime;
-                toolExec.content = action.payload.content;
-                toolExec.error = action.payload.error;
-              }
-            }
-          }
-        }
-      },
-    ),
   }),
   extraReducers: (builder) => {
     builder
@@ -303,8 +215,6 @@ export const {
   toggleProcessStep,
   collapseAllSteps,
   clearProcessingSteps,
-  addToolExecution,
-  updateToolExecution,
 } = ChatSlice.actions;
 
 export const {

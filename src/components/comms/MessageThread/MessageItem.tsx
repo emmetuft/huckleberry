@@ -8,7 +8,7 @@ import { selectFullScreen, toggleProcessStep } from 'reducers/chat/slice';
 import { AppPage } from 'models/enums/appPage';
 import { Message } from 'models/interfaces/message';
 import { MetricChart } from './MetricChart';
-import { ProcessStep } from './ProcessStep';
+import { ProcessStep } from './ProcessStep/ProcessStep';
 import { formatMessageTimestamp } from 'utils/datetime';
 
 interface MessageItemProps {

@@ -1,0 +1,131 @@
+@import '../../../../styles/shared.scss';
+@import '../../../../styles/variables.scss';
+
+.ProcessStep {
+  margin-bottom: 8px;
+
+  .headerContent {
+    display: flex;
+    justify-content: space-between;
+
+    .details {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .spinner {
+        color: $purple;
+        animation: spin 1s linear infinite;
+      }
+
+      .check {
+        color: $success-icon;
+      }
+
+      .title {
+        font-weight: 500;
+      }
+    }
+
+    .actions {
+    }
+  }
+
+  .stepDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    .detailsText {
+      font-size: 13px;
+    }
+
+    .graphContainer {
+      display: flex;
+      justify-content: center;
+      margin-top: 8px;
+      border-radius: 8px;
+      background-color: white;
+
+      canvas {
+        border-radius: 8px;
+      }
+    }
+
+    .metricName {
+      font-weight: 600;
+    }
+
+    .metricProperties {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+
+      .property {
+        padding: 2px 8px;
+        background-color: white;
+        border-radius: 4px;
+        font-size: 12px;
+      }
+    }
+
+    .sectionLabel {
+      font-weight: 500;
+      font-size: 13px;
+      margin: 0;
+    }
+
+    .toolHeader {
+      display: flex;
+      align-items: flex-end;
+
+      .serverTag {
+        background-color: $purple-light;
+        border-color: $purple;
+        color: $purple;
+      }
+
+      .executionTime {
+        margin-left: auto;
+        font-size: 12px;
+      }
+    }
+
+    .toolError {
+      margin-top: 10px;
+      padding: 8px;
+      background-color: #ffebe9;
+      border: 1px solid #ff8182;
+      border-radius: 4px;
+
+      .errorText {
+        margin: 0;
+        font-size: 12px;
+        color: #cf222e;
+      }
+    }
+  }
+}
+
+.codeBlock {
+  margin: 0;
+  padding: 12px;
+  background-color: #f6f8fa;
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-size: 12px;
+  font-family:
+    'SF Mono', 'Monaco', 'Inconsolata', 'Fira Mono', 'Droid Sans Mono',
+    'Source Code Pro', monospace;
+  line-height: 1.5;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
