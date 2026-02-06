@@ -3,6 +3,7 @@ import {
   GraphContext,
   UserRequest,
 } from '../../shared/models/interfaces/userRequest.ts';
+import { ContextResult } from '../../shared/models/interfaces/context.ts';
 import { models } from '../config/models.js';
 import {
   ContextStrategyType,
@@ -17,26 +18,29 @@ import {
   GRAPH_RAG_DESCRIPTION,
   METRIC_DESCRIPTION,
   PERSONA_DESCRIPTION,
+  MCP_TOOL_DESCRIPTION,
+  DATASOURCE_DESCRIPTION,
 } from '../constants/strategies.ts';
 import { graphRagService } from './graphRag.service.js';
 import { metricService } from './metric.service.js';
 import { personaService } from './persona.service.js';
 import { fileService } from './file.service.js';
+import { mcpToolService } from './mcpTool.service.js';
 import { datasourceService } from './datasource.service.js';
-
-interface ContextResult {
-  textContext: string;
-  graphContext?: GraphContext;
-  metadata: {
-    [key: string]: any;
-  };
-}
+import { stripCodeBlockMarkers } from '../utils/aiResponse.js';
+import {
+  StepType,
+  StepTypeTitles,
+} from '../../shared/models/enums/stepType.ts';
 
 interface ContextStrategy {
   name: string;
   description: string;
   priority: number;
-  buildContext(userRequest: UserRequest): Promise<ContextResult>;
+  buildContext(
+    userRequest: UserRequest,
+    emitEvent?: (event: any) => void,
+  ): Promise<ContextResult>;
 }
 
 class GraphRagStrategy implements ContextStrategy {
@@ -102,6 +106,43 @@ class PersonaStrategy implements ContextStrategy {
   }
 }
 
+class MCPToolStrategy implements ContextStrategy {
+  name = ContextStrategyType.MCP_TOOL;
+  description = MCP_TOOL_DESCRIPTION;
+  priority = 2;
+
+  async buildContext(
+    userRequest: UserRequest,
+    emitEvent?: (event: any) => void,
+  ): Promise<ContextResult> {
+    const { textContext, metadata } = await mcpToolService.buildMcpToolContext(
+      userRequest,
+      emitEvent,
+    );
+
+    return {
+      textContext,
+      metadata: {
+        strategy: this.name,
+        ...metadata,
+      },
+    };
+  }
+}
+
+class DatasourceStrategy implements ContextStrategy {
+  name = ContextStrategyType.DATASOURCE;
+  description = DATASOURCE_DESCRIPTION;
+  priority = 2;
+
+  async buildContext(
+    userRequest: UserRequest,
+    emitEvent?: (event: any) => void,
+  ): Promise<ContextResult> {
+    return datasourceService.buildDatasourceContext(userRequest, emitEvent);
+  }
+}
+
 class ContextBuilderService {
   private model;
   private strategies: ContextStrategy[] = [];
@@ -109,10 +150,11 @@ class ContextBuilderService {
   constructor() {
     this.model = models.contextBuilder;
 
-    // Register available strategies (sorted by priority)
-    this.registerStrategy(new PersonaStrategy());
-    this.registerStrategy(new MetricStrategy());
     this.registerStrategy(new GraphRagStrategy());
+    this.registerStrategy(new MetricStrategy());
+    this.registerStrategy(new PersonaStrategy());
+    this.registerStrategy(new MCPToolStrategy());
+    this.registerStrategy(new DatasourceStrategy());
   }
 
   registerStrategy(strategy: ContextStrategy): void {
@@ -122,24 +164,37 @@ class ContextBuilderService {
   }
 
   /**
+   * Auto-include a strategy if user provided specific items
+   */
+  private autoIncludeStrategy(
+    strategyType: ContextStrategyType,
+    selected: ContextStrategy[],
+    items: any[] | undefined,
+  ): void {
+    if (items && items.length > 0) {
+      const strategy = this.strategies.find((s) => s.name === strategyType);
+      if (strategy && !selected.includes(strategy)) {
+        console.log(`[Strategy Selection] Auto-including ${strategyType}`);
+        selected.push(strategy);
+      }
+    }
+  }
+
+  /**
    * Use AI to intelligently select which strategies should be used for this request
    */
   private async selectStrategies(
     userRequest: UserRequest,
   ): Promise<ContextStrategy[]> {
-    if (userRequest.dataSources && userRequest.dataSources.length > 0) {
-      // If specific datasources are requested, skip strategy selection
-      return [];
-    }
+    const { userInput, tools, dataSources } = userRequest;
 
-    const { userInput } = userRequest;
-
-    // Build strategy descriptions for the AI
     const strategyDescriptions = this.strategies
       .map((s) => `- ${s.name}: ${s.description}`)
       .join('\n');
 
     const prompt = CONTEXT_STRATEGY_PROMPT(strategyDescriptions, userInput);
+
+    let selected: ContextStrategy[] = [];
 
     try {
       const { text } = await generateText({
@@ -148,20 +203,26 @@ class ContextBuilderService {
         temperature: 0,
       });
 
-      const cleanedText = text.trim().replace(/```json\n?|\n?```/g, '');
+      const cleanedText = stripCodeBlockMarkers(text);
       const selectedNames: string[] = JSON.parse(cleanedText);
-      console.log('AI selected strategies:', selectedNames);
-
-      const selected = this.strategies.filter((s) =>
-        selectedNames.includes(s.name),
-      );
-
-      // Fallback: if no strategies selected or invalid response, use none
-      return selected.length > 0 ? selected : [];
+      selected = this.strategies.filter((s) => selectedNames.includes(s.name));
     } catch (error) {
       console.error('Error selecting strategies:', error);
-      return [];
     }
+
+    // Auto-include strategies if user provided specific items
+    this.autoIncludeStrategy(ContextStrategyType.MCP_TOOL, selected, tools);
+    this.autoIncludeStrategy(
+      ContextStrategyType.DATASOURCE,
+      selected,
+      dataSources,
+    );
+
+    console.log(
+      `[Strategy Selection] Final strategies:`,
+      selected.map((s) => s.name),
+    );
+    return selected;
   }
 
   /**
@@ -245,37 +306,34 @@ class ContextBuilderService {
   async queryStream(userRequest: UserRequest, emitEvent: (event: any) => void) {
     // 1. Analyze request
     const strategiesToRun = await this.runStep(
-      emitEvent,
-      { id: 'analyze-request', title: 'Analyzing your request' },
+      {
+        id: StepType.ANALYZE_REQUEST,
+        title: StepTypeTitles[StepType.ANALYZE_REQUEST],
+      },
       () => this.selectStrategies(userRequest),
+      emitEvent,
       (strategies) => ({
-        selectedStrategies: strategies.map((s) => s.name),
+        strategyName: strategies.map((s) => s.name).toString(),
       }),
     );
 
-    // 2. Run strategies + datasources in parallel
-    const results = await Promise.all([
-      ...strategiesToRun.map((s) =>
-        this.runStrategy(s, userRequest, emitEvent),
-      ),
-      ...(userRequest.dataSources || []).map((ds) =>
-        this.runDatasource(ds, userRequest, emitEvent),
-      ),
-    ]);
+    // 2. Run strategies in parallel
+    const results = await Promise.all(
+      strategiesToRun.map((s) => this.runStrategy(s, userRequest, emitEvent)),
+    );
 
     // 3. Generate response
     const { textContext, graphContext } = this.mergeContextResults(results);
 
-    emitEvent({ type: 'metadata', context: graphContext });
+    emitEvent({ type: StreamType.METADATA, context: graphContext });
 
     const messages = this.buildMessages(textContext, userRequest);
 
-    // Step: Generating response
     emitEvent({
       type: StreamType.STEP_START,
       step: {
-        id: 'generate-response',
-        title: 'Generating response',
+        id: StepType.GENERATE_RESPONSE,
+        title: StepTypeTitles[StepType.GENERATE_RESPONSE],
         status: StreamStatus.IN_PROGRESS,
       },
     });
@@ -290,8 +348,8 @@ class ContextBuilderService {
     emitEvent({
       type: StreamType.STEP_COMPLETE,
       step: {
-        id: 'generate-response',
-        title: 'Generating response',
+        id: StepType.GENERATE_RESPONSE,
+        title: StepTypeTitles[StepType.GENERATE_RESPONSE],
         status: StreamStatus.COMPLETE,
       },
     });
@@ -302,12 +360,12 @@ class ContextBuilderService {
   }
 
   async runStep<T>(
-    emitEvent: (event: any) => void,
     step: { id: string; title: string },
     work: () => Promise<T>,
+    emitEvent?: (event: any) => void,
     details?: (result: T) => any,
   ): Promise<T> {
-    emitEvent({
+    emitEvent?.({
       type: StreamType.STEP_START,
       step: { ...step, status: StreamStatus.IN_PROGRESS },
     });
@@ -315,7 +373,7 @@ class ContextBuilderService {
     try {
       const result = await work();
 
-      emitEvent({
+      emitEvent?.({
         type: StreamType.STEP_COMPLETE,
         step: {
           ...step,
@@ -326,7 +384,7 @@ class ContextBuilderService {
 
       return result;
     } catch (error) {
-      emitEvent({
+      emitEvent?.({
         type: StreamType.STEP_COMPLETE,
         step: {
           ...step,
@@ -348,12 +406,16 @@ class ContextBuilderService {
   ) {
     const stepId = `strategy-${strategy.name}`;
     const title = STRATEGY_EXP_MAP[strategy.name as ContextStrategyType];
+    const skipEvents = [
+      ContextStrategyType.MCP_TOOL,
+      ContextStrategyType.DATASOURCE,
+    ].includes(strategy.name as ContextStrategyType);
 
     try {
       return await this.runStep(
-        emitEvent,
         { id: stepId, title },
-        () => strategy.buildContext(userRequest),
+        () => strategy.buildContext(userRequest, emitEvent),
+        skipEvents ? undefined : emitEvent,
         (result) => ({
           strategyName: strategy.name,
           graphContext: result.graphContext,
@@ -369,75 +431,6 @@ class ContextBuilderService {
         },
       };
     }
-  }
-
-  private async runDatasource(
-    datasource: { id: string; name?: string },
-    userRequest: UserRequest,
-    emitEvent: (event: any) => void,
-  ) {
-    const stepId = `datasource-${datasource.id}`;
-    const title = `Querying datasource: ${datasource.name || datasource.id}`;
-
-    try {
-      return await this.runStep(
-        emitEvent,
-        { id: stepId, title },
-        async () => {
-          const { data, query } = await datasourceService.queryDatasource(
-            userRequest.userInput,
-            datasource,
-          );
-
-          return { data, query };
-        },
-        ({ data, query }) => ({
-          datasourceId: datasource.id,
-          query,
-          resultCount: data.length,
-        }),
-      ).then(({ data, query }) => ({
-        textContext: this.formatDatasourceContext(datasource, data, query),
-        metadata: {
-          datasourceId: datasource.id,
-          datasourceName: datasource.name || datasource.id,
-          query,
-          resultCount: data.length,
-        },
-      }));
-    } catch (error) {
-      return {
-        textContext: `# Datasource: ${datasource.name || datasource.id}\n\nError querying datasource: ${
-          error instanceof Error ? error.message : 'Unknown error'
-        }`,
-        metadata: {
-          datasourceId: datasource.id,
-          error: error instanceof Error ? error.message : 'Unknown error',
-        },
-      };
-    }
-  }
-
-  private formatDatasourceContext(
-    datasource: { id: string; name?: string },
-    data: unknown[],
-    query: string,
-  ): string {
-    const name = datasource.name || datasource.id;
-
-    return [
-      `# Datasource: ${name}`,
-      ``,
-      `**SQL Query:**`,
-      '```sql',
-      query,
-      '```',
-      ``,
-      `**Query Results (${data.length} rows):**`,
-      '```json',
-      JSON.stringify(data, null, 2),
-      '```',
-    ].join('\n');
   }
 }
 

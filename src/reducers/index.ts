@@ -7,6 +7,7 @@ import OntologyReducer from './ontology/slice';
 import ApplicationsReducer from './applications/slice';
 import ChatReducer from './chat/slice';
 import MetricsReducer from './metrics/slice';
+import MCPReducer from './mcp/slice';
 //-- importRef
 import { useDispatch } from 'react-redux';
 
@@ -17,6 +18,7 @@ export const store = configureStore({
     applications: ApplicationsReducer,
     chat: ChatReducer,
     metrics: MetricsReducer,
+    mcp: MCPReducer,
     //-- reducerRef
   },
 });

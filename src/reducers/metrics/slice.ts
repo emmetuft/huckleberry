@@ -19,7 +19,7 @@ const initialState: State = {
 export const MetricsSlice = createAppSlice({
   name: 'metrics',
   initialState,
-  reducers: (create) => ({}),
+  reducers: () => ({}),
   extraReducers: (builder) => {
     builder
       .addCase(fetchMetricCatalogSchema.pending, (state) => {

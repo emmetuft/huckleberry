@@ -50,7 +50,7 @@ export const swapPersona = createAsyncThunk<
   Persona,
   number,
   { state: RootState }
->('app/swapPersona', async (userId, { getState }) => {
+>('app/swapPersona', async (userId) => {
   const persona = await StorageService.fetchUserPersona(userId);
   if (!persona) {
     return defaultPersona;

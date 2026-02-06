@@ -1,6 +1,14 @@
 import dotenv from 'dotenv';
 import { generateText } from 'ai';
 import { models } from '../config/models.js';
+import { UserRequest } from '../../shared/models/interfaces/userRequest.ts';
+import { ContextStrategyType } from '../../shared/models/enums/contextStrategy.ts';
+import { ContextResult } from '../../shared/models/interfaces/context.ts';
+import { StreamStatus, StreamType } from '../../shared/models/enums/stream.ts';
+import {
+  StepType,
+  StepTypeTitles,
+} from '../../shared/models/enums/stepType.ts';
 
 dotenv.config();
 
@@ -15,56 +23,6 @@ class DatasourceService {
 
   constructor() {
     this.model = models.datasource;
-  }
-
-  /**
-   * Execute a SQL query against a datasource
-   */
-  async executeDatasourceQuery(
-    datasourceId: string,
-    query: string,
-  ): Promise<any> {
-    const url = `${BASE_URL}/api/query/v1/execute/${datasourceId}`;
-
-    console.log('Executing SQL query:', query);
-
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'X-DOMO-Developer-Token': process.env.DEV_TOKEN,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          sql: query,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(
-          `Datasource query failed with status ${response.status}: ${errorText}`,
-        );
-      }
-
-      const result = (await response.json()) as {
-        columns: string[];
-        rows: any[][];
-      };
-
-      const formattedRows = result.rows.map((row) => {
-        const rowObj: Record<string, any> = {};
-        result.columns.forEach((columnName, index) => {
-          rowObj[columnName] = row[index];
-        });
-        return rowObj;
-      });
-
-      return formattedRows;
-    } catch (error) {
-      console.error('Error executing datasource query:', error);
-      throw error;
-    }
   }
 
   /**
@@ -135,6 +93,56 @@ SQL Query:`;
   }
 
   /**
+   * Execute a SQL query against a datasource
+   */
+  async executeDatasourceQuery(
+    datasourceId: string,
+    query: string,
+  ): Promise<any> {
+    const url = `${BASE_URL}/api/query/v1/execute/${datasourceId}`;
+
+    console.log('Executing SQL query:', query);
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'X-DOMO-Developer-Token': process.env.DEV_TOKEN,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sql: query,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(
+          `Datasource query failed with status ${response.status}: ${errorText}`,
+        );
+      }
+
+      const result = (await response.json()) as {
+        columns: string[];
+        rows: any[][];
+      };
+
+      const formattedRows = result.rows.map((row) => {
+        const rowObj: Record<string, any> = {};
+        result.columns.forEach((columnName, index) => {
+          rowObj[columnName] = row[index];
+        });
+        return rowObj;
+      });
+
+      return formattedRows;
+    } catch (error) {
+      console.error('Error executing datasource query:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Query a datasource by fetching its schema, generating an appropriate SQL query,
    * and executing it to retrieve data that helps answer the user's question
    */
@@ -168,6 +176,139 @@ SQL Query:`;
       console.error('Error querying datasource:', error);
       throw error;
     }
+  }
+
+  private formatDatasourceContext(
+    datasource: { id: string; name?: string },
+    data: unknown[],
+    query: string,
+  ): string {
+    const name = datasource.name || datasource.id;
+
+    return [
+      `# Datasource: ${name}`,
+      ``,
+      `**SQL Query:**`,
+      '```sql',
+      query,
+      '```',
+      ``,
+      `**Query Results (${data.length} rows):**`,
+      '```json',
+      JSON.stringify(data, null, 2),
+      '```',
+    ].join('\n');
+  }
+
+  /**
+   * Build datasource context for a user request
+   */
+  async buildDatasourceContext(
+    userRequest: UserRequest,
+    emitEvent?: (event: any) => void,
+  ): Promise<ContextResult> {
+    const { dataSources, userInput } = userRequest;
+
+    if (!dataSources || dataSources.length === 0) {
+      // TODO: Let AI potentially select and query data sources in the future
+      return {
+        textContext: '',
+        metadata: {
+          strategy: ContextStrategyType.DATASOURCE,
+          datasources: [],
+        },
+      };
+    }
+
+    const results = [];
+
+    for (const datasource of dataSources) {
+      const datasourceName = datasource.name || datasource.id;
+
+      const stepId = `${StepType.QUERY_DATASOURCE}-${datasource.id}`;
+      const title = `${StepTypeTitles[StepType.QUERY_DATASOURCE]}: ${datasourceName}`;
+      const step = { id: stepId, title };
+
+      try {
+        emitEvent?.({
+          type: StreamType.STEP_START,
+          step: { ...step, status: StreamStatus.IN_PROGRESS },
+        });
+
+        const { data, query } = await this.queryDatasource(
+          userInput,
+          datasource,
+        );
+
+        emitEvent?.({
+          type: StreamType.STEP_COMPLETE,
+          step: {
+            ...step,
+            status: StreamStatus.COMPLETE,
+            details: {
+              strategyName: ContextStrategyType.DATASOURCE,
+              metadata: {
+                datasourceId: datasource.id,
+                query,
+                data,
+              },
+            },
+          },
+        });
+
+        results.push({
+          datasourceId: datasource.id,
+          datasourceName,
+          query,
+          data,
+          resultCount: data.length,
+          success: true,
+        });
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : 'Unknown error';
+
+        emitEvent?.({
+          type: StreamType.STEP_COMPLETE,
+          step: {
+            ...step,
+            status: StreamStatus.COMPLETE,
+            details: {
+              strategyName: ContextStrategyType.DATASOURCE,
+              error: error instanceof Error ? error.message : 'Unknown error',
+            },
+          },
+        });
+
+        results.push({
+          datasourceId: datasource.id,
+          datasourceName,
+          query: '',
+          data: [],
+          error: errorMessage,
+          success: false,
+        });
+      }
+    }
+
+    // Format text context
+    const textSections = results
+      .filter((result) => result.success)
+      .map((result) =>
+        this.formatDatasourceContext(
+          { id: result.datasourceId, name: result.datasourceName },
+          result.data,
+          result.query,
+        ),
+      );
+
+    return {
+      textContext: textSections.join('\n\n---\n\n'),
+      metadata: {
+        strategy: ContextStrategyType.DATASOURCE,
+        datasources: results,
+      },
+    };
   }
 }
 

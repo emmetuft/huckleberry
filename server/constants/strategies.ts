@@ -13,3 +13,9 @@ Use when the user is asking for quantitative, analytical, or performance-related
 
 export const PERSONA_DESCRIPTION = `
 Use when the response should be tailored to the user's role, responsibilities, goals, or expertise. Retrieves profile and behavioral context (e.g., role, department, focus areas, strengths, priorities) to shape tone, depth, framing, and recommendations—rather than to supply factual or metric data.`;
+
+export const MCP_TOOL_DESCRIPTION = `
+Use when external tools or integrations would help answer the user's question. Executes MCP server tools that can perform operations like querying external databases, fetching data from APIs, executing workflows, or calling custom integrations. Best suited for questions that require data or actions beyond the knowledge graph, metrics, and persona context - such as fetching live data, executing queries against external systems, or performing operations that require tool integrations.`;
+
+export const DATASOURCE_DESCRIPTION = `
+Use when the user needs to query specific datasources or when data from external datasources would help answer the question. Fetches schema, generates appropriate SQL queries, and executes them against datasources to retrieve relevant data. Best suited for questions that require direct database queries, data analysis, or when the user explicitly mentions datasources.`;
