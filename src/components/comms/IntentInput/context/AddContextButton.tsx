@@ -7,7 +7,7 @@ import { IconBtn } from 'components/shared/IconBtn/IconBtn';
 import {
   MAX_FILE_SIZE,
   formatFileSize,
-} from '../../../../shared/constants/files';
+} from '../../../../../shared/constants/files';
 
 interface AddContextButtonProps {
   onFileUpload?: (file: File) => void;
@@ -85,7 +85,7 @@ export const AddContextButton: FC<AddContextButtonProps> = ({
     <Dropdown
       menu={{ items: menuItems }}
       trigger={['click']}
-      placement="topLeft"
+      placement="bottomLeft"
     >
       <div>
         <IconBtn icon={<Plus {...sharedIconProps} size={16} />} />

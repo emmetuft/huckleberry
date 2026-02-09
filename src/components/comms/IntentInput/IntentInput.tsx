@@ -1,17 +1,11 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Button, Tooltip } from 'antd';
+import { Button } from 'antd';
+import { CloseOutlined, ToolOutlined } from '@ant-design/icons';
 import {
-  CloseOutlined,
-  LoadingOutlined,
-  ToolOutlined,
-} from '@ant-design/icons';
-import {
-  ArrowUp,
   CalendarBlank,
   ChartLine,
   Database,
-  File,
   PaperPlaneTilt,
 } from 'phosphor-react';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -20,28 +14,27 @@ import { useAppDispatch } from 'reducers';
 import { selectPage } from 'reducers/app/slice';
 import { sendStreamingRequest } from 'reducers/chat/actions';
 import { selectLoading, setFullScreen } from 'reducers/chat/slice';
-import { selectTools } from 'reducers/mcp/slice';
-import { fetchTools } from 'reducers/mcp/actions';
-import { COMMANDS } from 'constants/app';
 import { sharedIconProps } from 'constants/styles';
-import { AppPage } from 'models/enums/appPage';
-import { DataSource } from 'models/interfaces/dataSource';
-import { DataSourceModal } from 'components/modals/DataSourceModal/DataSourceModal';
-import { SendModal, SendData } from 'components/modals/SendModal/SendModal';
-import { AddContextButton } from './AddContextButton';
-import { ToolPopup } from './ToolPopup';
-import { ToolBrowser } from '../ToolBrowser/ToolBrowser';
-import {
-  getCaretCharacterOffsetWithin,
-  getTextWithHighlights,
-  setCaretPosition,
-} from 'utils/dom';
-import { ActionType, getSuggestedActions } from 'utils/temp';
-import { processFiles } from 'utils/file';
 import {
   MCPToolDefinition,
   MCPToolCall,
 } from '../../../../shared/models/interfaces/mcpServer';
+import { AppPage } from 'models/enums/appPage';
+import { InputCommand } from 'models/enums/inputCommand';
+import { DataSource } from 'models/interfaces/dataSource';
+import { MentionItem } from 'models/interfaces/mention';
+import { IconBtn } from 'components/shared/IconBtn/IconBtn';
+import { DataSourceModal } from 'components/modals/DataSourceModal/DataSourceModal';
+import { SendModal, SendData } from 'components/modals/SendModal/SendModal';
+import { AddContextButton } from './context/AddContextButton';
+import { CommandPopup } from './CommandPopup/CommandPopup';
+import { ContextItems } from './context/ContextItems';
+import { EditableInput } from './EditableInput';
+import { SendButton } from './SendBtn';
+import { ToolBrowser } from '../ToolBrowser/ToolBrowser';
+import { ActionType, getSuggestedActions } from 'utils/temp';
+import { processFiles } from 'utils/file';
+import { useCommandPopup } from 'hooks/useCommandPopup';
 
 interface IntentInputProps {
   placeholder?: string;
@@ -52,57 +45,61 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   const dispatch = useAppDispatch();
   const appPage = useSelector(selectPage);
   const requestLoading = useSelector(selectLoading);
-  const mcpTools = useSelector(selectTools);
 
   const [isEmpty, setIsEmpty] = useState<boolean>(true);
   const [suggestedActions, setSuggestedActions] = useState<
     { type: ActionType; text: string }[]
   >([]);
-  const [showToolPopup, setShowToolPopup] = useState<boolean>(false);
-  const [lastPopupTriggerIndex, setLastPopupTriggerIndex] = useState<
-    number | null
-  >(null);
-  const [toolSearchQuery, setToolSearchQuery] = useState<string>('');
-  const [selectedToolIndex, setSelectedToolIndex] = useState<number>(0);
   const [selectedTools, setSelectedTools] = useState<MCPToolDefinition[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [showToolBrowser, setShowToolBrowser] = useState<boolean>(false);
-
-  useEffect(() => {
-    dispatch(fetchTools());
-  }, [dispatch]);
   const [selectedDataSources, setSelectedDataSources] = useState<DataSource[]>(
     [],
   );
   const [showDataSourceModal, setShowDataSourceModal] =
     useState<boolean>(false);
   const [showSendModal, setShowSendModal] = useState<boolean>(false);
+  const [mentionedItems, setMentionedItems] = useState<MentionItem[]>([]);
 
   const editableRef = useRef<HTMLDivElement>(null);
   const popupRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node;
-
-      const clickedInsidePopup =
-        popupRef.current && popupRef.current.contains(target);
-
-      const dropdowns = document.querySelectorAll('.ant-select-dropdown');
-      const clickedInsideDropdown = Array.from(dropdowns).some((dropdown) =>
-        dropdown.contains(target),
-      );
-
-      if (!clickedInsidePopup && !clickedInsideDropdown) {
-        setShowToolPopup(false);
+  const toolPopup = useCommandPopup<MCPToolDefinition>(editableRef, {
+    trigger: InputCommand.TOOL,
+    removeOnSelect: true,
+    popupRef,
+    onSelect: (tool) => {
+      // Avoid duplicates
+      if (
+        selectedTools.some(
+          (t) => t.name === tool.name && t.serverId === tool.serverId,
+        )
+      ) {
+        return;
       }
-    };
+      setSelectedTools([...selectedTools, tool]);
+    },
+  });
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
+  const mentionPopup = useCommandPopup<MentionItem>(editableRef, {
+    trigger: InputCommand.MENTION,
+    removeOnSelect: false,
+    popupRef,
+    replaceWith: (item) => {
+      if ('username' in item) {
+        return `${InputCommand.MENTION}${item.username}`;
+      } else {
+        return `${InputCommand.MENTION}${item.name}`;
+      }
+    },
+    onSelect: (item) => {
+      // Avoid duplicates
+      if (mentionedItems.some((m) => m.id === item.id)) {
+        return;
+      }
+      setMentionedItems([...mentionedItems, item]);
+    },
+  });
 
   useEffect(() => {
     const el = editableRef.current;
@@ -111,94 +108,17 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     setSuggestedActions(getSuggestedActions(text, selectedDataSources));
   }, [selectedDataSources]);
 
-  // Reset selected tool index when filtered tools change
-  useEffect(() => {
-    setSelectedToolIndex(0);
-  }, [toolSearchQuery]);
-
-  const onInput = () => {
-    const el = editableRef.current;
-    if (!el) return;
-
-    const preCaretOffset = getCaretCharacterOffsetWithin(el);
-
-    const text = el.innerText;
-    const isNowEmpty = text.trim() === '';
+  const handleTextChange = (text: string, isNowEmpty: boolean) => {
     setIsEmpty(isNowEmpty);
 
     if (isNowEmpty) {
-      el.innerHTML = '';
-      setLastPopupTriggerIndex(null);
-      setShowToolPopup(false);
-      setToolSearchQuery('');
-      setSelectedToolIndex(0);
+      toolPopup.resetPopup();
+      mentionPopup.resetPopup();
     } else {
       setSuggestedActions(getSuggestedActions(text, selectedDataSources));
-      const highlightedHTML = getTextWithHighlights(text, styles);
-      el.innerHTML = highlightedHTML;
-      controlToolPopup(text);
+      toolPopup.controlPopup(text);
+      mentionPopup.controlPopup(text);
     }
-
-    setCaretPosition(el, preCaretOffset);
-  };
-
-  const controlToolPopup = (text: string) => {
-    const atIndex = text.lastIndexOf(COMMANDS.TOOL);
-
-    // If "/" was deleted, close the popup
-    if (atIndex === -1) {
-      if (showToolPopup) {
-        setLastPopupTriggerIndex(null);
-        setShowToolPopup(false);
-        setToolSearchQuery('');
-        setSelectedToolIndex(0);
-      }
-      return;
-    }
-
-    // Extract search query after the "/"
-    const searchQuery = text.slice(atIndex + 1);
-    setToolSearchQuery(searchQuery);
-
-    // Show popup if it's a new trigger
-    if (atIndex !== lastPopupTriggerIndex) {
-      setShowToolPopup(true);
-      setLastPopupTriggerIndex(atIndex);
-      setSelectedToolIndex(0);
-    }
-  };
-
-  // Filter tools based on search query
-  const filteredTools = mcpTools.filter((tool) =>
-    tool.name.toLowerCase().includes(toolSearchQuery.toLowerCase()),
-  );
-
-  const onSelectTool = (tool: MCPToolDefinition) => {
-    // Add tool to selectedTools, avoiding duplicates
-    if (
-      selectedTools.some(
-        (t) => t.name === tool.name && t.serverId === tool.serverId,
-      )
-    )
-      return;
-    setSelectedTools([...selectedTools, tool]);
-    setShowToolPopup(false);
-    setToolSearchQuery('');
-    setLastPopupTriggerIndex(null);
-
-    // Remove command and search query from the editable content
-    const el = editableRef.current;
-    if (!el) return;
-    const text = el.innerText;
-    const atIndex = text.lastIndexOf(COMMANDS.TOOL);
-    if (atIndex !== -1) {
-      // Remove the "/" and everything after it (the search query)
-      const newText = text.slice(0, atIndex) + ' ';
-      el.innerText = newText;
-      setCaretPosition(el, newText.length);
-    }
-    // Refocus the editable element
-    el.focus();
   };
 
   const onRemoveTool = (tool: MCPToolDefinition) => {
@@ -308,46 +228,9 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   };
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    // Handle tool popup keyboard navigation
-    if (showToolPopup && filteredTools.length > 0) {
-      if (event.key === 'ArrowDown') {
-        event.preventDefault();
-        setSelectedToolIndex((prev) =>
-          prev < filteredTools.length - 1 ? prev + 1 : prev,
-        );
-        return;
-      }
-      if (event.key === 'ArrowUp') {
-        event.preventDefault();
-        setSelectedToolIndex((prev) => (prev > 0 ? prev - 1 : prev));
-        return;
-      }
-      if (event.key === 'Enter') {
-        event.preventDefault();
-        onSelectTool(filteredTools[selectedToolIndex]);
-        return;
-      }
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        setShowToolPopup(false);
-        setToolSearchQuery('');
-        setLastPopupTriggerIndex(null);
+    if (toolPopup.handleKeyDown(event)) return;
+    if (mentionPopup.handleKeyDown(event)) return;
 
-        // Remove the "/" and search query from the input
-        const el = editableRef.current;
-        if (el) {
-          const text = el.innerText;
-          const atIndex = text.lastIndexOf(COMMANDS.TOOL);
-          if (atIndex !== -1) {
-            el.innerText = text.slice(0, atIndex);
-            setCaretPosition(el, atIndex);
-          }
-        }
-        return;
-      }
-    }
-
-    // Normal enter key handling for sending messages
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
       onClickSend();
@@ -373,12 +256,10 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
         onCancel={handleSendModalCancel}
         onConfirm={handleSendModalConfirm}
       />
-      {showToolPopup && filteredTools.length > 0 && (
-        <ToolPopup
+      {(toolPopup.showPopup || mentionPopup.showPopup) && (
+        <CommandPopup
           popupRef={popupRef}
-          tools={filteredTools}
-          selectedIndex={selectedToolIndex}
-          onSelectTool={onSelectTool}
+          popup={toolPopup.showPopup ? toolPopup : mentionPopup}
         />
       )}
       <ToolBrowser
@@ -390,66 +271,48 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
       <div
         className={`${styles.inputWrapper} ${animate ? styles.animate : ''}`}
       >
-        {selectedTools.length > 0 && (
-          <div className={styles.selectedTools}>
-            {selectedTools.map((tool) => (
-              <div
-                key={`${tool.serverId}-${tool.name}`}
-                className={styles.tool}
-              >
-                <p>{tool.name}</p>
-                <button onClick={() => onRemoveTool(tool)}>
-                  <CloseOutlined className={styles.closeIcon} />
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-        <div>
-          <div
-            className={`${styles.editable} ${isEmpty ? styles.empty : ''} ${requestLoading ? styles.disabled : ''}`}
-            contentEditable={!requestLoading}
-            ref={editableRef}
-            onInput={onInput}
-            onKeyDown={onKeyDown}
-            data-placeholder={
-              placeholder ??
-              'Start something new: a workflow, an app, an agent—your call.'
-            }
-          />
-        </div>
+        <ContextItems
+          uploadedFiles={uploadedFiles}
+          selectedDataSources={selectedDataSources}
+          onRemoveFile={onRemoveFile}
+          onRemoveDataSource={onRemoveDataSource}
+        />
+        <EditableInput
+          ref={editableRef}
+          isEmpty={isEmpty}
+          disabled={requestLoading}
+          placeholder={
+            placeholder ??
+            'Start something new: a workflow, an app, an agent—your call.'
+          }
+          onTextChange={handleTextChange}
+          onKeyDown={onKeyDown}
+        />
         <div className={styles.actions}>
           <div className={styles.buttons}>
             <AddContextButton
               onFileUpload={handleFileUpload}
               onDataSourceClick={handleDataSourceClick}
             />
-            <Tooltip title="Browse Tools">
-              <Button
-                type="text"
-                icon={<ToolOutlined />}
-                onClick={() => setShowToolBrowser(true)}
-                size="small"
-              />
-            </Tooltip>
-            {uploadedFiles.map((file) => (
-              <div key={file.name} className={styles.uploadedFile}>
-                <File {...sharedIconProps} size={14} />
-                <span className={styles.fileName}>{file.name}</span>
-                <button onClick={() => onRemoveFile(file.name)}>
-                  <CloseOutlined className={styles.closeIcon} />
-                </button>
+            <IconBtn
+              icon={<ToolOutlined />}
+              onClick={() => setShowToolBrowser(true)}
+            />
+            {selectedTools.length > 0 && (
+              <div className={styles.selectedTools}>
+                {selectedTools.map((tool) => (
+                  <div
+                    key={`${tool.serverId}-${tool.name}`}
+                    className={styles.tool}
+                  >
+                    <p>{tool.name}</p>
+                    <button onClick={() => onRemoveTool(tool)}>
+                      <CloseOutlined className={styles.closeIcon} />
+                    </button>
+                  </div>
+                ))}
               </div>
-            ))}
-            {selectedDataSources.map((dataSource) => (
-              <div key={dataSource.id} className={styles.uploadedFile}>
-                <Database {...sharedIconProps} size={14} />
-                <span className={styles.fileName}>{dataSource.name}</span>
-                <button onClick={() => onRemoveDataSource(dataSource.id)}>
-                  <CloseOutlined className={styles.closeIcon} />
-                </button>
-              </div>
-            ))}
+            )}
             <AnimatePresence>
               {suggestedActions.map((action) => (
                 <motion.div
@@ -470,26 +333,7 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
               ))}
             </AnimatePresence>
           </div>
-          <Button
-            type="text"
-            icon={
-              requestLoading ? (
-                <LoadingOutlined
-                  style={{ fontSize: 16, color: 'white' }}
-                  spin
-                />
-              ) : (
-                <ArrowUp color={isEmpty ? '#2c2b2a' : 'white'} size={16} />
-              )
-            }
-            style={{
-              backgroundColor:
-                isEmpty && !requestLoading ? 'transparent' : '#2c2b2a',
-              transition: 'background-color 0.3s ease',
-            }}
-            onClick={onClickSend}
-            disabled={requestLoading}
-          />
+          <SendButton isEmpty={isEmpty} onClickSend={onClickSend} />
         </div>
       </div>
     </div>

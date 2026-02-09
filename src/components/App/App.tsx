@@ -14,6 +14,8 @@ import {
   setPage,
 } from 'reducers/app/slice';
 import { fetchMetricCatalogSchema } from 'reducers/metrics/actions';
+import { fetchTools } from 'reducers/mcp/actions';
+import { fetchTeams, fetchUsers } from 'reducers/people/actions';
 import { Heading } from 'components/layout/Heading/Heading';
 import { Nav } from 'components/layout/Nav/Nav';
 import { PromptBar } from 'components/comms/PromptBar/PromptBar';
@@ -38,6 +40,9 @@ export const App: FC = () => {
     if (identity) {
       dispatch(fetchUserPersona());
       dispatch(fetchMetricCatalogSchema());
+      dispatch(fetchTools());
+      dispatch(fetchUsers());
+      dispatch(fetchTeams());
     }
   }, [identity]);
 
