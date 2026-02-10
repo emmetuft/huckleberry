@@ -5,9 +5,17 @@ export const getTextWithHighlights = (text: string, styles: any): string => {
   return words
     .map((word) => {
       const clean = word.trim().toLowerCase();
+
+      // Check if word is a mention (starts with @)
+      if (word.trim().startsWith('@')) {
+        return `<span class="${styles.mention}">${word}</span>`;
+      }
+
+      // Check if word is an entity
       if (ENTITIES.includes(clean)) {
         return `<span class="${styles.entity}">${word}</span>`;
       }
+
       return word;
     })
     .join('');

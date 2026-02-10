@@ -1,5 +1,5 @@
 import { MCPToolDefinition } from '../../../shared/models/interfaces/mcpServer';
-import { User, Team, MentionItem } from './mention';
+import { User, Group, MentionItem } from './mention';
 
 export interface CommandPopupItem {
   id: string;
@@ -28,35 +28,18 @@ export const userToCommandItem = (user: User): CommandPopupItem => ({
   groupName: 'Users',
 });
 
-export const teamToCommandItem = (team: Team): CommandPopupItem => ({
-  id: team.id,
-  name: team.name,
-  description: team.description,
-  groupKey: 'teams',
-  groupName: 'Teams',
+export const groupToCommandItem = (group: Group): CommandPopupItem => ({
+  id: group.id,
+  name: group.name,
+  description: group.description,
+  groupKey: 'groups',
+  groupName: 'Groups',
 });
 
 export const mentionToCommandItem = (item: MentionItem): CommandPopupItem => {
   if ('username' in item) {
     return userToCommandItem(item);
   } else {
-    return teamToCommandItem(item);
+    return groupToCommandItem(item);
   }
-};
-
-export const filterMentions = (
-  items: MentionItem[],
-  searchQuery: string,
-): MentionItem[] => {
-  const searchLower = searchQuery.toLowerCase();
-  return items.filter((item) => {
-    if ('username' in item) {
-      return (
-        item.username.toLowerCase().includes(searchLower) ||
-        item.displayName?.toLowerCase().includes(searchLower)
-      );
-    } else {
-      return item.name.toLowerCase().includes(searchLower);
-    }
-  });
 };

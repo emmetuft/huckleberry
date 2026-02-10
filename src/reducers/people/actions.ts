@@ -1,7 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from 'reducers';
 import { PeopleService } from '../../services/people';
-import { User, Team } from 'models/interfaces/mention';
+import { User, Group } from 'models/interfaces/mention';
 
 export const fetchUsers = createAsyncThunk<User[], void, { state: RootState }>(
   'people/fetchUsers',
@@ -14,13 +14,14 @@ export const fetchUsers = createAsyncThunk<User[], void, { state: RootState }>(
   },
 );
 
-export const fetchTeams = createAsyncThunk<Team[], void, { state: RootState }>(
-  'people/fetchTeams',
-  async (_, { getState }) => {
-    const { teams } = getState().people;
-    if (teams.length > 0) {
-      return teams;
-    }
-    return PeopleService.getTeams();
-  },
-);
+export const fetchGroups = createAsyncThunk<
+  Group[],
+  void,
+  { state: RootState }
+>('people/fetchGroups', async (_, { getState }) => {
+  const { groups } = getState().people;
+  if (groups.length > 0) {
+    return groups;
+  }
+  return PeopleService.getGroups();
+});

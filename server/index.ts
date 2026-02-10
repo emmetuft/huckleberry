@@ -4,6 +4,8 @@ import { router as ontologyRouter } from './routes/ontology.routes.js';
 import { router as contextBuilderRouter } from './routes/contextBuilder.routes.js';
 import { router as personaRouter } from './routes/persona.routes.js';
 import { router as mcpRouter } from './routes/mcp.routes.js';
+import { router as usersRouter } from './routes/users.routes.js';
+import { router as groupsRouter } from './routes/groups.routes.js';
 
 export async function setupServer(app: Express): Promise<void> {
   // Middleware - increased limit to support file uploads (up to 15MB)
@@ -23,6 +25,8 @@ export async function setupServer(app: Express): Promise<void> {
   app.use('/api/context', contextBuilderRouter);
   app.use('/api/persona', personaRouter);
   app.use('/api/mcp', mcpRouter);
+  app.use('/api/users', usersRouter);
+  app.use('/api/groups', groupsRouter);
 
   // Error handling middleware
   app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {

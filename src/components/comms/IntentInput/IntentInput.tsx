@@ -87,9 +87,10 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     popupRef,
     replaceWith: (item) => {
       if ('username' in item) {
-        return `${InputCommand.MENTION}${item.username}`;
+        const name = item.displayName || item.username;
+        return `${InputCommand.MENTION}${name.replace(/\s+/g, '')}`;
       } else {
-        return `${InputCommand.MENTION}${item.name}`;
+        return `${InputCommand.MENTION}${item.name.replace(/\s+/g, '')}`;
       }
     },
     onSelect: (item) => {

@@ -3,12 +3,11 @@ import { useSelector } from 'react-redux';
 import { InputCommand } from 'models/enums/inputCommand';
 import { setCaretPosition } from 'utils/dom';
 import { selectTools } from 'reducers/mcp/slice';
-import { selectUsers, selectTeams } from 'reducers/people/slice';
+import { selectUsers, selectGroups } from 'reducers/people/slice';
 import {
   CommandPopupItem,
   toolToCommandItem,
   mentionToCommandItem,
-  filterMentions,
 } from 'models/interfaces/commandPopup';
 import { MCPToolDefinition } from '../../shared/models/interfaces/mcpServer';
 import { MentionItem } from 'models/interfaces/mention';
@@ -70,17 +69,31 @@ export const useCommandPopup = <T = any>(
   // Select items from Redux based on trigger
   const mcpTools = useSelector(selectTools);
   const users = useSelector(selectUsers);
-  const teams = useSelector(selectTeams);
+  const groups = useSelector(selectGroups);
+
+  const filterMentions = (
+    items: MentionItem[],
+    searchQuery: string,
+  ): MentionItem[] => {
+    const searchLower = searchQuery.toLowerCase();
+    return items.filter((item) => {
+      if ('username' in item) {
+        return item.displayName?.toLowerCase().includes(searchLower);
+      } else {
+        return item.name.toLowerCase().includes(searchLower);
+      }
+    });
+  };
 
   // Get items based on command type
   const allItems: any[] = useMemo(() => {
     if (config.trigger === InputCommand.TOOL) {
       return mcpTools;
     } else if (config.trigger === InputCommand.MENTION) {
-      return [...users, ...teams];
+      return [...users, ...groups];
     }
     return [];
-  }, [config.trigger, mcpTools, users, teams]);
+  }, [config.trigger, mcpTools, users, groups]);
 
   // Filter items based on search query
   const filteredItems: any[] = useMemo(() => {
@@ -194,6 +207,9 @@ export const useCommandPopup = <T = any>(
       const newCaretPosition = triggerIndex + 1 + searchQuery.length;
       setCaretPosition(el, newCaretPosition);
     }
+
+    // Trigger input event to apply highlighting
+    el.dispatchEvent(new Event('input', { bubbles: true }));
 
     config.onSelect(item);
     resetPopup();

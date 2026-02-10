@@ -6,19 +6,19 @@ export interface User {
   avatar?: string;
 }
 
-export interface Team {
+export interface Group {
   id: string;
   name: string;
   description?: string;
   memberCount?: number;
 }
 
-export type MentionItem = User | Team;
+export type MentionItem = User | Group;
 
 export const isUser = (item: MentionItem): item is User => {
   return 'username' in item;
 };
 
-export const isTeam = (item: MentionItem): item is Team => {
+export const isGroup = (item: MentionItem): item is Group => {
   return 'name' in item && !('username' in item);
 };
