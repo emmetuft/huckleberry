@@ -1,12 +1,13 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Button } from 'antd';
-import { CloseOutlined, ToolOutlined } from '@ant-design/icons';
+import { CloseOutlined } from '@ant-design/icons';
 import {
   CalendarBlank,
   ChartLine,
   Database,
   PaperPlaneTilt,
+  Wrench,
 } from 'phosphor-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import styles from './IntentInput.module.scss';
@@ -31,6 +32,7 @@ import { CommandPopup } from './CommandPopup/CommandPopup';
 import { ContextItems } from './context/ContextItems';
 import { EditableInput } from './EditableInput';
 import { SendButton } from './SendBtn';
+import { DictateButton } from './DictateBtn/DictateBtn';
 import { ToolBrowser } from '../ToolBrowser/ToolBrowser';
 import { ActionType, getSuggestedActions } from 'utils/temp';
 import { processFiles } from 'utils/file';
@@ -238,6 +240,28 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     }
   };
 
+  const handleTranscript = (transcript: string) => {
+    const el = editableRef.current;
+    if (!el) return;
+
+    // Append transcript to existing text
+    const currentText = el.innerText;
+    const newText = currentText ? `${currentText} ${transcript}` : transcript;
+    el.innerText = newText;
+
+    // Update state
+    setIsEmpty(false);
+    handleTextChange(newText, false);
+
+    // Move cursor to end
+    const range = document.createRange();
+    const selection = window.getSelection();
+    range.selectNodeContents(el);
+    range.collapse(false);
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+  };
+
   const actionIconMap = {
     [ActionType.SCHEDULE]: <CalendarBlank {...sharedIconProps} size={16} />,
     [ActionType.CHART]: <ChartLine {...sharedIconProps} size={16} />,
@@ -296,8 +320,12 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
               onDataSourceClick={handleDataSourceClick}
             />
             <IconBtn
-              icon={<ToolOutlined />}
+              icon={<Wrench />}
               onClick={() => setShowToolBrowser(true)}
+            />
+            <DictateButton
+              onTranscript={handleTranscript}
+              disabled={requestLoading}
             />
             {selectedTools.length > 0 && (
               <div className={styles.selectedTools}>
