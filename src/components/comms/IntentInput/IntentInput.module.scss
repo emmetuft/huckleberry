@@ -63,7 +63,15 @@
     span.entity {
       font-weight: 600;
       color: $purple;
-      background-color: lighten($purple, 45%);
+      background-color: $purple-light;
+      padding: 1px 4px;
+      border-radius: 4px;
+    }
+
+    span.mention {
+      font-weight: 600;
+      color: $pink;
+      background-color: $pink-light;
       padding: 1px 4px;
       border-radius: 4px;
     }

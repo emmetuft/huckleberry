@@ -1,92 +1,133 @@
-import { User, Team } from 'models/interfaces/mention';
+import { User, Group } from 'models/interfaces/mention';
+import { DomoUser } from '../../shared/models/interfaces/domoUser';
+import { DomoGroup } from '../../shared/models/interfaces/domoGroup';
 
-// Mock data - TODO: Replace with real API calls
-const mockUsers: User[] = [
-  {
-    id: '1',
-    username: 'johndoe',
-    displayName: 'John Doe',
-    email: 'john@example.com',
-  },
-  {
-    id: '2',
-    username: 'janesmith',
-    displayName: 'Jane Smith',
-    email: 'jane@example.com',
-  },
-  {
-    id: '3',
-    username: 'bobwilson',
-    displayName: 'Bob Wilson',
-    email: 'bob@example.com',
-  },
-  {
-    id: '4',
-    username: 'alicejohnson',
-    displayName: 'Alice Johnson',
-    email: 'alice@example.com',
-  },
-  {
-    id: '5',
-    username: 'charlielee',
-    displayName: 'Charlie Lee',
-    email: 'charlie@example.com',
-  },
-];
-
-const mockTeams: Team[] = [
-  {
-    id: 't1',
-    name: 'Engineering',
-    description: 'Software engineering team',
-    memberCount: 15,
-  },
-  {
-    id: 't2',
-    name: 'Design',
-    description: 'Product design team',
-    memberCount: 8,
-  },
-  {
-    id: 't3',
-    name: 'Marketing',
-    description: 'Marketing team',
-    memberCount: 10,
-  },
-  {
-    id: 't4',
-    name: 'Sales',
-    description: 'Sales team',
-    memberCount: 12,
-  },
-  {
-    id: 't5',
-    name: 'Support',
-    description: 'Customer support team',
-    memberCount: 6,
-  },
-];
+const API_BASE_URL = '/api';
 
 export class PeopleService {
   static async getUsers(): Promise<User[]> {
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 100));
-    return mockUsers;
+    try {
+      const response = await fetch(`${API_BASE_URL}/users`);
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch users: ${response.status}`);
+      }
+
+      const result = (await response.json()) as {
+        success: boolean;
+        data: DomoUser[];
+      };
+
+      if (!result.success) {
+        throw new Error('Failed to fetch users');
+      }
+
+      // Transform DomoUser to User interface
+      return result.data.map((domoUser) => ({
+        id: domoUser.id.toString(),
+        username: domoUser.userName,
+        displayName: domoUser.displayName,
+        email: domoUser.emailAddress,
+      }));
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      throw error;
+    }
   }
 
-  static async getTeams(): Promise<Team[]> {
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 100));
-    return mockTeams;
+  static async getGroups(): Promise<Group[]> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/groups`);
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch groups: ${response.status}`);
+      }
+
+      const result = (await response.json()) as {
+        success: boolean;
+        data: DomoGroup[];
+      };
+
+      if (!result.success) {
+        throw new Error('Failed to fetch groups');
+      }
+
+      // Transform DomoGroup to Group interface
+      return result.data.map((domoGroup) => ({
+        id: domoGroup.id.toString(),
+        name: domoGroup.name,
+        description: domoGroup.description,
+        memberCount: domoGroup.memberCount,
+      }));
+    } catch (error) {
+      console.error('Error fetching groups:', error);
+      throw error;
+    }
   }
 
   static async getUserById(id: string): Promise<User | null> {
-    await new Promise((resolve) => setTimeout(resolve, 50));
-    return mockUsers.find((user) => user.id === id) || null;
+    try {
+      const response = await fetch(`${API_BASE_URL}/users/${id}`);
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          return null;
+        }
+        throw new Error(`Failed to fetch user: ${response.status}`);
+      }
+
+      const result = (await response.json()) as {
+        success: boolean;
+        data: DomoUser;
+      };
+
+      if (!result.success) {
+        return null;
+      }
+
+      // Transform DomoUser to User interface
+      return {
+        id: result.data.id.toString(),
+        username: result.data.userName,
+        displayName: result.data.displayName,
+        email: result.data.emailAddress,
+      };
+    } catch (error) {
+      console.error('Error fetching user by ID:', error);
+      return null;
+    }
   }
 
-  static async getTeamById(id: string): Promise<Team | null> {
-    await new Promise((resolve) => setTimeout(resolve, 50));
-    return mockTeams.find((team) => team.id === id) || null;
+  static async getGroupById(id: string): Promise<Group | null> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/groups/${id}`);
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          return null;
+        }
+        throw new Error(`Failed to fetch group: ${response.status}`);
+      }
+
+      const result = (await response.json()) as {
+        success: boolean;
+        data: DomoGroup;
+      };
+
+      if (!result.success) {
+        return null;
+      }
+
+      // Transform DomoGroup to Group interface
+      return {
+        id: result.data.id.toString(),
+        name: result.data.name,
+        description: result.data.description,
+        memberCount: result.data.memberCount,
+      };
+    } catch (error) {
+      console.error('Error fetching group by ID:', error);
+      return null;
+    }
   }
 }

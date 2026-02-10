@@ -15,7 +15,7 @@ import {
 } from 'reducers/app/slice';
 import { fetchMetricCatalogSchema } from 'reducers/metrics/actions';
 import { fetchTools } from 'reducers/mcp/actions';
-import { fetchTeams, fetchUsers } from 'reducers/people/actions';
+import { fetchGroups, fetchUsers } from 'reducers/people/actions';
 import { Heading } from 'components/layout/Heading/Heading';
 import { Nav } from 'components/layout/Nav/Nav';
 import { PromptBar } from 'components/comms/PromptBar/PromptBar';
@@ -42,7 +42,7 @@ export const App: FC = () => {
       dispatch(fetchMetricCatalogSchema());
       dispatch(fetchTools());
       dispatch(fetchUsers());
-      dispatch(fetchTeams());
+      dispatch(fetchGroups());
     }
   }, [identity]);
 
