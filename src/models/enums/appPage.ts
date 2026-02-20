@@ -1,3 +1,18 @@
+// Public pages (unauthenticated)
+export enum PublicPage {
+  LANDING = 'landing',
+  ABOUT = 'about',
+  FEATURES = 'features',
+  PRICING = 'pricing',
+  DOCS = 'docs',
+  LOGIN = 'login',
+  SIGNUP = 'signup',
+  RESET_PASSWORD = 'reset_password',
+  TERMS = 'terms',
+  PRIVACY = 'privacy',
+}
+
+// Platform pages (authenticated)
 export enum AppPage {
   AGENTS = 'agents',
   APPS = 'apps',
@@ -11,7 +26,7 @@ export enum AppPage {
   WORKFLOW = 'workflow',
 }
 
-export const AppPageLabel = {
+export const AppPageLabel: Record<string, string> = {
   [AppPage.AGENTS]: 'Agents',
   [AppPage.APPS]: 'Applications',
   [AppPage.AUTOMATION]: 'Automation Rules',
@@ -22,4 +37,40 @@ export const AppPageLabel = {
   [AppPage.METRICS]: 'Metric Catalog',
   [AppPage.ONTOLOGY]: 'Business Ontology',
   [AppPage.WORKFLOW]: 'Workflow',
+};
+
+// Public route paths
+export const publicRoutePaths: Record<PublicPage, string> = {
+  [PublicPage.LANDING]: '/',
+  [PublicPage.ABOUT]: '/about',
+  [PublicPage.FEATURES]: '/features',
+  [PublicPage.PRICING]: '/pricing',
+  [PublicPage.DOCS]: '/docs',
+  [PublicPage.LOGIN]: '/login',
+  [PublicPage.SIGNUP]: '/signup',
+  [PublicPage.RESET_PASSWORD]: '/reset-password',
+  [PublicPage.TERMS]: '/terms',
+  [PublicPage.PRIVACY]: '/privacy',
+};
+
+// Platform route paths
+export const platformRoutePaths: Record<AppPage, string> = {
+  [AppPage.APPS]: '/apps',
+  [AppPage.AGENTS]: '/agents',
+  [AppPage.AUTOMATION]: '/automation',
+  [AppPage.DATA_HEALTH]: '/data-health',
+  [AppPage.DATA_HUB]: '/data-hub',
+  [AppPage.HOME]: '/workspace',
+  [AppPage.INTEGRATIONS]: '/integrations',
+  [AppPage.METRICS]: '/metrics',
+  [AppPage.ONTOLOGY]: '/ontology',
+  [AppPage.WORKFLOW]: '/workflow',
+};
+
+// Helper to get AppPage from platform path
+export const getAppPageFromPath = (path: string): AppPage => {
+  const entry = Object.entries(platformRoutePaths).find(
+    ([_, routePath]) => routePath === path,
+  );
+  return entry ? (entry[0] as AppPage) : AppPage.HOME;
 };

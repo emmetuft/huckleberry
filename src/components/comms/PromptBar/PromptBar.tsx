@@ -1,6 +1,5 @@
 import { FC, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { routePaths } from 'routes';
 import { Popover, Tooltip } from 'antd';
 import { ArrowsOutSimple, Chat, X } from 'phosphor-react';
 import styles from './PromptBar.module.scss';
@@ -10,7 +9,7 @@ import {
   selectHasMessages,
   setFullScreen,
 } from 'reducers/chat/slice';
-import { AppPage } from 'models/enums/appPage';
+import { AppPage, platformRoutePaths } from 'models/enums/appPage';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
 import { IntentInput } from 'components/comms/IntentInput/IntentInput';
 import { MessageThread } from '../MessageThread/MessageThread';
@@ -57,7 +56,7 @@ export const PromptBar: FC<PromptBarProps> = ({}) => {
             placement="top"
             mouseEnterDelay={0.5}
           >
-            <Link to={routePaths[AppPage.HOME]}>
+            <Link to={platformRoutePaths[AppPage.HOME]}>
               <IconBtn
                 icon={<ArrowsOutSimple size={16} />}
                 onClick={onClickFullScreen}

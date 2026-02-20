@@ -1,0 +1,56 @@
+.PublicFooter {
+  background: #f8f8f8;
+  border-top: 1px solid #e6e9ff;
+  padding: 3rem 2rem 1rem;
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    h4 {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #333;
+    }
+
+    a {
+      color: #666;
+      text-decoration: none;
+      font-size: 0.9rem;
+
+      &:hover {
+        color: #5a0cff;
+      }
+    }
+
+    p {
+      color: #666;
+      font-size: 0.9rem;
+      margin: 0;
+    }
+  }
+
+  .copyright {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-top: 2rem;
+    border-top: 1px solid #e0e0e0;
+    text-align: center;
+
+    p {
+      color: #999;
+      font-size: 0.85rem;
+      margin: 0;
+    }
+  }
+}

@@ -1,5 +1,6 @@
-@import '../../styles/shared.scss';
-@import '../../styles/variables.scss';
+@use 'sass:color';
+@use 'src/styles/shared.scss' as *;
+@use 'src/styles/variables.scss' as *;
 
 .RecCard {
   @extend .card;
@@ -83,7 +84,7 @@
             padding: 2px 8px;
             font-size: 10px;
             font-weight: 600;
-            background-color: lighten($purple, 42%);
+            background-color: color.adjust($purple, $lightness: +42%);
             border-radius: 8px;
             height: fit-content;
           }

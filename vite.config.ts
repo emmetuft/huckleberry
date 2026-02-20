@@ -69,6 +69,7 @@ export default defineConfig(({ command }) => {
       preprocessorOptions: {
         scss: {
           api: 'modern',
+          loadPaths: [path.resolve(__dirname)],
         },
       },
     },
