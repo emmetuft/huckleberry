@@ -1,24 +1,10 @@
 import { FC } from 'react';
 import { Button } from 'antd';
 import styles from './index.module.scss';
-import { Persona } from '../../../../../shared/models/interfaces/persona';
 
-interface AccountsTabProps {
-  editedPersona: Persona;
-  setEditedPersona: React.Dispatch<React.SetStateAction<Persona>>;
-}
+interface AccountsTabProps {}
 
-export const AccountsTab: FC<AccountsTabProps> = ({
-  editedPersona,
-  setEditedPersona,
-}) => {
-  const onChangePersona = (field: keyof Persona, value: string) => {
-    setEditedPersona((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
+export const AccountsTab: FC<AccountsTabProps> = () => {
   return (
     <div className={styles.tab}>
       <Button>Connect your calendar</Button>

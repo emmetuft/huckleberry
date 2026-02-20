@@ -1,5 +1,5 @@
-@import '../../../styles/shared.scss';
-@import '../../../styles/variables.scss';
+@use 'src/styles/shared.scss' as *;
+@use 'src/styles/variables.scss' as *;
 
 .IntentInput {
   display: flex;

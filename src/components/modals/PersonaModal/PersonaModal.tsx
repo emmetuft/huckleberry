@@ -11,7 +11,7 @@ import {
   setPersonaModal,
 } from 'reducers/app/slice';
 import { defaultPersona } from 'constants/persona';
-import { Persona } from '../../../shared/models/interfaces/persona';
+import { Persona } from '../../../../shared/models/interfaces/persona';
 import { PersonaTab } from './tabs/PersonaTab';
 import { SettingsTab } from './tabs/SettingsTab';
 import { AccountsTab } from './tabs/AccountsTab';
@@ -43,7 +43,9 @@ export const PersonaModal: FC<PersonaModalProps> = ({}) => {
     dispatch(swapPersona(e.target.value));
   };
 
-  const onChangeTab = (key: string) => {};
+  const onChangeTab = (key: string) => {
+    console.log('Active tab:', key);
+  };
 
   const onOk = () => {
     dispatch(saveUserPersona(editedPersona));
@@ -68,12 +70,7 @@ export const PersonaModal: FC<PersonaModalProps> = ({}) => {
     {
       key: '2',
       label: 'Accounts',
-      children: (
-        <AccountsTab
-          editedPersona={editedPersona}
-          setEditedPersona={setEditedPersona}
-        />
-      ),
+      children: <AccountsTab />,
     },
     {
       key: '3',

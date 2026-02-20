@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 
 import { store } from 'reducers/index.ts';
-import { App } from 'components/App/App.tsx';
+import { AppRouter } from './AppRouter.tsx';
 
 import './index.scss';
 
@@ -16,7 +16,7 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <Provider store={store}>
       <BrowserRouter>
-        <App />
+        <AppRouter />
       </BrowserRouter>
     </Provider>
   </StrictMode>,

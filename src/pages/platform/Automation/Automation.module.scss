@@ -1,0 +1,126 @@
+@use 'src/styles/variables.scss' as *;
+
+.automation {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: $defaultPagePadding;
+
+  .heading {
+    display: flex;
+    justify-content: space-between;
+
+    .tags {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .pill {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 10px;
+        border-radius: 30px;
+        font-size: 14px;
+        font-weight: 500;
+
+        &.active {
+          background-color: $success-bg;
+          color: $success-icon;
+        }
+
+        &.disabled {
+          background-color: $medium-bg;
+          color: $medium-icon;
+        }
+
+        &.aiGenerated {
+          background-color: $info-bg;
+          color: $info-icon;
+        }
+      }
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+    }
+  }
+
+  .ruleHeader {
+    display: flex;
+    justify-content: space-between;
+
+    .ruleName {
+      display: flex;
+      gap: 8px;
+
+      .saveIcon {
+        color: $success-icon;
+      }
+
+      button {
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        visibility: hidden;
+      }
+    }
+
+    &:hover {
+      .ruleName button {
+        visibility: visible;
+      }
+    }
+  }
+
+  .ruleContent {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .dataSource {
+      padding: 8px 12px;
+      background-color: $grey;
+      border-radius: 6px;
+    }
+
+    h4 {
+      font-weight: normal;
+    }
+
+    .conditionsWrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-left: 20px;
+
+      .condition {
+        display: flex;
+        gap: 10px;
+        padding: 6px 8px;
+        background-color: $grey;
+        border-radius: 6px;
+      }
+
+      .conditionOptions {
+        display: flex;
+
+        .addBtn {
+          display: flex;
+          gap: 5px;
+          background-color: transparent;
+          border: none;
+          color: $data-blue-dark;
+          cursor: pointer;
+        }
+      }
+    }
+
+    .btnWrapper {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+  }
+}
