@@ -11,7 +11,7 @@ import {
   setPersonaModal,
 } from 'reducers/app/slice';
 import { defaultPersona } from 'constants/persona';
-import { Persona } from '../../../shared/models/interfaces/persona';
+import { Persona } from '../../../../shared/models/interfaces/persona';
 import { PersonaTab } from './tabs/PersonaTab';
 import { SettingsTab } from './tabs/SettingsTab';
 import { AccountsTab } from './tabs/AccountsTab';
