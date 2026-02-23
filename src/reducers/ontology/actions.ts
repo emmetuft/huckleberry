@@ -1,5 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from 'reducers';
+import { FilterCondition } from 'models/interfaces/graphFilter';
 import {
   GraphData,
   Neo4jNode,
@@ -7,7 +8,6 @@ import {
 } from 'models/interfaces/ontology';
 import { DomoAIService } from 'services/ai';
 import { Neo4jService } from 'services/neo4j';
-import { FilterCondition } from '../../../shared/models/interfaces/filters';
 
 export const generateOntology = createAsyncThunk<GraphData, OntologySource[]>(
   'ontology/generateOntology',

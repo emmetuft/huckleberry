@@ -1,18 +1,18 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from 'reducers';
 import {
-  MCPService,
-  OAuth2AuthorizationResponse,
-  OAuth2StatusResponse,
-  OAuth2DiscoveryResponse,
-} from '../../services/mcp';
-import {
   MCPServerConfig,
   MCPServerCreateInput,
   MCPServerUpdateInput,
   MCPToolDefinition,
   MCPTestConnectionResult,
-} from '../../../shared/models/interfaces/mcpServer';
+} from 'models/interfaces/mcpServer';
+import {
+  MCPService,
+  OAuth2AuthorizationResponse,
+  OAuth2StatusResponse,
+  OAuth2DiscoveryResponse,
+} from '../../services/mcp';
 
 export const fetchServers = createAsyncThunk<
   MCPServerConfig[],

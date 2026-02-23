@@ -1,4 +1,5 @@
 import { FC, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { Button, Tag, Tooltip, Space } from 'antd';
 import {
   CheckCircleOutlined,
@@ -9,7 +10,6 @@ import {
   SyncOutlined,
   SearchOutlined,
 } from '@ant-design/icons';
-import { useSelector } from 'react-redux';
 import { useAppDispatch } from 'reducers';
 import {
   initiateOAuth2Authorization,
@@ -23,10 +23,7 @@ import {
   selectOAuth2Status,
   selectDiscoveringServerId,
 } from 'reducers/mcp/slice';
-import {
-  MCPServerConfig,
-  OAuth2AuthStatus,
-} from '../../../../shared/models/interfaces/mcpServer';
+import { MCPServerConfig, OAuth2AuthStatus } from 'models/interfaces/mcpServer';
 
 interface OAuth2StatusProps {
   server: MCPServerConfig;

@@ -34,10 +34,3 @@ export const OperatorOptionMap: Record<FilterOperator, string> = {
   [FilterOperator.LTE]: 'Less than or equal to',
   [FilterOperator.BETWEEN]: 'Between',
 };
-
-export interface TimeFilter {
-  start?: string;
-  end?: string;
-  grain?: string;
-  operator: FilterOperator;
-}

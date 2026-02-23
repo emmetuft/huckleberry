@@ -12,11 +12,6 @@ import {
 } from 'antd';
 import { PlusOutlined, SyncOutlined, ApiOutlined } from '@ant-design/icons';
 import styles from './Integrations.module.scss';
-import { integrationCategories, integrationList } from 'constants/integrations';
-import { defaultMotionProps } from 'constants/styles';
-import { IntegrationCard } from './IntegrationCard';
-import { AddServerModal } from './AddServerModal';
-import { OAuth2Status } from './OAuth2Status';
 import { useAppDispatch } from 'reducers';
 import {
   fetchServers,
@@ -35,7 +30,12 @@ import {
   selectSyncingServerId,
   setSelectedServer,
 } from 'reducers/mcp/slice';
-import { MCPServerConfig } from '../../../../shared/models/interfaces/mcpServer';
+import { integrationCategories, integrationList } from 'constants/integrations';
+import { defaultMotionProps } from 'constants/styles';
+import { MCPServerConfig } from 'models/interfaces/mcpServer';
+import { IntegrationCard } from './IntegrationCard';
+import { AddServerModal } from './AddServerModal';
+import { OAuth2Status } from './OAuth2Status';
 
 type MenuItem = Required<MenuProps>['items'][number];
 

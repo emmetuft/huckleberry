@@ -1,10 +1,7 @@
+import { StreamType } from 'models/enums/stream';
 import { ProcessStep } from 'models/interfaces/processStep';
-import { StreamType } from '../../shared/models/enums/stream';
-import {
-  GraphContext,
-  UserRequest,
-} from '../../shared/models/interfaces/userRequest';
 import { ToolEventData } from 'models/interfaces/tool';
+import { GraphContext, UserRequest } from 'models/interfaces/userRequest';
 
 const CONTEXT_BUILDER_API_BASE = '/api/context';
 

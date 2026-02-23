@@ -7,7 +7,7 @@ export const Landing: FC = () => {
   return (
     <div className={styles.Landing}>
       <section className={styles.hero}>
-        <h1>Welcome to Huckleberry</h1>
+        <h1>The brain for your business</h1>
         <p>AI-powered data intelligence platform for modern enterprises</p>
         <div className={styles.cta}>
           <Link

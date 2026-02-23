@@ -4,10 +4,7 @@ import type { MenuProps, UploadProps } from 'antd';
 import { Plus, UploadSimple, Database } from 'phosphor-react';
 import { sharedIconProps } from 'constants/styles';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
-import {
-  MAX_FILE_SIZE,
-  formatFileSize,
-} from '../../../../../shared/constants/files';
+import { formatFileSize, MAX_FILE_SIZE } from 'utils/file';
 
 interface AddContextButtonProps {
   onFileUpload?: (file: File) => void;

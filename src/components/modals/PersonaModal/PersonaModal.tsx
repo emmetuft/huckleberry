@@ -3,19 +3,18 @@ import { useSelector } from 'react-redux';
 import { Modal, Radio, Tabs, TabsProps } from 'antd';
 import styles from './PersonaModal.module.scss';
 import { useAppDispatch } from 'reducers';
+import { saveUserPersona, swapPersona } from 'reducers/app/actions';
 import {
-  saveUserPersona,
   selectIdentity,
   selectPersona,
   selectPersonaModalOpen,
   setPersonaModal,
 } from 'reducers/app/slice';
 import { defaultPersona } from 'constants/persona';
-import { Persona } from '../../../../shared/models/interfaces/persona';
+import { Persona } from 'models/interfaces/persona';
 import { PersonaTab } from './tabs/PersonaTab';
 import { SettingsTab } from './tabs/SettingsTab';
 import { AccountsTab } from './tabs/AccountsTab';
-import { swapPersona } from 'reducers/app/actions';
 
 interface PersonaModalProps {}
 

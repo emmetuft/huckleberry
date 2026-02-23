@@ -35,7 +35,7 @@ export type MCPAuthType = 'none' | 'bearer' | 'api-key' | 'oauth2';
  * Legacy OAuth2Config - manual configuration (deprecated)
  * Kept for backwards compatibility during migration
  */
-export interface OAuth2Config {
+interface OAuth2Config {
   authorizationUrl: string;
   tokenUrl: string;
   clientId: string;
@@ -67,14 +67,6 @@ export interface OAuth2DiscoveredConfig {
   discoveredAt?: number;
 }
 
-export interface OAuth2TokenData {
-  accessToken: string;
-  refreshToken?: string;
-  tokenType: string;
-  expiresAt?: number;
-  issuedAt: number;
-}
-
 export type OAuth2AuthStatus =
   | 'not_configured'
   | 'discovering'
@@ -84,11 +76,7 @@ export type OAuth2AuthStatus =
   | 'expired'
   | 'error';
 
-export type MCPConnectionStatus =
-  | 'connected'
-  | 'disconnected'
-  | 'error'
-  | 'unknown';
+type MCPConnectionStatus = 'connected' | 'disconnected' | 'error' | 'unknown';
 
 export interface MCPToolDefinition {
   name: string;
@@ -98,14 +86,14 @@ export interface MCPToolDefinition {
   serverName?: string;
 }
 
-export interface JSONSchema {
+interface JSONSchema {
   type: string;
   properties?: Record<string, JSONSchemaProperty>;
   required?: string[];
   description?: string;
 }
 
-export interface JSONSchemaProperty {
+interface JSONSchemaProperty {
   type: string;
   description?: string;
   enum?: string[];
@@ -175,58 +163,4 @@ export interface MCPTestConnectionResult {
   requiresOAuth2?: boolean;
   /** Discovered OAuth2 config when requiresOAuth2 is true */
   oauth2DiscoveredConfig?: OAuth2DiscoveredConfig;
-}
-
-/**
- * MCP JSON-RPC Protocol Interfaces
- * Based on the Model Context Protocol specification
- */
-
-export interface MCPRequest {
-  jsonrpc: '2.0';
-  id: number | string;
-  method: string;
-  params?: Record<string, unknown>;
-}
-
-export interface MCPResponse {
-  jsonrpc: '2.0';
-  id: number | string;
-  result?: unknown;
-  error?: {
-    code: number;
-    message: string;
-    data?: unknown;
-  };
-}
-
-export interface MCPInitializeResult {
-  protocolVersion: string;
-  capabilities: {
-    tools?: Record<string, unknown>;
-    resources?: Record<string, unknown>;
-    prompts?: Record<string, unknown>;
-  };
-  serverInfo: {
-    name: string;
-    version: string;
-  };
-}
-
-export interface MCPListToolsResult {
-  tools: Array<{
-    name: string;
-    description?: string;
-    inputSchema: JSONSchema;
-  }>;
-}
-
-export interface MCPCallToolResult {
-  content: Array<{
-    type: string;
-    text?: string;
-    data?: string;
-    mimeType?: string;
-  }>;
-  isError?: boolean;
 }

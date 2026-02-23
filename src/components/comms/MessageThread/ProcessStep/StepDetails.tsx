@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import styles from './ProcessStep.module.scss';
-import { ContextStrategyType } from '../../../../../shared/models/enums/contextStrategy';
-import { StepType } from '../../../../../shared/models/enums/stepType';
+import { ContextStrategyType } from 'models/enums/contextStrategy';
+import { StepType } from 'models/enums/stepType';
 import { ProcessStep } from 'models/interfaces/processStep';
 import { ContextGraph } from '../ContextGraph';
 import { isEmpty } from 'utils/misc';

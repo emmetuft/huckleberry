@@ -1,21 +1,28 @@
+@use 'src/styles/variables.scss' as *;
+
 .PublicHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   background: #fff;
   border-bottom: 1px solid #e6e9ff;
-  padding: 1rem 2rem;
+  padding: 1rem 3rem;
 
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
+  .logoDetails {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-  }
-
-  .logo {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #5a0cff;
+    gap: 10px;
     text-decoration: none;
+
+    .logo {
+      height: 40px;
+    }
+
+    h2 {
+      font-size: 24px;
+      font-weight: 400;
+      color: $grey-dark;
+    }
   }
 
   .nav {

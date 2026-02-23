@@ -8,7 +8,7 @@ import {
   MCPAuthType,
   MCPTransportType,
   OAuth2DiscoveredConfig,
-} from '../../../../shared/models/interfaces/mcpServer';
+} from 'models/interfaces/mcpServer';
 
 const { Text } = Typography;
 

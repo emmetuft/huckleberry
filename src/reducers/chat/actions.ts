@@ -1,12 +1,9 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from '../index';
-import { StreamStatus, StreamType } from '../../../shared/models/enums/stream';
-import {
-  SystemResponse,
-  UserRequest,
-} from '../../../shared/models/interfaces/userRequest';
-import { ProcessedFile } from '../../../shared/models/interfaces/files';
-import { MCPToolCall } from '../../../shared/models/interfaces/mcpServer';
+import { StreamStatus, StreamType } from 'models/enums/stream';
+import { ProcessedFile } from 'models/interfaces/files';
+import { MCPToolCall } from 'models/interfaces/mcpServer';
+import { SystemResponse, UserRequest } from 'models/interfaces/userRequest';
 import { ContextService } from 'services/context';
 
 /**

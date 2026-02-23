@@ -17,7 +17,7 @@ import {
   MCPServerConfig,
   MCPToolDefinition,
   MCPTestConnectionResult,
-} from '../../../shared/models/interfaces/mcpServer';
+} from 'models/interfaces/mcpServer';
 import { OAuth2StatusResponse } from '../../services/mcp';
 
 interface MCPState {

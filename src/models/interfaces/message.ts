@@ -1,6 +1,6 @@
-import { ProcessedFile } from '../../../shared/models/interfaces/files';
-import { GraphContext } from '../../../shared/models/interfaces/userRequest';
+import { ProcessedFile } from './files';
 import { ProcessStepWithUI } from './processStep';
+import { GraphContext } from './userRequest';
 
 export interface Message {
   id: string;

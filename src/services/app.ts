@@ -1,13 +1,14 @@
-import { AuthClient, AuthResponse } from '@appteam6/domoapps.js';
-import { Identity, IdentityClient } from '@domoinc/toolkit';
-
-const authenticate = async (): Promise<AuthResponse> =>
-  await AuthClient.authenticate('huckleberry');
-
-const fetchIdentity = async (): Promise<Identity> => {
+const authenticate = async () => {
   try {
-    const response = await IdentityClient.get();
-    return response.data;
+    return undefined;
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+};
+
+const fetchIdentity = async () => {
+  try {
+    return undefined;
   } catch (error: any) {
     throw new Error(error.message);
   }

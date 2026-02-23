@@ -1,4 +1,4 @@
-import { ToolStatus } from '../../../shared/models/enums/toolStatus';
+import { ToolStatus } from 'models/enums/toolStatus';
 
 export interface ToolExecution {
   name: string;

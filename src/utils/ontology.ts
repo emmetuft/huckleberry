@@ -1,9 +1,6 @@
 import { Neo4jNode } from 'models/interfaces/ontology';
 import { formatDateTime, isValidDate } from './datetime';
-import {
-  FilterDataType,
-  FilterOperator,
-} from '../../shared/models/interfaces/filters';
+import { FilterDataType, FilterOperator } from 'models/interfaces/graphFilter';
 
 export const renderValue = (value: any): string => {
   if (value === null || value === undefined) {
