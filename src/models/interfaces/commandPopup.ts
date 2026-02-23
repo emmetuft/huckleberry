@@ -1,4 +1,4 @@
-import { MCPToolDefinition } from '../../../shared/models/interfaces/mcpServer';
+import { MCPToolDefinition } from 'models/interfaces/mcpServer';
 import { User, Group, MentionItem } from './mention';
 
 export interface CommandPopupItem {

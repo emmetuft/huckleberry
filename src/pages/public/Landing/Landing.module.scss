@@ -1,3 +1,5 @@
+@use 'src/styles/variables.scss' as *;
+
 .Landing {
   .hero {
     text-align: center;
@@ -6,9 +8,10 @@
     margin: 0 auto;
 
     h1 {
+      font-family: 'Lora';
+      font-weight: 500;
       font-size: 3rem;
-      font-weight: 700;
-      color: #333;
+      color: $grey-dark;
       margin-bottom: 1rem;
     }
 

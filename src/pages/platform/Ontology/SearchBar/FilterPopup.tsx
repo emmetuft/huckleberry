@@ -23,7 +23,7 @@ import {
   FilterDataType,
   FilterOperator,
   OperatorOptionMap,
-} from '../../../../../shared/models/interfaces/filters';
+} from 'models/interfaces/graphFilter';
 import { Neo4jNode } from 'models/interfaces/ontology';
 import { Neo4jService } from 'services/neo4j';
 import { getOperatorsForType, getPropertyType } from 'utils/ontology';

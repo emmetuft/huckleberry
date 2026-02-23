@@ -1,4 +1,4 @@
-import { Persona } from '../../shared/models/interfaces/persona';
+import { Persona } from 'models/interfaces/persona';
 
 const PERSONA_API_BASE = '/api/persona';
 

@@ -9,7 +9,7 @@ import {
   toolToCommandItem,
   mentionToCommandItem,
 } from 'models/interfaces/commandPopup';
-import { MCPToolDefinition } from '../../shared/models/interfaces/mcpServer';
+import { MCPToolDefinition } from 'models/interfaces/mcpServer';
 import { MentionItem } from 'models/interfaces/mention';
 
 export interface CommandConfig<T = any> {

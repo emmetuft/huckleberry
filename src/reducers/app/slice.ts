@@ -7,7 +7,7 @@ import {
   swapPersona,
 } from './actions';
 import { AppPage } from 'models/enums/appPage';
-import { Persona } from '../../../shared/models/interfaces/persona';
+import { Persona } from 'models/interfaces/persona';
 
 interface State {
   identity?: Identity;

@@ -22,19 +22,19 @@ This specification documents the MCP (Model Context Protocol) External Server In
 
 ```typescript
 interface MCPServerConfig {
-  id: string;                      // Unique identifier (UUID)
-  name: string;                    // Display name
-  description?: string;            // Optional description
-  url: string;                     // HTTP endpoint
-  transport: 'http' | 'sse';       // Transport type
+  id: string; // Unique identifier (UUID)
+  name: string; // Display name
+  description?: string; // Optional description
+  url: string; // HTTP endpoint
+  transport: 'http' | 'sse'; // Transport type
   authType: 'none' | 'bearer' | 'api-key';
-  authToken?: string;              // Encrypted at rest
-  enabled: boolean;                // Toggle to enable/disable
-  createdAt: string;               // ISO timestamp
-  updatedAt?: string;              // ISO timestamp
-  lastConnectedAt?: string;        // Last successful connection
+  authToken?: string; // Encrypted at rest
+  enabled: boolean; // Toggle to enable/disable
+  createdAt: string; // ISO timestamp
+  updatedAt?: string; // ISO timestamp
+  lastConnectedAt?: string; // Last successful connection
   connectionStatus?: 'connected' | 'disconnected' | 'error' | 'unknown';
-  tools: MCPToolDefinition[];      // Cached tool list
+  tools: MCPToolDefinition[]; // Cached tool list
 }
 ```
 
@@ -42,11 +42,11 @@ interface MCPServerConfig {
 
 ```typescript
 interface MCPToolDefinition {
-  name: string;                    // Tool name
-  description: string;             // Tool description
-  inputSchema: JSONSchema;         // Input parameters schema
-  serverId: string;                // Parent server ID
-  serverName?: string;             // Server name for display
+  name: string; // Tool name
+  description: string; // Tool description
+  inputSchema: JSONSchema; // Input parameters schema
+  serverId: string; // Parent server ID
+  serverName?: string; // Server name for display
 }
 ```
 
@@ -59,10 +59,12 @@ The MCP registry uses Domo AppDB for persistent storage, consistent with other H
 **Collection:** `96bfadf7-9c4e-4cdb-91bb-808b05edd3db`
 
 Each document contains:
+
 - Server configuration (name, URL, transport, auth settings)
 - Cached tools array for that server
 
 Documents are managed via the AppDB REST API at:
+
 ```
 ${DOMO_INSTANCE_URL}/api/datastores/v2/collections/{collectionId}/documents
 ```
@@ -71,23 +73,23 @@ ${DOMO_INSTANCE_URL}/api/datastores/v2/collections/{collectionId}/documents
 
 ### Server Management
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `POST` | `/api/mcp/servers` | Add new MCP server |
-| `GET` | `/api/mcp/servers` | List all servers |
-| `GET` | `/api/mcp/servers/:id` | Get server details |
-| `PUT` | `/api/mcp/servers/:id` | Update server config |
-| `DELETE` | `/api/mcp/servers/:id` | Remove server |
-| `POST` | `/api/mcp/servers/:id/test` | Test connection |
-| `POST` | `/api/mcp/servers/:id/sync` | Refresh tool list |
-| `PATCH` | `/api/mcp/servers/:id/toggle` | Toggle enabled state |
+| Method   | Endpoint                      | Description          |
+| -------- | ----------------------------- | -------------------- |
+| `POST`   | `/api/mcp/servers`            | Add new MCP server   |
+| `GET`    | `/api/mcp/servers`            | List all servers     |
+| `GET`    | `/api/mcp/servers/:id`        | Get server details   |
+| `PUT`    | `/api/mcp/servers/:id`        | Update server config |
+| `DELETE` | `/api/mcp/servers/:id`        | Remove server        |
+| `POST`   | `/api/mcp/servers/:id/test`   | Test connection      |
+| `POST`   | `/api/mcp/servers/:id/sync`   | Refresh tool list    |
+| `PATCH`  | `/api/mcp/servers/:id/toggle` | Toggle enabled state |
 
 ### Tool Management
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/api/mcp/tools` | List all available tools (from enabled servers) |
-| `POST` | `/api/mcp/tools/execute` | Execute a tool |
+| Method | Endpoint                 | Description                                     |
+| ------ | ------------------------ | ----------------------------------------------- |
+| `GET`  | `/api/mcp/tools`         | List all available tools (from enabled servers) |
+| `POST` | `/api/mcp/tools/execute` | Execute a tool                                  |
 
 ## MCP Protocol Implementation
 
@@ -102,6 +104,7 @@ The `MCPHttpClient` implements the MCP protocol over HTTP:
 ### Authentication
 
 Supported authentication methods:
+
 - `none` - No authentication
 - `bearer` - Bearer token in Authorization header
 - `api-key` - API key in X-API-Key header
@@ -111,6 +114,7 @@ Supported authentication methods:
 ### MCP Tool Strategy
 
 The `MCPToolStrategy` is a context strategy that:
+
 - Has priority 0 (highest - runs first)
 - Auto-selects when tools are provided in the request
 - Executes selected tools and formats results for LLM context
@@ -131,6 +135,7 @@ class MCPToolStrategy implements ContextStrategy {
 ### Integrations Page (`/integrations`)
 
 The Integrations page has two tabs:
+
 1. **MCP Servers** - Manage external MCP server connections
 2. **Data Integrations** - Existing integration management
 
@@ -152,6 +157,7 @@ When typing `@` in the chat input, a popup shows available tools grouped by serv
 #### Tool Browser
 
 A modal accessible from the toolbar that allows browsing all available tools with:
+
 - Search functionality
 - Tools grouped by server
 - Multi-select for adding tools to chat
@@ -235,17 +241,6 @@ src/
         └── mcp.test.ts
 ```
 
-### Shared Files
-
-```
-shared/models/
-├── interfaces/
-│   └── mcpServer.ts              # MCP types
-└── enums/
-    ├── contextStrategy.ts        # Added MCP_TOOL
-    └── stream.ts                 # Added TOOL_* events
-```
-
 ## Security Considerations
 
 1. **Token Storage** - Auth tokens are stored in Domo AppDB with access controlled by developer token
@@ -274,10 +269,10 @@ shared/models/
 
 ### Environment Variables
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `DOMO_INSTANCE_URL` | Domo instance URL for AppDB | `https://domo-es.domo.com` |
-| `DEV_TOKEN` | Domo developer token for API access | Required |
+| Variable            | Description                         | Default                    |
+| ------------------- | ----------------------------------- | -------------------------- |
+| `DOMO_INSTANCE_URL` | Domo instance URL for AppDB         | `https://domo-es.domo.com` |
+| `DEV_TOKEN`         | Domo developer token for API access | Required                   |
 
 ## Usage
 

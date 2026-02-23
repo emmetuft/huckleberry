@@ -1,6 +1,5 @@
 import { User, Group } from 'models/interfaces/mention';
-import { DomoUser } from '../../shared/models/interfaces/domoUser';
-import { DomoGroup } from '../../shared/models/interfaces/domoGroup';
+import { DomoGroup, DomoUser } from 'models/interfaces/people';
 
 const API_BASE_URL = '/api';
 

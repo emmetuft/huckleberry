@@ -1,4 +1,4 @@
-import { RoleLevel } from '../../shared/models/interfaces/persona';
+import { RoleLevel } from 'models/interfaces/persona';
 
 export const defaultPersona = {
   role: 'Chief Marketing Officer',

@@ -1,6 +1,6 @@
 import { FC, useMemo, useRef } from 'react';
 import styles from './IntentInput.module.scss';
-import { MCPToolDefinition } from '../../../../shared/models/interfaces/mcpServer';
+import { MCPToolDefinition } from 'models/interfaces/mcpServer';
 
 interface ToolPopupProps {
   popupRef: React.RefObject<HTMLDivElement>;

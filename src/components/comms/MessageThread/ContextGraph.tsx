@@ -1,7 +1,7 @@
 import { FC, useCallback, useEffect, useMemo, useRef } from 'react';
 import ForceGraph2D from 'react-force-graph-2d';
 import * as d3 from 'd3-force';
-import { GraphContext } from '../../../../shared/models/interfaces/userRequest';
+import { GraphContext } from 'models/interfaces/userRequest';
 import { getColorForGroup } from 'utils/styles';
 
 interface ContextGraphProps {

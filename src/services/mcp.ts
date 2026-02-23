@@ -7,7 +7,7 @@ import {
   MCPToolResult,
   OAuth2AuthStatus,
   OAuth2DiscoveredConfig,
-} from '../../shared/models/interfaces/mcpServer';
+} from 'models/interfaces/mcpServer';
 
 const MCP_API_BASE = '/api/mcp';
 

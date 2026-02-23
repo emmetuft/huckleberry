@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { MCPServerCreateInput } from 'models/interfaces/mcpServer';
 import { MCPService } from '../../services/mcp';
-import { MCPServerCreateInput } from '../../../shared/models/interfaces/mcpServer';
 
 describe('MCPService', () => {
   let fetchMock: ReturnType<typeof vi.fn>;

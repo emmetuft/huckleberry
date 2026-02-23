@@ -16,10 +16,7 @@ import { selectPage } from 'reducers/app/slice';
 import { sendStreamingRequest } from 'reducers/chat/actions';
 import { selectLoading, setFullScreen } from 'reducers/chat/slice';
 import { sharedIconProps } from 'constants/styles';
-import {
-  MCPToolDefinition,
-  MCPToolCall,
-} from '../../../../shared/models/interfaces/mcpServer';
+import { MCPToolDefinition, MCPToolCall } from 'models/interfaces/mcpServer';
 import { AppPage } from 'models/enums/appPage';
 import { InputCommand } from 'models/enums/inputCommand';
 import { DataSource } from 'models/interfaces/dataSource';

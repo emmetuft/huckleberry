@@ -6,7 +6,7 @@ import styles from './ToolBrowser.module.scss';
 import { useAppDispatch } from 'reducers';
 import { fetchTools, fetchServers } from 'reducers/mcp/actions';
 import { selectTools, selectServers } from 'reducers/mcp/slice';
-import { MCPToolDefinition } from '../../../../shared/models/interfaces/mcpServer';
+import { MCPToolDefinition } from 'models/interfaces/mcpServer';
 
 interface ToolBrowserProps {
   open: boolean;

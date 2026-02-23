@@ -1,5 +1,4 @@
 import { createAppSlice } from '../createAppSlice';
-import { GraphData, Neo4jNode } from 'models/interfaces/ontology';
 import {
   generateOntology,
   fetchAllNodeLabels,
@@ -7,7 +6,8 @@ import {
   loadSubgraph,
   searchAndLoadNodes,
 } from './actions';
-import { FilterCondition } from '../../../shared/models/interfaces/filters';
+import { FilterCondition } from 'models/interfaces/graphFilter';
+import { GraphData, Neo4jNode } from 'models/interfaces/ontology';
 
 interface State {
   graphData: GraphData;

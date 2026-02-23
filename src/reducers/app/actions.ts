@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from 'reducers';
-import { Persona } from '../../../shared/models/interfaces/persona';
+import { Persona } from 'models/interfaces/persona';
 import { defaultPersona } from 'constants/persona';
 import { StorageService } from 'services/storage';
 import { AppService } from 'services/app';

@@ -6,32 +6,31 @@ import styles from './PublicHeader.module.scss';
 export const PublicHeader: FC = () => {
   return (
     <header className={styles.PublicHeader}>
-      <div className={styles.container}>
-        <Link to={publicRoutePaths[PublicPage.LANDING]} className={styles.logo}>
-          Huckleberry
+      <Link
+        to={publicRoutePaths[PublicPage.LANDING]}
+        className={styles.logoDetails}
+      >
+        <img src="/static/logo.svg" className={styles.logo} />
+        <h2>Huckleberry</h2>
+      </Link>
+
+      <nav className={styles.nav}>
+        <Link to={publicRoutePaths[PublicPage.ABOUT]}>About</Link>
+        <Link to={publicRoutePaths[PublicPage.FEATURES]}>Features</Link>
+        <Link to={publicRoutePaths[PublicPage.PRICING]}>Pricing</Link>
+        <Link to={publicRoutePaths[PublicPage.DOCS]}>Docs</Link>
+      </nav>
+
+      <div className={styles.authButtons}>
+        <Link to={publicRoutePaths[PublicPage.LOGIN]} className={styles.login}>
+          Sign in
         </Link>
-
-        <nav className={styles.nav}>
-          <Link to={publicRoutePaths[PublicPage.ABOUT]}>About</Link>
-          <Link to={publicRoutePaths[PublicPage.FEATURES]}>Features</Link>
-          <Link to={publicRoutePaths[PublicPage.PRICING]}>Pricing</Link>
-          <Link to={publicRoutePaths[PublicPage.DOCS]}>Docs</Link>
-        </nav>
-
-        <div className={styles.authButtons}>
-          <Link
-            to={publicRoutePaths[PublicPage.LOGIN]}
-            className={styles.login}
-          >
-            Login
-          </Link>
-          <Link
-            to={publicRoutePaths[PublicPage.SIGNUP]}
-            className={styles.signup}
-          >
-            Sign Up
-          </Link>
-        </div>
+        <Link
+          to={publicRoutePaths[PublicPage.SIGNUP]}
+          className={styles.signup}
+        >
+          Try Huckleberry
+        </Link>
       </div>
     </header>
   );

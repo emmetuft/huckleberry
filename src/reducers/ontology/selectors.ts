@@ -4,7 +4,7 @@ import {
   selectLabelFilters,
   selectPropertyFilters,
 } from './slice';
-import { FilterOperator } from '../../../shared/models/interfaces/filters';
+import { FilterOperator } from 'models/interfaces/graphFilter';
 
 /**
  * Memoized selector that returns filtered graph data based on label and property filters

@@ -1,6 +1,6 @@
-import { StreamStatus } from '../../../shared/models/enums/stream';
-import { GraphContext } from '../../../shared/models/interfaces/userRequest';
+import { StreamStatus } from 'models/enums/stream';
 import { ToolExecution } from './tool';
+import { GraphContext } from './userRequest';
 
 export interface ProcessStep {
   id: string;

@@ -1,7 +1,4 @@
-import {
-  FilterCondition,
-  FilterDataType,
-} from '../../shared/models/interfaces/filters';
+import { FilterCondition, FilterDataType } from 'models/interfaces/graphFilter';
 
 export const DEFAULT_FILTER: FilterCondition = {
   id: Date.now().toString(),
