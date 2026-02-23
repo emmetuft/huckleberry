@@ -230,23 +230,6 @@ yarn test          # Watch mode
 yarn test:ci       # Single run
 ```
 
-## Deployment
-
-### Domo Platform
-
-Deploy to Domo:
-
-```bash
-yarn upload
-```
-
-This will:
-
-1. Run all code quality checks
-2. Apply the Domo manifest
-3. Build the application
-4. Publish to your Domo instance
-
 ## Support
 
 For issues or questions:

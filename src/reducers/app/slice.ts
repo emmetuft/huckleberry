@@ -2,7 +2,6 @@ import { Identity } from '@domoinc/toolkit';
 import { createAppSlice } from '../createAppSlice';
 import {
   authenticate,
-  fetchIdentity,
   fetchUserPersona,
   saveUserPersona,
   swapPersona,
@@ -55,13 +54,13 @@ export const AppReducer = createAppSlice({
   extraReducers: (builder) => {
     builder
       // Fetch identity
-      .addCase(fetchIdentity.pending, (state) => {
+      .addCase(authenticate.pending, (state) => {
         state.loading.identity = true;
       })
-      .addCase(fetchIdentity.rejected, (state) => {
+      .addCase(authenticate.rejected, (state) => {
         state.loading.identity = false;
       })
-      .addCase(fetchIdentity.fulfilled, (state, { payload }) => {
+      .addCase(authenticate.fulfilled, (state, { payload }) => {
         state.identity = payload;
         state.loading.identity = false;
       })
@@ -110,7 +109,6 @@ export const AppReducer = createAppSlice({
   },
 });
 
-export { authenticate, fetchIdentity, fetchUserPersona, saveUserPersona };
 export const { setPage, setIncognitoMode, setPersonaModal } =
   AppReducer.actions;
 export const {

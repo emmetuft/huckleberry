@@ -13,10 +13,7 @@
     "test": "vitest",
     "test:ci": "vitest run --passWithNoTests --no-color",
     "storybook": "storybook dev -p 6006",
-    "generate": "da generate",
-    "prestart": "da apply-manifest",
-    "prebuild": "da apply-manifest",
-    "upload": "yarn build && cd build && domo publish && cd .."
+    "generate": "da generate"
   },
   "moduleDirectories": [
     "node_modules",
