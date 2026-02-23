@@ -194,29 +194,6 @@ interface MCPState {
 
 ## File Structure
 
-### Backend Files
-
-```
-server/
-├── services/
-│   ├── mcpRegistry.service.ts    # CRUD for MCP servers (AppDB)
-│   └── mcpHttpClient.ts          # MCP HTTP protocol client
-├── controllers/
-│   └── mcp.controller.ts         # API endpoint handlers
-├── routes/
-│   └── mcp.routes.ts             # Route definitions
-└── __tests__/
-    ├── services/
-    │   ├── mcpRegistry.service.test.ts
-    │   └── mcpHttpClient.test.ts
-    ├── controllers/
-    │   └── mcp.controller.test.ts
-    └── integration/
-        └── mcp-external.test.ts
-```
-
-### Frontend Files
-
 ```
 src/
 ├── services/
