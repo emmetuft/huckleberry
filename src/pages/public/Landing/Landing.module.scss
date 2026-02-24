@@ -2,56 +2,22 @@
 
 .Landing {
   .hero {
-    text-align: center;
-    padding: 6rem 2rem;
-    max-width: 800px;
-    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
     h1 {
-      font-family: 'Lora';
-      font-weight: 500;
-      font-size: 3rem;
+      font-family: 'Inter';
+      font-weight: 600;
+      font-size: 12rem;
       color: $grey-dark;
-      margin-bottom: 1rem;
+      margin-bottom: 0.5rem;
     }
 
     p {
-      font-size: 1.25rem;
-      color: #666;
+      font-size: 20px;
+      color: $grey-text;
       margin-bottom: 2rem;
-    }
-
-    .cta {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-
-      a {
-        padding: 1rem 2rem;
-        text-decoration: none;
-        border-radius: 4px;
-        font-weight: 500;
-        font-size: 1.1rem;
-
-        &.primary {
-          background: #5a0cff;
-          color: #fff;
-
-          &:hover {
-            background: #4a0acc;
-          }
-        }
-
-        &.secondary {
-          background: #fff;
-          color: #5a0cff;
-          border: 2px solid #5a0cff;
-
-          &:hover {
-            background: #f8f8ff;
-          }
-        }
-      }
     }
   }
 }

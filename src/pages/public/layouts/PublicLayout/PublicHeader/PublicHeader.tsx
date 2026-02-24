@@ -11,25 +11,23 @@ export const PublicHeader: FC = () => {
         className={styles.logoDetails}
       >
         <img src="/static/logo.svg" className={styles.logo} />
-        <h2>Huckleberry</h2>
+        <h2>Work smarter.</h2>
       </Link>
 
-      <nav className={styles.nav}>
-        <Link to={publicRoutePaths[PublicPage.ABOUT]}>About</Link>
-        <Link to={publicRoutePaths[PublicPage.FEATURES]}>Features</Link>
+      {/* <nav className={styles.nav}>
+        <Link to={publicRoutePaths[PublicPage.ABOUT]}>Product</Link>
+        <Link to={publicRoutePaths[PublicPage.FEATURES]}>Stories</Link>
         <Link to={publicRoutePaths[PublicPage.PRICING]}>Pricing</Link>
         <Link to={publicRoutePaths[PublicPage.DOCS]}>Docs</Link>
-      </nav>
+      </nav> */}
 
       <div className={styles.authButtons}>
-        <Link to={publicRoutePaths[PublicPage.LOGIN]} className={styles.login}>
-          Sign in
-        </Link>
+        <Link to={publicRoutePaths[PublicPage.LOGIN]}>Sign in</Link>
         <Link
           to={publicRoutePaths[PublicPage.SIGNUP]}
           className={styles.signup}
         >
-          Try Huckleberry
+          Try for free
         </Link>
       </div>
     </header>

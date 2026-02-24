@@ -1,0 +1,15 @@
+import { FC } from 'react';
+import { UseCase } from '../Landing';
+import styles from './UseCaseCard.module.scss';
+
+interface UseCaseCardProps {
+  useCase: UseCase;
+}
+
+export const UseCaseCard: FC<UseCaseCardProps> = ({ useCase }) => {
+  return (
+    <div className={styles.useCaseCard}>
+      <h2 className={styles.title}>{useCase}</h2>
+    </div>
+  );
+};

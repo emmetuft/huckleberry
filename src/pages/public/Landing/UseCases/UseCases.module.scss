@@ -1,0 +1,13 @@
+.carousel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+}
+
+.carouselItem {
+  position: absolute;
+  left: 50%;
+  height: 90%;
+}

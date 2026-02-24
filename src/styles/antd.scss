@@ -17,6 +17,21 @@
   justify-content: center;
 }
 
+// Segmented
+.ant-segmented {
+  padding: 8px;
+}
+
+.ant-segmented,
+.ant-segmented .ant-segmented-item-selected,
+.ant-segmented-thumb,
+.ant-segmented
+  .ant-segmented-item:hover:not(.ant-segmented-item-selected):not(
+    .ant-segmented-item-disabled
+  )::after {
+  border-radius: 20px !important;
+}
+
 // Table
 .ant-table-pagination {
   margin: 0 !important;
