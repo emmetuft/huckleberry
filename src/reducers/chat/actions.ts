@@ -4,7 +4,7 @@ import { StreamStatus, StreamType } from 'models/enums/stream';
 import { ProcessedFile } from 'models/interfaces/files';
 import { MCPToolCall } from 'models/interfaces/mcpServer';
 import { SystemResponse, UserRequest } from 'models/interfaces/userRequest';
-import { ContextService } from 'services/context';
+import { AgentService } from 'services/agent';
 
 /**
  * Send a streaming request using context builder
@@ -38,7 +38,7 @@ export const sendStreamingRequest = createAsyncThunk<
     let fullText = '';
 
     // Stream the response
-    for await (const message of ContextService.queryStream(queryWithUserId)) {
+    for await (const message of AgentService.queryStream(queryWithUserId)) {
       if (message.type === StreamType.STATUS) {
         dispatch({
           type: 'chat/updateStreamStatus',

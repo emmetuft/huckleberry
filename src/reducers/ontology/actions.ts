@@ -1,18 +1,8 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from 'reducers';
 import { FilterCondition } from 'models/interfaces/graphFilter';
-import {
-  GraphData,
-  Neo4jNode,
-  OntologySource,
-} from 'models/interfaces/ontology';
-import { DomoAIService } from 'services/ai';
+import { GraphData, Neo4jNode } from 'models/interfaces/ontology';
 import { Neo4jService } from 'services/neo4j';
-
-export const generateOntology = createAsyncThunk<GraphData, OntologySource[]>(
-  'ontology/generateOntology',
-  DomoAIService.generateOntology,
-);
 
 /**
  * Fetch all nodes from Neo4j
