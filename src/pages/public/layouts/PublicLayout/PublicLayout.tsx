@@ -10,9 +10,17 @@ export const PublicLayout: FC = () => {
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary: '#5a0cff',
+          colorPrimary: '#2a2a2a',
         },
         components: {
+          Button: {
+            defaultBg: 'transparent',
+            defaultBorderColor: '#000',
+            defaultHoverBorderColor: '#000',
+            defaultActiveBorderColor: '#000',
+            defaultHoverBg: 'rgba(0,0,0,0.04)',
+            defaultActiveBg: 'rgba(0,0,0,0.08)',
+          },
           Segmented: {
             itemSelectedBg: '#e6e9ff',
             itemSelectedColor: '#5a0cff',

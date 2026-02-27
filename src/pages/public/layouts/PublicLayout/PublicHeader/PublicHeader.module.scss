@@ -1,11 +1,14 @@
 @use 'src/styles/variables.scss' as *;
 
 .PublicHeader {
+  position: sticky;
+  top: 0;
+  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: white;
-  border-bottom: 1px solid $grey-light;
+  // background: white;
+  // border-bottom: 1px solid $grey-light;
   padding: 1rem 3rem;
 
   .logoDetails {
@@ -43,14 +46,5 @@
     display: flex;
     align-items: center;
     gap: 1rem;
-
-    .signup {
-      padding: 8px 16px;
-      background: $grey-dark;
-      text-decoration: none;
-      border-radius: 30px;
-      font-weight: 500;
-      color: #fff;
-    }
   }
 }

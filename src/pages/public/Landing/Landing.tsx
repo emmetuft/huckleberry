@@ -1,7 +1,8 @@
 import { FC, useMemo, useState } from 'react';
-import { Segmented } from 'antd';
+import { Button, Segmented } from 'antd';
 import styles from './Landing.module.scss';
 import UseCasesCarousel from './UseCases/UseCases';
+import { Background } from 'pages/platform/layouts/PlatformLayout/Background/Background';
 
 export enum UseCase {
   Finance = 'Finance',
@@ -22,25 +23,57 @@ export const Landing: FC = () => {
 
   return (
     <div className={styles.Landing}>
-      <div className={styles.hero}>
-        <h1>Huckleberry</h1>
-        <p>
-          No matter the team, and no matter the task, Huckleberry elevates your
-          teams to focus on the work that moves your business forward.
-        </p>
-        <Segmented
-          options={useCaseOptions}
-          value={useCaseOptions[selectedIndex]}
-          onChange={(value) =>
-            setSelectedIndex(useCaseOptions.indexOf(value as UseCase))
-          }
-        />
-      </div>
-      <div>
-        <UseCasesCarousel
-          selectedIndex={selectedIndex}
-          setSelectedIndex={setSelectedIndex}
-        />
+      <Background />
+      <h1 className={styles.title}>Huckleberry</h1>
+      <p className={styles.subtitle}>
+        No matter the team, and no matter the task, Huckleberry elevates your
+        teams to focus on the work that moves your business forward.
+      </p>
+      <Segmented
+        options={useCaseOptions}
+        value={useCaseOptions[selectedIndex]}
+        onChange={(value) =>
+          setSelectedIndex(useCaseOptions.indexOf(value as UseCase))
+        }
+      />
+      <UseCasesCarousel
+        selectedIndex={selectedIndex}
+        setSelectedIndex={setSelectedIndex}
+      />
+      <div className={styles.section}>
+        <div className={styles.sectionHeading}>
+          <h2 className={styles.sectionTitle}>Superior context.</h2>
+          <h2 className={styles.sectionTitle}>Powered by graphs.</h2>
+        </div>
+        <Button shape="round" size="large">
+          Watch the demo
+        </Button>
+        <div className={styles.graphs}>
+          <div className={styles.graphContainer}>
+            <h2>Ontology graph</h2>
+            <h4>The entities and relationships specific to your business</h4>
+          </div>
+          <div className={styles.graphContainer}>
+            <h2>Knowledge graph</h2>
+            <h4>
+              Metadata that describes how connected sources map to your ontology
+            </h4>
+          </div>
+          <div className={styles.graphContainer}>
+            <h2>Entity graph</h2>
+            <h4>
+              Huckleberry artifacts, including automations, apps, and anything
+              else created on the platform
+            </h4>
+          </div>
+          <div className={styles.graphContainer}>
+            <h2>Decision graph</h2>
+            <h4>
+              A record of actions taken and decisions made within your
+              organization
+            </h4>
+          </div>
+        </div>
       </div>
     </div>
   );

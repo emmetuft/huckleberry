@@ -1,5 +1,6 @@
 import { FC } from 'react';
 import { Link } from 'react-router-dom';
+import { Button } from 'antd';
 import { publicRoutePaths, PublicPage } from 'models/enums/appPage';
 import styles from './PublicHeader.module.scss';
 
@@ -22,13 +23,12 @@ export const PublicHeader: FC = () => {
       </nav> */}
 
       <div className={styles.authButtons}>
-        <Link to={publicRoutePaths[PublicPage.LOGIN]}>Sign in</Link>
-        <Link
-          to={publicRoutePaths[PublicPage.SIGNUP]}
-          className={styles.signup}
-        >
+        <Button shape="round" size="large">
+          Sign in
+        </Button>
+        <Button type="primary" shape="round" size="large">
           Try for free
-        </Link>
+        </Button>
       </div>
     </header>
   );
