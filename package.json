@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "prepare": "husky",
-    "start": "reset && tsx server.js",
+    "dev": "vite",
+    "start": "vite",
     "build": "yarn run-checks && vite build",
     "preview": "yarn build && vite preview",
     "run-checks": "yarn format && yarn lint && yarn test:ci",
