@@ -1,5 +1,6 @@
 import { FC } from 'react';
 import { Link } from 'react-router-dom';
+import { Button } from 'antd';
 import { publicRoutePaths, PublicPage } from 'models/enums/appPage';
 import styles from './PublicHeader.module.scss';
 
@@ -11,26 +12,23 @@ export const PublicHeader: FC = () => {
         className={styles.logoDetails}
       >
         <img src="/static/logo.svg" className={styles.logo} />
-        <h2>Huckleberry</h2>
+        <h2>Work smarter.</h2>
       </Link>
 
-      <nav className={styles.nav}>
-        <Link to={publicRoutePaths[PublicPage.ABOUT]}>About</Link>
-        <Link to={publicRoutePaths[PublicPage.FEATURES]}>Features</Link>
+      {/* <nav className={styles.nav}>
+        <Link to={publicRoutePaths[PublicPage.ABOUT]}>Product</Link>
+        <Link to={publicRoutePaths[PublicPage.FEATURES]}>Stories</Link>
         <Link to={publicRoutePaths[PublicPage.PRICING]}>Pricing</Link>
         <Link to={publicRoutePaths[PublicPage.DOCS]}>Docs</Link>
-      </nav>
+      </nav> */}
 
       <div className={styles.authButtons}>
-        <Link to={publicRoutePaths[PublicPage.LOGIN]} className={styles.login}>
+        <Button shape="round" size="large">
           Sign in
-        </Link>
-        <Link
-          to={publicRoutePaths[PublicPage.SIGNUP]}
-          className={styles.signup}
-        >
-          Try Huckleberry
-        </Link>
+        </Button>
+        <Button type="primary" shape="round" size="large">
+          Try for free
+        </Button>
       </div>
     </header>
   );

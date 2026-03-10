@@ -1,6 +1,5 @@
 import { createAppSlice } from '../createAppSlice';
 import {
-  generateOntology,
   fetchAllNodeLabels,
   fetchNodes,
   loadSubgraph,
@@ -100,18 +99,6 @@ export const OntologySlice = createAppSlice({
   }),
   extraReducers: (builder) => {
     builder
-      // Generate ontology
-      .addCase(generateOntology.pending, (state) => {
-        state.loading = { ...state.loading, initGeneration: true };
-      })
-      .addCase(generateOntology.rejected, (state) => {
-        state.loading = { ...state.loading, initGeneration: false };
-      })
-      .addCase(generateOntology.fulfilled, (state, { payload }) => {
-        state.loading = { ...state.loading, initGeneration: false };
-        state.graphData = payload;
-      })
-
       // Fetch node labels
       .addCase(fetchAllNodeLabels.pending, (state) => {
         state.loading = { ...state.loading, fetchNodeLabels: true };

@@ -1,6 +1,5 @@
 import { FC, ReactNode } from 'react';
 import { Button } from 'antd';
-// import styles from './IconBtn.module.scss';
 
 interface IconBtnProps {
   icon: ReactNode;

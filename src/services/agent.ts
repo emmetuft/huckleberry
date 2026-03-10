@@ -3,7 +3,7 @@ import { ProcessStep } from 'models/interfaces/processStep';
 import { ToolEventData } from 'models/interfaces/tool';
 import { GraphContext, UserRequest } from 'models/interfaces/userRequest';
 
-const CONTEXT_BUILDER_API_BASE = '/api/context';
+const API_BASE = '/api/agent';
 
 export interface StreamMessage {
   type: StreamType;
@@ -23,7 +23,7 @@ const queryStream = async function* (
   params: UserRequest,
 ): AsyncGenerator<StreamMessage, void, unknown> {
   try {
-    const response = await fetch(`${CONTEXT_BUILDER_API_BASE}/query-stream`, {
+    const response = await fetch(`${API_BASE}/query-stream`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -73,6 +73,6 @@ const queryStream = async function* (
   }
 };
 
-export const ContextService = {
+export const AgentService = {
   queryStream,
 };
