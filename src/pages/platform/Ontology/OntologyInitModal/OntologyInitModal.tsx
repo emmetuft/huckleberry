@@ -4,7 +4,6 @@ import { Modal, Select, Table } from 'antd';
 import { Database } from 'phosphor-react';
 import styles from './OntologyInitModal.module.scss';
 import { useAppDispatch } from 'reducers';
-import { generateOntology } from 'reducers/ontology/actions';
 import { selectLoading } from 'reducers/ontology/slice';
 import { DataSource } from 'models/interfaces/dataSource';
 import { OntologySource } from 'models/interfaces/ontology';
@@ -144,9 +143,7 @@ export const OntologyInitModal: FC<OntologyInitModalProps> = ({
     setOntologySources([...existingSources, ...newSources]);
   };
 
-  const onOk = () => {
-    dispatch(generateOntology(ontologySources));
-  };
+  const onOk = () => {};
 
   const onCancel = () => {
     onClose();

@@ -131,35 +131,6 @@ const searchNodes = async (
   }
 };
 
-// /**
-//  * Create a new node in Neo4j
-//  */
-// const createNode = async (label: string, properties: Record<string, any>) => {
-//   try {
-//     const response = await fetch(`${NEO4J_API_BASE}/nodes`, {
-//       method: 'POST',
-//       headers: {
-//         'Content-Type': 'application/json',
-//       },
-//       body: JSON.stringify({ label, properties }),
-//     });
-
-//     if (!response.ok) {
-//       throw new Error('Failed to create node in Neo4j');
-//     }
-
-//     const result = await response.json();
-
-//     if (!result.success) {
-//       throw new Error(result.error || 'Unknown error');
-//     }
-
-//     return result.data;
-//   } catch (error: any) {
-//     throw error;
-//   }
-// };
-
 export const Neo4jService = {
   fetchNodeLabels,
   fetchPropertyValues,

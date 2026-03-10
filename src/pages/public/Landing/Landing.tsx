@@ -1,29 +1,80 @@
-import { FC } from 'react';
-import { Link } from 'react-router-dom';
-import { publicRoutePaths, PublicPage } from 'models/enums/appPage';
+import { FC, useMemo, useState } from 'react';
+import { Button, Segmented } from 'antd';
 import styles from './Landing.module.scss';
+import UseCasesCarousel from './UseCases/UseCases';
+import { Background } from 'pages/platform/layouts/PlatformLayout/Background/Background';
+
+export enum UseCase {
+  Finance = 'Finance',
+  HR = 'HR',
+  IT = 'IT',
+  Legal = 'Legal',
+  Marketing = 'Marketing',
+  Manufacturing = 'Manufacturing',
+  Operations = 'Operations',
+  Retail = 'Retail',
+  Sales = 'Sales',
+  More = 'More',
+}
 
 export const Landing: FC = () => {
+  const useCaseOptions = useMemo(() => Object.values(UseCase), []);
+  const [selectedIndex, setSelectedIndex] = useState<number>(0);
+
   return (
     <div className={styles.Landing}>
-      <section className={styles.hero}>
-        <h1>The brain for your business</h1>
-        <p>AI-powered data intelligence platform for modern enterprises</p>
-        <div className={styles.cta}>
-          <Link
-            to={publicRoutePaths[PublicPage.SIGNUP]}
-            className={styles.primary}
-          >
-            Get Started
-          </Link>
-          <Link
-            to={publicRoutePaths[PublicPage.FEATURES]}
-            className={styles.secondary}
-          >
-            Learn More
-          </Link>
+      <Background />
+      <h1 className={styles.title}>Huckleberry</h1>
+      <p className={styles.subtitle}>
+        No matter the team, and no matter the task, Huckleberry elevates your
+        teams to focus on the work that moves your business forward.
+      </p>
+      <Segmented
+        options={useCaseOptions}
+        value={useCaseOptions[selectedIndex]}
+        onChange={(value) =>
+          setSelectedIndex(useCaseOptions.indexOf(value as UseCase))
+        }
+      />
+      <UseCasesCarousel
+        selectedIndex={selectedIndex}
+        setSelectedIndex={setSelectedIndex}
+      />
+      <div className={styles.section}>
+        <div className={styles.sectionHeading}>
+          <h2 className={styles.sectionTitle}>Superior context.</h2>
+          <h2 className={styles.sectionTitle}>Powered by graphs.</h2>
         </div>
-      </section>
+        <Button shape="round" size="large">
+          Watch the demo
+        </Button>
+        <div className={styles.graphs}>
+          <div className={styles.graphContainer}>
+            <h2>Ontology graph</h2>
+            <h4>The entities and relationships specific to your business</h4>
+          </div>
+          <div className={styles.graphContainer}>
+            <h2>Knowledge graph</h2>
+            <h4>
+              Metadata that describes how connected sources map to your ontology
+            </h4>
+          </div>
+          <div className={styles.graphContainer}>
+            <h2>Entity graph</h2>
+            <h4>
+              Huckleberry artifacts, including automations, apps, and anything
+              else created on the platform
+            </h4>
+          </div>
+          <div className={styles.graphContainer}>
+            <h2>Decision graph</h2>
+            <h4>
+              A record of actions taken and decisions made within your
+              organization
+            </h4>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

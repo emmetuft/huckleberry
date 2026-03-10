@@ -252,6 +252,6 @@ const queryStream = async function* (
   );
 };
 
-export const ContextService = {
+export const AgentService = {
   queryStream,
 };
