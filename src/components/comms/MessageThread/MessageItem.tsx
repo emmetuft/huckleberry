@@ -28,7 +28,7 @@ export const MessageItem: FC<MessageItemProps> = ({
   const isFullScreen = appPage === AppPage.HOME && fullScreen;
 
   const metricNode = useMemo(() => {
-    if (message.context && message.context.nodes.length > 0) {
+    if (message.context?.nodes && message.context.nodes.length > 0) {
       const metricNode = message.context.nodes.find(
         (node) =>
           node.labels.includes('Metric') &&

@@ -4,13 +4,9 @@ export enum StreamStatus {
 }
 
 export enum StreamType {
-  DONE = 'done',
-  METADATA = 'metadata',
-  STATUS = 'status',
-  STEP_START = 'step_start',
-  STEP_COMPLETE = 'step_complete',
-  TEXT = 'text',
-  TOOL_START = 'tool_start',
-  TOOL_RESULT = 'tool_result',
-  TOOL_ERROR = 'tool_error',
+  THINKING = 'THINKING',
+  TOOL_STARTED = 'TOOL_STARTED',
+  TOOL_COMPLETED = 'TOOL_COMPLETED',
+  ANSWER = 'ANSWER',
+  ERROR = 'ERROR',
 }

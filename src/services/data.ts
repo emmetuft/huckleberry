@@ -24,9 +24,10 @@ const fetchDataSources = async ({
     const response = await fetch(apiUrl);
     if (response.ok) {
       const result = await response.json();
+      const payload = result.data ?? result;
       return {
-        sources: result.dataSources,
-        total: result._metaData.totalCount,
+        sources: payload.dataSources ?? [],
+        total: payload._metaData?.totalCount ?? 0,
       };
     }
     return {
@@ -59,7 +60,8 @@ const fetchDataSourceSchema = async (
     const response = await fetch(SCHEMA_URL.replace('{id}', dataSourceId));
     if (response.ok) {
       const result = await response.json();
-      return result.columnList;
+      const payload = result.data ?? result;
+      return payload.columnList ?? payload.columns ?? payload;
     }
     return [];
   } catch (error: any) {
@@ -84,7 +86,7 @@ const fetchDataSourceRows = async ({
 
   const requestBody = getDatasetRequestBody(columnNames);
 
-  const url = `https://domo-service.labsprod.domotech.io/api/v2/domo/datasets/${dataSourceId}/data?page=${page - 1}&size=${pageSize}`;
+  const url = `${DATA_SOURCES_URL}/${dataSourceId}/data?page=${page - 1}&size=${pageSize}`;
   const options = {
     method: 'POST',
     headers: commonHeaders(),
@@ -93,7 +95,8 @@ const fetchDataSourceRows = async ({
 
   const response = await fetch(url, options);
   if (response.ok) {
-    const datasetResponse = await response.json();
+    const result = await response.json();
+    const datasetResponse = result.data ?? result;
     const dataContent = datasetResponse.content;
     const datasetRows = formatRowsWithKeys(schema, dataContent);
     return datasetRows;

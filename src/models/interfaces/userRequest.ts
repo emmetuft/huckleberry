@@ -8,7 +8,6 @@ export interface UserRequest {
 
 export interface SystemResponse {
   output: string;
-  context?: GraphContext;
 }
 
 export interface SystemStreamResponse {

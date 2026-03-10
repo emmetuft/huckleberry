@@ -1,4 +1,3 @@
-import domo from 'ryuu.js';
 import { toast } from 'sonner';
 import { GraphData, OntologySource } from 'models/interfaces/ontology';
 import { filterInvalidLinks, isValidGraphData } from 'utils/ai';
@@ -35,11 +34,20 @@ Sample Rows: ${JSON.stringify(ds.sampleRows)}\n`,
       system: ontologySystemPrompt,
     };
 
-    const response: any = await domo.post<DomoGPTResponse>(
-      TEXT_GEN_ENDPOINT,
-      body,
-    );
-    const rawData = response.choices[0].output;
+    const response = await fetch(TEXT_GEN_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      toast.error('Could not generate ontology, please try again.');
+      throw new Error(`AI text generation failed: ${response.status}`);
+    }
+
+    const result = await response.json();
+    const payload: DomoGPTResponse = result.data ?? result;
+    const rawData = payload.choices[0].output;
 
     // Parse JSON with error handling
     let parsedData: any;

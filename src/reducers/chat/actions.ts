@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from '../index';
-import { StreamStatus, StreamType } from 'models/enums/stream';
+import { StreamType } from 'models/enums/stream';
 import { ProcessedFile } from 'models/interfaces/files';
 import { MCPToolCall } from 'models/interfaces/mcpServer';
 import { SystemResponse, UserRequest } from 'models/interfaces/userRequest';
@@ -34,49 +34,55 @@ export const sendStreamingRequest = createAsyncThunk<
       dataSources,
     };
 
-    let context: any = undefined;
     let fullText = '';
+    let messageCount = 0;
+
+    console.log('[sendStreamingRequest] starting stream');
 
     // Stream the response
     for await (const message of ContextService.queryStream(queryWithUserId)) {
-      if (message.type === StreamType.STATUS) {
-        dispatch({
-          type: 'chat/updateStreamStatus',
-          payload: message.message,
-        });
-      } else if (message.type === StreamType.STEP_START && message.step) {
-        dispatch({
-          type: 'chat/addProcessStep',
-          payload: message.step,
-        });
-      } else if (message.type === StreamType.STEP_COMPLETE && message.step) {
-        dispatch({
-          type: 'chat/updateProcessStep',
-          payload: message.step,
-        });
-      } else if (message.type === StreamType.METADATA && message.context) {
-        context = message.context;
-      } else if (message.type === StreamType.TEXT && message.content) {
+      messageCount++;
+      console.log(`[sendStreamingRequest] message #${messageCount}:`, {
+        type: message.type,
+        contentLen: message.content?.length,
+        hasStep: !!message.step,
+      });
+
+      if (message.type === StreamType.ANSWER && message.content) {
         fullText += message.content;
         dispatch({
           type: 'chat/appendStreamText',
           payload: message.content,
         });
-      } else if (message.type === StreamType.DONE) {
+      } else if (message.type === StreamType.THINKING && message.content) {
+        dispatch({
+          type: 'chat/updateStreamStatus',
+          payload: message.content,
+        });
+      } else if (message.type === StreamType.TOOL_STARTED && message.step) {
+        dispatch({
+          type: 'chat/addProcessStep',
+          payload: message.step,
+        });
+      } else if (message.type === StreamType.TOOL_COMPLETED && message.step) {
         dispatch({
           type: 'chat/updateProcessStep',
-          payload: {
-            id: 'generate-response',
-            title: 'Generating response',
-            status: StreamStatus.COMPLETE,
-          },
+          payload: message.step,
+        });
+      } else if (message.type === StreamType.ERROR && message.message) {
+        dispatch({
+          type: 'chat/updateStreamStatus',
+          payload: message.message,
         });
       }
     }
 
+    console.log(
+      `[sendStreamingRequest] stream complete — ${messageCount} messages, fullText length: ${fullText.length}`,
+    );
+
     return {
       output: fullText,
-      context,
     };
   },
 );

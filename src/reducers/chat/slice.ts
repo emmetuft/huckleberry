@@ -38,6 +38,11 @@ export const ChatSlice = createAppSlice({
       state.streamStatus = action.payload;
     }),
     appendStreamText: create.reducer((state, action: { payload: string }) => {
+      console.log('[slice/appendStreamText]', {
+        streamingMessageId: state.streamingMessageId,
+        payloadLen: action.payload.length,
+        payload: action.payload.slice(0, 100),
+      });
       // Find the streaming message and append text
       if (state.streamingMessageId) {
         const message = state.messages.find(
@@ -45,7 +50,18 @@ export const ChatSlice = createAppSlice({
         );
         if (message) {
           message.content += action.payload;
+          console.log(
+            '[slice/appendStreamText] message content now:',
+            message.content.slice(0, 200),
+          );
+        } else {
+          console.warn(
+            '[slice/appendStreamText] message NOT FOUND for id:',
+            state.streamingMessageId,
+          );
         }
+      } else {
+        console.warn('[slice/appendStreamText] no streamingMessageId set!');
       }
     }),
     addProcessStep: create.reducer(
@@ -160,6 +176,12 @@ export const ChatSlice = createAppSlice({
         };
         state.messages.push(assistantMessage);
         state.streamingMessageId = assistantMessageId;
+        console.log(
+          '[slice/pending] created assistant message:',
+          assistantMessageId,
+          'total messages:',
+          state.messages.length,
+        );
       })
       .addCase(sendStreamingRequest.rejected, (state, action) => {
         state.loading = false;
@@ -179,9 +201,6 @@ export const ChatSlice = createAppSlice({
             (m) => m.id === state.streamingMessageId,
           );
           if (message) {
-            if (payload.context) {
-              message.context = payload.context;
-            }
             // Collapse all processing steps when complete
             if (message.processingSteps) {
               message.processingSteps.forEach((step) => {
