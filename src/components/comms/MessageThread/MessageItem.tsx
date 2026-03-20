@@ -6,8 +6,11 @@ import styles from './MessageThread.module.scss';
 import { useAppDispatch } from 'reducers';
 import { selectPage } from 'reducers/app/slice';
 import { selectFullScreen, toggleProcessStep } from 'reducers/chat/slice';
+import { submitElicitationResponse } from 'reducers/chat/actions';
 import { AppPage } from 'models/enums/appPage';
 import { Message } from 'models/interfaces/message';
+import { ElicitationResponse } from 'models/interfaces/userRequest';
+import { ConfirmationRequest } from './Elicitation/ConfirmationRequest';
 import { MetricChart } from './MetricChart';
 import { ProcessStep } from './ProcessStep/ProcessStep';
 import { formatMessageTimestamp } from 'utils/datetime';
@@ -44,6 +47,20 @@ export const MessageItem: FC<MessageItemProps> = ({
     dispatch(toggleProcessStep({ messageId: message.id, stepId }));
   };
 
+  const handleElicitationResponse = (responses: ElicitationResponse[]) => {
+    const batchId = message.confirmationRequests?.[0].batchId;
+    const requestId = message.requestId;
+    if (!batchId || !requestId) return; // TODO: Show error to user
+
+    dispatch(
+      submitElicitationResponse({
+        batchId,
+        requestId,
+        responses,
+      }),
+    );
+  };
+
   return (
     <div key={message.id}>
       {showTimestamp && (
@@ -67,6 +84,13 @@ export const MessageItem: FC<MessageItemProps> = ({
             ))}
           </div>
         )}
+        {message.confirmationRequests &&
+          message.confirmationRequests.length > 0 && (
+            <ConfirmationRequest
+              confirmationRequests={message.confirmationRequests}
+              onSubmit={handleElicitationResponse}
+            />
+          )}
         <div className={styles.content}>
           <Markdown remarkPlugins={[remarkGfm]}>{message.content}</Markdown>
         </div>
