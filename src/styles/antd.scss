@@ -17,6 +17,11 @@
   justify-content: center;
 }
 
+// Form
+.ant-form-item:last-child {
+  margin-bottom: 0;
+}
+
 // Segmented
 .ant-segmented {
   padding: 8px;

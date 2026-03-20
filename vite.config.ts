@@ -52,5 +52,28 @@ export default defineConfig(({ command }) => {
       },
     },
     clearScreen: false,
+    server: {
+      proxy: {
+        '/api': {
+          target: 'http://localhost:3000',
+          changeOrigin: true,
+          // Prevent buffering of SSE streaming responses
+          configure: (proxy) => {
+            proxy.on('proxyRes', (proxyRes, _req, res) => {
+              const ct = proxyRes.headers['content-type'] || '';
+              if (ct.includes('text/event-stream')) {
+                res.setHeader('X-Accel-Buffering', 'no');
+                res.setHeader('Cache-Control', 'no-cache, no-transform');
+                res.flushHeaders();
+              }
+            });
+          },
+        },
+        '/domo': {
+          target: 'http://localhost:3000',
+          changeOrigin: true,
+        },
+      },
+    },
   };
 });

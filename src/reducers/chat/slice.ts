@@ -1,16 +1,23 @@
 import { createAppSlice } from '../createAppSlice';
-import { sendStreamingRequest } from './actions';
+import { sendStreamingRequest, submitElicitationResponse } from './actions';
 import { Message } from 'models/interfaces/message';
-import { ProcessStep, ProcessStepWithUI } from 'models/interfaces/processStep';
+import {
+  ProcessStep,
+  ProcessStepStatus,
+  ProcessStepType,
+} from 'models/interfaces/processStep';
+import {
+  AISessionEventType,
+  ConfirmationRequest,
+} from 'models/interfaces/sessionEvent';
 
 interface State {
   messages: Message[];
   fullScreen: boolean;
   loading: boolean;
   error: string | null;
-  streamStatus: string | null;
   streamingMessageId: string | null;
-  processingSteps: ProcessStepWithUI[];
+  sessionId?: string;
 }
 
 const initialState: State = {
@@ -18,10 +25,56 @@ const initialState: State = {
   fullScreen: false,
   loading: false,
   error: null,
-  streamStatus: null,
   streamingMessageId: null,
-  processingSteps: [],
 };
+
+// ─── Helper Functions ─────────────────────────────────────────────────────────
+
+/**
+ * Finds the currently streaming message in the state.
+ * Returns undefined if no streaming message exists or if it can't be found.
+ */
+function getStreamingMessage(state: State): Message | undefined {
+  if (!state.streamingMessageId) return undefined;
+  return state.messages.find((m) => m.id === state.streamingMessageId);
+}
+
+/**
+ * Handles the fulfilled state for streaming actions.
+ * Updates the message content, collapses steps, and clears streaming state.
+ * Only clears streamingMessageId if there are no pending confirmation requests.
+ */
+function handleStreamFulfilled(state: State, payload?: string) {
+  state.loading = false;
+  state.error = null;
+
+  // Update the assistant message with final output and collapse steps
+  const message = getStreamingMessage(state);
+  if (message) {
+    if (payload) {
+      message.content = payload;
+    }
+    if (message.processingSteps) {
+      message.processingSteps.forEach((step) => {
+        step.isOpen = false;
+      });
+    }
+
+    // Only clear streamingMessageId if there are no pending confirmation requests
+    // If confirmations are pending, we're paused and will resume later
+    if (
+      !message.confirmationRequests ||
+      message.confirmationRequests.length === 0
+    ) {
+      state.streamingMessageId = null;
+    }
+  } else {
+    // If no message found, clear streamingMessageId anyway
+    state.streamingMessageId = null;
+  }
+}
+
+// ─── Slice ────────────────────────────────────────────────────────────────────
 
 export const ChatSlice = createAppSlice({
   name: 'chat',
@@ -33,70 +86,132 @@ export const ChatSlice = createAppSlice({
     clearMessages: create.reducer((state) => {
       state.messages = [];
       state.error = null;
-    }),
-    updateStreamStatus: create.reducer((state, action: { payload: string }) => {
-      state.streamStatus = action.payload;
+      state.sessionId = undefined;
     }),
     appendStreamText: create.reducer((state, action: { payload: string }) => {
-      // Find the streaming message and append text
-      if (state.streamingMessageId) {
-        const message = state.messages.find(
-          (m) => m.id === state.streamingMessageId,
-        );
-        if (message) {
-          message.content += action.payload;
-        }
+      const message = getStreamingMessage(state);
+      if (message) {
+        message.content += action.payload;
+      } else {
+        console.warn('[slice/appendStreamText] no streamingMessageId set!');
       }
     }),
     addProcessStep: create.reducer(
       (state, action: { payload: ProcessStep }) => {
-        // Add new step to the streaming message
-        if (state.streamingMessageId) {
-          const message = state.messages.find(
-            (m) => m.id === state.streamingMessageId,
+        const message = getStreamingMessage(state);
+        if (message) {
+          if (!message.processingSteps) {
+            message.processingSteps = [];
+          }
+          message.processingSteps.push({
+            ...action.payload,
+            isOpen: true,
+          });
+        }
+      },
+    ),
+    addActionSubStep: create.reducer(
+      (state, action: { payload: ProcessStep }) => {
+        const message = getStreamingMessage(state);
+        if (message?.processingSteps) {
+          const toolStep = message.processingSteps.find(
+            (s) =>
+              s.stepType === ProcessStepType.TOOL &&
+              s.tool === action.payload.tool,
           );
-          if (message) {
-            if (!message.processingSteps) {
-              message.processingSteps = [];
-            }
-            message.processingSteps.push({
-              ...action.payload,
-              isOpen: true,
-            });
+          if (toolStep) {
+            if (!toolStep.subSteps) toolStep.subSteps = [];
+            toolStep.subSteps.push(action.payload);
           }
         }
       },
     ),
     updateProcessStep: create.reducer(
-      (state, action: { payload: ProcessStep }) => {
-        // Update step in the streaming message
-        if (state.streamingMessageId) {
-          const message = state.messages.find(
-            (m) => m.id === state.streamingMessageId,
-          );
-          if (message?.processingSteps) {
-            const index = message.processingSteps.findIndex(
-              (s) => s.id === action.payload.id,
-            );
-            if (index !== -1) {
-              // If this is the "generate-response" step completing, remove it entirely
+      (
+        state,
+        action: {
+          payload: {
+            eventId: string;
+            event: any;
+            status?: ProcessStepStatus;
+          };
+        },
+      ) => {
+        const message = getStreamingMessage(state);
+        if (message?.processingSteps) {
+          const applyUpdate = <T extends ProcessStep>(existingStep: T): T => {
+            const event = action.payload.event;
+
+            // Determine the new status
+            let status: ProcessStepStatus | undefined = action.payload.status;
+            if (!status) {
               if (
-                action.payload.id === 'generate-response' &&
-                action.payload.status === 'complete'
+                event.type === AISessionEventType.ACTION_COMPLETED ||
+                event.type === AISessionEventType.TOOL_COMPLETED ||
+                event.type === AISessionEventType.TOOL_FINISHED ||
+                event.type === AISessionEventType.MCP_RESPONSE
               ) {
-                message.processingSteps.splice(index, 1);
-              } else {
-                const existingStep = message.processingSteps[index];
-                // Merge details
-                const mergedDetails = {
-                  ...existingStep.details,
-                  ...action.payload.details,
-                };
-                message.processingSteps[index] = {
-                  ...existingStep,
-                  ...action.payload,
-                  details: mergedDetails,
-                };
+                status = ProcessStepStatus.COMPLETED;
+              } else if (event.type === AISessionEventType.TOOL_PAUSED) {
+                status = ProcessStepStatus.PAUSED;
+              } else if (event.type === AISessionEventType.TOOL_RESUMED) {
+                status = ProcessStepStatus.RESUMED;
+              }
+            }
+
+            if (event.error) {
+              status = ProcessStepStatus.FAILED;
+            }
+
+            const updatedStep = {
+              ...existingStep,
+              status: status || existingStep.status,
+              endEvent: event,
+              endTime: event.timestamp,
+              durationMs: event.durationMs || existingStep.durationMs,
+              error: event.error || existingStep.error,
+            };
+
+            if (event.type === AISessionEventType.ACTION_COMPLETED) {
+              updatedStep.outputs = event.outputs;
+            } else if (
+              event.type === AISessionEventType.TOOL_COMPLETED ||
+              event.type === AISessionEventType.TOOL_FINISHED
+            ) {
+              updatedStep.outputs = [event.response];
+            }
+
+            if (event.type === AISessionEventType.MCP_RESPONSE) {
+              updatedStep.mcpData = {
+                ...existingStep.mcpData,
+                responsePayload: event.payload,
+              } as any;
+            }
+
+            return updatedStep;
+          };
+
+          // Search top-level steps first
+          const index = message.processingSteps.findIndex(
+            (s) => s.id === action.payload.eventId,
+          );
+          if (index !== -1) {
+            message.processingSteps[index] = applyUpdate(
+              message.processingSteps[index],
+            );
+          } else {
+            // Search sub-steps
+            for (const parentStep of message.processingSteps) {
+              if (parentStep.subSteps) {
+                const subIndex = parentStep.subSteps.findIndex(
+                  (s) => s.id === action.payload.eventId,
+                );
+                if (subIndex !== -1) {
+                  parentStep.subSteps[subIndex] = applyUpdate(
+                    parentStep.subSteps[subIndex],
+                  );
+                  break;
+                }
               }
             }
           }
@@ -112,14 +227,11 @@ export const ChatSlice = createAppSlice({
           const step = message.processingSteps.find(
             (s) => s.id === action.payload.stepId,
           );
-          if (step) {
-            step.isOpen = !step.isOpen;
-          }
+          if (step) step.isOpen = !step.isOpen;
         }
       },
     ),
     collapseAllSteps: create.reducer((state, action: { payload: string }) => {
-      // Collapse all steps in a specific message
       const message = state.messages.find((m) => m.id === action.payload);
       if (message?.processingSteps) {
         message.processingSteps.forEach((step) => {
@@ -127,9 +239,69 @@ export const ChatSlice = createAppSlice({
         });
       }
     }),
-    clearProcessingSteps: create.reducer((state) => {
-      state.processingSteps = [];
+    addInsight: create.reducer((state, action: { payload: any }) => {
+      const message = getStreamingMessage(state);
+      if (message) {
+        if (!message.insights) {
+          message.insights = [];
+        }
+        message.insights.push({
+          id: `insight-${Date.now()}`,
+          content: action.payload,
+          timestamp: Date.now(),
+        });
+      }
     }),
+    addWarning: create.reducer((state, action: { payload: string }) => {
+      const message = getStreamingMessage(state);
+      if (message) {
+        if (!message.warnings) {
+          message.warnings = [];
+        }
+        message.warnings.push({
+          id: `warning-${Date.now()}`,
+          message: action.payload,
+          timestamp: Date.now(),
+        });
+      }
+    }),
+    setConfirmationRequests: create.reducer(
+      (state, action: { payload: ConfirmationRequest[] }) => {
+        const message = getStreamingMessage(state);
+        if (message) {
+          message.confirmationRequests = action.payload;
+        }
+      },
+    ),
+    setSessionId: create.reducer((state, action: { payload: string }) => {
+      state.sessionId = action.payload;
+    }),
+    updateMessageMetadata: create.reducer(
+      (
+        state,
+        action: {
+          payload: {
+            sessionId?: string;
+            eventId?: string;
+            parentEventId?: string;
+            requestId?: string;
+            error?: any;
+          };
+        },
+      ) => {
+        const message = getStreamingMessage(state);
+        if (message) {
+          if (action.payload.sessionId)
+            message.sessionId = action.payload.sessionId;
+          if (action.payload.eventId) message.eventId = action.payload.eventId;
+          if (action.payload.parentEventId)
+            message.parentEventId = action.payload.parentEventId;
+          if (action.payload.requestId)
+            message.requestId = action.payload.requestId;
+          if (action.payload.error) message.error = action.payload.error;
+        }
+      },
+    ),
   }),
   extraReducers: (builder) => {
     builder
@@ -137,8 +309,6 @@ export const ChatSlice = createAppSlice({
       .addCase(sendStreamingRequest.pending, (state, action) => {
         state.loading = true;
         state.error = null;
-        state.streamStatus = null;
-        state.processingSteps = []; // Clear previous steps
 
         // Add user message to the thread
         const userMessage: Message = {
@@ -165,33 +335,30 @@ export const ChatSlice = createAppSlice({
         state.loading = false;
         state.error =
           action.error.message || 'Failed to send streaming request';
-        state.streamStatus = null;
         state.streamingMessageId = null;
       })
       .addCase(sendStreamingRequest.fulfilled, (state, { payload }) => {
-        state.loading = false;
+        handleStreamFulfilled(state, payload);
+      })
+      // Submit elicitation response (resume stream)
+      .addCase(submitElicitationResponse.pending, (state) => {
+        state.loading = true;
         state.error = null;
-        state.streamStatus = null;
 
-        // Update the assistant message with final context and collapse steps
-        if (state.streamingMessageId) {
-          const message = state.messages.find(
-            (m) => m.id === state.streamingMessageId,
-          );
-          if (message) {
-            if (payload.context) {
-              message.context = payload.context;
-            }
-            // Collapse all processing steps when complete
-            if (message.processingSteps) {
-              message.processingSteps.forEach((step) => {
-                step.isOpen = false;
-              });
-            }
-          }
+        // Clear confirmation requests from the streaming message
+        const message = getStreamingMessage(state);
+        if (message) {
+          delete message.confirmationRequests;
         }
-
+      })
+      .addCase(submitElicitationResponse.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.error.message || 'Failed to submit elicitation response';
         state.streamingMessageId = null;
+      })
+      .addCase(submitElicitationResponse.fulfilled, (state, { payload }) => {
+        handleStreamFulfilled(state, payload);
       });
   },
   selectors: {
@@ -200,21 +367,24 @@ export const ChatSlice = createAppSlice({
     selectFullScreen: (state: State) => state.fullScreen,
     selectLoading: (state: State) => state.loading,
     selectError: (state: State) => state.error,
-    selectStreamStatus: (state: State) => state.streamStatus,
-    selectProcessingSteps: (state: State) => state.processingSteps,
+    selectSessionId: (state: State) => state.sessionId,
   },
 });
 
 export const {
   setFullScreen,
   clearMessages,
-  updateStreamStatus,
   appendStreamText,
   addProcessStep,
+  addActionSubStep,
   updateProcessStep,
   toggleProcessStep,
   collapseAllSteps,
-  clearProcessingSteps,
+  addInsight,
+  addWarning,
+  setConfirmationRequests,
+  setSessionId,
+  updateMessageMetadata,
 } = ChatSlice.actions;
 
 export const {
@@ -223,8 +393,7 @@ export const {
   selectFullScreen,
   selectLoading,
   selectError,
-  selectStreamStatus,
-  selectProcessingSteps,
+  selectSessionId,
 } = ChatSlice.selectors;
 
 export default ChatSlice.reducer;

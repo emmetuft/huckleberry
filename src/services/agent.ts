@@ -1,78 +1,151 @@
-import { StreamType } from 'models/enums/stream';
-import { ProcessStep } from 'models/interfaces/processStep';
-import { ToolEventData } from 'models/interfaces/tool';
-import { GraphContext, UserRequest } from 'models/interfaces/userRequest';
+import { AISessionEvent } from 'models/interfaces/sessionEvent';
+import { ResumeRequest, StreamRequest } from 'models/interfaces/userRequest';
 
-const API_BASE = '/api/agent';
+const CONTEXT_BUILDER_API_BASE = '/api/huckleberry';
 
-export interface StreamMessage {
-  type: StreamType;
-  content?: string;
-  message?: string;
-  context?: GraphContext;
-  cypherQuery?: string;
-  step?: ProcessStep;
-  tool?: ToolEventData;
+interface AgentStreamRequest {
+  input: string;
+  agentType?: string;
+  sessionId?: string;
+  aiAssistantContext?: any;
+  model?: string;
 }
 
 /**
- * Query using context builder and stream the response
- * Returns an async generator that yields stream messages
+ * Shared helper function to process a streaming response
+ * Handles SSE format (data:) or raw JSON lines
+ */
+async function* processStream(
+  response: Response,
+  logPrefix: string,
+): AsyncGenerator<AISessionEvent, void, unknown> {
+  if (!response.ok) {
+    throw new Error(
+      `Stream request failed: ${response.status} ${response.statusText}`,
+    );
+  }
+
+  if (!response.body) {
+    throw new Error('Response body is null');
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  let rawChunkCount = 0;
+  let yieldCount = 0;
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    const rawChunk = decoder.decode(value, { stream: true });
+    rawChunkCount++;
+    buffer += rawChunk;
+    const lines = buffer.split('\n');
+    buffer = lines.pop() || '';
+
+    for (const line of lines) {
+      const trimmed = line.replace(/\r$/, '');
+
+      // Extract JSON from SSE data field or raw JSON line
+      let json: string | null = null;
+      if (trimmed.startsWith('data:')) {
+        json = trimmed.slice(5).trim() || null;
+      } else if (trimmed.startsWith('{')) {
+        json = trimmed;
+      }
+      if (!json) continue;
+
+      let parsed: any;
+      try {
+        parsed = JSON.parse(json);
+      } catch {
+        console.warn('[stream] unparseable SSE data:', json.slice(0, 200));
+        continue;
+      }
+
+      yieldCount++;
+      yield parsed;
+    }
+  }
+
+  console.log(
+    `[${logPrefix}] stream ended — ${rawChunkCount} raw chunks, ${yieldCount} events yielded, remaining buffer: "${buffer.slice(0, 100)}"`,
+  );
+}
+
+/**
+ * Query context service and stream response
  */
 const queryStream = async function* (
-  params: UserRequest,
-): AsyncGenerator<StreamMessage, void, unknown> {
-  try {
-    const response = await fetch(`${API_BASE}/query-stream`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
+  params: StreamRequest,
+  sessionId?: string,
+): AsyncGenerator<AISessionEvent, void, unknown> {
+  const requestBody: AgentStreamRequest = {
+    input: params.userInput,
+    sessionId,
+    ...(params.dataSources && {
+      aiAssistantContext: {
+        dataSourceIds: params.dataSources,
       },
-      body: JSON.stringify(params),
-    });
+    }),
+  };
 
-    if (!response.ok) {
-      throw new Error(
-        `Failed to query context builder stream: ${response.status} ${response.statusText}`,
-      );
-    }
+  const response = await fetch(
+    `${CONTEXT_BUILDER_API_BASE}/execute/streaming`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestBody),
+    },
+  );
 
-    if (!response.body) {
-      throw new Error('Response body is null');
-    }
+  yield* processStream(response, 'queryStream');
+};
 
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = '';
+/**
+ * Submit elicitation response to the agent and stream the resumed response
+ * @param sessionId - The session ID
+ * @param batchId - The batch ID for the elicitation requests
+ * @param sourceRequestId - The source request ID
+ * @param aiAssistantContext - The AI assistant context
+ * @param responseItems - Array of responses with confirmationId, action, and content
+ */
+const submitElicitationResponse = async function* (
+  params: ResumeRequest,
+  sessionId: string,
+): AsyncGenerator<AISessionEvent, void, unknown> {
+  // Transform responseItems array into the nested items object structure
+  const items = params.responseItems.reduce(
+    (acc, item) => {
+      acc[item.confirmationId] = {
+        action: item.action,
+        content: item.content,
+      };
+      return acc;
+    },
+    {} as Record<string, { action: string; content: Record<string, unknown> }>,
+  );
 
-    while (true) {
-      const { done, value } = await reader.read();
+  const response = await fetch(`${CONTEXT_BUILDER_API_BASE}/resume/streaming`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      sessionId,
+      batchId: params.batchId,
+      sourceRequestId: params.sourceRequestId,
+      aiAssistantContext: params.aiAssistantContext,
+      response: {
+        items,
+      },
+    }),
+  });
 
-      if (done) {
-        break;
-      }
-
-      buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split('\n');
-      buffer = lines.pop() || '';
-
-      for (const line of lines) {
-        if (line.startsWith('data: ')) {
-          const data = line.slice(6);
-          try {
-            const message: StreamMessage = JSON.parse(data);
-            yield message;
-          } catch (e) {
-            console.error('Failed to parse SSE message:', e);
-          }
-        }
-      }
-    }
-  } catch (error: any) {
-    throw error;
-  }
+  yield* processStream(response, 'submitConfirmationResponse');
 };
 
 export const AgentService = {
   queryStream,
+  submitElicitationResponse,
 };

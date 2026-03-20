@@ -203,7 +203,7 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     // Process datasources to send only id and name
     const processedDataSources =
       selectedDataSources.length > 0
-        ? selectedDataSources.map((ds) => ({ id: ds.id, name: ds.name }))
+        ? selectedDataSources.map((ds) => ds.id)
         : undefined;
 
     dispatch(
