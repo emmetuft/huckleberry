@@ -76,9 +76,9 @@ async function* processStream(
 }
 
 /**
- * Query context service and stream response
+ * Send stream execution to agent
  */
-const queryStream = async function* (
+const executeStream = async function* (
   params: StreamRequest,
   sessionId?: string,
 ): AsyncGenerator<AISessionEvent, void, unknown> {
@@ -101,7 +101,7 @@ const queryStream = async function* (
     },
   );
 
-  yield* processStream(response, 'queryStream');
+  yield* processStream(response, 'executeStream');
 };
 
 /**
@@ -112,7 +112,7 @@ const queryStream = async function* (
  * @param aiAssistantContext - The AI assistant context
  * @param responseItems - Array of responses with confirmationId, action, and content
  */
-const submitElicitationResponse = async function* (
+const resumeStream = async function* (
   params: ResumeRequest,
   sessionId: string,
 ): AsyncGenerator<AISessionEvent, void, unknown> {
@@ -142,10 +142,10 @@ const submitElicitationResponse = async function* (
     }),
   });
 
-  yield* processStream(response, 'submitConfirmationResponse');
+  yield* processStream(response, 'resumeStream');
 };
 
 export const AgentService = {
-  queryStream,
-  submitElicitationResponse,
+  executeStream,
+  resumeStream,
 };

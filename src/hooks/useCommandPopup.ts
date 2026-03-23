@@ -2,7 +2,6 @@ import { RefObject, useState, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { InputCommand } from 'models/enums/inputCommand';
 import { setCaretPosition } from 'utils/dom';
-import { selectTools } from 'reducers/mcp/slice';
 import { selectUsers, selectGroups } from 'reducers/people/slice';
 import {
   CommandPopupItem,
@@ -11,6 +10,7 @@ import {
 } from 'models/interfaces/commandPopup';
 import { MCPToolDefinition } from 'models/interfaces/mcpServer';
 import { MentionItem } from 'models/interfaces/mention';
+import { selectToolkits } from 'reducers/toolkits/slice';
 
 export interface CommandConfig<T = any> {
   /** The trigger character (e.g., '/' or '@') */
@@ -67,7 +67,7 @@ export const useCommandPopup = <T = any>(
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   // Select items from Redux based on trigger
-  const mcpTools = useSelector(selectTools);
+  const tools = useSelector(selectToolkits);
   const users = useSelector(selectUsers);
   const groups = useSelector(selectGroups);
 
@@ -88,12 +88,12 @@ export const useCommandPopup = <T = any>(
   // Get items based on command type
   const allItems: any[] = useMemo(() => {
     if (config.trigger === InputCommand.TOOL) {
-      return mcpTools;
+      return tools;
     } else if (config.trigger === InputCommand.MENTION) {
       return [...users, ...groups];
     }
     return [];
-  }, [config.trigger, mcpTools, users, groups]);
+  }, [config.trigger, tools, users, groups]);
 
   // Filter items based on search query
   const filteredItems: any[] = useMemo(() => {

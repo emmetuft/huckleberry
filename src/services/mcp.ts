@@ -8,29 +8,9 @@ import {
   OAuth2AuthStatus,
   OAuth2DiscoveredConfig,
 } from 'models/interfaces/mcpServer';
+import { handleResponse } from 'utils/service';
 
 const MCP_API_BASE = '/api/mcp';
-
-interface ApiResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
-}
-
-async function handleResponse<T>(response: Response): Promise<T> {
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || `HTTP error: ${response.status}`);
-  }
-
-  const result: ApiResponse<T> = await response.json();
-
-  if (!result.success) {
-    throw new Error(result.error || 'Unknown error');
-  }
-
-  return result.data as T;
-}
 
 export const createServer = async (
   input: MCPServerCreateInput,

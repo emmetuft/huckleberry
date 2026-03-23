@@ -7,7 +7,6 @@ import { useAppDispatch } from 'reducers';
 import { fetchUserPersona } from 'reducers/app/actions';
 import { selectIdentity, setPage } from 'reducers/app/slice';
 import { fetchMetricCatalogSchema } from 'reducers/metrics/actions';
-import { fetchTools } from 'reducers/mcp/actions';
 import { fetchGroups, fetchUsers } from 'reducers/people/actions';
 import { Heading } from './Heading/Heading';
 import { Nav } from './Nav/Nav';
@@ -26,7 +25,6 @@ export const PlatformLayout: FC = () => {
     if (identity) {
       dispatch(fetchUserPersona());
       dispatch(fetchMetricCatalogSchema());
-      dispatch(fetchTools());
       dispatch(fetchUsers());
       dispatch(fetchGroups());
     }

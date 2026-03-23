@@ -13,23 +13,6 @@ import {
 import { PlusOutlined, SyncOutlined, ApiOutlined } from '@ant-design/icons';
 import styles from './Integrations.module.scss';
 import { useAppDispatch } from 'reducers';
-import {
-  fetchServers,
-  fetchTools,
-  removeServer,
-  testConnection,
-  syncTools,
-  toggleServerEnabled,
-  editServer,
-} from 'reducers/mcp/actions';
-import {
-  selectServers,
-  selectSelectedServerId,
-  selectSelectedServer,
-  selectTestingServerId,
-  selectSyncingServerId,
-  setSelectedServer,
-} from 'reducers/mcp/slice';
 import { integrationCategories, integrationList } from 'constants/integrations';
 import { defaultMotionProps } from 'constants/styles';
 import { MCPServerConfig } from 'models/interfaces/mcpServer';
@@ -49,16 +32,16 @@ export const Integrations: FC<IntegrationsProps> = () => {
     null,
   );
 
-  const servers = useSelector(selectServers);
-  const selectedServerId = useSelector(selectSelectedServerId);
-  const selectedServer = useSelector(selectSelectedServer);
-  const testingServerId = useSelector(selectTestingServerId);
-  const syncingServerId = useSelector(selectSyncingServerId);
+  const servers: any[] = [];
+  const selectedServerId = '';
+  const selectedServer = null;
+  const testingServerId = null;
+  const syncingServerId = null;
 
-  useEffect(() => {
-    dispatch(fetchServers());
-    dispatch(fetchTools());
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(fetchServers());
+  //   dispatch(fetchTools());
+  // }, [dispatch]);
 
   // Handle OAuth2 callback URL params
   useEffect(() => {
@@ -68,7 +51,7 @@ export const Integrations: FC<IntegrationsProps> = () => {
 
     if (oauthSuccess === 'true') {
       message.success('OAuth2 authorization successful');
-      dispatch(fetchServers());
+      // dispatch(fetchServers());
       // Clean up URL params
       window.history.replaceState({}, '', window.location.pathname);
     } else if (oauthError) {
@@ -117,58 +100,58 @@ export const Integrations: FC<IntegrationsProps> = () => {
   };
 
   const handleDeleteServer = async (id: string) => {
-    await dispatch(removeServer(id));
+    // await dispatch(removeServer(id));
     message.success('Server deleted');
   };
 
   const handleTestConnection = async (id: string) => {
-    const result = await dispatch(testConnection(id)).unwrap();
-    if (result.success) {
-      message.success(
-        `Connected: ${result.tools?.length || 0} tools available`,
-      );
-    } else if (result.requiresOAuth2 && result.oauth2DiscoveredConfig) {
-      // OAuth2 required - update server with discovered config
-      const server = servers.find((s) => s.id === id);
-      if (server) {
-        await dispatch(
-          editServer({
-            id,
-            input: {
-              oauth2DiscoveredConfig: result.oauth2DiscoveredConfig,
-              oauth2Status: 'pending',
-            },
-          }),
-        );
-        dispatch(fetchServers());
-        message.info(
-          'OAuth2 authorization required. Click "Authorize" to connect.',
-        );
-      }
-    } else {
-      message.error(`Connection failed: ${result.message}`);
-    }
+    // const result = await dispatch(testConnection(id)).unwrap();
+    // if (result.success) {
+    //   message.success(
+    //     `Connected: ${result.tools?.length || 0} tools available`,
+    //   );
+    // } else if (result.requiresOAuth2 && result.oauth2DiscoveredConfig) {
+    //   // OAuth2 required - update server with discovered config
+    //   const server = servers.find((s) => s.id === id);
+    //   if (server) {
+    //     await dispatch(
+    //       editServer({
+    //         id,
+    //         input: {
+    //           oauth2DiscoveredConfig: result.oauth2DiscoveredConfig,
+    //           oauth2Status: 'pending',
+    //         },
+    //       }),
+    //     );
+    //     dispatch(fetchServers());
+    //     message.info(
+    //       'OAuth2 authorization required. Click "Authorize" to connect.',
+    //     );
+    //   }
+    // } else {
+    //   message.error(`Connection failed: ${result.message}`);
+    // }
   };
 
   const handleSyncTools = async (id: string) => {
-    try {
-      const result = await dispatch(syncTools(id)).unwrap();
-      message.success(`Synced ${result.toolCount} tools`);
-      dispatch(fetchTools());
-    } catch (error) {
-      message.error('Failed to sync tools');
-    }
+    // try {
+    //   const result = await dispatch(syncTools(id)).unwrap();
+    //   message.success(`Synced ${result.toolCount} tools`);
+    //   // dispatch(fetchTools());
+    // } catch (error) {
+    //   message.error('Failed to sync tools');
+    // }
   };
 
   const handleToggleEnabled = async (id: string, enabled: boolean) => {
-    await dispatch(toggleServerEnabled({ id, enabled }));
-    dispatch(fetchTools());
+    // await dispatch(toggleServerEnabled({ id, enabled }));
+    // dispatch(fetchTools());
   };
 
   const handleServerClick = (server: MCPServerConfig) => {
-    dispatch(
-      setSelectedServer(server.id === selectedServerId ? null : server.id),
-    );
+    // dispatch(
+    //   setSelectedServer(server.id === selectedServerId ? null : server.id),
+    // );
   };
 
   const handleModalClose = () => {
@@ -177,8 +160,8 @@ export const Integrations: FC<IntegrationsProps> = () => {
   };
 
   const handleModalSuccess = () => {
-    dispatch(fetchServers());
-    dispatch(fetchTools());
+    // dispatch(fetchServers());
+    // dispatch(fetchTools());
     handleModalClose();
   };
 
@@ -313,8 +296,8 @@ export const Integrations: FC<IntegrationsProps> = () => {
           {selectedServer && (
             <div className={styles.left} style={{ flex: 1 }}>
               <div className={styles.selectedServerPanel}>
-                <h3>Tools from {selectedServer.name}</h3>
-                {selectedServer.tools && selectedServer.tools.length > 0 ? (
+                {/* <h3>Tools from {selectedServer.name}</h3> */}
+                {/* {selectedServer.tools && selectedServer.tools.length > 0 ? (
                   <div className={styles.toolsList}>
                     {selectedServer.tools.map((tool) => (
                       <div key={tool.name} className={styles.toolItem}>
@@ -329,7 +312,7 @@ export const Integrations: FC<IntegrationsProps> = () => {
                   <p className={styles.noTools}>
                     No tools discovered. Try syncing the server.
                   </p>
-                )}
+                )} */}
               </div>
             </div>
           )}

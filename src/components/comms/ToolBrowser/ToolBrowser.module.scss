@@ -1,54 +1,39 @@
 @use 'src/styles/variables.scss' as *;
 
 .toolBrowserModal {
-  :global(.ant-modal-content) {
-    max-height: 70vh;
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
+
+  .searchContainer {
+    margin-bottom: 16px;
   }
 
-  :global(.ant-modal-body) {
+  .serverCollapse {
+    max-height: 600px;
     overflow-y: auto;
-    flex: 1;
-  }
-}
-
-.searchContainer {
-  margin-bottom: 16px;
-}
-
-.serverCollapse {
-  background: transparent;
-
-  :global(.ant-collapse-item) {
-    border-color: rgba(255, 255, 255, 0.1);
-  }
-
-  :global(.ant-collapse-header) {
-    padding: 12px 16px !important;
-  }
-
-  :global(.ant-collapse-content-box) {
-    padding: 0 !important;
+    background: transparent;
   }
 }
 
 .header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   margin-top: 1px;
+  min-width: 0;
+  overflow: hidden;
 
   .serverLabel {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     font-size: 12px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    line-height: 12px;
   }
 
   .toolCount {
-    font-weight: 400;
+    flex-shrink: 0;
+    margin-left: 6px;
     font-size: 12px;
   }
 }
@@ -61,7 +46,6 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-    padding: 12px 16px;
     border-bottom: 1px solid $grey-light;
     cursor: default;
 

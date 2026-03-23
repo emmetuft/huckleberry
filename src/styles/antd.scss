@@ -5,6 +5,17 @@
   border: 1px solid $grey;
 }
 
+.ant-collapse-header {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.ant-collapse-header-text {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
 // Drawer
 .ant-drawer-right > .ant-drawer-content-wrapper {
   box-shadow: $box-shadow;
