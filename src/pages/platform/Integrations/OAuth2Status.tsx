@@ -11,18 +11,6 @@ import {
   SearchOutlined,
 } from '@ant-design/icons';
 import { useAppDispatch } from 'reducers';
-import {
-  initiateOAuth2Authorization,
-  revokeOAuth2Authorization,
-  fetchOAuth2Status,
-  fetchServers,
-  triggerOAuth2Discovery,
-} from 'reducers/mcp/actions';
-import {
-  selectAuthorizingServerId,
-  selectOAuth2Status,
-  selectDiscoveringServerId,
-} from 'reducers/mcp/slice';
 import { MCPServerConfig, OAuth2AuthStatus } from 'models/interfaces/mcpServer';
 
 interface OAuth2StatusProps {
@@ -31,9 +19,9 @@ interface OAuth2StatusProps {
 
 export const OAuth2Status: FC<OAuth2StatusProps> = ({ server }) => {
   const dispatch = useAppDispatch();
-  const authorizingServerId = useSelector(selectAuthorizingServerId);
-  const discoveringServerId = useSelector(selectDiscoveringServerId);
-  const oauth2StatusMap = useSelector(selectOAuth2Status);
+  const authorizingServerId = null;
+  const discoveringServerId = null;
+  const oauth2StatusMap: any = {};
 
   const isAuthorizing = authorizingServerId === server.id;
   const isDiscovering = discoveringServerId === server.id;
@@ -48,51 +36,50 @@ export const OAuth2Status: FC<OAuth2StatusProps> = ({ server }) => {
 
   useEffect(() => {
     if (server.authType === 'oauth2') {
-      dispatch(fetchOAuth2Status(server.id));
+      // dispatch(fetchOAuth2Status(server.id));
     }
   }, [dispatch, server.id, server.authType]);
 
   const handleDiscover = async () => {
-    try {
-      await dispatch(triggerOAuth2Discovery(server.id)).unwrap();
-      dispatch(fetchServers());
-    } catch (error) {
-      console.error('Failed to discover OAuth2:', error);
-    }
+    // try {
+    //   await dispatch(triggerOAuth2Discovery(server.id)).unwrap();
+    //   dispatch(fetchServers());
+    // } catch (error) {
+    //   console.error('Failed to discover OAuth2:', error);
+    // }
   };
 
   const handleAuthorize = async () => {
-    try {
-      // If we don't have discovered config yet, trigger discovery first
-      if (!hasDiscoveredConfig) {
-        await handleDiscover();
-      }
-
-      const result = await dispatch(
-        initiateOAuth2Authorization(server.id),
-      ).unwrap();
-      // Open OAuth popup
-      const width = 600;
-      const height = 700;
-      const left = window.screenX + (window.outerWidth - width) / 2;
-      const top = window.screenY + (window.outerHeight - height) / 2;
-      window.open(
-        result.authorizationUrl,
-        'oauth2-popup',
-        `width=${width},height=${height},left=${left},top=${top},popup=yes`,
-      );
-    } catch (error) {
-      console.error('Failed to initiate OAuth2:', error);
-    }
+    // try {
+    //   // If we don't have discovered config yet, trigger discovery first
+    //   if (!hasDiscoveredConfig) {
+    //     await handleDiscover();
+    //   }
+    //   const result = await dispatch(
+    //     initiateOAuth2Authorization(server.id),
+    //   ).unwrap();
+    //   // Open OAuth popup
+    //   const width = 600;
+    //   const height = 700;
+    //   const left = window.screenX + (window.outerWidth - width) / 2;
+    //   const top = window.screenY + (window.outerHeight - height) / 2;
+    //   window.open(
+    //     result.authorizationUrl,
+    //     'oauth2-popup',
+    //     `width=${width},height=${height},left=${left},top=${top},popup=yes`,
+    //   );
+    // } catch (error) {
+    //   console.error('Failed to initiate OAuth2:', error);
+    // }
   };
 
   const handleRevoke = async () => {
-    try {
-      await dispatch(revokeOAuth2Authorization(server.id)).unwrap();
-      dispatch(fetchServers());
-    } catch (error) {
-      console.error('Failed to revoke OAuth2:', error);
-    }
+    // try {
+    //   await dispatch(revokeOAuth2Authorization(server.id)).unwrap();
+    //   dispatch(fetchServers());
+    // } catch (error) {
+    //   console.error('Failed to revoke OAuth2:', error);
+    // }
   };
 
   const getStatusTag = () => {

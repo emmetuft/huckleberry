@@ -1,7 +1,6 @@
 import { FC, useEffect } from 'react';
 import { Modal, Form, Input, Select, Switch, message, Typography } from 'antd';
 import { useAppDispatch } from 'reducers';
-import { addServer, editServer } from 'reducers/mcp/actions';
 import {
   MCPServerConfig,
   MCPServerCreateInput,
@@ -122,20 +121,20 @@ export const AddServerModal: FC<AddServerModalProps> = ({
           };
         }
 
-        await dispatch(
-          editServer({
-            id: server.id,
-            input: {
-              ...input,
-              // Only include authToken if it was changed
-              authToken: values.authToken || undefined,
-              oauth2DiscoveredConfig,
-            },
-          }),
-        ).unwrap();
+        // await dispatch(
+        //   editServer({
+        //     id: server.id,
+        //     input: {
+        //       ...input,
+        //       // Only include authToken if it was changed
+        //       authToken: values.authToken || undefined,
+        //       oauth2DiscoveredConfig,
+        //     },
+        //   }),
+        // ).unwrap();
         message.success('Server updated');
       } else {
-        await dispatch(addServer(input)).unwrap();
+        // await dispatch(addServer(input)).unwrap();
         message.success('Server added');
       }
 

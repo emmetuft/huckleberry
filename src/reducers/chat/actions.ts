@@ -16,6 +16,7 @@ import {
   createToolStep,
   createMcpStep,
 } from 'utils/processStep';
+import { Tool } from 'models/interfaces/toolkit';
 
 /**
  * Shared handler for all stream events
@@ -226,7 +227,7 @@ export const sendStreamingRequest = createAsyncThunk<
   {
     userInput: string;
     files?: ProcessedFile[];
-    tools?: MCPToolCall[];
+    tools?: Tool[];
     dataSources?: any;
   },
   { state: RootState }
@@ -246,7 +247,7 @@ export const sendStreamingRequest = createAsyncThunk<
     });
   }
 
-  for await (const message of AgentService.queryStream(params, sessionId)) {
+  for await (const message of AgentService.executeStream(params, sessionId)) {
     // Capture sessionId from the first event
     if (!sessionId && message.sessionId) {
       dispatch({
@@ -289,10 +290,7 @@ export const submitElicitationResponse = createAsyncThunk<
       responseItems: responses,
     };
 
-    for await (const event of AgentService.submitElicitationResponse(
-      params,
-      sessionId,
-    )) {
+    for await (const event of AgentService.resumeStream(params, sessionId)) {
       handleStreamEvent(event, dispatch, accumulator);
     }
 
