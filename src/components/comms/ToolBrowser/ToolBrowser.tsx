@@ -1,10 +1,8 @@
-import { FC, useEffect, useMemo, useState } from 'react';
+import { FC, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Modal, Input, Collapse, Button, Empty } from 'antd';
 import { SearchOutlined, PlusOutlined, CheckOutlined } from '@ant-design/icons';
 import styles from './ToolBrowser.module.scss';
-import { useAppDispatch } from 'reducers';
-import { fetchToolkits } from 'reducers/toolkits/actions';
 import { selectToolkits } from 'reducers/toolkits/slice';
 import { Tool, Toolkit } from 'models/interfaces/toolkit';
 
@@ -21,15 +19,8 @@ export const ToolBrowser: FC<ToolBrowserProps> = ({
   selectedTools,
   onToolsChange,
 }) => {
-  const dispatch = useAppDispatch();
   const toolkits = useSelector(selectToolkits);
   const [searchQuery, setSearchQuery] = useState('');
-
-  useEffect(() => {
-    if (open) {
-      dispatch(fetchToolkits());
-    }
-  }, [open, dispatch]);
 
   const filteredToolkits = useMemo(() => {
     if (!searchQuery) return toolkits;

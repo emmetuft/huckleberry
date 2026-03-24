@@ -1,16 +1,17 @@
 import { RefObject, useState, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { InputCommand } from 'models/enums/inputCommand';
-import { setCaretPosition } from 'utils/dom';
 import { selectUsers, selectGroups } from 'reducers/people/slice';
+import { selectToolkits } from 'reducers/toolkits/slice';
+import { InputCommand } from 'models/enums/inputCommand';
 import {
   CommandPopupItem,
   toolToCommandItem,
   mentionToCommandItem,
 } from 'models/interfaces/commandPopup';
-import { MCPToolDefinition } from 'models/interfaces/mcpServer';
 import { MentionItem } from 'models/interfaces/mention';
-import { selectToolkits } from 'reducers/toolkits/slice';
+import { Tool } from 'models/interfaces/toolkit';
+import { setCaretPosition } from 'utils/dom';
+import { selectAllTools } from 'reducers/toolkits/selectors';
 
 export interface CommandConfig<T = any> {
   /** The trigger character (e.g., '/' or '@') */
@@ -67,7 +68,7 @@ export const useCommandPopup = <T = any>(
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   // Select items from Redux based on trigger
-  const tools = useSelector(selectToolkits);
+  const tools = useSelector(selectAllTools);
   const users = useSelector(selectUsers);
   const groups = useSelector(selectGroups);
 
@@ -98,8 +99,12 @@ export const useCommandPopup = <T = any>(
   // Filter items based on search query
   const filteredItems: any[] = useMemo(() => {
     if (config.trigger === InputCommand.TOOL) {
-      return (allItems as MCPToolDefinition[]).filter((tool) =>
-        tool.name.toLowerCase().includes(searchQuery.toLowerCase()),
+      return (allItems as Tool[]).filter(
+        (tool) =>
+          tool.overrideToolName &&
+          tool.overrideToolName
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()),
       );
     } else if (config.trigger === InputCommand.MENTION) {
       return filterMentions(allItems as MentionItem[], searchQuery);
@@ -110,7 +115,7 @@ export const useCommandPopup = <T = any>(
   // Convert items to CommandPopupItem format
   const popupItems: CommandPopupItem[] = useMemo(() => {
     if (config.trigger === InputCommand.TOOL) {
-      return (filteredItems as MCPToolDefinition[]).map(toolToCommandItem);
+      return (filteredItems as Tool[]).map(toolToCommandItem);
     } else if (config.trigger === InputCommand.MENTION) {
       return (filteredItems as MentionItem[]).map(mentionToCommandItem);
     }

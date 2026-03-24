@@ -16,11 +16,11 @@ import { selectPage } from 'reducers/app/slice';
 import { sendStreamingRequest } from 'reducers/chat/actions';
 import { selectLoading, setFullScreen } from 'reducers/chat/slice';
 import { sharedIconProps } from 'constants/styles';
-import { MCPToolDefinition, MCPToolCall } from 'models/interfaces/mcpServer';
 import { AppPage } from 'models/enums/appPage';
 import { InputCommand } from 'models/enums/inputCommand';
 import { DataSource } from 'models/interfaces/dataSource';
 import { MentionItem } from 'models/interfaces/mention';
+import { Tool } from 'models/interfaces/toolkit';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
 import { DataSourceModal } from 'components/modals/DataSourceModal/DataSourceModal';
 import { SendModal, SendData } from 'components/modals/SendModal/SendModal';
@@ -49,7 +49,7 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   const [suggestedActions, setSuggestedActions] = useState<
     { type: ActionType; text: string }[]
   >([]);
-  const [selectedTools, setSelectedTools] = useState<MCPToolDefinition[]>([]);
+  const [selectedTools, setSelectedTools] = useState<Tool[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [showToolBrowser, setShowToolBrowser] = useState<boolean>(false);
   const [selectedDataSources, setSelectedDataSources] = useState<DataSource[]>(
@@ -63,17 +63,13 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   const editableRef = useRef<HTMLDivElement>(null);
   const popupRef = useRef<HTMLDivElement>(null);
 
-  const toolPopup = useCommandPopup<MCPToolDefinition>(editableRef, {
+  const toolPopup = useCommandPopup<Tool>(editableRef, {
     trigger: InputCommand.TOOL,
     removeOnSelect: true,
     popupRef,
     onSelect: (tool) => {
       // Avoid duplicates
-      if (
-        selectedTools.some(
-          (t) => t.name === tool.name && t.serverId === tool.serverId,
-        )
-      ) {
+      if (selectedTools.some((t) => t.toolId === tool.toolId)) {
         return;
       }
       setSelectedTools([...selectedTools, tool]);
@@ -121,12 +117,8 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     }
   };
 
-  const onRemoveTool = (tool: MCPToolDefinition) => {
-    setSelectedTools(
-      selectedTools.filter(
-        (t) => !(t.name === tool.name && t.serverId === tool.serverId),
-      ),
-    );
+  const onRemoveTool = (tool: Tool) => {
+    setSelectedTools(selectedTools.filter((t) => !(t.toolId === tool.toolId)));
   };
 
   const handleFileUpload = (file: File) => {
@@ -191,15 +183,6 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     const processedFiles =
       uploadedFiles.length > 0 ? await processFiles(uploadedFiles) : undefined;
 
-    // Convert selected tools to MCPToolCall format
-    const toolCalls: MCPToolCall[] | undefined =
-      selectedTools.length > 0
-        ? selectedTools.map((tool) => ({
-            toolName: tool.name,
-            serverId: tool.serverId,
-            params: {},
-          }))
-        : undefined;
     // Process datasources to send only id and name
     const processedDataSources =
       selectedDataSources.length > 0
@@ -210,7 +193,7 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
       sendStreamingRequest({
         userInput,
         files: processedFiles,
-        tools: toolCalls,
+        tools: selectedTools,
         dataSources: processedDataSources,
       }),
     );
@@ -303,10 +286,7 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
           ref={editableRef}
           isEmpty={isEmpty}
           disabled={requestLoading}
-          placeholder={
-            placeholder ??
-            'Start something new: a workflow, an app, an agent—your call.'
-          }
+          placeholder={placeholder ?? 'Start something new'}
           onTextChange={handleTextChange}
           onKeyDown={onKeyDown}
         />
@@ -327,11 +307,8 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
             {selectedTools.length > 0 && (
               <div className={styles.selectedTools}>
                 {selectedTools.map((tool) => (
-                  <div
-                    key={`${tool.serverId}-${tool.name}`}
-                    className={styles.tool}
-                  >
-                    <p>{tool.name}</p>
+                  <div key={tool.toolId} className={styles.tool}>
+                    <p>{tool.overrideToolName}</p>
                     <button onClick={() => onRemoveTool(tool)}>
                       <CloseOutlined className={styles.closeIcon} />
                     </button>

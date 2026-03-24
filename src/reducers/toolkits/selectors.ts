@@ -1,7 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit';
 import { selectToolkits } from './slice';
 
-export const selectEnabledToolkits = createSelector(
-  [selectToolkits],
-  (toolkits) => toolkits.filter((toolkit) => toolkit.enabled),
-);
+export const selectAllTools = createSelector([selectToolkits], (toolkits) => {
+  return toolkits.flatMap((toolkit) => toolkit.tools);
+});

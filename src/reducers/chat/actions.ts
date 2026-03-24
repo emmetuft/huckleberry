@@ -16,6 +16,7 @@ import {
   createToolStep,
   createMcpStep,
 } from 'utils/processStep';
+import { Tool } from 'models/interfaces/toolkit';
 
 /**
  * Shared handler for all stream events
@@ -226,7 +227,7 @@ export const sendStreamingRequest = createAsyncThunk<
   {
     userInput: string;
     files?: ProcessedFile[];
-    tools?: MCPToolCall[];
+    tools?: Tool[];
     dataSources?: any;
   },
   { state: RootState }
