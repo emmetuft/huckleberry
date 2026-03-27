@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { Blob, DotGrid, LinearGradient, Liquify, Shader } from 'shaders/react';
 
-import styles from './Background.module.scss';
+import styles from './Background.module.css';
 
 interface BackgroundProps {}
 

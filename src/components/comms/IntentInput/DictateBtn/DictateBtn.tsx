@@ -1,7 +1,7 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { Button } from 'antd';
 import { Check, Microphone, X } from 'phosphor-react';
-import styles from './DictateBtn.module.scss';
+import styles from './DictateBtn.module.css';
 
 // Web Speech API type definitions
 interface SpeechRecognitionEvent extends Event {

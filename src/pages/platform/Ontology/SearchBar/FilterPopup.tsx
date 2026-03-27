@@ -11,7 +11,7 @@ import {
   Cascader,
 } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
-import styles from './FilterPopup.module.scss';
+import styles from './FilterPopup.module.css';
 import {
   selectLabelFilters,
   selectPropertyFilters,

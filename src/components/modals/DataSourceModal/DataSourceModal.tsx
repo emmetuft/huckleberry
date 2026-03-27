@@ -3,7 +3,7 @@ import { Modal, Input, Checkbox, Empty, Spin } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { DataSource } from 'models/interfaces/dataSource';
 import { DataService } from 'services/data';
-import styles from './DataSourceModal.module.scss';
+import styles from './DataSourceModal.module.css';
 
 interface DataSourceModalProps {
   open: boolean;

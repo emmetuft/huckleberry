@@ -1,0 +1,63 @@
+/* Collapse */
+.ant-collapse {
+  border: 1px solid var(--grey);
+}
+
+.ant-collapse-header {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.ant-collapse-header-text {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Drawer */
+.ant-drawer-right > .ant-drawer-content-wrapper {
+  box-shadow: var(--box-shadow);
+}
+
+/* Float Button */
+.ant-float-btn-content .ant-float-btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Form */
+.ant-form-item:last-child {
+  margin-bottom: 0;
+}
+
+/* Segmented */
+.ant-segmented {
+  padding: 8px;
+}
+
+.ant-segmented,
+.ant-segmented .ant-segmented-item-selected,
+.ant-segmented-thumb,
+.ant-segmented
+  .ant-segmented-item:hover:not(.ant-segmented-item-selected):not(
+    .ant-segmented-item-disabled
+  )::after {
+  border-radius: 20px !important;
+}
+
+/* Table */
+.ant-table-pagination {
+  margin: 0 !important;
+  padding: 16px;
+  border-top: 1px solid var(--grey-bg);
+  border-radius: 0 0 8px 8px;
+}
+
+.ant-table-wrapper .ant-table-thead > tr > th {
+  line-height: 14px;
+}
+
+.ant-empty-normal {
+  margin-block: unset;
+}

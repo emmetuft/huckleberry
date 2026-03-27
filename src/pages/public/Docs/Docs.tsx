@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import styles from './Docs.module.scss';
+import styles from './Docs.module.css';
 
 export const Docs: FC = () => {
   return (

@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { Link } from 'react-router-dom';
 import { publicRoutePaths, PublicPage } from 'models/enums/appPage';
-import styles from './PublicFooter.module.scss';
+import styles from './PublicFooter.module.css';
 
 export const PublicFooter: FC = () => {
   return (

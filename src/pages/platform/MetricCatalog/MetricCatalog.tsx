@@ -1,7 +1,7 @@
 import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Table } from 'antd';
-import styles from './MetricCatalog.module.scss';
+import styles from './MetricCatalog.module.css';
 import { selectMetricCatalogSchema } from 'reducers/metrics/slice';
 import { departmentColors, metricCatalogDatasourceId } from 'constants/metrics';
 import { DataService } from 'services/data';

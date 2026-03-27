@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { useLocation, Outlet } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import { Toaster } from 'sonner';
-import styles from './PlatformLayout.module.scss';
+import styles from './PlatformLayout.module.css';
 import { useAppDispatch } from 'reducers';
 import { fetchUserPersona } from 'reducers/app/actions';
 import { selectIdentity, setPage } from 'reducers/app/slice';

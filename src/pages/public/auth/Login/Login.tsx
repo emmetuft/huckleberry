@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { Link } from 'react-router-dom';
 import { publicRoutePaths, PublicPage } from 'models/enums/appPage';
-import styles from './Login.module.scss';
+import styles from './Login.module.css';
 
 export const Login: FC = () => {
   return (

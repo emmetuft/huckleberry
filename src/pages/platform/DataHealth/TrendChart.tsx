@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts';
-import styles from './DataHealth.module.scss';
+import styles from './DataHealth.module.css';
 
 const TrendChart = () => {
   // Generate the same fake data with sine + randomness

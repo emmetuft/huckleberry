@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import styles from './RecCard.module.scss';
+import styles from './RecCard.module.css';
 import { recommendations } from 'constants/recommendations';
 import { PopupCard } from 'components/shared/PopupCard/PopupCard';
 

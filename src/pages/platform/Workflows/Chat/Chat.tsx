@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { motion } from 'framer-motion';
-import styles from './Chat.module.scss';
+import styles from './Chat.module.css';
 import { IntentInput } from 'components/comms/IntentInput/IntentInput';
 import { Triggers } from '../Triggers/Triggers';
 
@@ -8,7 +8,7 @@ interface ChatProps {}
 
 export const Chat: FC<ChatProps> = ({}) => {
   return (
-    <div className={styles.Chat}>
+    <div className={`${styles.Chat} card`}>
       <motion.p
         className={styles.greeting}
         initial={{ opacity: 0, y: -10 }}

@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
-import styles from './Applications.module.scss';
+import styles from './Applications.module.css';
 import { selectTab } from 'reducers/applications/slice';
 import { appList } from 'constants/applications';
 import { defaultMotionProps } from 'constants/styles';

@@ -1,6 +1,6 @@
 import { FC, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import styles from './MessageThread.module.scss';
+import styles from './MessageThread.module.css';
 import { selectPage } from 'reducers/app/slice';
 import { selectFullScreen, selectMessages } from 'reducers/chat/slice';
 import { AppPage } from 'models/enums/appPage';

@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import styles from './Privacy.module.scss';
+import styles from './Privacy.module.css';
 
 export const Privacy: FC = () => {
   return (

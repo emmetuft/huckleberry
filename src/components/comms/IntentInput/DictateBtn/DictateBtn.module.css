@@ -1,0 +1,38 @@
+.dictateContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.soundwave {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 20px;
+
+  .bar {
+    width: 3px;
+    background-color: var(--purple);
+    border-radius: 2px;
+    transition: height 0.1s ease;
+    min-height: 20%;
+  }
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cancelBtn {
+  &:hover {
+    background-color: rgba(229, 57, 53, 0.1);
+  }
+}
+
+.confirmBtn {
+  &:hover {
+    background-color: rgba(76, 175, 80, 0.1);
+  }
+}

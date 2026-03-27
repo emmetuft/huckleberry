@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import styles from './Features.module.scss';
+import styles from './Features.module.css';
 
 export const Features: FC = () => {
   return (

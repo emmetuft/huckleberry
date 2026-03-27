@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Modal, Radio, Tabs, TabsProps } from 'antd';
-import styles from './PersonaModal.module.scss';
+import styles from './PersonaModal.module.css';
 import { useAppDispatch } from 'reducers';
 import { saveUserPersona, swapPersona } from 'reducers/app/actions';
 import {

@@ -2,7 +2,7 @@ import { FC, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Popover, Tooltip } from 'antd';
 import { ArrowsOutSimple, Chat, X } from 'phosphor-react';
-import styles from './PromptBar.module.scss';
+import styles from './PromptBar.module.css';
 import { useAppDispatch } from 'reducers';
 import {
   clearMessages,
@@ -84,7 +84,7 @@ export const PromptBar: FC<PromptBarProps> = ({}) => {
           },
         }}
       >
-        <div className={styles.bar} />
+        <div className={`${styles.bar} card`} />
       </Popover>
     </div>
   );

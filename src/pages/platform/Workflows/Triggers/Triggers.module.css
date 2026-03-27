@@ -1,0 +1,30 @@
+.TriggerList {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+
+  .trigger {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: var(--grey-bg);
+    box-shadow: none;
+    cursor: pointer;
+
+    .heading {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    h4 {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    p {
+      font-size: 14px;
+      color: var(--grey-text);
+    }
+  }
+}

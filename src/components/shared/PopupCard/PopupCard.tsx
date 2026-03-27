@@ -1,6 +1,6 @@
 import { FC, useEffect, useRef } from 'react';
 import { X } from 'phosphor-react';
-import styles from './PopupCard.module.scss';
+import styles from './PopupCard.module.css';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
 
 interface PopupCardProps {
@@ -37,7 +37,7 @@ export const PopupCard: FC<PopupCardProps> = ({
   }, []);
 
   return (
-    <div className={styles.PopupCard} ref={popupRef}>
+    <div className={`${styles.PopupCard} card`} ref={popupRef}>
       <div className={styles.heading}>
         <div className={styles.title}>
           <h3>{title}</h3>

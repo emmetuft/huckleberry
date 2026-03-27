@@ -18,7 +18,7 @@ import {
   UserCircle,
 } from 'phosphor-react';
 import { Button, Tooltip } from 'antd';
-import styles from './Nav.module.scss';
+import styles from './Nav.module.css';
 import { useAppDispatch } from 'reducers';
 import {
   selectIdentity,
@@ -104,7 +104,7 @@ export const Nav: FC<NavProps> = ({}) => {
 
   return (
     <React.Fragment>
-      <div className={styles.Nav}>
+      <div className={`${styles.Nav} card`}>
         <Link
           to={platformRoutePaths[AppPage.HOME]}
           className={styles.logo}

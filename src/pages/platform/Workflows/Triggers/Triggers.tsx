@@ -7,7 +7,7 @@ import {
   HandPointing,
   NotePencil,
 } from 'phosphor-react';
-import styles from './Triggers.module.scss';
+import styles from './Triggers.module.css';
 import { motion } from 'framer-motion';
 import { DEFAULT_WORKFLOW_STARTS } from 'constants/workflows';
 import { defaultMotionProps, sharedIconProps } from 'constants/styles';
@@ -36,7 +36,7 @@ export const Triggers: FC = () => {
         <motion.div
           {...defaultMotionProps}
           key={trigger.id}
-          className={styles.trigger}
+          className={`${styles.trigger} card`}
           onClick={() => onClickTrigger(trigger)}
         >
           <div className={styles.heading}>

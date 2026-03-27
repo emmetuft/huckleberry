@@ -1,0 +1,61 @@
+.sectionItems {
+  display: flex;
+  flex-direction: column;
+
+  .item {
+    padding: 16px;
+    border-top: 1px solid var(--grey-light);
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--grey-bg);
+    }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+
+      .title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        max-width: 65%;
+
+        .itemImg {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 30px;
+          width: 30px;
+          border-radius: 8px;
+        }
+
+        p {
+          font-size: 14px;
+        }
+      }
+
+      .actionPill {
+        padding: 2px 8px;
+        font-size: 10px;
+        font-weight: 600;
+        background-color: #d4bfff;
+        border-radius: 8px;
+        height: fit-content;
+      }
+    }
+
+    .description {
+      margin-top: 8px;
+      p {
+        font-size: 13px;
+        color: var(--grey-text);
+      }
+    }
+
+    a {
+      font-size: 13px;
+      color: var(--purple);
+    }
+  }
+}

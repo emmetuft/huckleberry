@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { Position } from '@xyflow/react';
-import styles from './index.module.scss';
+import styles from './index.module.css';
 import { MotionWrapper } from '../MotionWrapper';
 import { CustomHandle } from '../../Handle';
 

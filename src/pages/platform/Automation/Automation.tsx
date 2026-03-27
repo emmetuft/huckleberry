@@ -11,7 +11,7 @@ import {
   TrashSimple,
   Warning,
 } from 'phosphor-react';
-import styles from './Automation.module.scss';
+import styles from './Automation.module.css';
 // import { getSourceSchema } from 'reducers/data/actions';
 // import {
 //   selectCreatingRule,

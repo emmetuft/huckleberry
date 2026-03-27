@@ -27,14 +27,6 @@ export default defineConfig(({ command }) => {
     ],
     envDir: './.environment',
     envPrefix,
-    css: {
-      preprocessorOptions: {
-        scss: {
-          api: 'modern',
-          loadPaths: [path.resolve(__dirname)],
-        },
-      },
-    },
     test: {
       globals: true,
       environment: 'jsdom',

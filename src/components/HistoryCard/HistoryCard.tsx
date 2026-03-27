@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { useSelector } from 'react-redux';
 import { Trash } from 'phosphor-react';
-import styles from './HistoryCard.module.scss';
+import styles from './HistoryCard.module.css';
 import { useAppDispatch } from 'reducers';
 import { selectSessions } from 'reducers/chat/slice';
 import { PopupCard } from 'components/shared/PopupCard/PopupCard';

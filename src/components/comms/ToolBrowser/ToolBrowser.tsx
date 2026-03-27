@@ -2,7 +2,7 @@ import { FC, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Modal, Input, Collapse, Button, Empty } from 'antd';
 import { SearchOutlined, PlusOutlined, CheckOutlined } from '@ant-design/icons';
-import styles from './ToolBrowser.module.scss';
+import styles from './ToolBrowser.module.css';
 import { selectToolkits } from 'reducers/toolkits/slice';
 import { Tool, Toolkit } from 'models/interfaces/toolkit';
 

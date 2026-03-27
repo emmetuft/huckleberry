@@ -15,7 +15,7 @@ import { Ontology } from './Ontology/Ontology';
 import { FlowCanvas } from './Workflows/FlowCanvas';
 import { Workspace } from './Workspace/Workspace';
 import { platformRoutePaths, AppPage } from 'models/enums/appPage';
-import styles from './layouts/PlatformLayout/PlatformLayout.module.scss';
+import styles from './layouts/PlatformLayout/PlatformLayout.module.css';
 
 // Home page component wrapper
 const HomePage = () => {

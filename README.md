@@ -89,7 +89,7 @@ src/
     app/            # Application state
     ontology/       # Ontology state
   services/         # API and service layer
-  styles/           # SCSS files for styling
+  styles/           # CSS files for styling
   utils/            # Utility functions
   main.tsx          # Application entry point
 package.json

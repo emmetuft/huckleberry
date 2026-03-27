@@ -1,7 +1,7 @@
 import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Table } from 'antd';
-import styles from './DataHub.module.scss';
+import styles from './DataHub.module.css';
 import { selectIdentity } from 'reducers/app/slice';
 import { dataSourceColumns } from 'constants/data';
 // import { DataProvidersChart } from './charts/DataProviders';

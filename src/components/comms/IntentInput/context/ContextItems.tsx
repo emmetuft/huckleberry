@@ -3,7 +3,7 @@ import { CloseOutlined } from '@ant-design/icons';
 import { Database, File as FileIcon } from 'phosphor-react';
 import { sharedIconProps } from 'constants/styles';
 import { DataSource } from 'models/interfaces/dataSource';
-import styles from './Context.module.scss';
+import styles from './Context.module.css';
 
 interface ContextItemsProps {
   uploadedFiles: File[];

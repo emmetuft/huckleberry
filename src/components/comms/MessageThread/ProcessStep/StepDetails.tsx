@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import styles from './ProcessStep.module.scss';
+import styles from './ProcessStep.module.css';
 import { ProcessStep } from 'models/interfaces/processStep';
 import { Tag } from 'antd';
 

@@ -6,7 +6,7 @@ import {
   ShieldCheck,
   Timer,
 } from 'phosphor-react';
-import styles from './DataHealth.module.scss';
+import styles from './DataHealth.module.css';
 import { IconType, metricList } from 'constants/health';
 import { sharedIconProps } from 'constants/styles';
 import { Quality, qualityColorMap } from 'models/enums/quality';

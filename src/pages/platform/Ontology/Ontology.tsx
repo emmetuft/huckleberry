@@ -6,7 +6,7 @@ import {
   PlusSquareOutlined,
   ClearOutlined,
 } from '@ant-design/icons';
-import styles from './Ontology.module.scss';
+import styles from './Ontology.module.css';
 import { useAppDispatch } from 'reducers';
 import {
   selectGraphData,

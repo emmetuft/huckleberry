@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { useSelector } from 'react-redux';
 import { AnimatePresence, motion } from 'framer-motion';
-import styles from './Workspace.module.scss';
+import styles from './Workspace.module.css';
 import { selectIdentity } from 'reducers/app/slice';
 import { selectFullScreen } from 'reducers/chat/slice';
 import { IntentInput } from 'components/comms/IntentInput/IntentInput';

@@ -10,7 +10,7 @@ import {
   Wrench,
 } from 'phosphor-react';
 import { AnimatePresence, motion } from 'framer-motion';
-import styles from './IntentInput.module.scss';
+import styles from './IntentInput.module.css';
 import { useAppDispatch } from 'reducers';
 import { selectPage } from 'reducers/app/slice';
 import { executeStream } from 'reducers/chat/actions';
@@ -274,7 +274,7 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
         onToolsChange={setSelectedTools}
       />
       <div
-        className={`${styles.inputWrapper} ${animate ? styles.animate : ''}`}
+        className={`${styles.inputWrapper} ${animate ? styles.animate : ''} card`}
       >
         <ContextItems
           uploadedFiles={uploadedFiles}

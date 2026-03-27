@@ -1,6 +1,6 @@
 import { FC, useState, useEffect } from 'react';
 import { Modal, Input, Form, message } from 'antd';
-import styles from './SaveMetricModal.module.scss';
+import styles from './SaveMetricModal.module.css';
 
 const { TextArea } = Input;
 

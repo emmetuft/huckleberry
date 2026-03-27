@@ -2,7 +2,7 @@ import { FC, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Modal, Select, Table } from 'antd';
 import { Database } from 'phosphor-react';
-import styles from './OntologyInitModal.module.scss';
+import styles from './OntologyInitModal.module.css';
 import { useAppDispatch } from 'reducers';
 import { selectLoading } from 'reducers/ontology/slice';
 import { DataSource } from 'models/interfaces/dataSource';

@@ -1,6 +1,6 @@
 import { useMemo, useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import styles from './CommandPopup.module.scss';
+import styles from './CommandPopup.module.css';
 import { selectIdentity } from 'reducers/app/slice';
 import { InputCommand } from 'models/enums/inputCommand';
 import { CommandPopupItem } from 'models/interfaces/commandPopup';
@@ -93,7 +93,7 @@ export const CommandPopup = ({ popupRef, popup }: CommandPopupProps) => {
   };
 
   return (
-    <div ref={popupRef} className={styles.commandPopup}>
+    <div ref={popupRef} className={`${styles.commandPopup} card`}>
       <div className={styles.itemList}>
         {Object.entries(groupedItems).map(([groupKey, groupItems]) => {
           const firstItem = groupItems[0];

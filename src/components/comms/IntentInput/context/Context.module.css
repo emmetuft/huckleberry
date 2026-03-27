@@ -1,0 +1,38 @@
+.contextItems {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 12px;
+}
+
+.uploadedFile {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  padding: 4px 8px;
+  border: 1px solid var(--grey);
+  border-radius: 6px;
+  max-width: 150px;
+
+  .fileName {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100px;
+  }
+
+  button {
+    padding: 0;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .closeIcon {
+    font-size: 10px;
+  }
+}

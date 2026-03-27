@@ -2,7 +2,7 @@ import { FC, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import styles from './MessageThread.module.scss';
+import styles from './MessageThread.module.css';
 import { useAppDispatch } from 'reducers';
 import { selectPage } from 'reducers/app/slice';
 import { selectFullScreen, toggleProcessStep } from 'reducers/chat/slice';
