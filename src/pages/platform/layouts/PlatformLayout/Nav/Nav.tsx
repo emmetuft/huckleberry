@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { platformRoutePaths } from 'models/enums/appPage';
 import {
   Atom,
+  ClockCounterClockwise,
   Cube,
   Database,
   Graph,
@@ -31,6 +32,7 @@ import { sharedIconProps } from 'constants/styles';
 import { AppPage, AppPageLabel } from 'models/enums/appPage';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
 import { RecCard } from 'components/RecCard/RecCard';
+import { HistoryCard } from 'components/HistoryCard/HistoryCard';
 
 interface NavProps {}
 
@@ -38,6 +40,7 @@ export const Nav: FC<NavProps> = ({}) => {
   const dispatch = useAppDispatch();
   const incognitoMode = useSelector(selectIncognitoMode);
 
+  const [showHistory, setShowHistory] = useState<boolean>(false);
   const [showRecs, setShowRecs] = useState<boolean>(false);
 
   const identity = useSelector(selectIdentity);
@@ -109,18 +112,28 @@ export const Nav: FC<NavProps> = ({}) => {
         >
           <img src="/static/logo.svg" width="100%" />
         </Link>
-        <Tooltip
-          title="Recommendations"
-          placement="right"
-          mouseEnterDelay={0.5}
-        >
-          <div>
-            <IconBtn
-              icon={<Lightbulb {...sharedIconProps} />}
-              onClick={() => setShowRecs(true)}
-            />
-          </div>
-        </Tooltip>
+        <div className={styles.buttons}>
+          <Tooltip
+            title="Recommendations"
+            placement="right"
+            mouseEnterDelay={0.5}
+          >
+            <div>
+              <IconBtn
+                icon={<Lightbulb {...sharedIconProps} />}
+                onClick={() => setShowRecs(true)}
+              />
+            </div>
+          </Tooltip>
+          <Tooltip title="History" placement="right" mouseEnterDelay={0.5}>
+            <div>
+              <IconBtn
+                icon={<ClockCounterClockwise {...sharedIconProps} />}
+                onClick={() => setShowHistory(true)}
+              />
+            </div>
+          </Tooltip>
+        </div>
         <div className={styles.divider} />
         <div className={styles.buttons}>
           {upperPages.map((page) => renderIconBtn(page))}
@@ -175,7 +188,8 @@ export const Nav: FC<NavProps> = ({}) => {
           />
         </div>
       </div>
-      {showRecs && <RecCard setShowRecs={setShowRecs} />}
+      {showRecs && <RecCard setShowCard={setShowRecs} />}
+      {showHistory && <HistoryCard setShowCard={setShowHistory} />}
     </React.Fragment>
   );
 };

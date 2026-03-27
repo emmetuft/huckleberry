@@ -1,50 +1,18 @@
-import { FC, useEffect, useRef } from 'react';
-import { X } from 'phosphor-react';
+import { FC } from 'react';
 import styles from './RecCard.module.scss';
 import { recommendations } from 'constants/recommendations';
-import { IconBtn } from 'components/shared/IconBtn/IconBtn';
+import { PopupCard } from 'components/shared/PopupCard/PopupCard';
 
 interface RecCardProps {
-  setShowRecs: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowCard: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const RecCard: FC<RecCardProps> = ({ setShowRecs }) => {
-  const popupRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node;
-
-      const clickedInsidePopup =
-        popupRef.current && popupRef.current.contains(target);
-
-      if (!clickedInsidePopup) {
-        setShowRecs(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
-  // const sections = ['today', 'this week', 'older'];
-
+export const RecCard: FC<RecCardProps> = ({ setShowCard }) => {
   return (
-    <div className={styles.RecCard} ref={popupRef}>
-      <div className={styles.heading}>
-        <div className={styles.title}>
-          <h3>Recommended for you</h3>
-          <IconBtn icon={<X />} onClick={() => setShowRecs(false)} />
-        </div>
-        <p>Fresh ideas relevant to your work.</p>
-      </div>
-      {/* {sections.map((section) => ( */}
-      <div className={styles.section}>
-        {/* <div className={styles.sectionHeader}>
-            <h4>{section}</h4>
-          </div> */}
+    <PopupCard
+      title="Recommended for you"
+      description="Fresh ideas relevant to your work."
+      children={
         <div className={styles.sectionItems}>
           {recommendations.map((rec) => (
             <div key={rec.id} className={styles.item}>
@@ -66,8 +34,8 @@ export const RecCard: FC<RecCardProps> = ({ setShowRecs }) => {
             </div>
           ))}
         </div>
-      </div>
-      {/* ))} */}
-    </div>
+      }
+      setShowCard={setShowCard}
+    />
   );
 };

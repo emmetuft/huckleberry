@@ -5,7 +5,7 @@ import {
   AISessionEvent,
 } from 'models/interfaces/sessionEvent';
 import { ProcessedFile } from 'models/interfaces/files';
-import { MCPToolCall } from 'models/interfaces/mcpServer';
+import { Tool } from 'models/interfaces/toolkit';
 import {
   ElicitationResponse,
   ResumeRequest,
@@ -16,7 +16,25 @@ import {
   createToolStep,
   createMcpStep,
 } from 'utils/processStep';
-import { Tool } from 'models/interfaces/toolkit';
+
+export const fetchSessions = createAsyncThunk(
+  'chat/fetchSessions',
+  AgentService.getSessions,
+);
+
+export const fetchSession = createAsyncThunk(
+  'chat/fetchSession',
+  async (sessionId: string) => {
+    const session = await AgentService.getSession(sessionId);
+    const events = await AgentService.getSessionEvents(sessionId);
+    return { ...session, events };
+  },
+);
+
+export const deleteSession = createAsyncThunk(
+  'chat/deleteSession',
+  AgentService.deleteSession,
+);
 
 /**
  * Shared handler for all stream events
@@ -222,7 +240,7 @@ const handleStreamEvent = (
 /**
  * Send a streaming request to the huckleberry agent
  */
-export const sendStreamingRequest = createAsyncThunk<
+export const executeStream = createAsyncThunk<
   string,
   {
     userInput: string;
@@ -265,7 +283,7 @@ export const sendStreamingRequest = createAsyncThunk<
 /**
  * Submit an elicitation response
  */
-export const submitElicitationResponse = createAsyncThunk<
+export const resumeStream = createAsyncThunk<
   string,
   {
     batchId?: string;

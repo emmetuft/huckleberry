@@ -2,107 +2,64 @@
 @use 'src/styles/shared.scss' as *;
 @use 'src/styles/variables.scss' as *;
 
-.RecCard {
-  @extend .card;
-  position: fixed;
-  top: 20px;
-  left: calc(62px + 40px);
-  width: 400px;
-  z-index: 200;
-  padding: 0;
-  border: none;
-  padding-bottom: 10px;
+.sectionItems {
+  display: flex;
+  flex-direction: column;
 
-  .heading {
-    padding: 15px;
+  .item {
+    padding: 16px;
+    border-top: 1px solid $grey-light;
+    cursor: pointer;
 
-    .title {
+    &:hover {
+      background-color: $grey-bg;
+    }
+
+    .top {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-    }
 
-    h3 {
-      font-size: 16px;
-      font-weight: 400;
-    }
-    p {
-      margin-top: 5px;
-      font-size: 12px;
-      font-weight: 500;
-      color: $grey-text;
-    }
-  }
+      .title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        max-width: 65%;
 
-  .section {
-    .sectionHeader {
-      padding: 8px 16px;
-      background-color: $grey-bg;
-      text-transform: uppercase;
-      font-size: 10px;
-      font-weight: 400;
-    }
-
-    .sectionItems {
-      display: flex;
-      flex-direction: column;
-
-      .item {
-        padding: 16px;
-        border-top: 1px solid $grey-light;
-        cursor: pointer;
-
-        &:hover {
-          background-color: $grey-bg;
-        }
-
-        .top {
+        .itemImg {
           display: flex;
-          justify-content: space-between;
-
-          .title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            max-width: 65%;
-
-            .itemImg {
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              height: 30px;
-              width: 30px;
-              border-radius: 8px;
-            }
-
-            p {
-              font-size: 14px;
-            }
-          }
-
-          .actionPill {
-            padding: 2px 8px;
-            font-size: 10px;
-            font-weight: 600;
-            background-color: color.adjust($purple, $lightness: +42%);
-            border-radius: 8px;
-            height: fit-content;
-          }
+          justify-content: center;
+          align-items: center;
+          height: 30px;
+          width: 30px;
+          border-radius: 8px;
         }
 
-        .description {
-          margin-top: 8px;
-          p {
-            font-size: 13px;
-            color: $grey-text;
-          }
-        }
-
-        a {
-          font-size: 13px;
-          color: $purple;
+        p {
+          font-size: 14px;
         }
       }
+
+      .actionPill {
+        padding: 2px 8px;
+        font-size: 10px;
+        font-weight: 600;
+        background-color: color.adjust($purple, $lightness: +42%);
+        border-radius: 8px;
+        height: fit-content;
+      }
+    }
+
+    .description {
+      margin-top: 8px;
+      p {
+        font-size: 13px;
+        color: $grey-text;
+      }
+    }
+
+    a {
+      font-size: 13px;
+      color: $purple;
     }
   }
 }

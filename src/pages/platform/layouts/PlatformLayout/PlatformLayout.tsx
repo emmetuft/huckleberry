@@ -15,6 +15,7 @@ import { Heading } from './Heading/Heading';
 import { Nav } from './Nav/Nav';
 import { PromptBar } from 'components/comms/PromptBar/PromptBar';
 import { PersonaModal } from 'components/modals/PersonaModal/PersonaModal';
+import { fetchSessions } from 'reducers/chat/actions';
 
 export const PlatformLayout: FC = () => {
   const dispatch = useAppDispatch();
@@ -37,6 +38,7 @@ export const PlatformLayout: FC = () => {
     if (loading.current) return;
     loading.current = true;
     dispatch(fetchToolkits());
+    dispatch(fetchSessions());
   }, []);
 
   // Sync Redux state with current route
