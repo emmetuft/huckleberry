@@ -1,17 +1,26 @@
 import { createAppSlice } from '../createAppSlice';
-import { sendStreamingRequest, submitElicitationResponse } from './actions';
+import {
+  deleteSession,
+  executeStream,
+  fetchSession,
+  fetchSessions,
+  resumeStream,
+} from './actions';
 import { Message } from 'models/interfaces/message';
+import { sessionEventsToMessages } from 'utils/sessionMessages';
 import {
   ProcessStep,
   ProcessStepStatus,
   ProcessStepType,
 } from 'models/interfaces/processStep';
+import { AgentSession } from 'models/interfaces/session';
 import {
   AISessionEventType,
   ConfirmationRequest,
 } from 'models/interfaces/sessionEvent';
 
 interface State {
+  sessions: AgentSession[];
   messages: Message[];
   fullScreen: boolean;
   loading: boolean;
@@ -21,6 +30,7 @@ interface State {
 }
 
 const initialState: State = {
+  sessions: [],
   messages: [],
   fullScreen: false,
   loading: false,
@@ -305,8 +315,35 @@ export const ChatSlice = createAppSlice({
   }),
   extraReducers: (builder) => {
     builder
+      // Fetch agent sessions
+      .addCase(fetchSessions.fulfilled, (state, { payload }) => {
+        state.sessions = payload;
+      })
+      // Load a saved session into the chat thread
+      .addCase(fetchSession.fulfilled, (state, { payload }) => {
+        state.sessionId = payload.id;
+        state.messages = sessionEventsToMessages(payload.events ?? []);
+        state.error = null;
+        state.streamingMessageId = null;
+        state.fullScreen = true;
+      })
+      .addCase(deleteSession.fulfilled, (state, { meta }) => {
+        // Remove the deleted session from the sessions list
+        const sessionId = meta.arg;
+        state.sessions = state.sessions.filter((s) => s.id !== sessionId);
+
+        // Clear the chat thread if the deleted session was currently loaded
+        if (state.sessionId === sessionId) {
+          state.messages = [];
+          state.sessionId = undefined;
+          state.streamingMessageId = null;
+          state.error = null;
+          state.fullScreen = false;
+        }
+      })
+
       // Send streaming request
-      .addCase(sendStreamingRequest.pending, (state, action) => {
+      .addCase(executeStream.pending, (state, action) => {
         state.loading = true;
         state.error = null;
 
@@ -331,17 +368,17 @@ export const ChatSlice = createAppSlice({
         state.messages.push(assistantMessage);
         state.streamingMessageId = assistantMessageId;
       })
-      .addCase(sendStreamingRequest.rejected, (state, action) => {
+      .addCase(executeStream.rejected, (state, action) => {
         state.loading = false;
         state.error =
           action.error.message || 'Failed to send streaming request';
         state.streamingMessageId = null;
       })
-      .addCase(sendStreamingRequest.fulfilled, (state, { payload }) => {
+      .addCase(executeStream.fulfilled, (state, { payload }) => {
         handleStreamFulfilled(state, payload);
       })
       // Submit elicitation response (resume stream)
-      .addCase(submitElicitationResponse.pending, (state) => {
+      .addCase(resumeStream.pending, (state) => {
         state.loading = true;
         state.error = null;
 
@@ -351,17 +388,18 @@ export const ChatSlice = createAppSlice({
           delete message.confirmationRequests;
         }
       })
-      .addCase(submitElicitationResponse.rejected, (state, action) => {
+      .addCase(resumeStream.rejected, (state, action) => {
         state.loading = false;
         state.error =
           action.error.message || 'Failed to submit elicitation response';
         state.streamingMessageId = null;
       })
-      .addCase(submitElicitationResponse.fulfilled, (state, { payload }) => {
+      .addCase(resumeStream.fulfilled, (state, { payload }) => {
         handleStreamFulfilled(state, payload);
       });
   },
   selectors: {
+    selectSessions: (state: State) => state.sessions,
     selectMessages: (state: State) => state.messages,
     selectHasMessages: (state: State) => state.messages.length > 0,
     selectFullScreen: (state: State) => state.fullScreen,
@@ -388,6 +426,7 @@ export const {
 } = ChatSlice.actions;
 
 export const {
+  selectSessions,
   selectMessages,
   selectHasMessages,
   selectFullScreen,

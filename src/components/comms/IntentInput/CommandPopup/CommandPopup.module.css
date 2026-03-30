@@ -1,0 +1,79 @@
+.commandPopup {
+  position: absolute;
+  top: 60%;
+  left: 0;
+  max-height: 300px;
+  max-width: 300px;
+  box-sizing: border-box;
+  z-index: 100;
+
+  display: flex;
+  flex-direction: column;
+  padding: 8px 0 !important;
+
+  .itemList {
+    overflow-y: auto;
+    flex: 1;
+
+    .itemGroup {
+      .groupName {
+        padding: 8px 12px 4px 12px;
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--grey-text);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .item {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        padding: 8px 12px;
+        transition: background-color 0.15s ease;
+        cursor: pointer;
+
+        &.selected {
+          background-color: var(--grey-bg);
+        }
+
+        .itemName {
+          font-size: 14px;
+          font-weight: 500;
+        }
+
+        .itemDescription {
+          font-size: 10px;
+          color: var(--grey-text);
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .nameWithAvatar {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+
+          .avatar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            height: 20px;
+          }
+        }
+      }
+    }
+  }
+
+  .hint {
+    display: flex;
+    gap: 12px;
+    padding: 8px 12px 4px 12px;
+    border-top: 1px solid var(--grey-light);
+    margin-top: 4px;
+    font-size: 10px;
+    color: var(--grey-text);
+  }
+}

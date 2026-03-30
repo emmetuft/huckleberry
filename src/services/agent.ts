@@ -1,7 +1,10 @@
+import { AgentSession } from 'models/interfaces/session';
 import { AISessionEvent } from 'models/interfaces/sessionEvent';
 import { ResumeRequest, StreamRequest } from 'models/interfaces/userRequest';
+import { handleResponse } from 'utils/service';
 
-const CONTEXT_BUILDER_API_BASE = '/api/huckleberry';
+const AGENT_API_BASE = '/api/huckleberry';
+const SESSION_API_BASE = '/api/sessions';
 
 interface AgentStreamRequest {
   input: string;
@@ -92,14 +95,11 @@ const executeStream = async function* (
     }),
   };
 
-  const response = await fetch(
-    `${CONTEXT_BUILDER_API_BASE}/execute/streaming`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(requestBody),
-    },
-  );
+  const response = await fetch(`${AGENT_API_BASE}/execute/streaming`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(requestBody),
+  });
 
   yield* processStream(response, 'executeStream');
 };
@@ -128,7 +128,7 @@ const resumeStream = async function* (
     {} as Record<string, { action: string; content: Record<string, unknown> }>,
   );
 
-  const response = await fetch(`${CONTEXT_BUILDER_API_BASE}/resume/streaming`, {
+  const response = await fetch(`${AGENT_API_BASE}/resume/streaming`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -145,7 +145,74 @@ const resumeStream = async function* (
   yield* processStream(response, 'resumeStream');
 };
 
+/**
+ * Retrieve all agent sessions
+ */
+const getSessions = async (): Promise<AgentSession[]> => {
+  const response = await fetch(`${SESSION_API_BASE}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+  const data = await handleResponse<{
+    pageContext: any;
+    sessions: AgentSession[];
+  }>(response);
+  return data.sessions.sort(
+    (a, b) =>
+      new Date(b.lastActivity).getTime() - new Date(a.lastActivity).getTime(),
+  );
+};
+
+/**
+ * Retrieve an agent session by session ID
+ */
+const getSession = async (sessionId: string): Promise<AgentSession> => {
+  const response = await fetch(`${SESSION_API_BASE}/${sessionId}`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+  return await handleResponse<AgentSession>(response);
+};
+
+/**
+ * Retrieve all events for a given session ID
+ */
+const getSessionEvents = async (
+  sessionId: string,
+): Promise<AISessionEvent[]> => {
+  const response = await fetch(`${SESSION_API_BASE}/${sessionId}/events`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+  const data = await handleResponse<{
+    events: AISessionEvent[];
+    pageContext: { next: string };
+    requestId: string | null;
+    sessionId: string;
+  }>(response);
+  return data.events;
+};
+
+/**
+ * Delete an agent session by session ID
+ */
+const deleteSession = async (sessionId: string): Promise<any> => {
+  const response = await fetch(`${SESSION_API_BASE}/${sessionId}`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+  return await handleResponse<any>(response); // Returns empty string for data
+};
+
 export const AgentService = {
   executeStream,
   resumeStream,
+  getSessions,
+  getSession,
+  getSessionEvents,
+  deleteSession,
 };

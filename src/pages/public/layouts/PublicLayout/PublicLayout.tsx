@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { Outlet } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
-import styles from './PublicLayout.module.scss';
+import styles from './PublicLayout.module.css';
 import { PublicHeader } from './PublicHeader/PublicHeader';
 import { PublicFooter } from './PublicFooter/PublicFooter';
 

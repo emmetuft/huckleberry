@@ -1,7 +1,7 @@
 import { FC, useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Button, Drawer, Input, List, Popover, Select } from 'antd';
-import styles from './Ontology.module.scss';
+import styles from './Ontology.module.css';
 import { selectGraphData, selectNodeLabels } from 'reducers/ontology/slice';
 import { getColorForGroup } from 'utils/styles';
 

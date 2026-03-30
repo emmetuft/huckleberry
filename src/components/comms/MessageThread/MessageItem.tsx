@@ -2,11 +2,11 @@ import { FC, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import styles from './MessageThread.module.scss';
+import styles from './MessageThread.module.css';
 import { useAppDispatch } from 'reducers';
 import { selectPage } from 'reducers/app/slice';
 import { selectFullScreen, toggleProcessStep } from 'reducers/chat/slice';
-import { submitElicitationResponse } from 'reducers/chat/actions';
+import { resumeStream } from 'reducers/chat/actions';
 import { AppPage } from 'models/enums/appPage';
 import { Message } from 'models/interfaces/message';
 import { ElicitationResponse } from 'models/interfaces/userRequest';
@@ -53,7 +53,7 @@ export const MessageItem: FC<MessageItemProps> = ({
     if (!batchId || !requestId) return; // TODO: Show error to user
 
     dispatch(
-      submitElicitationResponse({
+      resumeStream({
         batchId,
         requestId,
         responses,

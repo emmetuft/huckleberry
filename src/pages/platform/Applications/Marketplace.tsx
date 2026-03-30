@@ -1,6 +1,6 @@
 import { FC, useMemo, useState } from 'react';
 import { Menu, MenuProps } from 'antd';
-import styles from './Applications.module.scss';
+import styles from './Applications.module.css';
 import { appCategories, marketplaceApps } from 'constants/applications';
 import { AppCard } from './AppCard';
 

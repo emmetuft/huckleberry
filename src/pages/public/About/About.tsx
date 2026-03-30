@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import styles from './About.module.scss';
+import styles from './About.module.css';
 
 export const About: FC = () => {
   return (

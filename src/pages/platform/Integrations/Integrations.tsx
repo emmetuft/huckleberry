@@ -11,7 +11,7 @@ import {
   message,
 } from 'antd';
 import { PlusOutlined, SyncOutlined, ApiOutlined } from '@ant-design/icons';
-import styles from './Integrations.module.scss';
+import styles from './Integrations.module.css';
 import { useAppDispatch } from 'reducers';
 import { integrationCategories, integrationList } from 'constants/integrations';
 import { defaultMotionProps } from 'constants/styles';

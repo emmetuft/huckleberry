@@ -10,12 +10,11 @@ import {
   Wrench,
 } from 'phosphor-react';
 import { AnimatePresence, motion } from 'framer-motion';
-import styles from './IntentInput.module.scss';
+import styles from './IntentInput.module.css';
 import { useAppDispatch } from 'reducers';
 import { selectPage } from 'reducers/app/slice';
-import { sendStreamingRequest } from 'reducers/chat/actions';
+import { executeStream } from 'reducers/chat/actions';
 import { selectLoading, setFullScreen } from 'reducers/chat/slice';
-import { sharedIconProps } from 'constants/styles';
 import { AppPage } from 'models/enums/appPage';
 import { InputCommand } from 'models/enums/inputCommand';
 import { DataSource } from 'models/interfaces/dataSource';
@@ -190,7 +189,7 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
         : undefined;
 
     dispatch(
-      sendStreamingRequest({
+      executeStream({
         userInput,
         files: processedFiles,
         tools: selectedTools,
@@ -243,10 +242,10 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   };
 
   const actionIconMap = {
-    [ActionType.SCHEDULE]: <CalendarBlank {...sharedIconProps} size={16} />,
-    [ActionType.CHART]: <ChartLine {...sharedIconProps} size={16} />,
-    [ActionType.DATASET]: <Database {...sharedIconProps} size={16} />,
-    [ActionType.SEND]: <PaperPlaneTilt {...sharedIconProps} size={16} />,
+    [ActionType.SCHEDULE]: <CalendarBlank size={16} />,
+    [ActionType.CHART]: <ChartLine size={16} />,
+    [ActionType.DATASET]: <Database size={16} />,
+    [ActionType.SEND]: <PaperPlaneTilt size={16} />,
   };
 
   return (
@@ -274,7 +273,7 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
         onToolsChange={setSelectedTools}
       />
       <div
-        className={`${styles.inputWrapper} ${animate ? styles.animate : ''}`}
+        className={`${styles.inputWrapper} ${animate ? styles.animate : ''} card`}
       >
         <ContextItems
           uploadedFiles={uploadedFiles}

@@ -1,0 +1,48 @@
+.PublicHeader {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* background: white; */
+  /* border-bottom: 1px solid var(--grey-light); */
+  padding: 1rem 3rem;
+
+  .logoDetails {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none;
+
+    .logo {
+      height: 40px;
+    }
+
+    h2 {
+      font-size: 24px;
+      font-weight: 400;
+      color: var(--grey-dark);
+    }
+  }
+
+  .nav {
+    display: flex;
+    gap: 2rem;
+  }
+
+  a {
+    color: var(--grey-dark);
+    text-decoration: none;
+
+    /* &:hover { */
+    /*   color: var(--purple); */
+    /* } */
+  }
+
+  .authButtons {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+}

@@ -6,7 +6,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { store } from 'reducers/index.ts';
 import { AppRouter } from './AppRouter.tsx';
 
-import './index.scss';
+import './index.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

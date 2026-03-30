@@ -1,0 +1,99 @@
+.IntentInput {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+
+  .inputWrapper {
+    min-height: 100px;
+    border: 1px solid var(--grey-bg);
+
+    &.animate {
+      animation: breathe 4s ease-in-out infinite;
+      transition: box-shadow 0.3s ease;
+    }
+
+    .selectedTools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+
+      .tool {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 14px;
+        color: white;
+        background-color: var(--grey-dark);
+        padding: 2px 6px;
+        border-radius: 4px;
+
+        button {
+          padding: 0;
+          background-color: transparent;
+          border: none;
+          cursor: pointer;
+        }
+
+        .closeIcon {
+          font-size: 10px;
+          color: white;
+        }
+      }
+    }
+  }
+
+  .editable {
+    outline: none;
+    font-size: 16px;
+    white-space: pre-wrap;
+
+    &.empty::before {
+      content: attr(data-placeholder);
+      color: #999;
+      pointer-events: none;
+      display: block;
+    }
+
+    span.entity {
+      font-weight: 600;
+      color: var(--purple);
+      background-color: var(--purple-light);
+      padding: 1px 4px;
+      border-radius: 4px;
+    }
+
+    span.mention {
+      font-weight: 600;
+      color: var(--pink);
+      background-color: var(--pink-light);
+      padding: 1px 4px;
+      border-radius: 4px;
+    }
+  }
+
+  .actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+
+    .buttons {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+    }
+  }
+}
+
+@keyframes breathe {
+  0% {
+    box-shadow: 0 0 0px rgba(73, 35, 209, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 12px rgba(73, 35, 209, 0.15);
+  }
+  100% {
+    box-shadow: 0 0 0px rgba(73, 35, 209, 0.15);
+  }
+}

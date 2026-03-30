@@ -13,6 +13,7 @@ interface State {
   identity?: Identity;
   persona?: Persona;
   page: AppPage;
+  theme: 'light' | 'dark';
   incognitoMode: boolean;
   personaModalOpen: boolean;
   loading: {
@@ -24,6 +25,7 @@ interface State {
 
 const initialState: State = {
   page: AppPage.HOME,
+  theme: (localStorage.getItem('theme') as 'light' | 'dark') || 'light',
   incognitoMode: false,
   personaModalOpen: false,
   loading: {
@@ -40,6 +42,12 @@ export const AppReducer = createAppSlice({
     setPage: create.reducer((state, { payload }: { payload: AppPage }) => {
       state.page = payload;
     }),
+    setTheme: create.reducer(
+      (state, { payload }: { payload: 'light' | 'dark' }) => {
+        state.theme = payload;
+        localStorage.setItem('theme', payload);
+      },
+    ),
     setIncognitoMode: create.reducer(
       (state, { payload }: { payload: boolean }) => {
         state.incognitoMode = payload;
@@ -103,18 +111,20 @@ export const AppReducer = createAppSlice({
     selectIdentity: (state) => state.identity,
     selectPersona: (state) => state.persona,
     selectPage: (state) => state.page,
+    selectTheme: (state) => state.theme,
     selectIncognitoMode: (state) => state.incognitoMode,
     selectPersonaModalOpen: (state) => state.personaModalOpen,
     selectLoading: (state) => state.loading,
   },
 });
 
-export const { setPage, setIncognitoMode, setPersonaModal } =
+export const { setPage, setTheme, setIncognitoMode, setPersonaModal } =
   AppReducer.actions;
 export const {
   selectIdentity,
   selectPersona,
   selectPage,
+  selectTheme,
   selectIncognitoMode,
   selectPersonaModalOpen,
   selectLoading,

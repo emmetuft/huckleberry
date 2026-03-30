@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { Checkbox, Input, Select } from 'antd';
-import styles from './PersonaModal.module.scss';
+import styles from './PersonaModal.module.css';
 import { InputType } from 'models/enums/inputType';
 
 interface LabelInputProps {

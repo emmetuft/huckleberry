@@ -1,0 +1,30 @@
+.TemplateList {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+
+  .template {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: var(--box-shadow);
+    cursor: pointer;
+
+    h4 {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    p {
+      font-size: 14px;
+      color: var(--grey-text);
+    }
+
+    .preview {
+      height: 60px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      background-color: white;
+    }
+  }
+}

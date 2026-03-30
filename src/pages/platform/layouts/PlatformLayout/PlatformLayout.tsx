@@ -3,10 +3,10 @@ import { useSelector } from 'react-redux';
 import { useLocation, Outlet } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import { Toaster } from 'sonner';
-import styles from './PlatformLayout.module.scss';
+import styles from './PlatformLayout.module.css';
 import { useAppDispatch } from 'reducers';
 import { fetchUserPersona } from 'reducers/app/actions';
-import { selectIdentity, setPage } from 'reducers/app/slice';
+import { selectIdentity, selectTheme, setPage } from 'reducers/app/slice';
 import { fetchMetricCatalogSchema } from 'reducers/metrics/actions';
 import { fetchGroups, fetchUsers } from 'reducers/people/actions';
 import { fetchToolkits } from 'reducers/toolkits/actions';
@@ -15,12 +15,16 @@ import { Heading } from './Heading/Heading';
 import { Nav } from './Nav/Nav';
 import { PromptBar } from 'components/comms/PromptBar/PromptBar';
 import { PersonaModal } from 'components/modals/PersonaModal/PersonaModal';
+import { fetchSessions } from 'reducers/chat/actions';
 
 export const PlatformLayout: FC = () => {
   const dispatch = useAppDispatch();
   const location = useLocation();
   const identity = useSelector(selectIdentity);
+  const theme = useSelector(selectTheme);
   const loading = useRef<boolean>(false);
+
+  const isDark = theme === 'dark';
 
   // Fetch platform data when identity is available
   useEffect(() => {
@@ -37,6 +41,7 @@ export const PlatformLayout: FC = () => {
     if (loading.current) return;
     loading.current = true;
     dispatch(fetchToolkits());
+    dispatch(fetchSessions());
   }, []);
 
   // Sync Redux state with current route
@@ -52,7 +57,7 @@ export const PlatformLayout: FC = () => {
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary: '#5a0cff',
+          colorPrimary: isDark ? '#8673ffff' : '#5a0cff',
         },
         components: {
           Menu: {
@@ -61,8 +66,8 @@ export const PlatformLayout: FC = () => {
           },
           Table: {
             borderColor: '#f8f8f8',
-            headerBg: '#fff',
-            footerBg: '#fff',
+            headerBg: isDark ? 'transparent' : '#fff',
+            footerBg: isDark ? 'transparent' : '#fff',
           },
         },
       }}

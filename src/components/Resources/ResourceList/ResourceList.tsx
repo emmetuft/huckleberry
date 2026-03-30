@@ -1,5 +1,5 @@
 import { FC, useMemo } from 'react';
-import styles from './ResourceList.module.scss';
+import styles from './ResourceList.module.css';
 import { motion } from 'framer-motion';
 import { DEFAULT_AGENTS, DEFAULT_TEMPLATES } from 'constants/templates';
 import { defaultMotionProps } from 'constants/styles';
@@ -38,7 +38,7 @@ export const ResourceList: FC<ResourceListProps> = ({ tab }) => {
         <motion.div
           {...defaultMotionProps}
           key={resource.id}
-          className={styles.template}
+          className={`${styles.template} card`}
           onClick={() => onClickResource(resource)}
         >
           {resource.image ? (

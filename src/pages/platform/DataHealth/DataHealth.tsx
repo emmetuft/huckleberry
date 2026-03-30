@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import styles from './DataHealth.module.scss';
+import styles from './DataHealth.module.css';
 import Metrics from './Metrics';
 import TrendChart from './TrendChart';
 

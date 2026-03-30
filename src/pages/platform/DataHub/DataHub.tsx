@@ -1,7 +1,7 @@
 import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Table } from 'antd';
-import styles from './DataHub.module.scss';
+import styles from './DataHub.module.css';
 import { selectIdentity } from 'reducers/app/slice';
 import { dataSourceColumns } from 'constants/data';
 // import { DataProvidersChart } from './charts/DataProviders';
@@ -78,10 +78,8 @@ export const DataHub: FC<DataHubProps> = ({}) => {
 
   const cellRenderer = (col: any, val: any) => {
     if (col.id === 'owner') {
-      const avatar =
-        identity !== undefined
-          ? `https://${identity.host}/api/content/v1/avatar/USER/${val.id}?size=100`
-          : undefined;
+      const avatar = `https://domo-labs-dev.dev.domo.com/api/content/v1/avatar/USER/${val.id}?size=100`;
+      // Todo: replace with actual avatar URL when available, currently using Domo Labs Dev instance for placeholder images
 
       return (
         <div className={styles.owner}>

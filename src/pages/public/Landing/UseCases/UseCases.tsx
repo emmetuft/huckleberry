@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import styles from './UseCases.module.scss';
+import styles from './UseCases.module.css';
 import { UseCase } from '../Landing';
 import { UseCaseCard } from './UseCaseCard';
 

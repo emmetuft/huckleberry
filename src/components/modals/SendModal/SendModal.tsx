@@ -1,6 +1,6 @@
 import { FC, useState, useEffect } from 'react';
 import { Modal, Select, Input, message } from 'antd';
-import styles from './SendModal.module.scss';
+import styles from './SendModal.module.css';
 
 const { TextArea } = Input;
 

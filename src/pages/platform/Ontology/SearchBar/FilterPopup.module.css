@@ -1,0 +1,29 @@
+.FilterPopup {
+  width: 650px;
+  max-height: 500px;
+  display: flex;
+  flex-direction: column;
+
+  .filterList {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 400px;
+    margin-bottom: 12px;
+  }
+
+  .emptyState {
+    padding: 20px;
+    text-align: center;
+    color: var(--grey-text);
+  }
+
+  .filterRow {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+    padding: 8px;
+    background: var(--grey-bg);
+    border-radius: 8px;
+  }
+}

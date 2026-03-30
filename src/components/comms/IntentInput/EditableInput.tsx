@@ -1,5 +1,5 @@
 import { forwardRef, KeyboardEvent } from 'react';
-import styles from './IntentInput.module.scss';
+import styles from './IntentInput.module.css';
 import {
   getCaretCharacterOffsetWithin,
   getTextWithHighlights,

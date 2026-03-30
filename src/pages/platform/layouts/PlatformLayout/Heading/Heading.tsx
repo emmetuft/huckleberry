@@ -1,7 +1,7 @@
 import { FC, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { Segmented } from 'antd';
-import styles from './Heading.module.scss';
+import styles from './Heading.module.css';
 import { useAppDispatch } from 'reducers';
 import { selectPage } from 'reducers/app/slice';
 import { selectTab, setTab } from 'reducers/applications/slice';

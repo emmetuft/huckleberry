@@ -1,0 +1,252 @@
+.Integrations {
+  padding: var(--default-page-padding);
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+
+    h1 {
+      font-size: 24px;
+      font-weight: 500;
+      margin: 0;
+    }
+  }
+
+  .tabContent {
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+
+    h2 {
+      margin-bottom: 10px;
+      font-weight: 400;
+      font-size: 20px;
+    }
+  }
+
+  .layout {
+    display: flex;
+    gap: 20px;
+
+    .left {
+      flex: 1;
+    }
+    .right {
+      flex: 4;
+    }
+  }
+
+  .integrationGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 20px;
+
+    &.available {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+  }
+
+  /* MCP Servers Section */
+  .mcpSection {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+
+    .sectionHeader {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      h2 {
+        margin: 0;
+        font-weight: 400;
+        font-size: 20px;
+      }
+    }
+  }
+
+  .serverGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+  }
+
+  .serverCard {
+    background: white;
+    border: 1px solid var(--grey-border);
+    border-radius: 12px;
+    padding: 16px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+
+    &:hover {
+      border-color: #ababab;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    &.selected {
+      border-color: var(--purple);
+      background: rgba(90, 12, 255, 0.05);
+    }
+
+    .cardHeader {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+
+      .serverInfo {
+        flex: 1;
+        min-width: 0;
+
+        h3 {
+          margin: 0 0 4px 0;
+          font-size: 16px;
+          font-weight: 500;
+          color: var(--grey-dark);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .serverUrl {
+          font-size: 12px;
+          color: var(--grey-text);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+
+      .statusBadge {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        padding: 4px 8px;
+        border-radius: 12px;
+        background: var(--grey-bg);
+        color: var(--grey-text);
+
+        .statusDot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+
+          &.connected {
+            background: #52c41a;
+          }
+          &.disconnected {
+            background: #ff4d4f;
+          }
+          &.error {
+            background: #faad14;
+          }
+          &.unknown {
+            background: #8c8c8c;
+          }
+        }
+      }
+    }
+
+    .cardDescription {
+      font-size: 13px;
+      color: var(--grey-text);
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .toolCount {
+      font-size: 12px;
+      color: var(--grey-text);
+      margin-bottom: 12px;
+    }
+
+    .oauth2Status {
+      margin-bottom: 12px;
+    }
+
+    .cardActions {
+      display: flex;
+      gap: 8px;
+      padding-top: 12px;
+      border-top: 1px solid var(--grey-border);
+    }
+  }
+
+  .emptyState {
+    text-align: center;
+    padding: 48px 24px;
+    background: var(--grey-bg);
+    border: 1px dashed var(--grey-border);
+    border-radius: 12px;
+
+    h3 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--grey-dark);
+    }
+
+    p {
+      margin: 0 0 16px 0;
+      color: var(--grey-text);
+      font-size: 14px;
+    }
+  }
+
+  .selectedServerPanel {
+    background: white;
+    border: 1px solid var(--grey-border);
+    border-radius: 12px;
+    padding: 20px;
+    max-height: 500px;
+    overflow-y: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+
+    &::-webkit-scrollbar {
+      display: none; /* Chrome/Safari/Edge */
+    }
+
+    h3 {
+      margin: 0 0 16px 0;
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--grey-dark);
+    }
+
+    .toolsList {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+
+      .toolItem {
+        background: var(--grey-bg);
+        border: 1px solid var(--grey-border);
+        border-radius: 8px;
+        padding: 12px;
+
+        .toolName {
+          font-weight: 500;
+          font-size: 14px;
+          margin-bottom: 4px;
+          color: var(--purple);
+        }
+
+        .toolDescription {
+          font-size: 13px;
+          color: var(--grey-text);
+          line-height: 1.4;
+        }
+      }
+    }
+
+    .noTools {
+      color: var(--grey-text);
+      font-style: italic;
+    }
+  }
+}

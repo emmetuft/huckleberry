@@ -4,40 +4,47 @@ import { Link } from 'react-router-dom';
 import { platformRoutePaths } from 'models/enums/appPage';
 import {
   Atom,
+  ClockCounterClockwise,
   Cube,
   Database,
   Graph,
   Heartbeat,
   Lightbulb,
   Lightning,
+  Moon,
   Notebook,
   PuzzlePiece,
   SquaresFour,
+  Sun,
   TreeStructure,
   UserCircle,
 } from 'phosphor-react';
 import { Button, Tooltip } from 'antd';
-import styles from './Nav.module.scss';
+import styles from './Nav.module.css';
 import { useAppDispatch } from 'reducers';
 import {
   selectIdentity,
   selectIncognitoMode,
+  selectTheme,
   setIncognitoMode,
   setPersonaModal,
+  setTheme,
 } from 'reducers/app/slice';
 import { setFullScreen } from 'reducers/chat/slice';
 import { appList } from 'constants/applications';
-import { sharedIconProps } from 'constants/styles';
 import { AppPage, AppPageLabel } from 'models/enums/appPage';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
 import { RecCard } from 'components/RecCard/RecCard';
+import { HistoryCard } from 'components/HistoryCard/HistoryCard';
 
 interface NavProps {}
 
 export const Nav: FC<NavProps> = ({}) => {
   const dispatch = useAppDispatch();
   const incognitoMode = useSelector(selectIncognitoMode);
+  const theme = useSelector(selectTheme);
 
+  const [showHistory, setShowHistory] = useState<boolean>(false);
   const [showRecs, setShowRecs] = useState<boolean>(false);
 
   const identity = useSelector(selectIdentity);
@@ -54,17 +61,19 @@ export const Nav: FC<NavProps> = ({}) => {
     dispatch(setPersonaModal(true));
   };
 
+  const iconSize = 22;
+
   const navIconMap: Record<string, any> = {
-    [AppPage.APPS]: <SquaresFour {...sharedIconProps} />,
-    [AppPage.AGENTS]: <Atom {...sharedIconProps} />,
-    [AppPage.AUTOMATION]: <Lightning {...sharedIconProps} />,
-    [AppPage.DATA_HUB]: <Database {...sharedIconProps} />,
-    [AppPage.DATA_HEALTH]: <Heartbeat {...sharedIconProps} />,
+    [AppPage.APPS]: <SquaresFour size={iconSize} />,
+    [AppPage.AGENTS]: <Atom size={iconSize} />,
+    [AppPage.AUTOMATION]: <Lightning size={iconSize} />,
+    [AppPage.DATA_HUB]: <Database size={iconSize} />,
+    [AppPage.DATA_HEALTH]: <Heartbeat size={iconSize} />,
     [AppPage.HOME]: undefined,
-    [AppPage.INTEGRATIONS]: <PuzzlePiece {...sharedIconProps} />,
-    [AppPage.METRICS]: <Notebook {...sharedIconProps} />,
-    [AppPage.ONTOLOGY]: <Graph {...sharedIconProps} />,
-    [AppPage.WORKFLOW]: <TreeStructure {...sharedIconProps} />,
+    [AppPage.INTEGRATIONS]: <PuzzlePiece size={iconSize} />,
+    [AppPage.METRICS]: <Notebook size={iconSize} />,
+    [AppPage.ONTOLOGY]: <Graph size={iconSize} />,
+    [AppPage.WORKFLOW]: <TreeStructure size={iconSize} />,
   };
 
   const upperPages = [
@@ -101,7 +110,7 @@ export const Nav: FC<NavProps> = ({}) => {
 
   return (
     <React.Fragment>
-      <div className={styles.Nav}>
+      <div className={`${styles.Nav} card`}>
         <Link
           to={platformRoutePaths[AppPage.HOME]}
           className={styles.logo}
@@ -109,18 +118,28 @@ export const Nav: FC<NavProps> = ({}) => {
         >
           <img src="/static/logo.svg" width="100%" />
         </Link>
-        <Tooltip
-          title="Recommendations"
-          placement="right"
-          mouseEnterDelay={0.5}
-        >
-          <div>
-            <IconBtn
-              icon={<Lightbulb {...sharedIconProps} />}
-              onClick={() => setShowRecs(true)}
-            />
-          </div>
-        </Tooltip>
+        <div className={styles.buttons}>
+          <Tooltip
+            title="Recommendations"
+            placement="right"
+            mouseEnterDelay={0.5}
+          >
+            <div>
+              <IconBtn
+                icon={<Lightbulb size={iconSize} />}
+                onClick={() => setShowRecs(true)}
+              />
+            </div>
+          </Tooltip>
+          <Tooltip title="History" placement="right" mouseEnterDelay={0.5}>
+            <div>
+              <IconBtn
+                icon={<ClockCounterClockwise size={iconSize} />}
+                onClick={() => setShowHistory(true)}
+              />
+            </div>
+          </Tooltip>
+        </div>
         <div className={styles.divider} />
         <div className={styles.buttons}>
           {upperPages.map((page) => renderIconBtn(page))}
@@ -163,19 +182,36 @@ export const Nav: FC<NavProps> = ({}) => {
               onClick={() => dispatch(setIncognitoMode(!incognitoMode))}
             />
           </Tooltip>
+          <Tooltip title={theme === 'dark' ? 'Dark mode' : 'Light mode'}>
+            <div>
+              <IconBtn
+                icon={
+                  theme === 'dark' ? (
+                    <Moon size={iconSize} />
+                  ) : (
+                    <Sun size={iconSize} />
+                  )
+                }
+                onClick={() =>
+                  dispatch(setTheme(theme === 'dark' ? 'light' : 'dark'))
+                }
+              />
+            </div>
+          </Tooltip>
           <IconBtn
             icon={
               avatar ? (
                 <img src={avatar} alt="User Avatar" className={styles.avatar} />
               ) : (
-                <UserCircle {...sharedIconProps} />
+                <UserCircle size={iconSize} />
               )
             }
             onClick={onClickAvatar}
           />
         </div>
       </div>
-      {showRecs && <RecCard setShowRecs={setShowRecs} />}
+      {showRecs && <RecCard setShowCard={setShowRecs} />}
+      {showHistory && <HistoryCard setShowCard={setShowHistory} />}
     </React.Fragment>
   );
 };

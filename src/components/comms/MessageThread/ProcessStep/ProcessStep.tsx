@@ -1,7 +1,7 @@
 import { FC, useState } from 'react';
 import { Collapse, Tag } from 'antd';
 import { CheckCircle, CircleNotch, XCircle, Pause, Play } from 'phosphor-react';
-import styles from './ProcessStep.module.scss';
+import styles from './ProcessStep.module.css';
 import {
   ProcessStepStatus,
   ProcessStepWithUI,

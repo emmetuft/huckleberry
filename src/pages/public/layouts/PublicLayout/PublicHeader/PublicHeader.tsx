@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from 'antd';
 import { publicRoutePaths, PublicPage } from 'models/enums/appPage';
-import styles from './PublicHeader.module.scss';
+import styles from './PublicHeader.module.css';
 
 export const PublicHeader: FC = () => {
   return (

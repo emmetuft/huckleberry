@@ -2,7 +2,7 @@ import { FC, useState } from 'react';
 import { Button, Form, Card, Collapse } from 'antd';
 import type { CollapseProps } from 'antd';
 import { Check, X } from 'phosphor-react';
-import styles from './ConfirmationRequest.module.scss';
+import styles from './ConfirmationRequest.module.css';
 import { ConfirmationRequest as SessionConfirmationRequest } from 'models/interfaces/sessionEvent';
 import {
   ElicitationAction,

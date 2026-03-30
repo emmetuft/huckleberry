@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import styles from './index.module.scss';
+import styles from './index.module.css';
 import { InputType } from 'models/enums/inputType';
 import { Persona } from 'models/interfaces/persona';
 import { LabelInput } from '../LabelInput';

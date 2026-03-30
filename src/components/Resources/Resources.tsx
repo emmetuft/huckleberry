@@ -1,6 +1,6 @@
 import { FC, useState } from 'react';
 // import { MagnifyingGlass } from 'phosphor-react';
-import styles from './Resources.module.scss';
+import styles from './Resources.module.css';
 import { ResourceList } from './ResourceList/ResourceList';
 // import { IconBtn } from 'components/shared/IconBtn/IconBtn';
 import { formatCurrentDate } from 'utils/datetime';

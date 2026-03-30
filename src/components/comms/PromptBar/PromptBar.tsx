@@ -2,7 +2,7 @@ import { FC, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Popover, Tooltip } from 'antd';
 import { ArrowsOutSimple, Chat, X } from 'phosphor-react';
-import styles from './PromptBar.module.scss';
+import styles from './PromptBar.module.css';
 import { useAppDispatch } from 'reducers';
 import {
   clearMessages,
@@ -81,6 +81,8 @@ export const PromptBar: FC<PromptBarProps> = ({}) => {
             padding: 0,
             width: 600,
             borderRadius: 12,
+            boxShadow: 'var(--box-shadow)',
+            backgroundColor: 'var(--background)',
           },
         }}
       >

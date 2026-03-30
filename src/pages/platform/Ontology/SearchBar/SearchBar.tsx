@@ -2,7 +2,7 @@ import { FC, useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Input, Select, Popover, Button, Badge } from 'antd';
 import { FilterOutlined } from '@ant-design/icons';
-import styles from './SearchBar.module.scss';
+import styles from './SearchBar.module.css';
 import { useAppDispatch } from 'reducers';
 import {
   selectNodeLabels,
@@ -103,7 +103,7 @@ export const SearchBar: FC<SearchBarProps> = ({}) => {
   };
 
   return (
-    <div className={styles.SearchBar}>
+    <div className={`${styles.SearchBar} card`}>
       <Select
         mode="multiple"
         placeholder="Select node label(s)"

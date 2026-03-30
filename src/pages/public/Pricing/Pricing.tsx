@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import styles from './Pricing.module.scss';
+import styles from './Pricing.module.css';
 
 export const Pricing: FC = () => {
   return (
