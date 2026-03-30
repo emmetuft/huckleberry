@@ -56,6 +56,11 @@
 
 .ant-table-wrapper .ant-table-thead > tr > th {
   line-height: 14px;
+  border-bottom: 1px solid var(--grey-light);
+}
+
+.ant-table-wrapper .ant-table-tbody > tr > td {
+  border-bottom: none;
 }
 
 .ant-empty-normal {

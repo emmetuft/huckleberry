@@ -10,7 +10,7 @@ import {
 import styles from './Triggers.module.css';
 import { motion } from 'framer-motion';
 import { DEFAULT_WORKFLOW_STARTS } from 'constants/workflows';
-import { defaultMotionProps, sharedIconProps } from 'constants/styles';
+import { defaultMotionProps } from 'constants/styles';
 
 export const Triggers: FC = () => {
   const onClickTrigger = (trigger: {
@@ -22,12 +22,12 @@ export const Triggers: FC = () => {
   };
 
   const iconMap: { [key: string]: JSX.Element } = {
-    clock: <Clock {...sharedIconProps} />,
-    manual: <HandPointing {...sharedIconProps} />,
-    upload: <FileArrowUp {...sharedIconProps} />,
-    refresh: <ArrowsCounterClockwise {...sharedIconProps} />,
-    form: <NotePencil {...sharedIconProps} />,
-    webhook: <Gear {...sharedIconProps} />,
+    clock: <Clock size={24} />,
+    manual: <HandPointing size={24} />,
+    upload: <FileArrowUp size={24} />,
+    refresh: <ArrowsCounterClockwise size={24} />,
+    form: <NotePencil size={24} />,
+    webhook: <Gear size={24} />,
   };
 
   return (

@@ -17,6 +17,8 @@ import { Chat } from './Chat/Chat';
 import { StartNode } from './Nodes/StartNode';
 import { EndNode } from './Nodes/EndNode';
 import { ActionNode } from './Nodes/ActionNode';
+import { useSelector } from 'react-redux';
+import { selectTheme } from 'reducers/app/slice';
 
 const nodeTypes = {
   [NodeType.START]: StartNode,
@@ -27,6 +29,9 @@ const nodeTypes = {
 interface FlowCanvasProps {}
 
 export const FlowCanvas: FC<FlowCanvasProps> = ({}) => {
+  const theme = useSelector(selectTheme);
+  const isDark = theme === 'dark';
+
   const [nodes, setNodes, onNodesChange] = useNodesState(TEMPLATE_NODES);
   const [edges, setEdges, onEdgesChange] = useEdgesState([] as Edge[]);
 
@@ -53,8 +58,8 @@ export const FlowCanvas: FC<FlowCanvasProps> = ({}) => {
           variant={BackgroundVariant.Dots}
           gap={25}
           size={2}
-          color="#b7b6b6"
-          bgColor="white"
+          color={isDark ? '#727272ff' : '#b7b6b6'}
+          bgColor={isDark ? '#1a1a1a' : 'white'}
         />
       </ReactFlow>
     </div>

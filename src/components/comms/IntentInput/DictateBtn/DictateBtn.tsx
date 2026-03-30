@@ -2,6 +2,7 @@ import { FC, useEffect, useRef, useState } from 'react';
 import { Button } from 'antd';
 import { Check, Microphone, X } from 'phosphor-react';
 import styles from './DictateBtn.module.css';
+import { IconBtn } from 'components/shared/IconBtn/IconBtn';
 
 // Web Speech API type definitions
 interface SpeechRecognitionEvent extends Event {
@@ -187,11 +188,10 @@ export const DictateButton: FC<DictateButtonProps> = ({
   return (
     <div className={styles.dictateContainer}>
       {!isListening ? (
-        <Button
-          type="text"
-          icon={<Microphone color="#2c2b2a" size={16} />}
-          onClick={startDictation}
+        <IconBtn
+          icon={<Microphone />}
           disabled={disabled}
+          onClick={startDictation}
         />
       ) : (
         <>

@@ -355,7 +355,7 @@ export const FilterPopup: FC<FilterPopupProps> = ({
         )}
       </div>
 
-      <div className={styles.actions}>
+      <div>
         <Button type="dashed" icon={<PlusOutlined />} onClick={addFilter} block>
           Add Filter
         </Button>

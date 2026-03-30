@@ -2,7 +2,6 @@ import { FC } from 'react';
 import { Dropdown, Upload, message } from 'antd';
 import type { MenuProps, UploadProps } from 'antd';
 import { Plus, UploadSimple, Database } from 'phosphor-react';
-import { sharedIconProps } from 'constants/styles';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
 import { formatFileSize, MAX_FILE_SIZE } from 'utils/file';
 
@@ -58,7 +57,7 @@ export const AddContextButton: FC<AddContextButtonProps> = ({
           accept=".pdf,application/pdf"
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <UploadSimple {...sharedIconProps} size={16} />
+            <UploadSimple size={16} />
             <span>Upload PDF</span>
           </div>
         </Upload>
@@ -71,7 +70,7 @@ export const AddContextButton: FC<AddContextButtonProps> = ({
           style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
           onClick={onDataSourceClick}
         >
-          <Database {...sharedIconProps} size={16} />
+          <Database size={16} />
           <span>Connect Datasource</span>
         </div>
       ),
@@ -85,7 +84,7 @@ export const AddContextButton: FC<AddContextButtonProps> = ({
       placement="bottomLeft"
     >
       <div>
-        <IconBtn icon={<Plus {...sharedIconProps} size={16} />} />
+        <IconBtn icon={<Plus size={16} />} />
       </div>
     </Dropdown>
   );

@@ -43,14 +43,12 @@
           align-items: center;
           height: 48px;
           width: 48px;
-          background-color: var(--grey-bg);
+          background-color: var(--grey-light);
           border-radius: 8px;
 
           &.warning {
             background: var(--error-bg);
-            svg {
-              fill: var(--error-icon);
-            }
+            color: var(--error-icon);
           }
         }
 

@@ -1,6 +1,16 @@
 import { FC } from 'react';
+import {
+  ArrowSquareOut,
+  Article,
+  Lightning,
+  UserCirclePlus,
+} from 'phosphor-react';
 import styles from './RecCard.module.css';
-import { recommendations } from 'constants/recommendations';
+import {
+  Recommendation,
+  recommendations,
+  RecommendationType,
+} from 'constants/recommendations';
 import { PopupCard } from 'components/shared/PopupCard/PopupCard';
 
 interface RecCardProps {
@@ -8,6 +18,18 @@ interface RecCardProps {
 }
 
 export const RecCard: FC<RecCardProps> = ({ setShowCard }) => {
+  const onClickRec = (rec: Recommendation) => {
+    if (rec.url) {
+      window.open(rec.url, '_blank');
+    }
+  };
+
+  const iconMap: Record<RecommendationType, JSX.Element> = {
+    [RecommendationType.Workflow]: <Lightning size={20} />,
+    [RecommendationType.Article]: <Article size={20} />,
+    [RecommendationType.Contact]: <UserCirclePlus size={20} />,
+  };
+
   return (
     <PopupCard
       title="Recommended for you"
@@ -15,10 +37,14 @@ export const RecCard: FC<RecCardProps> = ({ setShowCard }) => {
       children={
         <div className={styles.sectionItems}>
           {recommendations.map((rec) => (
-            <div key={rec.id} className={styles.item}>
+            <div
+              key={rec.id}
+              className={styles.item}
+              onClick={() => onClickRec(rec)}
+            >
               <div className={styles.top}>
                 <div className={styles.title}>
-                  <img src="/static/logo.svg" className={styles.itemImg} />
+                  <div className={styles.icon}>{iconMap[rec.type]}</div>
                   <p>{rec.title}</p>
                 </div>
                 <div className={styles.actionPill}>{rec.actionLabel}</div>
@@ -26,11 +52,6 @@ export const RecCard: FC<RecCardProps> = ({ setShowCard }) => {
               <div className={styles.description}>
                 <p>{rec.description}</p>
               </div>
-              {rec.url && (
-                <a href={rec.url} target="_blank" rel="noopener noreferrer">
-                  {rec.url}
-                </a>
-              )}
             </div>
           ))}
         </div>

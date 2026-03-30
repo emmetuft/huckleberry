@@ -15,7 +15,6 @@ import { useAppDispatch } from 'reducers';
 import { selectPage } from 'reducers/app/slice';
 import { executeStream } from 'reducers/chat/actions';
 import { selectLoading, setFullScreen } from 'reducers/chat/slice';
-import { sharedIconProps } from 'constants/styles';
 import { AppPage } from 'models/enums/appPage';
 import { InputCommand } from 'models/enums/inputCommand';
 import { DataSource } from 'models/interfaces/dataSource';
@@ -243,10 +242,10 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   };
 
   const actionIconMap = {
-    [ActionType.SCHEDULE]: <CalendarBlank {...sharedIconProps} size={16} />,
-    [ActionType.CHART]: <ChartLine {...sharedIconProps} size={16} />,
-    [ActionType.DATASET]: <Database {...sharedIconProps} size={16} />,
-    [ActionType.SEND]: <PaperPlaneTilt {...sharedIconProps} size={16} />,
+    [ActionType.SCHEDULE]: <CalendarBlank size={16} />,
+    [ActionType.CHART]: <ChartLine size={16} />,
+    [ActionType.DATASET]: <Database size={16} />,
+    [ActionType.SEND]: <PaperPlaneTilt size={16} />,
   };
 
   return (

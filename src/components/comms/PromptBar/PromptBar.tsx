@@ -81,10 +81,12 @@ export const PromptBar: FC<PromptBarProps> = ({}) => {
             padding: 0,
             width: 600,
             borderRadius: 12,
+            boxShadow: 'var(--box-shadow)',
+            backgroundColor: 'var(--background)',
           },
         }}
       >
-        <div className={`${styles.bar} card`} />
+        <div className={styles.bar} />
       </Popover>
     </div>
   );

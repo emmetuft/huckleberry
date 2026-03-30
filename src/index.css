@@ -16,12 +16,14 @@ body,
 #root {
   height: 100%;
   width: 100%;
+  background-color: var(--background);
 }
 
 body {
   margin: 0;
   font-family: 'Inter', sans-serif;
   font-synthesis: none;
+  color: var(--text);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

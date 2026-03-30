@@ -78,10 +78,8 @@ export const DataHub: FC<DataHubProps> = ({}) => {
 
   const cellRenderer = (col: any, val: any) => {
     if (col.id === 'owner') {
-      const avatar =
-        identity !== undefined
-          ? `https://${identity.host}/api/content/v1/avatar/USER/${val.id}?size=100`
-          : undefined;
+      const avatar = `https://domo-labs-dev.dev.domo.com/api/content/v1/avatar/USER/${val.id}?size=100`;
+      // Todo: replace with actual avatar URL when available, currently using Domo Labs Dev instance for placeholder images
 
       return (
         <div className={styles.owner}>

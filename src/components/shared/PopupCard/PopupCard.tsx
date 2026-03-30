@@ -37,7 +37,7 @@ export const PopupCard: FC<PopupCardProps> = ({
   }, []);
 
   return (
-    <div className={`${styles.PopupCard} card`} ref={popupRef}>
+    <div className={`card ${styles.PopupCard}`} ref={popupRef}>
       <div className={styles.heading}>
         <div className={styles.title}>
           <h3>{title}</h3>

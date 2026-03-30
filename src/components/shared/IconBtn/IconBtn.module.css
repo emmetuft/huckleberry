@@ -1,0 +1,7 @@
+.IconBtn {
+  color: var(--grey-dark);
+
+  &:hover {
+    color: var(--grey-dark) !important;
+  }
+}

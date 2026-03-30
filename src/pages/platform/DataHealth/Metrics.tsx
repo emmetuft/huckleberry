@@ -8,17 +8,16 @@ import {
 } from 'phosphor-react';
 import styles from './DataHealth.module.css';
 import { IconType, metricList } from 'constants/health';
-import { sharedIconProps } from 'constants/styles';
 import { Quality, qualityColorMap } from 'models/enums/quality';
 
 const Metrics = () => {
   const actionIconMap = {
-    [IconType.SHIELD_CHECK]: <ShieldCheck {...sharedIconProps} />,
-    [IconType.SPEEDOMETER]: <Gauge {...sharedIconProps} />,
-    [IconType.EYE]: <Eye {...sharedIconProps} />,
-    [IconType.HOURGLASS]: <HourglassMedium {...sharedIconProps} />,
-    [IconType.DATABASE]: <Database {...sharedIconProps} />,
-    [IconType.TIMER]: <Timer {...sharedIconProps} />,
+    [IconType.SHIELD_CHECK]: <ShieldCheck size={24} />,
+    [IconType.SPEEDOMETER]: <Gauge size={24} />,
+    [IconType.EYE]: <Eye size={24} />,
+    [IconType.HOURGLASS]: <HourglassMedium size={24} />,
+    [IconType.DATABASE]: <Database size={24} />,
+    [IconType.TIMER]: <Timer size={24} />,
   };
 
   return (
@@ -29,7 +28,7 @@ const Metrics = () => {
             <div className={styles.left}>
               <div
                 className={`${styles.metricIcon} ${
-                  metric.quality === Quality.BAD
+                  metric.quality === Quality.BAD ? styles.warning : ''
                 }`}
               >
                 {actionIconMap[metric.icon]}

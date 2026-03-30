@@ -103,7 +103,7 @@ export const SearchBar: FC<SearchBarProps> = ({}) => {
   };
 
   return (
-    <div className={styles.SearchBar}>
+    <div className={`${styles.SearchBar} card`}>
       <Select
         mode="multiple"
         placeholder="Select node label(s)"

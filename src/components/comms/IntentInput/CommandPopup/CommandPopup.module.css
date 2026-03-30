@@ -9,7 +9,7 @@
 
   display: flex;
   flex-direction: column;
-  padding: 8px 0;
+  padding: 8px 0 !important;
 
   .itemList {
     overflow-y: auto;
@@ -34,7 +34,7 @@
         cursor: pointer;
 
         &.selected {
-          background-color: white;
+          background-color: var(--grey-bg);
         }
 
         .itemName {
@@ -71,7 +71,7 @@
     display: flex;
     gap: 12px;
     padding: 8px 12px 4px 12px;
-    border-top: 1px solid white;
+    border-top: 1px solid var(--grey-light);
     margin-top: 4px;
     font-size: 10px;
     color: var(--grey-text);

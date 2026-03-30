@@ -21,12 +21,13 @@
         gap: 10px;
         max-width: 65%;
 
-        .itemImg {
+        .icon {
           display: flex;
           justify-content: center;
           align-items: center;
           height: 30px;
-          width: 30px;
+          min-width: 30px;
+          border: 1px solid var(--grey-border);
           border-radius: 8px;
         }
 
@@ -36,10 +37,11 @@
       }
 
       .actionPill {
-        padding: 2px 8px;
+        padding: 3px 8px;
         font-size: 10px;
         font-weight: 600;
-        background-color: #d4bfff;
+        color: var(--purple);
+        background-color: var(--purple-light);
         border-radius: 8px;
         height: fit-content;
       }
@@ -51,11 +53,6 @@
         font-size: 13px;
         color: var(--grey-text);
       }
-    }
-
-    a {
-      font-size: 13px;
-      color: var(--purple);
     }
   }
 }

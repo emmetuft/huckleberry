@@ -1,9 +1,18 @@
 export const ENTITIES = [
   'dataset',
+  'datasets',
   'workflow',
+  'workflows',
   'agent',
+  'agents',
   'dashboard',
+  'dashboards',
   'chart',
+  'charts',
   'automation',
+  'automations',
+  'report',
+  'reports',
   'alert',
+  'alerts',
 ];

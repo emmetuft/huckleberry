@@ -93,7 +93,7 @@ export const CommandPopup = ({ popupRef, popup }: CommandPopupProps) => {
   };
 
   return (
-    <div ref={popupRef} className={`${styles.commandPopup} card`}>
+    <div ref={popupRef} className={`card ${styles.commandPopup}`}>
       <div className={styles.itemList}>
         {Object.entries(groupedItems).map(([groupKey, groupItems]) => {
           const firstItem = groupItems[0];

@@ -24,7 +24,7 @@ const HomePage = () => {
   return (
     <div className={`${styles.home} ${fullScreen ? styles.fullScreen : ''}`}>
       <Workspace />
-      <Background />
+      {/* <Background /> */}
     </div>
   );
 };

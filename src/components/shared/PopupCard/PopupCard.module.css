@@ -4,7 +4,7 @@
   left: calc(62px + 40px);
   width: 400px;
   z-index: 200;
-  padding: 0;
+  padding: 0 !important;
   border: none;
   padding-bottom: 10px;
 

@@ -14,11 +14,7 @@
   .emptyState {
     padding: 20px;
     text-align: center;
-    color: #8c8c8c;
-
-    p {
-      margin: 0;
-    }
+    color: var(--grey-text);
   }
 
   .filterRow {
@@ -27,16 +23,7 @@
     align-items: center;
     margin-bottom: 8px;
     padding: 8px;
-    background: #fafafa;
+    background: var(--grey-bg);
     border-radius: 8px;
-
-    &:hover {
-      background: #f0f0f0;
-    }
-  }
-
-  .actions {
-    border-top: 1px solid #f0f0f0;
-    padding-top: 12px;
   }
 }

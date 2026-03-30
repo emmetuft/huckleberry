@@ -7,8 +7,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    /* background-color: var(--grey-bg); */
-    box-shadow: none;
+    box-shadow: var(--box-shadow);
     cursor: pointer;
 
     h4 {
