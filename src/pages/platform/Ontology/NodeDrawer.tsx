@@ -33,18 +33,16 @@ export const NodeDrawer: FC<NodeDrawerProps> = ({
   }, [selectedNode]);
 
   const relationshipTypes = useMemo(() => {
-    const types = Array.from(
-      new Set(graphData.relationships.map((rel) => rel.type)),
-    );
+    const types = Array.from(new Set(graphData.edges.map((rel) => rel.type)));
     return types;
   }, [graphData]);
 
   const relatedLinks = useMemo(
     () =>
-      graphData.relationships.filter(
+      graphData.edges.filter(
         (rel) => rel.source === selectedNode || rel.target === selectedNode,
       ),
-    [graphData.relationships, selectedNode],
+    [graphData.edges, selectedNode],
   );
 
   const onChangeLabel = (value: string) => {

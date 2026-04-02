@@ -1,20 +1,15 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from 'reducers';
-import { FilterCondition } from 'models/interfaces/graphFilter';
-import { GraphData, Neo4jNode } from 'models/interfaces/ontology';
-import { Neo4jService } from 'services/neo4j';
+import { FilterCondition, NodeFilter } from 'models/interfaces/graphFilter';
+import { GraphData } from 'models/interfaces/ontology';
+import { GraphService } from 'services/graph';
+import { parseFilterConditions } from 'utils/ontology';
 
-/**
- * Fetch all nodes from Neo4j
- */
 export const fetchAllNodeLabels = createAsyncThunk<string[]>(
   'ontology/fetchAllNodeLabels',
-  Neo4jService.fetchNodeLabels,
+  GraphService.fetchNodeLabels,
 );
 
-/**
- * Fetch nodes
- */
 export const fetchNodes = createAsyncThunk<
   { graphData: GraphData; labels: string[] },
   { labels?: string[]; filters?: FilterCondition[]; limit?: number },
@@ -26,91 +21,36 @@ export const fetchNodes = createAsyncThunk<
     let labels = selectedLabels ?? controls.selectedLabels;
     if (labels.length === 0) {
       return {
-        graphData: { nodes: [], relationships: [] },
+        graphData: { nodes: [], edges: [] },
         labels: [],
       };
     }
 
-    // Always fetch with all selected labels to get cross-label relationships
-    // This ensures we get relationships between previously fetched and newly fetched nodes
-    const result = await Neo4jService.fetchNodes({
-      labels,
-      filters,
+    const filter: NodeFilter = {
+      nodeLabels: labels,
+      labelMode: 'ANY',
+      propertyFilters: parseFilterConditions(
+        filters ?? controls.propertyFilters,
+      ),
+    };
+
+    const result = await GraphService.fetchNodes({
+      filter,
       limit,
-      includeRelationships: true,
     });
 
-    // If the result is a GraphData structure (with nodes and relationships)
-    if (result.nodes && result.relationships) {
-      return { graphData: result, labels };
-    }
+    // If the result is a GraphData structure (with nodes and edges)
+    // if (result.nodes && result.edges) {
+    //   return { graphData: result, labels };
+    // }
 
-    // Fallback: if we only got nodes, return empty relationships
+    // Fallback: if we only got nodes, return empty edges
     return {
       graphData: {
         nodes: Array.isArray(result) ? result : [],
-        relationships: [],
+        edges: [],
       },
       labels,
     };
-  },
-);
-
-/**
- * Load a subgraph starting from a specific node and merge into graph
- */
-export const loadSubgraph = createAsyncThunk<
-  GraphData,
-  { nodeId: string; depth?: number; limit?: number }
->('ontology/loadSubgraph', async ({ nodeId, depth, limit }) => {
-  return await Neo4jService.fetchSubgraph(nodeId, depth, limit);
-});
-
-/**
- * Search for nodes and optionally load their subgraphs
- */
-export const searchAndLoadNodes = createAsyncThunk<
-  GraphData,
-  { query: string; limit?: number; loadSubgraphs?: boolean }
->(
-  'ontology/searchAndLoadNodes',
-  async ({ query, limit, loadSubgraphs = false }) => {
-    const { nodes, relationships } = await Neo4jService.searchNodes(
-      query,
-      limit,
-    );
-
-    if (loadSubgraphs && nodes.length > 0) {
-      // Load subgraphs for all search results
-      const subgraphPromises = nodes.map((node) =>
-        Neo4jService.fetchSubgraph(node.id, 1, 100),
-      );
-      const subgraphs = await Promise.all(subgraphPromises);
-
-      // Merge all subgraphs
-      const nodeMap = new Map<string, Neo4jNode>();
-      const relationships: any[] = [];
-
-      subgraphs.forEach((subgraph) => {
-        subgraph.nodes.forEach((node) => {
-          if (!nodeMap.has(node.id)) {
-            nodeMap.set(node.id, node);
-          }
-        });
-        relationships.push(...subgraph.relationships);
-      });
-
-      // Deduplicate relationships
-      const uniqueRels = Array.from(
-        new Map(relationships.map((r) => [r.id, r])).values(),
-      );
-
-      return {
-        nodes: Array.from(nodes.values()),
-        relationships: uniqueRels,
-      };
-    }
-
-    return { nodes, relationships };
   },
 );

@@ -24,9 +24,9 @@ import {
   FilterOperator,
   OperatorOptionMap,
 } from 'models/interfaces/graphFilter';
-import { Neo4jNode } from 'models/interfaces/ontology';
-import { Neo4jService } from 'services/neo4j';
+import { GraphNode } from 'models/interfaces/ontology';
 import { getOperatorsForType, getPropertyType } from 'utils/ontology';
+import { GraphService } from 'services/graph';
 
 const { RangePicker } = DatePicker;
 
@@ -37,7 +37,7 @@ interface Option {
 }
 
 interface FilterPopupProps {
-  nodes: Neo4jNode[];
+  nodes: GraphNode[];
   onApplyFilters: (filters: FilterCondition[]) => void;
 }
 
@@ -79,7 +79,7 @@ export const FilterPopup: FC<FilterPopupProps> = ({
           }
 
           try {
-            const values = await Neo4jService.fetchPropertyValues(
+            const values = await GraphService.fetchPropertyValues(
               filter.nodeLabel,
               filter.property,
               50,

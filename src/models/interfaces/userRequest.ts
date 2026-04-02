@@ -30,7 +30,7 @@ export interface GraphContext {
     labels: string[];
     properties: Record<string, any>;
   }>;
-  relationships: Array<{
+  edges: Array<{
     id: string;
     type: string;
     source: string;

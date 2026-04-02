@@ -34,3 +34,18 @@ export const OperatorOptionMap: Record<FilterOperator, string> = {
   [FilterOperator.LTE]: 'Less than or equal to',
   [FilterOperator.BETWEEN]: 'Between',
 };
+
+export interface PropertyFilter {
+  type: string;
+  field: string;
+  operator: string;
+  value?: unknown;
+}
+
+export interface NodeFilter {
+  nodeLabels?: string[];
+  nodeIds?: string[];
+  labelMode?: string;
+  idProperty?: string;
+  propertyFilters?: PropertyFilter[];
+}
