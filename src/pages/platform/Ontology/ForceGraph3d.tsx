@@ -7,11 +7,11 @@ import {
   selectHighlightedNodeId,
   selectGraphData,
 } from 'reducers/ontology/slice';
-import { Neo4jNode } from 'models/interfaces/ontology';
+import { GraphNode } from 'models/interfaces/ontology';
 import { getColorForGroup } from 'utils/styles';
 
 interface ForceGraph3DProps {
-  onNodeClick?: (node: Neo4jNode) => void;
+  onNodeClick?: (node: GraphNode) => void;
 }
 
 interface D3Node {
@@ -52,8 +52,8 @@ export const ForceGraph: React.FC<ForceGraph3DProps> = ({ onNodeClick }) => {
     // Create a Set of valid node IDs for quick lookup
     const nodeIds = new Set(d3Nodes.map((n) => n.id));
 
-    // Filter out relationships that reference non-existent nodes
-    const d3Links: D3Link[] = data.relationships
+    // Filter out edges that reference non-existent nodes
+    const d3Links: D3Link[] = data.edges
       .filter((rel) => nodeIds.has(rel.source) && nodeIds.has(rel.target))
       .map((rel) => {
         return {

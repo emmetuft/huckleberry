@@ -43,6 +43,7 @@ export const Nav: FC<NavProps> = ({}) => {
   const dispatch = useAppDispatch();
   const incognitoMode = useSelector(selectIncognitoMode);
   const theme = useSelector(selectTheme);
+  const isDark = theme === 'dark';
 
   const [showHistory, setShowHistory] = useState<boolean>(false);
   const [showRecs, setShowRecs] = useState<boolean>(false);
@@ -116,7 +117,7 @@ export const Nav: FC<NavProps> = ({}) => {
           className={styles.logo}
           onClick={onClickLogo}
         >
-          <img src="/static/logo.svg" width="100%" />
+          <img src={`/static/logo${isDark ? '-light' : ''}.svg`} width="100%" />
         </Link>
         <div className={styles.buttons}>
           <Tooltip
@@ -182,19 +183,13 @@ export const Nav: FC<NavProps> = ({}) => {
               onClick={() => dispatch(setIncognitoMode(!incognitoMode))}
             />
           </Tooltip>
-          <Tooltip title={theme === 'dark' ? 'Dark mode' : 'Light mode'}>
+          <Tooltip title={isDark ? 'Dark mode' : 'Light mode'}>
             <div>
               <IconBtn
                 icon={
-                  theme === 'dark' ? (
-                    <Moon size={iconSize} />
-                  ) : (
-                    <Sun size={iconSize} />
-                  )
+                  isDark ? <Moon size={iconSize} /> : <Sun size={iconSize} />
                 }
-                onClick={() =>
-                  dispatch(setTheme(theme === 'dark' ? 'light' : 'dark'))
-                }
+                onClick={() => dispatch(setTheme(isDark ? 'light' : 'dark'))}
               />
             </div>
           </Tooltip>

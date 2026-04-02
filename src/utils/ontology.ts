@@ -1,6 +1,11 @@
-import { Neo4jNode } from 'models/interfaces/ontology';
+import { GraphNode } from 'models/interfaces/ontology';
 import { formatDateTime, isValidDate } from './datetime';
-import { FilterDataType, FilterOperator } from 'models/interfaces/graphFilter';
+import {
+  FilterCondition,
+  FilterDataType,
+  FilterOperator,
+  PropertyFilter,
+} from 'models/interfaces/graphFilter';
 
 export const renderValue = (value: any): string => {
   if (value === null || value === undefined) {
@@ -27,7 +32,7 @@ export const renderValue = (value: any): string => {
 
 // Get the type of a property value
 export const getPropertyType = (
-  nodes: Neo4jNode[],
+  nodes: GraphNode[],
   label: string,
   property: string,
 ): FilterDataType => {
@@ -74,4 +79,15 @@ export const getOperatorsForType = (type: FilterDataType): FilterOperator[] => {
         FilterOperator.CONTAINS,
       ];
   }
+};
+
+export const parseFilterConditions = (
+  conditions: FilterCondition[],
+): PropertyFilter[] => {
+  return conditions.map((condition) => ({
+    type: condition.valueType ?? FilterDataType.STRING,
+    field: condition.property,
+    operator: condition.operator,
+    value: condition.value,
+  }));
 };

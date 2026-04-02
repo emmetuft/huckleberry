@@ -29,11 +29,13 @@ svg:focus {
 .appCard {
   position: relative;
   display: flex;
+  align-items: stretch;
+  min-width: 0;
   gap: 10px;
   padding: 10px;
   border-radius: 8px;
   background-color: var(--card-bg);
-  box-shadow: var(--box-shadow);
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
   transition: transform 0.3s ease;
   cursor: pointer;
 }
@@ -43,8 +45,8 @@ svg:focus {
 }
 
 .appCard img {
-  height: 40px;
-  width: 40px;
+  height: 50px;
+  width: 50px;
   border-radius: 6px;
   object-fit: cover;
 }
@@ -63,14 +65,23 @@ svg:focus {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  overflow: hidden;
+  min-width: 0;
 }
 
 .appCard .appInfo h4 {
   font-weight: 600;
+  line-height: 16px;
 }
 
 .appCard .appInfo p {
   font-size: 12px;
+  line-height: 14px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
 }
 
 .appCard .quickAdd {

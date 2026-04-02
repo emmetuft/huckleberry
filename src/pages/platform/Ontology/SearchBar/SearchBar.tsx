@@ -14,7 +14,7 @@ import {
   setHighlightedNode,
   clearHighlightedNode,
 } from 'reducers/ontology/slice';
-import { fetchNodes, searchAndLoadNodes } from 'reducers/ontology/actions';
+import { fetchNodes } from 'reducers/ontology/actions';
 import { FilterCondition } from 'models/interfaces/graphFilter';
 import { FilterPopup } from './FilterPopup';
 
@@ -66,13 +66,7 @@ export const SearchBar: FC<SearchBarProps> = ({}) => {
       return;
     }
 
-    // If not found in current graph, search Neo4j database and load results
-    dispatch(
-      searchAndLoadNodes({
-        query: searchLower,
-        limit: 20,
-      }),
-    );
+    // TODO: If not found in current graph, search Neo4j database and load results
   };
 
   useEffect(() => {

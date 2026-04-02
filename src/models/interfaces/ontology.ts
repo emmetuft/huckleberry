@@ -1,11 +1,11 @@
 import { Column } from './column';
 
-export interface Neo4jNode {
+export interface GraphNode {
   id: string;
   labels: string[];
   properties: Record<string, any>;
 }
-export interface Neo4jRelationship {
+export interface GraphEdge {
   id: string;
   source: string;
   target: string;
@@ -14,8 +14,8 @@ export interface Neo4jRelationship {
 }
 
 export interface GraphData {
-  nodes: Neo4jNode[];
-  relationships: Neo4jRelationship[];
+  nodes: GraphNode[];
+  edges: GraphEdge[];
 }
 
 export interface OntologySource {
