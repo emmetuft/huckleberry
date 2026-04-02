@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { platformRoutePaths } from 'models/enums/appPage';
 import {
   Atom,
-  ClockCounterClockwise,
+  Chats,
   Cube,
   Database,
   Graph,
@@ -135,7 +135,7 @@ export const Nav: FC<NavProps> = ({}) => {
           <Tooltip title="History" placement="right" mouseEnterDelay={0.5}>
             <div>
               <IconBtn
-                icon={<ClockCounterClockwise size={iconSize} />}
+                icon={<Chats size={iconSize} />}
                 onClick={() => setShowHistory(true)}
               />
             </div>
