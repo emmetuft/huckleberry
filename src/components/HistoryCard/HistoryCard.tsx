@@ -1,5 +1,6 @@
 import { FC } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { Trash } from 'phosphor-react';
 import styles from './HistoryCard.module.css';
 import { useAppDispatch } from 'reducers';
@@ -14,10 +15,13 @@ interface HistoryCardProps {
 
 export const HistoryCard: FC<HistoryCardProps> = ({ setShowCard }) => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const sessions = useSelector(selectSessions);
 
   const onClickSession = (sessionId: string) => {
     dispatch(fetchSession(sessionId));
+    navigate('/workspace');
+    setShowCard(false);
   };
 
   const onClickDeleteSession = (sessionId: string) => {

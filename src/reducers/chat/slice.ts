@@ -320,7 +320,19 @@ export const ChatSlice = createAppSlice({
         state.sessions = payload;
       })
       // Load a saved session into the chat thread
+      .addCase(fetchSession.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.messages = [];
+        state.sessionId = undefined;
+        state.streamingMessageId = null;
+      })
+      .addCase(fetchSession.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to load session';
+      })
       .addCase(fetchSession.fulfilled, (state, { payload }) => {
+        state.loading = false;
         state.sessionId = payload.id;
         state.messages = sessionEventsToMessages(payload.events ?? []);
         state.error = null;
