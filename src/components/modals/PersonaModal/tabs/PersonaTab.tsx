@@ -8,7 +8,7 @@ import {
 } from 'constants/persona';
 import { InputType } from 'models/enums/inputType';
 import { Persona, RoleLevel } from 'models/interfaces/persona';
-import { LabelInput } from '../LabelInput';
+import { LabelInput } from '../../../shared/LabelInput/LabelInput';
 
 interface PersonaTabProps {
   editedPersona: Persona;

@@ -7,15 +7,14 @@ import styles from './PlatformLayout.module.css';
 import { useAppDispatch } from 'reducers';
 import { fetchUserPersona } from 'reducers/app/actions';
 import { selectIdentity, selectTheme, setPage } from 'reducers/app/slice';
+import { fetchSessions } from 'reducers/chat/actions';
 import { fetchMetricCatalogSchema } from 'reducers/metrics/actions';
 import { fetchGroups, fetchUsers } from 'reducers/people/actions';
 import { fetchToolkits } from 'reducers/toolkits/actions';
 import { getAppPageFromPath } from 'models/enums/appPage';
+import { PromptBar } from 'components/comms/PromptBar/PromptBar';
 import { Heading } from './Heading/Heading';
 import { Nav } from './Nav/Nav';
-import { PromptBar } from 'components/comms/PromptBar/PromptBar';
-import { PersonaModal } from 'components/modals/PersonaModal/PersonaModal';
-import { fetchSessions } from 'reducers/chat/actions';
 
 export const PlatformLayout: FC = () => {
   const dispatch = useAppDispatch();
@@ -76,7 +75,6 @@ export const PlatformLayout: FC = () => {
         <Heading />
         <Nav />
         {!hidePromptBar && <PromptBar />}
-        <PersonaModal />
         <Outlet />
       </div>
       <Toaster position="top-right" theme="light" richColors />

@@ -1,0 +1,129 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+
+  .progress {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--grey-light);
+      transition: all 0.2s;
+
+      &.dotDone {
+        background: var(--purple);
+      }
+
+      &.dotActive {
+        width: 24px;
+        border-radius: 4px;
+        background: var(--purple);
+      }
+    }
+  }
+
+  .skipLink {
+    padding: 0;
+    background: none;
+    border: none;
+    color: var(--grey-text);
+    cursor: pointer;
+
+    &:hover {
+      color: var(--text);
+    }
+  }
+}
+
+.stepContent {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  .stepHeading {
+  }
+
+  .stepSubtext {
+    color: var(--grey-text);
+  }
+
+  .stepActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .fields {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+    .fieldRow {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+
+      .fieldLabel {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text);
+        letter-spacing: 0.01em;
+      }
+    }
+  }
+}
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  background: var(--grey-bg);
+  border-radius: 12px;
+
+  .summaryItem {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    .summaryLabel {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--grey-text);
+    }
+
+    .summaryValue {
+      font-size: 14px;
+      color: var(--text);
+    }
+  }
+}
+
+.animationClip {
+  overflow: hidden;
+
+  .stepWrapperModal {
+    padding: 8px 0 0;
+  }
+}
+
+.actionBtns {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  padding: 20px 0 8px;
+}

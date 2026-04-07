@@ -16,6 +16,8 @@ interface State {
   theme: 'light' | 'dark';
   incognitoMode: boolean;
   personaModalOpen: boolean;
+  isNewUser: boolean;
+  onboardingCompleted: boolean;
   loading: {
     identity: boolean;
     persona: boolean;
@@ -28,6 +30,8 @@ const initialState: State = {
   theme: (localStorage.getItem('theme') as 'light' | 'dark') || 'light',
   incognitoMode: false,
   personaModalOpen: false,
+  isNewUser: true, // TODO: derive from user identity / API
+  onboardingCompleted: false,
   loading: {
     identity: false,
     persona: false,
@@ -56,6 +60,11 @@ export const AppReducer = createAppSlice({
     setPersonaModal: create.reducer(
       (state, { payload }: { payload: boolean }) => {
         state.personaModalOpen = payload;
+      },
+    ),
+    setOnboardingCompleted: create.reducer(
+      (state, { payload }: { payload: boolean }) => {
+        state.onboardingCompleted = payload;
       },
     ),
   }),
@@ -114,12 +123,19 @@ export const AppReducer = createAppSlice({
     selectTheme: (state) => state.theme,
     selectIncognitoMode: (state) => state.incognitoMode,
     selectPersonaModalOpen: (state) => state.personaModalOpen,
+    selectIsNewUser: (state) => state.isNewUser,
+    selectOnboardingCompleted: (state) => state.onboardingCompleted,
     selectLoading: (state) => state.loading,
   },
 });
 
-export const { setPage, setTheme, setIncognitoMode, setPersonaModal } =
-  AppReducer.actions;
+export const {
+  setPage,
+  setTheme,
+  setIncognitoMode,
+  setPersonaModal,
+  setOnboardingCompleted,
+} = AppReducer.actions;
 export const {
   selectIdentity,
   selectPersona,
@@ -127,6 +143,8 @@ export const {
   selectTheme,
   selectIncognitoMode,
   selectPersonaModalOpen,
+  selectIsNewUser,
+  selectOnboardingCompleted,
   selectLoading,
 } = AppReducer.selectors;
 

@@ -1,0 +1,217 @@
+.ProfileHub {
+  height: 100%;
+  overflow-y: auto;
+  padding-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+
+  .pageHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+
+    .pageTitle {
+      font-size: 28px;
+      font-weight: 700;
+      margin: 0 0 6px;
+      color: var(--text);
+    }
+
+    .pageSubtitle {
+      font-size: 14px;
+      color: var(--grey-text);
+      margin: 0;
+    }
+
+    .completionBadge {
+      flex-shrink: 0;
+
+      .completionRing {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: conic-gradient(
+          var(--purple) calc(var(--pct) * 1%),
+          var(--grey-light) 0%
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+
+        &::before {
+          content: '';
+          position: absolute;
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          background: var(--background);
+        }
+
+        .completionPct {
+          font-size: 13px;
+          font-weight: 700;
+          color: var(--text);
+          position: relative;
+          z-index: 1;
+        }
+      }
+    }
+  }
+
+  .sections {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .sectionCard {
+    border: 1px solid var(--grey-light);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--card-bg);
+    transition: border-color 0.15s;
+
+    &:hover {
+      border-color: var(--grey-border);
+    }
+
+    &.expanded {
+      border-color: var(--purple);
+    }
+
+    .sectionHeader {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      padding: 16px 20px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.15s;
+
+      &:hover {
+        background: var(--grey-bg);
+      }
+
+      .sectionIcon {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        background: var(--purple-light);
+        color: var(--purple);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .sectionMeta {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        flex: 1;
+        min-width: 0;
+
+        .sectionLabel {
+          font-size: 15px;
+          font-weight: 600;
+          color: var(--text);
+        }
+
+        .sectionDesc {
+          font-size: 13px;
+          color: var(--grey-text);
+        }
+      }
+
+      .completionPill {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 20px;
+        flex-shrink: 0;
+
+        &.done {
+          background: rgba(28, 156, 111, 0.12);
+          color: var(--success-icon);
+        }
+
+        &.inProgress {
+          background: var(--purple-light);
+          color: var(--purple);
+        }
+
+        &.empty {
+          background: var(--grey-light);
+          color: var(--grey-text);
+        }
+      }
+    }
+
+    .sectionBody {
+      border-top: 1px solid var(--grey-light);
+      padding: 20px;
+    }
+  }
+
+  /* Editor styles */
+
+  .editor {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    .editorField {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+
+      p {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text);
+        letter-spacing: 0.01em;
+        margin: 0;
+      }
+
+      .editorLabel {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text);
+        letter-spacing: 0.01em;
+      }
+
+      .editorTags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        min-height: 24px;
+      }
+    }
+
+    .editorRow {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+
+      p {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text);
+        letter-spacing: 0.01em;
+        margin: 0;
+      }
+    }
+  }
+
+  .editorActions {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 4px;
+  }
+}

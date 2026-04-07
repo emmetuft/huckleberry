@@ -1,6 +1,6 @@
 import React, { FC, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { platformRoutePaths } from 'models/enums/appPage';
 import {
   Atom,
@@ -27,7 +27,6 @@ import {
   selectIncognitoMode,
   selectTheme,
   setIncognitoMode,
-  setPersonaModal,
   setTheme,
 } from 'reducers/app/slice';
 import { setFullScreen } from 'reducers/chat/slice';
@@ -41,6 +40,7 @@ interface NavProps {}
 
 export const Nav: FC<NavProps> = ({}) => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const incognitoMode = useSelector(selectIncognitoMode);
   const theme = useSelector(selectTheme);
   const isDark = theme === 'dark';
@@ -59,7 +59,7 @@ export const Nav: FC<NavProps> = ({}) => {
   };
 
   const onClickAvatar = () => {
-    dispatch(setPersonaModal(true));
+    navigate(platformRoutePaths[AppPage.PROFILE]);
   };
 
   const iconSize = 22;

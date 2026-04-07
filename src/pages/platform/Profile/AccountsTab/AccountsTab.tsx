@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { Button } from 'antd';
-import styles from './index.module.css';
+import styles from './AccountsTab.module.css';
 
 interface AccountsTabProps {}
 
