@@ -14,6 +14,7 @@ import { MetricCatalog } from './MetricCatalog/MetricCatalog';
 import { Ontology } from './Ontology/Ontology';
 import { FlowCanvas } from './Workflows/FlowCanvas';
 import { Workspace } from './Workspace/Workspace';
+import { ProfilePage } from './Profile/ProfilePage';
 import { platformRoutePaths, AppPage } from 'models/enums/appPage';
 import styles from './layouts/PlatformLayout/PlatformLayout.module.css';
 
@@ -71,6 +72,10 @@ export const platformRoutes: RouteObject[] = [
           {
             path: platformRoutePaths[AppPage.ONTOLOGY],
             element: <Ontology />,
+          },
+          {
+            path: platformRoutePaths[AppPage.PROFILE],
+            element: <ProfilePage />,
           },
           {
             path: platformRoutePaths[AppPage.WORKFLOW],

@@ -12,6 +12,16 @@ export interface DomoUserAttribute {
   values: (number | string)[];
 }
 
+export interface DomoGroupListItem {
+  groupId: number;
+  groupType: string;
+  name: string;
+  description: string;
+  memberCount: number;
+  owners: { id: string; displayName: string; type: string }[];
+  created: string;
+}
+
 export interface DomoGroup {
   id: number;
   name: string;

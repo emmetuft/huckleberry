@@ -15,4 +15,5 @@ export enum InputType {
   Select = 'select',
   TextArea = 'textarea',
   Tags = 'tags',
+  RadioCards = 'radiocards',
 }

@@ -1,0 +1,56 @@
+.tab {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.grid {
+  columns: 2;
+  column-gap: 12px;
+  padding: 20px;
+}
+
+.grid :global(.card) {
+  padding: 0;
+  box-shadow: none;
+  border: 1px solid var(--grey);
+  margin-bottom: 12px;
+  break-inside: avoid;
+}
+
+.sectionHeader {
+  padding: 15px;
+  border-bottom: 1px solid var(--grey-light);
+
+  h3 {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--grey-text);
+  }
+}
+
+.settingRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 15px;
+}
+
+.settingLabel {
+  display: flex;
+  flex-direction: column;
+
+  span {
+    font-weight: 500;
+  }
+
+  p {
+    color: var(--grey-text);
+  }
+}
+
+.settingControl {
+  flex-shrink: 0;
+}

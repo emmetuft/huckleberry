@@ -43,17 +43,25 @@
     }
   }
 
+  .wrapper {
+    position: relative;
+  }
+
+  .placeholder {
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: #999;
+    pointer-events: none;
+    user-select: none;
+  }
+
   .editable {
+    position: relative;
+    z-index: 1;
     outline: none;
     font-size: 16px;
     white-space: pre-wrap;
-
-    &.empty::before {
-      content: attr(data-placeholder);
-      color: #999;
-      pointer-events: none;
-      display: block;
-    }
 
     span.entity {
       font-weight: 600;

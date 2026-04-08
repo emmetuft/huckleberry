@@ -1,5 +1,3 @@
-export const metricCatalogDatasourceId = '9f5cb77e-21bc-413b-aea1-47bfed74952d';
-
 export const departmentColors: Record<
   string,
   { backgroundColor: string; color: string }
