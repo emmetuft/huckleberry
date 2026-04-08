@@ -1,17 +1,13 @@
-import { Identity } from '@domoinc/toolkit';
+import { Identity } from 'models/interfaces/identity';
 import { createAppSlice } from '../createAppSlice';
-import {
-  authenticate,
-  fetchUserPersona,
-  saveUserPersona,
-  swapPersona,
-} from './actions';
+import { authenticate, fetchUserPersona, saveUserPersona } from './actions';
 import { AppPage } from 'models/enums/appPage';
 import { Persona } from 'models/interfaces/persona';
+import { defaultPersona } from 'constants/persona';
 
 interface State {
   identity?: Identity;
-  persona?: Persona;
+  persona: Persona;
   page: AppPage;
   theme: 'light' | 'dark';
   incognitoMode: boolean;
@@ -26,6 +22,7 @@ interface State {
 }
 
 const initialState: State = {
+  persona: defaultPersona,
   page: AppPage.HOME,
   theme: (localStorage.getItem('theme') as 'light' | 'dark') || 'light',
   incognitoMode: false,
@@ -90,7 +87,7 @@ export const AppReducer = createAppSlice({
       })
       .addCase(fetchUserPersona.fulfilled, (state, { payload }) => {
         state.loading = { ...state.loading, persona: false };
-        state.persona = payload;
+        if (payload) state.persona = payload;
       })
       // Save user persona
       .addCase(saveUserPersona.pending, (state) => {
@@ -102,18 +99,6 @@ export const AppReducer = createAppSlice({
       .addCase(saveUserPersona.fulfilled, (state, { payload }) => {
         state.persona = payload;
         state.loading.personaUpdate = false;
-      })
-      // Swap persona
-      .addCase(swapPersona.fulfilled, (state, { meta, payload }) => {
-        state.persona = payload;
-        const identity = state.identity;
-        if (!identity) {
-          return;
-        }
-        state.identity = {
-          ...identity,
-          userId: meta.arg,
-        };
       });
   },
   selectors: {

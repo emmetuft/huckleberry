@@ -24,11 +24,3 @@
     overflow: hidden;
   }
 }
-
-.tabContent {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding-top: 8px;
-  max-width: 640px;
-}

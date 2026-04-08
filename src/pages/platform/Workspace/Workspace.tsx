@@ -30,7 +30,7 @@ export const Workspace: FC<WorkspaceProps> = ({}) => {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3 }}
             >
-              {`Good ${getTimeOfDay()}${identity ? `, ${getFirstName(identity)}` : ''}!`}
+              {`Good ${getTimeOfDay()}${identity ? `, ${getFirstName(identity.displayName)}` : ''}!`}
             </motion.p>
           )}
         </AnimatePresence>

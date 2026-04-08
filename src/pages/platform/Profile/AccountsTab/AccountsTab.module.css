@@ -1,12 +1,18 @@
-.tab {
+.AccountsTab {
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  margin-bottom: 15px;
+  gap: 10px;
+}
 
-  .row {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-  }
+.accountsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.connectAction {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  flex-shrink: 0;
 }

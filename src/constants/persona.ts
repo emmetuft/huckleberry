@@ -1,19 +1,15 @@
 import { Persona, RoleLevel } from 'models/interfaces/persona';
 
 export const defaultPersona: Persona = {
-  role: 'Chief Marketing Officer',
-  level: RoleLevel.C_LEVEL,
-  department: 'Marketing',
-  team: 'Marketing',
+  role: '',
+  level: RoleLevel.NONE,
+  department: '',
+  team: '',
   relationships: [],
-  goals: 'Attract 3 major news publishers for Domopalooza 2026',
-  focusAreas: [
-    'Campaign Performance',
-    'Customer Segmentation',
-    'Time to Market',
-  ],
-  strengths: ['Leadership', 'Collaboration', 'Decision Making'],
-  weaknesses: ['Overcommitting'],
+  goals: '',
+  focusAreas: [],
+  strengths: [],
+  weaknesses: [],
   skills: [],
   tools: [],
   communicationStyle: {

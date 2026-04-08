@@ -8,7 +8,6 @@ import { useAppDispatch } from 'reducers';
 import { fetchUserPersona } from 'reducers/app/actions';
 import { selectIdentity, selectTheme, setPage } from 'reducers/app/slice';
 import { fetchSessions } from 'reducers/chat/actions';
-import { fetchMetricCatalogSchema } from 'reducers/metrics/actions';
 import { fetchGroups, fetchUsers } from 'reducers/people/actions';
 import { fetchToolkits } from 'reducers/toolkits/actions';
 import { getAppPageFromPath } from 'models/enums/appPage';
@@ -27,21 +26,16 @@ export const PlatformLayout: FC = () => {
 
   // Fetch platform data when identity is available
   useEffect(() => {
+    if (loading.current) return;
     if (identity) {
+      loading.current = true;
       dispatch(fetchUserPersona());
-      dispatch(fetchMetricCatalogSchema());
       dispatch(fetchUsers());
       dispatch(fetchGroups());
       dispatch(fetchToolkits());
+      dispatch(fetchSessions());
     }
   }, [identity]);
-
-  useEffect(() => {
-    if (loading.current) return;
-    loading.current = true;
-    dispatch(fetchToolkits());
-    dispatch(fetchSessions());
-  }, []);
 
   // Sync Redux state with current route
   useEffect(() => {

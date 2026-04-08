@@ -1,11 +1,11 @@
 import {
-  Briefcase,
+  Brain,
   ChartBar,
   ChatCircle,
   Gear,
+  IdentificationCard,
   Star,
   UsersFour,
-  Warning,
 } from 'phosphor-react';
 import { InputType } from 'models/enums/inputType';
 import { InputField } from 'components/shared/LabelInput/LabelInput';
@@ -43,7 +43,7 @@ export const sections: SectionDef[] = [
     key: 'role',
     label: 'Role & Identity',
     description: 'Your job title, level, and department',
-    icon: <Briefcase size={iconSize} />,
+    icon: <IdentificationCard size={iconSize} />,
     status: (p) => {
       const filled = [p.role, p.level, p.department, p.team].filter(
         (v) => !isEmpty(v),
@@ -109,7 +109,7 @@ export const sections: SectionDef[] = [
     key: 'domainKnowledge',
     label: 'Domain Knowledge',
     description: 'Areas of deep expertise',
-    icon: <Warning size={iconSize} />,
+    icon: <Brain size={iconSize} />,
     status: (p) =>
       p.domainKnowledge.length > 0
         ? SectionStatus.Complete

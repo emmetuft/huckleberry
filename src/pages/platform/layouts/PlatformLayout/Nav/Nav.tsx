@@ -93,7 +93,7 @@ export const Nav: FC<NavProps> = ({}) => {
 
   const avatar =
     identity !== undefined
-      ? `https://${identity.host}/api/content/v1/avatar/USER/${identity.userId}?size=100`
+      ? `https://${'domo-labs-dev.dev.domo.com'}/api/content/v1/avatar/USER/${identity.id}?size=100`
       : undefined;
 
   const renderIconBtn = (page: AppPage) => (

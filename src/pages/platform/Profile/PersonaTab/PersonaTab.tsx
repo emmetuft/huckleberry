@@ -6,7 +6,6 @@ import { useAppDispatch } from 'reducers';
 import { selectPersona } from 'reducers/app/slice';
 import { saveUserPersona } from 'reducers/app/actions';
 import { Persona } from 'models/interfaces/persona';
-import { defaultPersona } from 'constants/persona';
 import { LabelInput } from 'components/shared/LabelInput/LabelInput';
 import {
   applyFieldValue,
@@ -22,7 +21,6 @@ import {
 export const PersonaTab: FC = () => {
   const dispatch = useAppDispatch();
   const persona = useSelector(selectPersona);
-  const p: Persona = persona ?? (defaultPersona as Persona);
 
   const [expandedSection, setExpandedSection] = useState<PersonaSection | null>(
     null,
@@ -30,7 +28,7 @@ export const PersonaTab: FC = () => {
   const [saving, setSaving] = useState(false);
 
   const completedCount = sections.filter(
-    (s) => s.status(p) === SectionStatus.Complete,
+    (s) => s.status(persona) === SectionStatus.Complete,
   ).length;
 
   const toggleSection = (key: PersonaSection) => {
@@ -74,7 +72,7 @@ export const PersonaTab: FC = () => {
           <SectionCard
             key={section.key}
             section={section}
-            persona={p}
+            persona={persona}
             isExpanded={expandedSection === section.key}
             onToggle={() => toggleSection(section.key)}
             onSave={save}
