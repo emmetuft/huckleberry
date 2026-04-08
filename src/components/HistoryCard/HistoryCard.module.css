@@ -7,14 +7,34 @@
   .item {
     display: flex;
     justify-content: space-between;
-    padding: 16px;
+    align-items: center;
+    padding: 6px 16px;
     border-top: 1px solid var(--grey-light);
     cursor: pointer;
 
     &:hover {
       background-color: var(--grey-bg);
     }
+
+    p {
+      font-size: 14px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      min-width: 0;
+      flex: 1;
+      margin-right: 8px;
+    }
   }
+}
+
+.groupLabel {
+  padding: 8px 16px 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--grey-mid, #888);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .noHistory {

@@ -23,6 +23,7 @@ export enum AppPage {
   INTEGRATIONS = 'integrations',
   METRICS = 'metrics',
   ONTOLOGY = 'ontology',
+  PROFILE = 'profile',
   WORKFLOW = 'workflow',
 }
 
@@ -36,7 +37,8 @@ export const AppPageLabel: Record<string, string> = {
   [AppPage.INTEGRATIONS]: 'Integrations',
   [AppPage.METRICS]: 'Metric Catalog',
   [AppPage.ONTOLOGY]: 'Business Ontology',
-  [AppPage.WORKFLOW]: 'Workflow',
+  [AppPage.PROFILE]: 'Profile',
+  [AppPage.WORKFLOW]: 'Workflows',
 };
 
 // Public route paths
@@ -64,6 +66,7 @@ export const platformRoutePaths: Record<AppPage, string> = {
   [AppPage.INTEGRATIONS]: '/integrations',
   [AppPage.METRICS]: '/metrics',
   [AppPage.ONTOLOGY]: '/ontology',
+  [AppPage.PROFILE]: '/profile',
   [AppPage.WORKFLOW]: '/workflow',
 };
 

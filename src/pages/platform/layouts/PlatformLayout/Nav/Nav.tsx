@@ -1,10 +1,10 @@
 import React, { FC, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { platformRoutePaths } from 'models/enums/appPage';
 import {
   Atom,
-  ClockCounterClockwise,
+  Chats,
   Cube,
   Database,
   Graph,
@@ -27,7 +27,6 @@ import {
   selectIncognitoMode,
   selectTheme,
   setIncognitoMode,
-  setPersonaModal,
   setTheme,
 } from 'reducers/app/slice';
 import { setFullScreen } from 'reducers/chat/slice';
@@ -41,6 +40,7 @@ interface NavProps {}
 
 export const Nav: FC<NavProps> = ({}) => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const incognitoMode = useSelector(selectIncognitoMode);
   const theme = useSelector(selectTheme);
   const isDark = theme === 'dark';
@@ -59,7 +59,7 @@ export const Nav: FC<NavProps> = ({}) => {
   };
 
   const onClickAvatar = () => {
-    dispatch(setPersonaModal(true));
+    navigate(platformRoutePaths[AppPage.PROFILE]);
   };
 
   const iconSize = 22;
@@ -93,7 +93,7 @@ export const Nav: FC<NavProps> = ({}) => {
 
   const avatar =
     identity !== undefined
-      ? `https://${identity.host}/api/content/v1/avatar/USER/${identity.userId}?size=100`
+      ? `https://${'domo-labs-dev.dev.domo.com'}/api/content/v1/avatar/USER/${identity.id}?size=100`
       : undefined;
 
   const renderIconBtn = (page: AppPage) => (
@@ -135,7 +135,7 @@ export const Nav: FC<NavProps> = ({}) => {
           <Tooltip title="History" placement="right" mouseEnterDelay={0.5}>
             <div>
               <IconBtn
-                icon={<ClockCounterClockwise size={iconSize} />}
+                icon={<Chats size={iconSize} />}
                 onClick={() => setShowHistory(true)}
               />
             </div>

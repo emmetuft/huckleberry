@@ -1,0 +1,18 @@
+.AccountsTab {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.accountsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.connectAction {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  flex-shrink: 0;
+}

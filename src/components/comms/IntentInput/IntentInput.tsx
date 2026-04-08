@@ -39,12 +39,19 @@ interface IntentInputProps {
   animate?: boolean;
 }
 
+const DEFAULT_PLACEHOLDERS = [
+  'Start something new',
+  'Type / for toolkits',
+  'Type @ to mention a person or group',
+];
+
 export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   const dispatch = useAppDispatch();
   const appPage = useSelector(selectPage);
   const requestLoading = useSelector(selectLoading);
 
   const [isEmpty, setIsEmpty] = useState<boolean>(true);
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [suggestedActions, setSuggestedActions] = useState<
     { type: ActionType; text: string }[]
   >([]);
@@ -95,6 +102,14 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
       setMentionedItems([...mentionedItems, item]);
     },
   });
+
+  useEffect(() => {
+    if (placeholder) return;
+    const interval = setInterval(() => {
+      setPlaceholderIndex((i) => (i + 1) % DEFAULT_PLACEHOLDERS.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [placeholder]);
 
   useEffect(() => {
     const el = editableRef.current;
@@ -285,7 +300,7 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
           ref={editableRef}
           isEmpty={isEmpty}
           disabled={requestLoading}
-          placeholder={placeholder ?? 'Start something new'}
+          placeholder={placeholder ?? DEFAULT_PLACEHOLDERS[placeholderIndex]}
           onTextChange={handleTextChange}
           onKeyDown={onKeyDown}
         />
