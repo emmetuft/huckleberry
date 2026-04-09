@@ -1,7 +1,6 @@
-import { FC, useState, useEffect, useRef } from 'react';
+import { FC } from 'react';
 import { Select, Spin } from 'antd';
-import { DataSource } from 'models/interfaces/dataSource';
-import { DataService } from 'services/data';
+import { useDataSources } from 'hooks/useDataSources';
 
 interface DataSourceSelectorProps {
   value?: string[];
@@ -9,81 +8,21 @@ interface DataSourceSelectorProps {
   placeholder?: string;
 }
 
-const PAGE_SIZE = 20;
-
 export const DataSourceSelector: FC<DataSourceSelectorProps> = ({
   value = [],
   onChange,
   placeholder = 'Search and select datasources...',
 }) => {
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [dataSources, setDataSources] = useState<DataSource[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [hasMore, setHasMore] = useState<boolean>(true);
-  const [page, setPage] = useState<number>(1);
-  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const { dataSources, loading, setSearchTerm, loadNextPage } =
+    useDataSources();
 
-  const loadDataSources = async (
-    pageNum: number,
-    search: string,
-    append: boolean = false,
-  ) => {
-    if (loading) return;
-
-    setLoading(true);
-    try {
-      const result = await DataService.fetchDataSources({
-        page: pageNum,
-        size: PAGE_SIZE,
-        searchTerm: search,
-      });
-
-      if (append) {
-        setDataSources((prev) => [...prev, ...result.sources]);
-      } else {
-        setDataSources(result.sources);
-      }
-
-      setHasMore(
-        result.sources.length === PAGE_SIZE &&
-          result.total > pageNum * PAGE_SIZE,
-      );
-    } catch (error) {
-      console.error('Failed to fetch data sources:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Load initial data on mount
-  useEffect(() => {
-    loadDataSources(1, '');
-  }, []);
-
-  // Handle search with debounce
-  const handleSearch = (search: string) => {
-    setSearchTerm(search);
-
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
-    }
-
-    searchTimeoutRef.current = setTimeout(() => {
-      setPage(1);
-      loadDataSources(1, search);
-    }, 500);
-  };
-
-  // Handle scroll to load more
   const handlePopupScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const target = e.target as HTMLDivElement;
     const isNearBottom =
       target.scrollHeight - target.scrollTop - target.clientHeight < 50;
 
-    if (isNearBottom && hasMore && !loading) {
-      const nextPage = page + 1;
-      setPage(nextPage);
-      loadDataSources(nextPage, searchTerm, true);
+    if (isNearBottom) {
+      loadNextPage();
     }
   };
 
@@ -94,7 +33,7 @@ export const DataSourceSelector: FC<DataSourceSelectorProps> = ({
       placeholder={placeholder}
       value={value}
       onChange={onChange}
-      onSearch={handleSearch}
+      onSearch={setSearchTerm}
       onPopupScroll={handlePopupScroll}
       filterOption={false}
       loading={loading}

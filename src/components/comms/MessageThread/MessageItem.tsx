@@ -8,7 +8,7 @@ import { selectPage } from 'reducers/app/slice';
 import { selectFullScreen, toggleProcessStep } from 'reducers/chat/slice';
 import { resumeStream } from 'reducers/chat/actions';
 import { AppPage } from 'models/enums/appPage';
-import { Message } from 'models/interfaces/message';
+import { ConversationTurn, TurnType } from 'models/interfaces/message';
 import { ElicitationResponse } from 'models/interfaces/userRequest';
 import { ConfirmationRequest } from './Elicitation/ConfirmationRequest';
 import { MetricChart } from './MetricChart';
@@ -16,66 +16,57 @@ import { ProcessStep } from './ProcessStep/ProcessStep';
 import { formatMessageTimestamp } from 'utils/datetime';
 
 interface MessageItemProps {
-  message: Message;
+  turn: ConversationTurn;
   showTimestamp: boolean;
 }
 
-export const MessageItem: FC<MessageItemProps> = ({
-  message,
-  showTimestamp,
-}) => {
+export const MessageItem: FC<MessageItemProps> = ({ turn, showTimestamp }) => {
   const dispatch = useAppDispatch();
   const appPage = useSelector(selectPage);
   const fullScreen = useSelector(selectFullScreen);
 
   const isFullScreen = appPage === AppPage.HOME && fullScreen;
 
-  const metricNode = useMemo(() => {
-    if (message.context?.nodes && message.context.nodes.length > 0) {
-      const metricNode = message.context.nodes.find(
-        (node) =>
-          node.labels.includes('Metric') &&
-          node.properties.vis_type &&
-          node.properties.queryData,
-      );
-      return metricNode;
-    }
-    return null;
-  }, [message.context]);
+  // const metricNode = useMemo(() => {
+  //   if (turn.kind !== 'user') return null;
+  //   if (!turn.context?.nodes?.length) return null;
+  //   return (
+  //     turn.context.nodes.find(
+  //       (node) =>
+  //         node.labels.includes('Metric') &&
+  //         node.properties.vis_type &&
+  //         node.properties.queryData,
+  //     ) ?? null
+  //   );
+  // }, [turn]);
 
   const handleToggleStep = (stepId: string) => {
-    dispatch(toggleProcessStep({ messageId: message.id, stepId }));
+    dispatch(toggleProcessStep({ turnId: turn.id, stepId }));
   };
 
   const handleElicitationResponse = (responses: ElicitationResponse[]) => {
-    const batchId = message.confirmationRequests?.[0].batchId;
-    const requestId = message.requestId;
-    if (!batchId || !requestId) return; // TODO: Show error to user
-
-    dispatch(
-      resumeStream({
-        batchId,
-        requestId,
-        responses,
-      }),
-    );
+    if (turn.kind !== 'assistant') return;
+    const batchId = turn.confirmationRequests?.[0].batchId;
+    const requestId = turn.requestId;
+    if (!batchId || !requestId) return;
+    dispatch(resumeStream({ batchId, requestId, responses }));
   };
 
+  const isUser = turn.kind === TurnType.USER;
+
   return (
-    <div key={message.id}>
+    <div key={turn.id}>
       {showTimestamp && (
         <div className={styles.timestamp}>
-          {formatMessageTimestamp(message.timestamp)}
+          {formatMessageTimestamp(turn.timestamp)}
         </div>
       )}
       <div
-        className={`${styles.message} ${
-          message.role === 'user' ? styles.user : styles.assistant
-        }`}
+        className={`${styles.message} ${isUser ? styles.user : styles.assistant}`}
       >
-        {message.processingSteps && message.processingSteps.length > 0 && (
+        {!isUser && turn.processingSteps.length > 0 && (
           <div className={styles.processingSteps}>
-            {message.processingSteps.map((step) => (
+            {turn.processingSteps.map((step) => (
               <ProcessStep
                 key={step.id}
                 step={step}
@@ -84,17 +75,29 @@ export const MessageItem: FC<MessageItemProps> = ({
             ))}
           </div>
         )}
-        {message.confirmationRequests &&
-          message.confirmationRequests.length > 0 && (
+        {!isUser &&
+          turn.confirmationRequests &&
+          turn.confirmationRequests.length > 0 && (
             <ConfirmationRequest
-              confirmationRequests={message.confirmationRequests}
+              confirmationRequests={turn.confirmationRequests}
               onSubmit={handleElicitationResponse}
             />
           )}
         <div className={styles.content}>
-          <Markdown remarkPlugins={[remarkGfm]}>{message.content}</Markdown>
+          <Markdown remarkPlugins={[remarkGfm]}>{turn.content}</Markdown>
         </div>
-        {metricNode && (
+        {isUser &&
+          turn.context?.dataSourceIds &&
+          turn.context.dataSourceIds.length > 0 && (
+            <div className={styles.dataSourcePills}>
+              {turn.context.dataSourceIds.map((id) => (
+                <span key={id} className={styles.dataSourcePill}>
+                  {id}
+                </span>
+              ))}
+            </div>
+          )}
+        {/* {metricNode && (
           <div className={styles.metricChart}>
             <MetricChart
               visType={metricNode.properties.vis_type}
@@ -104,7 +107,7 @@ export const MessageItem: FC<MessageItemProps> = ({
               minify={!isFullScreen}
             />
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );

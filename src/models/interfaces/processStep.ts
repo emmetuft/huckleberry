@@ -45,8 +45,8 @@ export interface ProcessStep {
   /** Tool or action name */
   tool?: string;
 
-  /** Action type category (for ACTION and TOOL events) */
-  actionType?: string;
+  /** Unique identifier for tool call */
+  toolCallId?: string;
 
   /** Duration in milliseconds (from completed event) */
   durationMs?: number;

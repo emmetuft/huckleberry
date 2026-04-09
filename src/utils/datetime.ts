@@ -1,5 +1,5 @@
 import { format, isValid } from 'date-fns';
-import { Message } from 'models/interfaces/message';
+import { ConversationTurn } from 'models/interfaces/message';
 
 export const ONE_HOUR_MS = 60 * 60 * 1000;
 
@@ -62,15 +62,15 @@ export const formatMessageTimestamp = (timestamp: number): string => {
 };
 
 /**
- * Determines whether to show a timestamp above a message.
- * Shows timestamp if it's the first message or if an hour or more has passed since the previous message.
+ * Determines whether to show a timestamp above a turn.
+ * Shows timestamp if it's the first turn or if an hour or more has passed since the previous turn.
  */
 export const shouldShowTimestamp = (
-  currentMessage: Message,
-  previousMessage?: Message,
+  currentTurn: ConversationTurn,
+  previousTurn?: ConversationTurn,
 ): boolean => {
-  if (!previousMessage) {
+  if (!previousTurn) {
     return true;
   }
-  return currentMessage.timestamp - previousMessage.timestamp >= ONE_HOUR_MS;
+  return currentTurn.timestamp - previousTurn.timestamp >= ONE_HOUR_MS;
 };

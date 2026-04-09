@@ -50,6 +50,13 @@ export enum ConfirmationType {
 
 /** Export the ConfirmationRequest interface */
 export type { ConfirmationRequest };
+
+/** Export individual event types needed by ConversationTurn */
+export type {
+  AssistantRequestEvent,
+  AssistantResponseEvent,
+  AssistantPausedEvent,
+};
 type McpMessageDirection = 'SENT' | 'RECEIVED';
 type McpMessageType = 'REQUEST' | 'RESPONSE' | 'NOTIFICATION';
 type McpMethod =
@@ -196,6 +203,9 @@ interface AssistantRequestEvent extends AISessionEventBase {
     /** The user's input text. */
     input: string;
     requestId: string;
+    aiAssistantContext?: {
+      dataSourceIds?: string[];
+    };
   };
 }
 
@@ -277,6 +287,7 @@ interface ActionRequestEvent extends AISessionEventBase {
 interface ActionStartedEvent extends AISessionEventBase {
   type: AISessionEventType.ACTION_STARTED;
   tool: string;
+  toolCallId: string;
   inputs: Record<string, ActionIO>;
   /** High-level category of this action (e.g. DATASET_LOOKUP, SQL_GENERATION). */
   actionType: string;
@@ -367,6 +378,7 @@ interface CancelEvent extends AISessionEventBase {
 interface ToolStartedEvent extends AISessionEventBase {
   type: AISessionEventType.TOOL_STARTED;
   tool: string;
+  toolCallId: string;
   arguments: Record<string, unknown>;
 }
 

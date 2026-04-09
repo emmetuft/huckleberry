@@ -52,14 +52,13 @@ export const PersonaTab: FC<PersonaTabProps> = ({
           inputType={InputType.Select}
           label="Department"
           value={editedPersona.department}
-          options={groupedDepartments.map((group) => ({
-            label: group.label,
-            title: group.label,
-            options: group.options.map((option) => ({
+          options={groupedDepartments.flatMap((group) =>
+            group.options.map((option) => ({
               label: option,
               value: option,
+              group: group.label,
             })),
-          }))}
+          )}
           onChange={(val: any) => onChangePersona('department', val)}
         />
         <LabelInput
