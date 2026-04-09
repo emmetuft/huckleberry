@@ -2,31 +2,31 @@ import { FC, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import styles from './MessageThread.module.css';
 import { selectPage } from 'reducers/app/slice';
-import { selectFullScreen, selectMessages } from 'reducers/chat/slice';
+import { selectFullScreen, selectTurns } from 'reducers/chat/slice';
 import { AppPage } from 'models/enums/appPage';
-import { Message } from 'models/interfaces/message';
+import { ConversationTurn } from 'models/interfaces/message';
 import { shouldShowTimestamp } from 'utils/datetime';
 import { MessageItem } from './MessageItem';
 
 export const MessageThread: FC = () => {
-  const messages = useSelector(selectMessages);
+  const turns = useSelector(selectTurns);
   const appPage = useSelector(selectPage);
   const fullScreen = useSelector(selectFullScreen);
 
   const isFullScreen = appPage === AppPage.HOME && fullScreen;
 
   const scrollRef = useRef<HTMLDivElement>(null);
-  const messageCountRef = useRef<number>(messages.length);
+  const turnCountRef = useRef<number>(turns.length);
 
   useEffect(() => {
-    // Auto-scroll to bottom when new messages arrive
-    if (scrollRef.current && messages.length > messageCountRef.current) {
+    // Auto-scroll to bottom when new turns arrive
+    if (scrollRef.current && turns.length > turnCountRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-      messageCountRef.current = messages.length;
+      turnCountRef.current = turns.length;
     }
-  }, [messages]);
+  }, [turns]);
 
-  if (messages.length === 0) {
+  if (turns.length === 0) {
     return null;
   }
 
@@ -36,11 +36,11 @@ export const MessageThread: FC = () => {
       ref={scrollRef}
     >
       <div className={styles.messages}>
-        {messages.map((message: Message, index: number) => (
+        {turns.map((turn: ConversationTurn, index: number) => (
           <MessageItem
-            key={message.id}
-            message={message}
-            showTimestamp={shouldShowTimestamp(message, messages[index - 1])}
+            key={turn.id}
+            turn={turn}
+            showTimestamp={shouldShowTimestamp(turn, turns[index - 1])}
           />
         ))}
       </div>

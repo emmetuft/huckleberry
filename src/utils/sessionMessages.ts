@@ -1,48 +1,95 @@
-import { Message } from 'models/interfaces/message';
+import {
+  AssistantTurn,
+  ConversationTurn,
+  TurnType,
+  UserTurn,
+} from 'models/interfaces/message';
 import {
   AISessionEvent,
   AISessionEventType,
 } from 'models/interfaces/sessionEvent';
+import { applyEventToTurn } from 'utils/conversationTurn';
 
 /**
  * Converts an ordered list of AISessionEvents from a saved session into
- * Message objects suitable for rendering in the chat UI.
+ * ConversationTurn objects suitable for rendering in the chat UI.
  *
- * Only ASSISTANT_REQUEST (user turn) and ASSISTANT_RESPONSE / ASSISTANT_PAUSED
- * (assistant turn) events are mapped — all other event types are ignored since
- * they represent intermediate processing steps that aren't needed for replay.
+ * Events are grouped by requestId and replayed in chronological order using
+ * applyEventToTurn — the same logic that drives the live stream.
  */
-export function sessionEventsToMessages(events: AISessionEvent[]): Message[] {
-  const messages: Message[] = [];
+export function sessionEventsToMessages(
+  events: AISessionEvent[],
+): ConversationTurn[] {
+  const turns: ConversationTurn[] = [];
 
+  // Group events by requestId so we can build each turn completely
+  const eventsByRequest = new Map<string, AISessionEvent[]>();
   for (const event of events) {
-    if (event.type === AISessionEventType.ASSISTANT_REQUEST) {
-      messages.push({
-        id: event.eventId,
-        role: 'user',
-        content: event.request.input,
-        timestamp: new Date(event.timestamp).getTime(),
-        sessionId: event.sessionId,
-        eventId: event.eventId,
-        requestId: event.requestId,
-      });
-    } else if (
-      event.type === AISessionEventType.ASSISTANT_RESPONSE ||
-      event.type === AISessionEventType.ASSISTANT_PAUSED
-    ) {
-      messages.push({
-        id: event.eventId,
-        role: 'assistant',
-        content: event.response.output ?? '',
-        timestamp: new Date(event.timestamp).getTime(),
-        sessionId: event.sessionId,
-        eventId: event.eventId,
-        parentEventId: event.parentEventId,
-        requestId: event.requestId,
-        error: event.error,
-      });
-    }
+    const group = eventsByRequest.get(event.requestId) ?? [];
+    group.push(event);
+    eventsByRequest.set(event.requestId, group);
   }
 
-  return messages.sort((a, b) => a.timestamp - b.timestamp);
+  for (const requestEvents of eventsByRequest.values()) {
+    const sorted = [...requestEvents].sort(
+      (a, b) =>
+        new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
+    );
+
+    // User turn
+    const requestEvent = sorted.find(
+      (e) => e.type === AISessionEventType.ASSISTANT_REQUEST,
+    );
+    if (requestEvent) {
+      const dataSourceIds =
+        requestEvent.request.aiAssistantContext?.dataSourceIds;
+      const userTurn: UserTurn = {
+        kind: TurnType.USER,
+        id: requestEvent.eventId,
+        timestamp: new Date(requestEvent.timestamp).getTime(),
+        event: requestEvent,
+        content: requestEvent.request.input,
+        context: dataSourceIds?.length ? { dataSourceIds } : undefined,
+      };
+      turns.push(userTurn);
+    }
+
+    // Assistant turn — only emit if a terminal event exists
+    const terminalEvent = sorted.find(
+      (e) =>
+        e.type === AISessionEventType.ASSISTANT_RESPONSE ||
+        e.type === AISessionEventType.ASSISTANT_PAUSED,
+    );
+    if (!terminalEvent) continue;
+
+    let assistantTurn: AssistantTurn = {
+      kind: TurnType.ASSISTANT,
+      id: terminalEvent.eventId,
+      timestamp: new Date(terminalEvent.timestamp).getTime(),
+      event: null,
+      requestId: terminalEvent.requestId,
+      content: '',
+      processingSteps: [],
+      insights: [],
+      warnings: [],
+    };
+
+    for (const event of sorted) {
+      assistantTurn = applyEventToTurn(assistantTurn, event);
+    }
+
+    // Collapse steps for completed sessions — they're visible while streaming
+    assistantTurn = {
+      ...assistantTurn,
+      processingSteps: assistantTurn.processingSteps.map((s) => ({
+        ...s,
+        isOpen: false,
+      })),
+    };
+
+    turns.push(assistantTurn);
+  }
+
+  const sorted = turns.sort((a, b) => a.timestamp - b.timestamp);
+  return sorted;
 }

@@ -76,9 +76,7 @@ export const ProcessStep: FC<ProcessStepProps> = ({ step, onToggle }) => {
         {getStatusIcon()}
         <span className={styles.title}>{title}</span>
         <Tag className={styles.stepTypeTag}>{stepType}</Tag>
-        {durationMs && status === ProcessStepStatus.COMPLETED && (
-          <span className={styles.duration}>{durationMs}ms</span>
-        )}
+        {durationMs && <span className={styles.duration}>{durationMs}ms</span>}
       </div>
     </div>
   );

@@ -8,32 +8,17 @@ interface StepDetailsProps {
 }
 
 export const StepDetails: FC<StepDetailsProps> = ({ step }) => {
-  const {
-    stepType,
-    tool,
-    actionType,
-    inputs,
-    outputs,
-    mcpData,
-    error,
-    description,
-  } = step;
+  const { stepType, inputs, outputs, mcpData, error, description } = step;
 
   // Error Display (shown for all step types if present)
   const renderError = () => {
     if (!error) return null;
     return (
-      <div className={styles.errorSection}>
+      <div className={styles.section}>
         <p className={styles.sectionLabel}>Error:</p>
         <div className={styles.errorContent}>
-          <p className={styles.errorText}>
-            {error.localizedMessage || error.message}
-          </p>
-          {error.errorCode && (
-            <Tag color="red" className={styles.errorCode}>
-              {error.errorCode}
-            </Tag>
-          )}
+          <p>{error.localizedMessage || error.message}</p>
+          {error.errorCode && <Tag color="red">{error.errorCode}</Tag>}
         </div>
       </div>
     );
@@ -42,16 +27,10 @@ export const StepDetails: FC<StepDetailsProps> = ({ step }) => {
   // ACTION Step Details
   const renderActionDetails = () => (
     <>
-      {actionType && (
-        <div className={styles.section}>
-          <p className={styles.sectionLabel}>Action Type:</p>
-          <Tag className={styles.actionTypeTag}>{actionType}</Tag>
-        </div>
-      )}
       {description && (
         <div className={styles.section}>
           <p className={styles.sectionLabel}>Description:</p>
-          <p className={styles.detailsText}>{description}</p>
+          <p>{description}</p>
         </div>
       )}
       {inputs && Object.keys(inputs).length > 0 && (
@@ -76,12 +55,6 @@ export const StepDetails: FC<StepDetailsProps> = ({ step }) => {
   // TOOL Step Details
   const renderToolDetails = () => (
     <>
-      {tool && (
-        <div className={styles.section}>
-          <p className={styles.sectionLabel}>Tool:</p>
-          <Tag className={styles.toolTag}>{tool}</Tag>
-        </div>
-      )}
       {inputs && Object.keys(inputs).length > 0 && (
         <div className={styles.section}>
           <p className={styles.sectionLabel}>Arguments:</p>
@@ -132,13 +105,12 @@ export const StepDetails: FC<StepDetailsProps> = ({ step }) => {
     );
   };
 
-  // Main render logic based on step type
   return (
-    <div className={styles.stepDetailsContent}>
+    <>
       {stepType === 'action' && renderActionDetails()}
-      {stepType === 'tool' && renderToolDetails()}
+      {/* {stepType === 'tool' && renderToolDetails()} */}
       {stepType === 'mcp' && renderMcpDetails()}
       {renderError()}
-    </div>
+    </>
   );
 };

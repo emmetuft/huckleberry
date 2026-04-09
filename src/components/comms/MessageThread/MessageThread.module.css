@@ -43,10 +43,27 @@
         .content {
           background-color: var(--grey-light);
         }
-      }
 
-      &.assistant {
-        font-style: italic;
+        .dataSourcePills {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 4px;
+          margin-top: 6px;
+          justify-content: flex-end;
+
+          .dataSourcePill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background-color: var(--purple-light);
+            border: 1px solid var(--purple);
+            font-size: 11px;
+            color: var(--purple);
+            white-space: nowrap;
+          }
+        }
       }
     }
   }

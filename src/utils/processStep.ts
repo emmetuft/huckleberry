@@ -20,10 +20,9 @@ export function createActionStep(event: AISessionEvent): ProcessStep {
     id: event.eventId,
     stepType: ProcessStepType.ACTION,
     status: ProcessStepStatus.STARTED,
-    title: `Action: ${event.tool}`,
+    title: event.actionType,
     startEvent: event,
     tool: event.tool,
-    actionType: event.actionType,
     inputs: event.inputs,
     startTime: event.timestamp,
   };
@@ -41,9 +40,10 @@ export function createToolStep(event: AISessionEvent): ProcessStep {
     id: event.eventId,
     stepType: ProcessStepType.TOOL,
     status: ProcessStepStatus.STARTED,
-    title: `Tool: ${event.tool}`,
+    title: event.tool,
     startEvent: event,
     tool: event.tool,
+    toolCallId: event.toolCallId,
     inputs: event.arguments,
     startTime: event.timestamp,
   };
