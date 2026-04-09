@@ -4,15 +4,10 @@
   gap: 16px;
   max-height: 500px;
 
-  .searchInput {
-    margin-bottom: 8px;
-  }
-
   .dataSourceList {
-    flex: 1;
     overflow-y: auto;
-    max-height: 400px;
-    border: 1px solid #d9d9d9;
+    height: 400px;
+    border: 1px solid var(--grey);
     border-radius: 4px;
     padding: 8px;
 
@@ -26,11 +21,11 @@
       transition: background-color 0.2s;
 
       &:hover {
-        background-color: #f5f5f5;
+        background-color: var(--grey-bg);
       }
 
       &.selected {
-        background-color: #e6f7ff;
+        background-color: var(--grey-light);
       }
 
       .dataSourceInfo {
@@ -41,7 +36,6 @@
 
         .dataSourceName {
           font-weight: 500;
-          color: #262626;
         }
 
         .dataSourceDetails {
@@ -59,13 +53,20 @@
       padding: 16px;
     }
   }
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 
   .selectedCount {
-    padding: 8px;
-    background-color: #f0f0f0;
-    border-radius: 4px;
-    text-align: center;
-    font-size: 14px;
-    color: #595959;
+    color: var(--grey-text);
+  }
+
+  div {
+    display: flex;
+    gap: 8px;
   }
 }

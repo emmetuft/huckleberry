@@ -5,9 +5,9 @@ import { Database } from 'phosphor-react';
 import styles from './OntologyInitModal.module.css';
 import { useAppDispatch } from 'reducers';
 import { selectLoading } from 'reducers/ontology/slice';
-import { DataSource } from 'models/interfaces/dataSource';
 import { OntologySource } from 'models/interfaces/ontology';
 import { DataService } from 'services/data';
+import { useDataSources } from 'hooks/useDataSources';
 
 interface OntologyInitModalProps {
   isOpen: boolean;
@@ -23,9 +23,10 @@ export const OntologyInitModal: FC<OntologyInitModalProps> = ({
 
   const [ontologySources, setOntologySources] = useState<OntologySource[]>([]);
 
-  const [dataSources, setDataSources] = useState<DataSource[]>([]);
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false);
+  const { dataSources, loading, setSearchTerm } = useDataSources({
+    pageSize: 50,
+    debounceMs: 300,
+  });
 
   // asynchronous loading state for UI
   const [schemaLoadingIds, setSchemaLoadingIds] = useState<Set<string>>(
@@ -33,14 +34,6 @@ export const OntologyInitModal: FC<OntologyInitModalProps> = ({
   );
   // synchronous loading state to prevent duplicate fetches
   const schemaLoadingRef = useRef<Set<string>>(new Set());
-
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      fetchDataSources();
-    }, 300);
-
-    return () => clearTimeout(timeoutId);
-  }, [searchTerm]);
 
   useEffect(() => {
     const fetchSchemasForEmptySources = async () => {
@@ -106,17 +99,6 @@ export const OntologyInitModal: FC<OntologyInitModalProps> = ({
 
     fetchSchemasForEmptySources();
   }, [ontologySources]);
-
-  const fetchDataSources = async () => {
-    setLoading(true);
-    const res = await DataService.fetchDataSources({
-      page: 1,
-      size: 50,
-      searchTerm,
-    });
-    setDataSources(res.sources);
-    setLoading(false);
-  };
 
   const onSearch = (value: string) => {
     setSearchTerm(value);

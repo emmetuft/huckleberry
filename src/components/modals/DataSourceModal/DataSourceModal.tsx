@@ -1,8 +1,8 @@
-import { FC, useEffect, useState, useRef, useCallback } from 'react';
-import { Modal, Input, Checkbox, Empty, Spin } from 'antd';
+import { FC, useEffect, useState, useRef } from 'react';
+import { Modal, Input, Checkbox, Empty, Spin, Button } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { DataSource } from 'models/interfaces/dataSource';
-import { DataService } from 'services/data';
+import { useDataSources } from 'hooks/useDataSources';
 import styles from './DataSourceModal.module.css';
 
 interface DataSourceModalProps {
@@ -11,84 +11,41 @@ interface DataSourceModalProps {
   onConfirm: (dataSources: DataSource[]) => void;
 }
 
-const PAGE_SIZE = 20;
-
 export const DataSourceModal: FC<DataSourceModalProps> = ({
   open,
   onCancel,
   onConfirm,
 }) => {
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [dataSources, setDataSources] = useState<DataSource[]>([]);
   const [selectedDataSources, setSelectedDataSources] = useState<DataSource[]>(
     [],
   );
-  const [loading, setLoading] = useState<boolean>(false);
-  const [hasMore, setHasMore] = useState<boolean>(true);
-  const [page, setPage] = useState<number>(1);
 
   const observerTarget = useRef<HTMLDivElement>(null);
 
-  const loadDataSources = useCallback(
-    async (pageNum: number, search: string, append: boolean = false) => {
-      if (loading) return;
+  const {
+    dataSources,
+    loading,
+    hasMore,
+    searchTerm,
+    setSearchTerm,
+    loadNextPage,
+    reset,
+  } = useDataSources({ loadOnMount: false });
 
-      setLoading(true);
-      try {
-        const result = await DataService.fetchDataSources({
-          page: pageNum,
-          size: PAGE_SIZE,
-          searchTerm: search,
-        });
-
-        if (append) {
-          setDataSources((prev) => [...prev, ...result.sources]);
-        } else {
-          setDataSources(result.sources);
-        }
-
-        setHasMore(
-          result.sources.length === PAGE_SIZE &&
-            result.total > pageNum * PAGE_SIZE,
-        );
-      } catch (error) {
-        console.error('Failed to fetch data sources:', error);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [loading],
-  );
-
-  // Load initial data when modal opens
+  // Reset and load when modal opens
   useEffect(() => {
     if (open) {
-      setPage(1);
-      setDataSources([]);
       setSelectedDataSources([]);
-      setSearchTerm('');
-      loadDataSources(1, '');
+      reset();
     }
   }, [open]);
-
-  // Handle search with debounce
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      setPage(1);
-      loadDataSources(1, searchTerm);
-    }, 500);
-
-    return () => clearTimeout(timeoutId);
-  }, [searchTerm]);
 
   // Infinite scroll observer
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loading) {
-          const nextPage = page + 1;
-          setPage(nextPage);
-          loadDataSources(nextPage, searchTerm, true);
+        if (entries[0].isIntersecting) {
+          loadNextPage();
         }
       },
       { threshold: 1.0 },
@@ -104,7 +61,7 @@ export const DataSourceModal: FC<DataSourceModalProps> = ({
         observer.unobserve(currentTarget);
       }
     };
-  }, [hasMore, loading, page, searchTerm, loadDataSources]);
+  }, [hasMore, loadNextPage]);
 
   const handleToggleDataSource = (dataSource: DataSource) => {
     const isSelected = selectedDataSources.some(
@@ -129,24 +86,40 @@ export const DataSourceModal: FC<DataSourceModalProps> = ({
     onCancel();
   };
 
+  const footer = (
+    <div className={styles.footer}>
+      <span className={styles.selectedCount}>
+        {selectedDataSources.length > 0 &&
+          `${selectedDataSources.length} datasource${selectedDataSources.length !== 1 ? 's' : ''} selected`}
+      </span>
+      <div>
+        <Button onClick={handleCancel}>Cancel</Button>
+        <Button
+          type="primary"
+          onClick={handleConfirm}
+          disabled={selectedDataSources.length === 0}
+        >
+          Add Selected
+        </Button>
+      </div>
+    </div>
+  );
+
   return (
     <Modal
       title="Select Datasources"
       open={open}
-      onOk={handleConfirm}
       onCancel={handleCancel}
       width={600}
-      okText="Add Selected"
-      okButtonProps={{ disabled: selectedDataSources.length === 0 }}
+      footer={footer}
     >
       <div className={styles.modalContent}>
         <Input
           placeholder="Search datasources..."
           prefix={<SearchOutlined />}
-          suffix={loading && page === 1 ? <Spin size="small" /> : null}
+          suffix={loading && searchTerm ? <Spin size="small" /> : null}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className={styles.searchInput}
         />
 
         <div className={styles.dataSourceList}>
@@ -188,13 +161,6 @@ export const DataSourceModal: FC<DataSourceModalProps> = ({
             </>
           )}
         </div>
-
-        {selectedDataSources.length > 0 && (
-          <div className={styles.selectedCount}>
-            {selectedDataSources.length} datasource
-            {selectedDataSources.length !== 1 ? 's' : ''} selected
-          </div>
-        )}
       </div>
     </Modal>
   );
