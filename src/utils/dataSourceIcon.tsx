@@ -18,49 +18,27 @@ import {
 } from '@phosphor-icons/react';
 
 export function getDataSourceIcon(type: string | undefined): Icon {
+  const fileTypeMap: [string[], Icon][] = [
+    [['csv'], FileCsvIcon],
+    [['xls', 'excel'], FileXlsIcon],
+    [['pdf'], FilePdfIcon],
+    [['doc', 'word'], FileDocIcon],
+    [['ppt', 'powerpoint'], FilePptIcon],
+    [['json', 'code'], FileCodeIcon],
+    [['html', 'htm'], FileHtmlIcon],
+    [['text', 'txt'], FileTextIcon],
+    [['image', 'jpg', 'jpeg', 'png'], FileImageIcon],
+    [['audio', 'mp3', 'wav'], FileAudioIcon],
+    [['video', 'mp4', 'mov'], FileVideoIcon],
+    [['zip', 'archive', 'tar', 'gz'], FileZipIcon],
+    [['cloud', 'snowflake'], FileCloudIcon],
+    [['dataflow'], ArrowsSplitIcon],
+  ];
+
   const normalized = (type ?? '').toLowerCase();
+  const match = fileTypeMap.find(([keywords]) =>
+    keywords.some((k) => normalized.includes(k)),
+  );
 
-  if (normalized.includes('csv')) return FileCsvIcon;
-  if (normalized.includes('xls') || normalized.includes('excel'))
-    return FileXlsIcon;
-  if (normalized.includes('pdf')) return FilePdfIcon;
-  if (normalized.includes('doc') || normalized.includes('word'))
-    return FileDocIcon;
-  if (normalized.includes('ppt') || normalized.includes('powerpoint'))
-    return FilePptIcon;
-  if (normalized.includes('json') || normalized.includes('code'))
-    return FileCodeIcon;
-  if (normalized.includes('html') || normalized.includes('htm'))
-    return FileHtmlIcon;
-  if (normalized.includes('text') || normalized.includes('txt'))
-    return FileTextIcon;
-  if (
-    normalized.includes('image') ||
-    normalized.includes('jpg') ||
-    normalized.includes('jpeg') ||
-    normalized.includes('png')
-  )
-    return FileImageIcon;
-  if (
-    normalized.includes('audio') ||
-    normalized.includes('mp3') ||
-    normalized.includes('wav')
-  )
-    return FileAudioIcon;
-  if (
-    normalized.includes('video') ||
-    normalized.includes('mp4') ||
-    normalized.includes('mov')
-  )
-    return FileVideoIcon;
-  if (
-    normalized.includes('zip') ||
-    normalized.includes('archive') ||
-    normalized.includes('tar') ||
-    normalized.includes('gz')
-  )
-    return FileZipIcon;
-  if (normalized.includes('dataflow')) return ArrowsSplitIcon;
-
-  return DatabaseIcon;
+  return match?.[1] ?? DatabaseIcon;
 }
