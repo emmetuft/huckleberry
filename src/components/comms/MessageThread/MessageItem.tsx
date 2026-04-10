@@ -1,19 +1,18 @@
-import { FC, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { FC, useEffect, useMemo, useState } from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { Database } from 'phosphor-react';
 import styles from './MessageThread.module.css';
 import { useAppDispatch } from 'reducers';
-import { selectPage } from 'reducers/app/slice';
-import { selectFullScreen, toggleProcessStep } from 'reducers/chat/slice';
+import { toggleProcessStep } from 'reducers/chat/slice';
 import { resumeStream } from 'reducers/chat/actions';
-import { AppPage } from 'models/enums/appPage';
 import { ConversationTurn, TurnType } from 'models/interfaces/message';
 import { ElicitationResponse } from 'models/interfaces/userRequest';
 import { ConfirmationRequest } from './Elicitation/ConfirmationRequest';
 import { MetricChart } from './MetricChart';
 import { ProcessStep } from './ProcessStep/ProcessStep';
 import { formatMessageTimestamp } from 'utils/datetime';
+import { DataService } from 'services/data';
 
 interface MessageItemProps {
   turn: ConversationTurn;
@@ -22,10 +21,10 @@ interface MessageItemProps {
 
 export const MessageItem: FC<MessageItemProps> = ({ turn, showTimestamp }) => {
   const dispatch = useAppDispatch();
-  const appPage = useSelector(selectPage);
-  const fullScreen = useSelector(selectFullScreen);
 
-  const isFullScreen = appPage === AppPage.HOME && fullScreen;
+  const [dataSourceNameMap, setDataSourceNameMap] = useState<
+    Record<string, string>
+  >({});
 
   // const metricNode = useMemo(() => {
   //   if (turn.kind !== 'user') return null;
@@ -39,6 +38,24 @@ export const MessageItem: FC<MessageItemProps> = ({ turn, showTimestamp }) => {
   //     ) ?? null
   //   );
   // }, [turn]);
+
+  useEffect(() => {
+    if (turn.kind === TurnType.USER && turn.context?.dataSourceIds) {
+      const idsToFetch = turn.context.dataSourceIds;
+      if (!idsToFetch.length) return;
+      Promise.all(
+        idsToFetch.map(async (id) => {
+          const name = await DataService.fetchDataSourceName(id);
+          return [id, name] as const;
+        }),
+      ).then((entries) => {
+        setDataSourceNameMap((prev) => ({
+          ...prev,
+          ...Object.fromEntries(entries),
+        }));
+      });
+    }
+  }, [turn]);
 
   const handleToggleStep = (stepId: string) => {
     dispatch(toggleProcessStep({ turnId: turn.id, stepId }));
@@ -92,7 +109,8 @@ export const MessageItem: FC<MessageItemProps> = ({ turn, showTimestamp }) => {
             <div className={styles.dataSourcePills}>
               {turn.context.dataSourceIds.map((id) => (
                 <span key={id} className={styles.dataSourcePill}>
-                  {id}
+                  <Database />
+                  {dataSourceNameMap[id] || id}
                 </span>
               ))}
             </div>

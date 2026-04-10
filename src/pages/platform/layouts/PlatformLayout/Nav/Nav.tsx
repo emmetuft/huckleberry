@@ -35,6 +35,7 @@ import { AppPage, AppPageLabel } from 'models/enums/appPage';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
 import { RecCard } from 'components/RecCard/RecCard';
 import { HistoryCard } from 'components/HistoryCard/HistoryCard';
+import { getAvatarUrl } from 'utils/misc';
 
 interface NavProps {}
 
@@ -91,10 +92,7 @@ export const Nav: FC<NavProps> = ({}) => {
     AppPage.APPS,
   ];
 
-  const avatar =
-    identity !== undefined
-      ? `https://${'domo-labs-dev.dev.domo.com'}/api/content/v1/avatar/USER/${identity.id}?size=100`
-      : undefined;
+  const avatar = identity !== undefined ? getAvatarUrl(identity.id) : undefined;
 
   const renderIconBtn = (page: AppPage) => (
     <Tooltip

@@ -54,6 +54,19 @@ const fetchDataSourceSchema = async (
   }
 };
 
+const fetchDataSourceName = async (dataSourceId: string): Promise<string> => {
+  try {
+    const response = await fetch(`${DATA_SOURCES_URL}/${dataSourceId}/schema`);
+    const data = await handleResponse<{
+      dataSource: any;
+      schemaContract: any;
+    }>(response);
+    return data.dataSource.name;
+  } catch (error: any) {
+    throw error;
+  }
+};
+
 interface FetchDataParams {
   dataSourceId: string;
   schema: Column[];
@@ -102,5 +115,6 @@ const formatRowsWithKeys = (schema: Column[], rows: string[][]) =>
 export const DataService = {
   fetchDataSources,
   fetchDataSourceSchema,
+  fetchDataSourceName,
   fetchDataSourceRows,
 };

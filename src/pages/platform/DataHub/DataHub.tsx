@@ -9,6 +9,7 @@ import { dataSourceColumns } from 'constants/data';
 // import { DataSourceUsageTrendChart } from './charts/DataSourceUsageTrendChart';
 import { DataService } from 'services/data';
 import { renderVal } from 'utils/data';
+import { getAvatarUrl } from 'utils/misc';
 
 interface DataHubProps {}
 
@@ -78,9 +79,7 @@ export const DataHub: FC<DataHubProps> = ({}) => {
 
   const cellRenderer = (col: any, val: any) => {
     if (col.id === 'owner') {
-      const avatar = `https://domo-labs-dev.dev.domo.com/api/content/v1/avatar/USER/${val.id}?size=100`;
-      // Todo: replace with actual avatar URL when available, currently using Domo Labs Dev instance for placeholder images
-
+      const avatar = getAvatarUrl(val.id);
       return (
         <div className={styles.owner}>
           <img className={styles.avatar} src={avatar} alt={val.name} />
