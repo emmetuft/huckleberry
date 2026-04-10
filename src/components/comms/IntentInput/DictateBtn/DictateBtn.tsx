@@ -189,7 +189,7 @@ export const DictateButton: FC<DictateButtonProps> = ({
     <div className={styles.dictateContainer}>
       {!isListening ? (
         <IconBtn
-          icon={<MicrophoneIcon />}
+          icon={<MicrophoneIcon size={16} />}
           disabled={disabled}
           onClick={startDictation}
         />

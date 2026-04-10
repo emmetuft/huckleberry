@@ -18,13 +18,20 @@ export const SendButton: FC<SendButtonProps> = ({ isEmpty, onClickSend }) => {
       type="text"
       icon={
         requestLoading ? (
-          <LoadingOutlined style={{ fontSize: 16, color: 'white' }} spin />
+          <LoadingOutlined
+            style={{ fontSize: 16, color: 'var(--background)' }}
+            spin
+          />
         ) : (
-          <ArrowUpIcon color={isEmpty ? '#2c2b2a' : 'white'} size={16} />
+          <ArrowUpIcon
+            color={isEmpty ? 'var(--grey-dark)' : 'var(--background)'}
+            size={16}
+          />
         )
       }
       style={{
-        backgroundColor: isEmpty && !requestLoading ? 'transparent' : '#2c2b2a',
+        backgroundColor:
+          isEmpty && !requestLoading ? 'transparent' : 'var(--grey-dark)',
         transition: 'background-color 0.3s ease',
       }}
       onClick={onClickSend}

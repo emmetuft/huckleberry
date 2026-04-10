@@ -311,7 +311,7 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
               onDataSourceClick={handleDataSourceClick}
             />
             <IconBtn
-              icon={<WrenchIcon />}
+              icon={<WrenchIcon size={16} />}
               onClick={() => setShowToolBrowser(true)}
             />
             <DictateButton
