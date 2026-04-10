@@ -1,7 +1,7 @@
 import { FC, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Popover, Tooltip } from 'antd';
-import { ArrowsOutSimple, Chat, X } from 'phosphor-react';
+import { ArrowsOutSimpleIcon, ChatIcon, XIcon } from '@phosphor-icons/react';
 import styles from './PromptBar.module.css';
 import { useAppDispatch } from 'reducers';
 import {
@@ -43,8 +43,8 @@ export const PromptBar: FC<PromptBarProps> = ({}) => {
               <IconBtn
                 icon={
                   <div className={styles.chatIcons}>
-                    <Chat size={20} />
-                    <X size={10} className={styles.plusIcon} />
+                    <ChatIcon size={20} />
+                    <XIcon size={10} className={styles.plusIcon} />
                   </div>
                 }
                 onClick={onClickNewChat}
@@ -58,7 +58,7 @@ export const PromptBar: FC<PromptBarProps> = ({}) => {
           >
             <Link to={platformRoutePaths[AppPage.HOME]}>
               <IconBtn
-                icon={<ArrowsOutSimple size={16} />}
+                icon={<ArrowsOutSimpleIcon size={16} />}
                 onClick={onClickFullScreen}
               />
             </Link>

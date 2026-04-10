@@ -1,6 +1,12 @@
 import { FC, useState } from 'react';
 import { Collapse, Tag } from 'antd';
-import { CheckCircle, CircleNotch, XCircle, Pause, Play } from 'phosphor-react';
+import {
+  CheckCircleIcon,
+  CircleNotchIcon,
+  XCircleIcon,
+  PauseIcon,
+  PlayIcon,
+} from '@phosphor-icons/react';
 import styles from './ProcessStep.module.css';
 import {
   ProcessStepStatus,
@@ -53,19 +59,21 @@ export const ProcessStep: FC<ProcessStepProps> = ({ step, onToggle }) => {
       case ProcessStepStatus.STARTED:
       case ProcessStepStatus.IN_PROGRESS:
         return (
-          <CircleNotch size={16} weight="bold" className={styles.spinner} />
+          <CircleNotchIcon size={16} weight="bold" className={styles.spinner} />
         );
       case ProcessStepStatus.COMPLETED:
-        return <CheckCircle size={16} weight="fill" className={styles.check} />;
+        return (
+          <CheckCircleIcon size={16} weight="fill" className={styles.check} />
+        );
       case ProcessStepStatus.FAILED:
-        return <XCircle size={16} weight="fill" className={styles.error} />;
+        return <XCircleIcon size={16} weight="fill" className={styles.error} />;
       case ProcessStepStatus.PAUSED:
-        return <Pause size={16} weight="fill" className={styles.paused} />;
+        return <PauseIcon size={16} weight="fill" className={styles.paused} />;
       case ProcessStepStatus.RESUMED:
-        return <Play size={16} weight="fill" className={styles.resumed} />;
+        return <PlayIcon size={16} weight="fill" className={styles.resumed} />;
       default:
         return (
-          <CircleNotch size={16} weight="bold" className={styles.spinner} />
+          <CircleNotchIcon size={16} weight="bold" className={styles.spinner} />
         );
     }
   };

@@ -1,12 +1,12 @@
 import {
-  Brain,
-  ChartBar,
-  ChatCircle,
-  Gear,
-  IdentificationCard,
-  Star,
-  UsersFour,
-} from 'phosphor-react';
+  BrainIcon,
+  ChartBarIcon,
+  ChatCircleIcon,
+  GearIcon,
+  IdentificationCardIcon,
+  StarIcon,
+  UsersFourIcon,
+} from '@phosphor-icons/react';
 import { InputType } from 'models/enums/inputType';
 import { InputField } from 'components/shared/LabelInput/LabelInput';
 import { Persona, RoleLevel } from 'models/interfaces/persona';
@@ -43,7 +43,7 @@ export const sections: SectionDef[] = [
     key: 'role',
     label: 'Role & Identity',
     description: 'Your job title, level, and department',
-    icon: <IdentificationCard size={iconSize} />,
+    icon: <IdentificationCardIcon size={iconSize} />,
     status: (p) => {
       const filled = [p.role, p.level, p.department, p.team].filter(
         (v) => !isEmpty(v),
@@ -57,7 +57,7 @@ export const sections: SectionDef[] = [
     key: 'skills',
     label: 'Skills',
     description: 'Hard and soft skills you bring to your work',
-    icon: <Star size={iconSize} />,
+    icon: <StarIcon size={iconSize} />,
     status: (p) => {
       const hasHard = p.skills.some((s) => s.type === 'hard');
       const hasSoft = p.skills.some((s) => s.type === 'soft');
@@ -70,7 +70,7 @@ export const sections: SectionDef[] = [
     key: 'goals',
     label: 'Goals & Priorities',
     description: "What you're trying to achieve",
-    icon: <ChartBar size={iconSize} />,
+    icon: <ChartBarIcon size={iconSize} />,
     status: (p) => {
       if (p.goals && p.focusAreas.length > 0) return SectionStatus.Complete;
       if (p.goals || p.focusAreas.length > 0) return SectionStatus.InProgress;
@@ -81,7 +81,7 @@ export const sections: SectionDef[] = [
     key: 'relationships',
     label: 'Team & Relationships',
     description: 'Key people you work with',
-    icon: <UsersFour size={iconSize} />,
+    icon: <UsersFourIcon size={iconSize} />,
     status: (p) =>
       p.relationships.length > 0
         ? SectionStatus.Complete
@@ -91,7 +91,7 @@ export const sections: SectionDef[] = [
     key: 'tools',
     label: 'Tools & Systems',
     description: 'Software and platforms you rely on',
-    icon: <Gear size={iconSize} />,
+    icon: <GearIcon size={iconSize} />,
     status: (p) =>
       p.tools.length > 0 ? SectionStatus.Complete : SectionStatus.NotStarted,
   },
@@ -99,7 +99,7 @@ export const sections: SectionDef[] = [
     key: 'communicationStyle',
     label: 'Communication Style',
     description: 'How you prefer agents to respond',
-    icon: <ChatCircle size={iconSize} />,
+    icon: <ChatCircleIcon size={iconSize} />,
     status: (p) =>
       !isEmpty(p.communicationStyle)
         ? SectionStatus.Complete
@@ -109,7 +109,7 @@ export const sections: SectionDef[] = [
     key: 'domainKnowledge',
     label: 'Domain Knowledge',
     description: 'Areas of deep expertise',
-    icon: <Brain size={iconSize} />,
+    icon: <BrainIcon size={iconSize} />,
     status: (p) =>
       p.domainKnowledge.length > 0
         ? SectionStatus.Complete

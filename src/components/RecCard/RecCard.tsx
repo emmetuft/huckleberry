@@ -1,10 +1,9 @@
 import { FC } from 'react';
 import {
-  ArrowSquareOut,
-  Article,
-  Lightning,
-  UserCirclePlus,
-} from 'phosphor-react';
+  ArticleIcon,
+  LightningIcon,
+  UserCirclePlusIcon,
+} from '@phosphor-icons/react';
 import styles from './RecCard.module.css';
 import {
   Recommendation,
@@ -25,9 +24,9 @@ export const RecCard: FC<RecCardProps> = ({ setShowCard }) => {
   };
 
   const iconMap: Record<RecommendationType, JSX.Element> = {
-    [RecommendationType.Workflow]: <Lightning size={20} />,
-    [RecommendationType.Article]: <Article size={20} />,
-    [RecommendationType.Contact]: <UserCirclePlus size={20} />,
+    [RecommendationType.Workflow]: <LightningIcon size={20} />,
+    [RecommendationType.Article]: <ArticleIcon size={20} />,
+    [RecommendationType.Contact]: <UserCirclePlusIcon size={20} />,
   };
 
   return (

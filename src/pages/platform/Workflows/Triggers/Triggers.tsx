@@ -1,12 +1,12 @@
 import { FC } from 'react';
 import {
-  ArrowsCounterClockwise,
-  Clock,
-  FileArrowUp,
-  Gear,
-  HandPointing,
-  NotePencil,
-} from 'phosphor-react';
+  ArrowsCounterClockwiseIcon,
+  ClockIcon,
+  FileArrowUpIcon,
+  GearIcon,
+  HandPointingIcon,
+  NotePencilIcon,
+} from '@phosphor-icons/react';
 import styles from './Triggers.module.css';
 import { motion } from 'framer-motion';
 import { DEFAULT_WORKFLOW_STARTS } from 'constants/workflows';
@@ -22,12 +22,12 @@ export const Triggers: FC = () => {
   };
 
   const iconMap: { [key: string]: JSX.Element } = {
-    clock: <Clock size={24} />,
-    manual: <HandPointing size={24} />,
-    upload: <FileArrowUp size={24} />,
-    refresh: <ArrowsCounterClockwise size={24} />,
-    form: <NotePencil size={24} />,
-    webhook: <Gear size={24} />,
+    clock: <ClockIcon size={24} />,
+    manual: <HandPointingIcon size={24} />,
+    upload: <FileArrowUpIcon size={24} />,
+    refresh: <ArrowsCounterClockwiseIcon size={24} />,
+    form: <NotePencilIcon size={24} />,
+    webhook: <GearIcon size={24} />,
   };
 
   return (

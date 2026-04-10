@@ -1,23 +1,23 @@
 import {
-  Database,
-  Eye,
-  Gauge,
-  HourglassMedium,
-  ShieldCheck,
-  Timer,
-} from 'phosphor-react';
+  DatabaseIcon,
+  EyeIcon,
+  GaugeIcon,
+  HourglassMediumIcon,
+  ShieldCheckIcon,
+  TimerIcon,
+} from '@phosphor-icons/react';
 import styles from './DataHealth.module.css';
 import { IconType, metricList } from 'constants/health';
 import { Quality, qualityColorMap } from 'models/enums/quality';
 
 const Metrics = () => {
   const actionIconMap = {
-    [IconType.SHIELD_CHECK]: <ShieldCheck size={24} />,
-    [IconType.SPEEDOMETER]: <Gauge size={24} />,
-    [IconType.EYE]: <Eye size={24} />,
-    [IconType.HOURGLASS]: <HourglassMedium size={24} />,
-    [IconType.DATABASE]: <Database size={24} />,
-    [IconType.TIMER]: <Timer size={24} />,
+    [IconType.SHIELD_CHECK]: <ShieldCheckIcon size={24} />,
+    [IconType.SPEEDOMETER]: <GaugeIcon size={24} />,
+    [IconType.EYE]: <EyeIcon size={24} />,
+    [IconType.HOURGLASS]: <HourglassMediumIcon size={24} />,
+    [IconType.DATABASE]: <DatabaseIcon size={24} />,
+    [IconType.TIMER]: <TimerIcon size={24} />,
   };
 
   return (

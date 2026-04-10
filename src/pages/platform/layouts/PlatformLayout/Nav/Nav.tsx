@@ -3,22 +3,22 @@ import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { platformRoutePaths } from 'models/enums/appPage';
 import {
-  Atom,
-  Chats,
-  Cube,
-  Database,
-  Graph,
-  Heartbeat,
-  Lightbulb,
-  Lightning,
-  Moon,
-  Notebook,
-  PuzzlePiece,
-  SquaresFour,
-  Sun,
-  TreeStructure,
-  UserCircle,
-} from 'phosphor-react';
+  AtomIcon,
+  ChatsIcon,
+  CubeIcon,
+  DatabaseIcon,
+  GraphIcon,
+  HeartbeatIcon,
+  LightbulbIcon,
+  LightningIcon,
+  MoonIcon,
+  NotebookIcon,
+  PuzzlePieceIcon,
+  SquaresFourIcon,
+  SunIcon,
+  TreeStructureIcon,
+  UserCircleIcon,
+} from '@phosphor-icons/react';
 import { Button, Tooltip } from 'antd';
 import styles from './Nav.module.css';
 import { useAppDispatch } from 'reducers';
@@ -66,16 +66,16 @@ export const Nav: FC<NavProps> = ({}) => {
   const iconSize = 22;
 
   const navIconMap: Record<string, any> = {
-    [AppPage.APPS]: <SquaresFour size={iconSize} />,
-    [AppPage.AGENTS]: <Atom size={iconSize} />,
-    [AppPage.AUTOMATION]: <Lightning size={iconSize} />,
-    [AppPage.DATA_HUB]: <Database size={iconSize} />,
-    [AppPage.DATA_HEALTH]: <Heartbeat size={iconSize} />,
+    [AppPage.APPS]: <SquaresFourIcon size={iconSize} />,
+    [AppPage.AGENTS]: <AtomIcon size={iconSize} />,
+    [AppPage.AUTOMATION]: <LightningIcon size={iconSize} />,
+    [AppPage.DATA_HUB]: <DatabaseIcon size={iconSize} />,
+    [AppPage.DATA_HEALTH]: <HeartbeatIcon size={iconSize} />,
     [AppPage.HOME]: undefined,
-    [AppPage.INTEGRATIONS]: <PuzzlePiece size={iconSize} />,
-    [AppPage.METRICS]: <Notebook size={iconSize} />,
-    [AppPage.ONTOLOGY]: <Graph size={iconSize} />,
-    [AppPage.WORKFLOW]: <TreeStructure size={iconSize} />,
+    [AppPage.INTEGRATIONS]: <PuzzlePieceIcon size={iconSize} />,
+    [AppPage.METRICS]: <NotebookIcon size={iconSize} />,
+    [AppPage.ONTOLOGY]: <GraphIcon size={iconSize} />,
+    [AppPage.WORKFLOW]: <TreeStructureIcon size={iconSize} />,
   };
 
   const upperPages = [
@@ -125,7 +125,7 @@ export const Nav: FC<NavProps> = ({}) => {
           >
             <div>
               <IconBtn
-                icon={<Lightbulb size={iconSize} />}
+                icon={<LightbulbIcon size={iconSize} />}
                 onClick={() => setShowRecs(true)}
               />
             </div>
@@ -133,7 +133,7 @@ export const Nav: FC<NavProps> = ({}) => {
           <Tooltip title="History" placement="right" mouseEnterDelay={0.5}>
             <div>
               <IconBtn
-                icon={<Chats size={iconSize} />}
+                icon={<ChatsIcon size={iconSize} />}
                 onClick={() => setShowHistory(true)}
               />
             </div>
@@ -158,7 +158,7 @@ export const Nav: FC<NavProps> = ({}) => {
                   <img src={app.iconUrl} height="100%" width="100%" />
                 ) : (
                   <div className={styles.defaultAppIcon}>
-                    <Cube color="white" size={18} />
+                    <CubeIcon color="white" size={18} />
                   </div>
                 )}
               </button>
@@ -185,7 +185,11 @@ export const Nav: FC<NavProps> = ({}) => {
             <div>
               <IconBtn
                 icon={
-                  isDark ? <Moon size={iconSize} /> : <Sun size={iconSize} />
+                  isDark ? (
+                    <MoonIcon size={iconSize} />
+                  ) : (
+                    <SunIcon size={iconSize} />
+                  )
                 }
                 onClick={() => dispatch(setTheme(isDark ? 'light' : 'dark'))}
               />
@@ -196,7 +200,7 @@ export const Nav: FC<NavProps> = ({}) => {
               avatar ? (
                 <img src={avatar} alt="User Avatar" className={styles.avatar} />
               ) : (
-                <UserCircle size={iconSize} />
+                <UserCircleIcon size={iconSize} />
               )
             }
             onClick={onClickAvatar}

@@ -1,7 +1,6 @@
 import { FC, useEffect, useMemo, useState } from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { Database } from 'phosphor-react';
 import styles from './MessageThread.module.css';
 import { useAppDispatch } from 'reducers';
 import { toggleProcessStep } from 'reducers/chat/slice';
@@ -13,6 +12,7 @@ import { MetricChart } from './MetricChart';
 import { ProcessStep } from './ProcessStep/ProcessStep';
 import { formatMessageTimestamp } from 'utils/datetime';
 import { DataService } from 'services/data';
+import { getDataSourceIcon } from 'utils/dataSourceIcon';
 
 interface MessageItemProps {
   turn: ConversationTurn;
@@ -23,7 +23,7 @@ export const MessageItem: FC<MessageItemProps> = ({ turn, showTimestamp }) => {
   const dispatch = useAppDispatch();
 
   const [dataSourceNameMap, setDataSourceNameMap] = useState<
-    Record<string, string>
+    Record<string, any>
   >({});
 
   // const metricNode = useMemo(() => {
@@ -45,8 +45,8 @@ export const MessageItem: FC<MessageItemProps> = ({ turn, showTimestamp }) => {
       if (!idsToFetch.length) return;
       Promise.all(
         idsToFetch.map(async (id) => {
-          const name = await DataService.fetchDataSourceName(id);
-          return [id, name] as const;
+          const datasource = await DataService.fetchDataSource(id);
+          return [id, datasource] as const;
         }),
       ).then((entries) => {
         setDataSourceNameMap((prev) => ({
@@ -107,12 +107,17 @@ export const MessageItem: FC<MessageItemProps> = ({ turn, showTimestamp }) => {
           turn.context?.dataSourceIds &&
           turn.context.dataSourceIds.length > 0 && (
             <div className={styles.dataSourcePills}>
-              {turn.context.dataSourceIds.map((id) => (
-                <span key={id} className={styles.dataSourcePill}>
-                  <Database />
-                  {dataSourceNameMap[id] || id}
-                </span>
-              ))}
+              {turn.context.dataSourceIds.map((id) => {
+                const DataSourceIcon = getDataSourceIcon(
+                  dataSourceNameMap[id]?.type,
+                );
+                return (
+                  <span key={id} className={styles.dataSourcePill}>
+                    <DataSourceIcon size={14} />
+                    {dataSourceNameMap[id]?.name || id}
+                  </span>
+                );
+              })}
             </div>
           )}
         {/* {metricNode && (

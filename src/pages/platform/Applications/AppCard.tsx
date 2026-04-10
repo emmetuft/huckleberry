@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Cube, Plus } from 'phosphor-react';
+import { CubeIcon, PlusIcon } from '@phosphor-icons/react';
 // import styles from './Applications.module.css';
 import { Application } from 'models/interfaces/application';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
@@ -16,7 +16,7 @@ export const AppCard: FC<AppCardProps> = ({ app, showAddBtn }) => {
         <img src={app.iconUrl} height="100%" width="100%" />
       ) : (
         <div className="defaultAppIcon">
-          <Cube color="white" size={18} />
+          <CubeIcon color="white" size={18} />
         </div>
       )}
       <div className="appInfo">
@@ -25,7 +25,7 @@ export const AppCard: FC<AppCardProps> = ({ app, showAddBtn }) => {
       </div>
       {showAddBtn && (
         <div className="quickAdd">
-          <IconBtn icon={<Plus />} />
+          <IconBtn icon={<PlusIcon />} />
         </div>
       )}
     </div>
