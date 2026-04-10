@@ -28,15 +28,4 @@ export const buildPersona = (data: any, persona?: Persona): Persona => ({
     decisionStyle:
       data.decisionStyle as PersonaCommunicationStyle['decisionStyle'],
   },
-  completedSections: [
-    ...new Set([
-      ...(persona?.completedSections ?? []),
-      ...(data.role ? (['role'] as const) : []),
-      ...(data.hardSkills.length || data.softSkills.length
-        ? (['skills'] as const)
-        : []),
-      ...(data.tools.length ? (['tools'] as const) : []),
-      ...(['communicationStyle'] as const),
-    ]),
-  ],
 });

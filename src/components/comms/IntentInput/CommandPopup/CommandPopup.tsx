@@ -5,6 +5,7 @@ import { selectIdentity } from 'reducers/app/slice';
 import { InputCommand } from 'models/enums/inputCommand';
 import { CommandPopupItem } from 'models/interfaces/commandPopup';
 import { CommandPopupState, CommandPopupActions } from 'hooks/useCommandPopup';
+import { getAvatarUrl } from 'utils/misc';
 
 interface CommandPopupProps {
   popupRef: React.RefObject<HTMLDivElement>;
@@ -71,10 +72,7 @@ export const CommandPopup = ({ popupRef, popup }: CommandPopupProps) => {
         </>
       );
     } else if (trigger === InputCommand.MENTION) {
-      const avatar =
-        identity !== undefined
-          ? `https://${identity.host}/api/content/v1/avatar/USER/${item.id}?size=100`
-          : undefined;
+      const avatar = identity !== undefined ? getAvatarUrl(item.id) : undefined;
 
       return (
         <div className={styles.nameWithAvatar}>

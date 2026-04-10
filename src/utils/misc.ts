@@ -7,6 +7,14 @@ export const getFirstName = (name?: string) => {
   return firstName || '';
 };
 
+export const getAvatarUrl = (
+  userId: number | string,
+  host: string = 'domo-labs-dev.dev.domo.com',
+  size: number = 100,
+): string => {
+  return `https://${host}/api/content/v1/avatar/USER/${userId}?size=${size}`;
+};
+
 export const getTimeOfDay = (): string => {
   const currentHour = new Date().getHours();
 
