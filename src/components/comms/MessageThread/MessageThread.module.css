@@ -77,6 +77,14 @@
     border-radius: 8px;
   }
 
+  &.panel {
+    max-height: unset;
+    height: 100%;
+    padding: 0;
+    overflow-y: auto;
+    margin-bottom: 120px;
+  }
+
   &.fullScreen {
     max-height: unset;
     margin-bottom: 150px;

@@ -43,8 +43,7 @@ export const PlatformLayout: FC = () => {
     dispatch(setPage(appPage));
   }, [location.pathname, dispatch]);
 
-  // Hide PromptBar on workspace page (/workspace)
-  const hidePromptBar = location.pathname === '/workspace';
+  const hidePromptBar = ['/workspace', '/agents'].includes(location.pathname);
 
   return (
     <ConfigProvider

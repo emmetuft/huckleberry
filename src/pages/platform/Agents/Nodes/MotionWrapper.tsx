@@ -4,13 +4,15 @@ import { motion } from 'framer-motion';
 interface MotionWrapperProps {
   children: ReactNode;
   className?: string;
+  style?: React.CSSProperties;
 }
 
 export const MotionWrapper = forwardRef<HTMLDivElement, MotionWrapperProps>(
-  ({ children, className }, ref) => (
+  ({ children, className, style }, ref) => (
     <motion.div
       ref={ref}
       className={className}
+      style={style}
       initial={{ opacity: 0, marginTop: -30 }}
       animate={{ opacity: 1, marginTop: 0 }}
       transition={{

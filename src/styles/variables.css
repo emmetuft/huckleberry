@@ -30,6 +30,12 @@
 
   --card-bg: white;
   --card-border: white;
+
+  --node-green: #1c9c6f;
+  --node-red: #e42121;
+  --node-blue: #2792c7;
+  --node-purple: #7b3fe4;
+  --node-yellow: #e6bf3e;
 }
 
 [data-theme='dark'] {
@@ -58,4 +64,10 @@
 
   --card-bg: rgba(255, 255, 255, 0.05);
   --card-border: rgba(255, 255, 255, 0.1);
+
+  --node-green: #4ade80;
+  --node-red: #ff6b4a;
+  --node-blue: #38bdf8;
+  --node-purple: #c084fc;
+  --node-yellow: #facc15;
 }
