@@ -1,32 +1,47 @@
+.layout {
+  display: flex;
+  min-height: 460px;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+  flex-shrink: 0;
+  background-color: var(--grey-bg);
+  border-radius: 10px;
+  padding: 16px 0;
+
+  .sidebarMenu {
+    background: transparent !important;
+    border-inline-end: none !important;
+  }
+
+  .continueLater {
+    margin-top: auto;
+    background: none;
+    border: none;
+    color: var(--grey-text);
+    cursor: pointer;
+
+    &:hover {
+      color: var(--text);
+    }
+  }
+}
+
+.mainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0 24px;
+}
+
 .header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   margin-bottom: 16px;
-
-  .progress {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-
-    .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--grey-light);
-      transition: all 0.2s;
-
-      &.dotDone {
-        background: var(--purple);
-      }
-
-      &.dotActive {
-        width: 24px;
-        border-radius: 4px;
-        background: var(--purple);
-      }
-    }
-  }
 
   .skipLink {
     padding: 0;
@@ -44,18 +59,21 @@
 .stepContent {
   display: flex;
   flex-direction: column;
-  gap: 20px;
 
   .stepHeading {
+    margin: 8px 0;
+    font-size: 36px;
   }
 
   .stepSubtext {
+    margin-bottom: 24px;
     color: var(--grey-text);
   }
 
   .stepActions {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: center;
     gap: 12px;
   }
 
@@ -114,16 +132,12 @@
 }
 
 .animationClip {
+  flex: 1;
   overflow: hidden;
-
-  .stepWrapperModal {
-    padding: 8px 0 0;
-  }
 }
 
 .actionBtns {
   display: flex;
   flex-direction: row-reverse;
   justify-content: space-between;
-  padding: 20px 0 8px;
 }

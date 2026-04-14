@@ -9,7 +9,6 @@ export interface StepData {
   department: string;
   hardSkills: string[];
   softSkills: string[];
-  tools: string[];
   preferredFormat: string;
   tone: string;
   decisionStyle: string;
@@ -84,12 +83,6 @@ export const quickStartSteps: QuickStartStep[] = [
     subtext:
       'This helps agents match your preferred style and the tools you rely on. You can always change this later.',
     fields: [
-      {
-        key: 'tools',
-        label: 'Tools & systems',
-        inputType: InputType.Tags,
-        placeholder: 'e.g. Salesforce, Domo, Slack',
-      },
       {
         key: 'preferredFormat',
         label: 'Response format',
@@ -169,7 +162,6 @@ export const defaultStepData: StepData = {
   department: '',
   hardSkills: [],
   softSkills: [],
-  tools: [],
   preferredFormat: 'balanced',
   tone: 'professional',
   decisionStyle: 'data-driven',
