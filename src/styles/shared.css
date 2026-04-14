@@ -89,3 +89,38 @@ svg:focus {
   top: 5px;
   right: 5px;
 }
+
+.agentNode .react-flow__handle {
+  opacity: 0;
+  transition: opacity 0.15s;
+  pointer-events: all;
+}
+
+.agentNode:hover .react-flow__handle,
+.agentNode .react-flow__handle.connected {
+  opacity: 1;
+}
+
+.agentNode {
+  padding: 24px;
+  background-color: var(--background);
+  border-radius: 10px;
+  width: 200px;
+
+  .content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      p {
+        font-weight: 500;
+        font-size: 14px;
+      }
+    }
+  }
+}

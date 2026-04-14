@@ -24,7 +24,6 @@ export enum AppPage {
   METRICS = 'metrics',
   ONTOLOGY = 'ontology',
   PROFILE = 'profile',
-  WORKFLOW = 'workflow',
 }
 
 export const AppPageLabel: Record<string, string> = {
@@ -38,7 +37,6 @@ export const AppPageLabel: Record<string, string> = {
   [AppPage.METRICS]: 'Metric Catalog',
   [AppPage.ONTOLOGY]: 'Business Ontology',
   [AppPage.PROFILE]: 'Profile',
-  [AppPage.WORKFLOW]: 'Workflows',
 };
 
 // Public route paths
@@ -67,7 +65,6 @@ export const platformRoutePaths: Record<AppPage, string> = {
   [AppPage.METRICS]: '/metrics',
   [AppPage.ONTOLOGY]: '/ontology',
   [AppPage.PROFILE]: '/profile',
-  [AppPage.WORKFLOW]: '/workflow',
 };
 
 // Helper to get AppPage from platform path

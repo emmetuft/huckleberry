@@ -75,7 +75,6 @@ export const Nav: FC<NavProps> = ({}) => {
     [AppPage.INTEGRATIONS]: <PuzzlePieceIcon size={iconSize} />,
     [AppPage.METRICS]: <NotebookIcon size={iconSize} />,
     [AppPage.ONTOLOGY]: <GraphIcon size={iconSize} />,
-    [AppPage.WORKFLOW]: <TreeStructureIcon size={iconSize} />,
   };
 
   const upperPages = [
@@ -85,10 +84,9 @@ export const Nav: FC<NavProps> = ({}) => {
     AppPage.METRICS,
   ];
   const lowerPages = [
+    AppPage.AGENTS,
     AppPage.INTEGRATIONS,
-    AppPage.WORKFLOW,
     // AppPage.AUTOMATION,
-    // AppPage.AGENTS,
     AppPage.APPS,
   ];
 

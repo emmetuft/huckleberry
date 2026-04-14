@@ -7,7 +7,8 @@ import { selectFullScreen } from 'reducers/chat/slice';
 import { QuickStart } from 'components/modals/QuickStartModal/QuickStart';
 import { IntentInput } from 'components/comms/IntentInput/IntentInput';
 import { Resources } from 'components/Resources/Resources';
-import { MessageThread } from 'components/comms/MessageThread/MessageThread';
+import { ChatContainer } from 'components/comms/ChatContainer/ChatContainer';
+import { ChatMode } from 'models/enums/chatMode';
 import { QuickStarts } from 'components/comms/QuickStarts/QuickStarts';
 import { getFirstName, getTimeOfDay } from 'utils/misc';
 
@@ -34,13 +35,15 @@ export const Workspace: FC<WorkspaceProps> = ({}) => {
             </motion.p>
           )}
         </AnimatePresence>
-        {fullScreen && <MessageThread />}
-        <div className={fullScreen ? styles.fullScreenInput : ''}>
-          <IntentInput
+        {fullScreen ? (
+          <ChatContainer
+            chatMode={ChatMode.fullScreen}
+            placeholder="Ask anything"
             animate
-            {...(fullScreen ? { placeholder: 'Ask anything' } : {})}
           />
-        </div>
+        ) : (
+          <IntentInput animate />
+        )}
         <AnimatePresence>
           {!fullScreen && (
             <motion.div

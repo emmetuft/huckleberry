@@ -3,7 +3,6 @@ import { useSelector } from 'react-redux';
 import { selectFullScreen } from 'reducers/chat/slice';
 import { AuthGuard } from './layouts/AuthGuard/AuthGuard';
 import { PlatformLayout } from './layouts/PlatformLayout/PlatformLayout';
-import { Agents } from './Agents/Agents';
 import { Applications } from './Applications/Applications';
 import { Automation } from './Automation/Automation';
 import { Background } from './layouts/PlatformLayout/Background/Background';
@@ -12,7 +11,7 @@ import { DataHub } from './DataHub/DataHub';
 import { Integrations } from './Integrations/Integrations';
 import { MetricCatalog } from './MetricCatalog/MetricCatalog';
 import { Ontology } from './Ontology/Ontology';
-import { FlowCanvas } from './Workflows/FlowCanvas';
+import { Agents } from './Agents/Agents';
 import { Workspace } from './Workspace/Workspace';
 import { ProfilePage } from './Profile/ProfilePage';
 import { platformRoutePaths, AppPage } from 'models/enums/appPage';
@@ -76,10 +75,6 @@ export const platformRoutes: RouteObject[] = [
           {
             path: platformRoutePaths[AppPage.PROFILE],
             element: <ProfilePage />,
-          },
-          {
-            path: platformRoutePaths[AppPage.WORKFLOW],
-            element: <FlowCanvas />,
           },
         ],
       },

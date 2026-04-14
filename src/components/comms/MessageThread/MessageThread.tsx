@@ -1,19 +1,18 @@
 import { FC, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import styles from './MessageThread.module.css';
-import { selectPage } from 'reducers/app/slice';
-import { selectFullScreen, selectTurns } from 'reducers/chat/slice';
-import { AppPage } from 'models/enums/appPage';
+import { selectTurns } from 'reducers/chat/slice';
+import { ChatMode } from 'models/enums/chatMode';
 import { ConversationTurn } from 'models/interfaces/message';
 import { shouldShowTimestamp } from 'utils/datetime';
 import { MessageItem } from './MessageItem';
 
-export const MessageThread: FC = () => {
-  const turns = useSelector(selectTurns);
-  const appPage = useSelector(selectPage);
-  const fullScreen = useSelector(selectFullScreen);
+interface MessageThreadProps {
+  chatMode: ChatMode;
+}
 
-  const isFullScreen = appPage === AppPage.HOME && fullScreen;
+export const MessageThread: FC<MessageThreadProps> = ({ chatMode }) => {
+  const turns = useSelector(selectTurns);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const turnCountRef = useRef<number>(turns.length);
@@ -32,7 +31,7 @@ export const MessageThread: FC = () => {
 
   return (
     <div
-      className={`${styles.MessageThread} ${isFullScreen ? styles.fullScreen : ''}`}
+      className={`${styles.MessageThread} ${styles[chatMode]}`}
       ref={scrollRef}
     >
       <div className={styles.messages}>
