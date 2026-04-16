@@ -1,18 +1,16 @@
-import { FC, useEffect, useMemo, useState } from 'react';
-import Markdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import styles from './MessageThread.module.css';
+import { FC, useEffect, useState } from 'react';
+import styles from './MessageItem.module.css';
 import { useAppDispatch } from 'reducers';
 import { toggleProcessStep } from 'reducers/chat/slice';
 import { resumeStream } from 'reducers/chat/actions';
 import { ConversationTurn, TurnType } from 'models/interfaces/message';
 import { ElicitationResponse } from 'models/interfaces/userRequest';
-import { ConfirmationRequest } from './Elicitation/ConfirmationRequest';
-import { MetricChart } from './MetricChart';
-import { ProcessStep } from './ProcessStep/ProcessStep';
+import { ConfirmationRequest } from '../Elicitation/ConfirmationRequest';
+import { ProcessStep } from '../ProcessStep/ProcessStep';
 import { formatMessageTimestamp } from 'utils/datetime';
 import { DataService } from 'services/data';
 import { getDataSourceIcon } from 'utils/dataSourceIcon';
+import { MessageContent } from './MessageContent';
 
 interface MessageItemProps {
   turn: ConversationTurn;
@@ -100,9 +98,7 @@ export const MessageItem: FC<MessageItemProps> = ({ turn, showTimestamp }) => {
               onSubmit={handleElicitationResponse}
             />
           )}
-        <div className={styles.content}>
-          <Markdown remarkPlugins={[remarkGfm]}>{turn.content}</Markdown>
-        </div>
+        <MessageContent content={turn.content} isUser={isUser} />
         {isUser &&
           turn.context?.dataSourceIds &&
           turn.context.dataSourceIds.length > 0 && (

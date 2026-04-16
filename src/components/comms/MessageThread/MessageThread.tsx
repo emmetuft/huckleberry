@@ -5,7 +5,7 @@ import { selectTurns } from 'reducers/chat/slice';
 import { ChatMode } from 'models/enums/chatMode';
 import { ConversationTurn } from 'models/interfaces/message';
 import { shouldShowTimestamp } from 'utils/datetime';
-import { MessageItem } from './MessageItem';
+import { MessageItem } from './MessageItem/MessageItem';
 
 interface MessageThreadProps {
   chatMode: ChatMode;
