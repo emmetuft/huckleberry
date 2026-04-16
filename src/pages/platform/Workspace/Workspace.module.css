@@ -12,3 +12,21 @@
     font-size: 20px;
   }
 }
+
+.bentoWorkspace {
+  position: fixed;
+  inset: 0;
+  padding: 20px 20px 20px 102px;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 20px;
+
+  .leftPanel {
+    gap: 20px;
+
+    .greeting {
+      font-size: 20px;
+    }
+  }
+}

@@ -93,8 +93,9 @@ export const AppReducer = createAppSlice({
       .addCase(saveUserPersona.pending, (state) => {
         state.loading.personaUpdate = true;
       })
-      .addCase(saveUserPersona.rejected, (state) => {
+      .addCase(saveUserPersona.rejected, (state, { meta }) => {
         state.loading.personaUpdate = false;
+        state.persona = meta.arg;
       })
       .addCase(saveUserPersona.fulfilled, (state, { payload }) => {
         state.persona = payload;

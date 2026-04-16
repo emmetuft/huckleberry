@@ -15,6 +15,7 @@ import { saveUserPersona } from 'reducers/app/actions';
 import { LabelInput } from 'components/shared/LabelInput/LabelInput';
 import {
   defaultStepData,
+  presetPersonas,
   QuickStartField,
   quickStartSteps,
   StepData,
@@ -90,21 +91,45 @@ export const QuickStart: FC = () => {
         <div className={styles.stepContent}>
           <h1 className={styles.stepHeading}>Tell us about you</h1>
           <p className={styles.stepSubtext}>
-            Your profile helps AI agents understand who you are, what you're
-            working on, and how you like to communicate. It only takes a few
-            minutes and you can always come back to finish later.
+            Your profile helps AI agents understand who you are and how you like
+            to work.
           </p>
-          <div className={styles.stepActions}>
-            <Button
-              type="primary"
-              shape="round"
-              size="large"
-              onClick={() => goTo(1)}
-              style={{ width: 200 }}
+          <button className={styles.linkedinBtn} onClick={() => {}}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              width="18"
+              height="18"
+              aria-hidden="true"
             >
-              Let's go
+              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+            </svg>
+            Connect with LinkedIn
+          </button>
+          <div className={styles.orDivider}>
+            <span>or pick a starting point</span>
+          </div>
+          <div className={styles.presetGrid}>
+            {presetPersonas.map((preset) => (
+              <button
+                key={preset.id}
+                className={styles.presetCard}
+                onClick={() => {
+                  setData((d) => ({ ...d, ...preset.data }));
+                  goTo(1);
+                }}
+              >
+                <span className={styles.presetTitle}>{preset.title}</span>
+                <span className={styles.presetDesc}>{preset.description}</span>
+              </button>
+            ))}
+          </div>
+          <div className={styles.landingFooter}>
+            <Button type="text" size="small" onClick={() => goTo(1)}>
+              Start from scratch
             </Button>
-            <Button type="text" shape="round" size="large" onClick={onSkip}>
+            <Button type="text" size="small" onClick={onSkip}>
               Skip for now
             </Button>
           </div>

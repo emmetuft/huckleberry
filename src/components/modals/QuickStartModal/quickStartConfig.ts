@@ -166,3 +166,93 @@ export const defaultStepData: StepData = {
   tone: 'professional',
   decisionStyle: 'data-driven',
 };
+
+export interface PresetPersona {
+  id: string;
+  title: string;
+  description: string;
+  data: Partial<StepData>;
+}
+
+export const presetPersonas: PresetPersona[] = [
+  {
+    id: 'product-manager',
+    title: 'Product Manager',
+    description: 'Roadmaps, backlogs & stakeholder alignment',
+    data: {
+      role: 'Product Manager',
+      level: 'Senior',
+      department: 'Product',
+      hardSkills: ['Product Roadmapping', 'Agile', 'User Research', 'Jira'],
+      softSkills: ['Communication', 'Leadership', 'Stakeholder Management'],
+      decisionStyle: 'data-driven',
+    },
+  },
+  {
+    id: 'software-engineer',
+    title: 'Software Engineer',
+    description: 'Building features, APIs & solving hard problems',
+    data: {
+      role: 'Software Engineer',
+      level: 'Mid',
+      department: 'Engineering',
+      hardSkills: ['TypeScript', 'React', 'REST APIs', 'Git'],
+      softSkills: ['Problem Solving', 'Collaboration'],
+      preferredFormat: 'detailed',
+      tone: 'professional',
+    },
+  },
+  {
+    id: 'data-analyst',
+    title: 'Data Analyst',
+    description: 'Turning raw data into actionable decisions',
+    data: {
+      role: 'Data Analyst',
+      level: 'Mid',
+      department: 'Data & Analytics',
+      hardSkills: ['SQL', 'Python', 'Tableau', 'Excel'],
+      softSkills: ['Analytical Thinking', 'Attention to Detail'],
+      decisionStyle: 'data-driven',
+    },
+  },
+  {
+    id: 'marketer',
+    title: 'Marketer',
+    description: 'Campaigns, content & brand growth',
+    data: {
+      role: 'Marketing Manager',
+      level: 'Senior',
+      department: 'Marketing',
+      hardSkills: ['SEO', 'Campaign Management', 'Analytics', 'Copywriting'],
+      softSkills: ['Creativity', 'Communication'],
+      tone: 'casual',
+    },
+  },
+  {
+    id: 'sales',
+    title: 'Sales',
+    description: 'Closing deals & building relationships',
+    data: {
+      role: 'Account Executive',
+      level: 'Senior',
+      department: 'Sales',
+      hardSkills: ['CRM', 'Forecasting', 'Outbound', 'Negotiation'],
+      softSkills: ['Persuasion', 'Relationship Building'],
+      tone: 'casual',
+      decisionStyle: 'intuition',
+    },
+  },
+  {
+    id: 'designer',
+    title: 'Designer',
+    description: 'Crafting intuitive, beautiful experiences',
+    data: {
+      role: 'Product Designer',
+      level: 'Senior',
+      department: 'Design / UX',
+      hardSkills: ['Figma', 'User Research', 'Prototyping', 'Design Systems'],
+      softSkills: ['Creativity', 'Empathy', 'Attention to Detail'],
+      tone: 'casual',
+    },
+  },
+];
