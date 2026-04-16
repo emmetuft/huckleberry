@@ -1,16 +1,16 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import styles from './MessageItem.module.css';
 import { useAppDispatch } from 'reducers';
-import { toggleProcessStep } from 'reducers/chat/slice';
-import { resumeStream } from 'reducers/chat/actions';
+import { selectDataSources, toggleProcessStep } from 'reducers/chat/slice';
+import { fetchDataSources, resumeStream } from 'reducers/chat/actions';
 import { ConversationTurn, TurnType } from 'models/interfaces/message';
 import { ElicitationResponse } from 'models/interfaces/userRequest';
 import { ConfirmationRequest } from '../Elicitation/ConfirmationRequest';
+import { MessageContent } from './MessageContent';
 import { ProcessStep } from '../ProcessStep/ProcessStep';
 import { formatMessageTimestamp } from 'utils/datetime';
-import { DataService } from 'services/data';
 import { getDataSourceIcon } from 'utils/dataSourceIcon';
-import { MessageContent } from './MessageContent';
 
 interface MessageItemProps {
   turn: ConversationTurn;
@@ -19,10 +19,7 @@ interface MessageItemProps {
 
 export const MessageItem: FC<MessageItemProps> = ({ turn, showTimestamp }) => {
   const dispatch = useAppDispatch();
-
-  const [dataSourceNameMap, setDataSourceNameMap] = useState<
-    Record<string, any>
-  >({});
+  const dataSourceNameMap = useSelector(selectDataSources);
 
   // const metricNode = useMemo(() => {
   //   if (turn.kind !== 'user') return null;
@@ -38,20 +35,8 @@ export const MessageItem: FC<MessageItemProps> = ({ turn, showTimestamp }) => {
   // }, [turn]);
 
   useEffect(() => {
-    if (turn.kind === TurnType.USER && turn.context?.dataSourceIds) {
-      const idsToFetch = turn.context.dataSourceIds;
-      if (!idsToFetch.length) return;
-      Promise.all(
-        idsToFetch.map(async (id) => {
-          const datasource = await DataService.fetchDataSource(id);
-          return [id, datasource] as const;
-        }),
-      ).then((entries) => {
-        setDataSourceNameMap((prev) => ({
-          ...prev,
-          ...Object.fromEntries(entries),
-        }));
-      });
+    if (turn.kind === TurnType.USER && turn.context?.dataSourceIds?.length) {
+      dispatch(fetchDataSources(turn.context.dataSourceIds));
     }
   }, [turn]);
 

@@ -23,7 +23,7 @@ export const ProcessStep: FC<ProcessStepProps> = ({ step, onToggle }) => {
   const { id, title, status, isOpen, durationMs, stepType } = step;
 
   const [openSubSteps, setOpenSubSteps] = useState<Set<string>>(
-    () => new Set(step.subSteps?.map((s) => s.id) ?? []),
+    () => new Set(),
   );
 
   const handleToggleSubStep = (subStepId: string) => {
@@ -94,6 +94,7 @@ export const ProcessStep: FC<ProcessStepProps> = ({ step, onToggle }) => {
       <Collapse
         bordered={false}
         activeKey={isOpen ? [id] : []}
+        ghost
         items={[
           {
             key: id,

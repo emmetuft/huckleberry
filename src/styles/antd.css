@@ -1,17 +1,22 @@
 /* Collapse */
 .ant-collapse {
-  border: 1px solid var(--grey);
+  /* border: 1px solid var(--grey); */
 }
 
 .ant-collapse-header {
   min-width: 0;
   overflow: hidden;
+  padding: 10px 16px !important;
 }
 
 .ant-collapse-header-text {
   min-width: 0;
   flex: 1;
   overflow: hidden;
+}
+
+.ant-collapse-content-box {
+  padding-block: 8px !important;
 }
 
 /* Drawer */

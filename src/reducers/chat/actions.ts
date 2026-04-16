@@ -8,7 +8,26 @@ import {
   ResumeRequest,
 } from 'models/interfaces/userRequest';
 import { AgentService } from 'services/agent';
+import { DataService } from 'services/data';
 import { applyStreamEvent, setSessionId } from './slice';
+
+export const fetchDataSources = createAsyncThunk<
+  Record<string, any>,
+  string[],
+  { state: RootState }
+>('chat/fetchDataSources', async (ids, { getState }) => {
+  const cached = getState().chat.dataSources;
+  const uncachedIds = ids.filter((id) => !(id in cached));
+  if (!uncachedIds.length) return {};
+
+  const entries = await Promise.all(
+    uncachedIds.map(async (id) => {
+      const datasource = await DataService.fetchDataSource(id);
+      return [id, datasource] as const;
+    }),
+  );
+  return Object.fromEntries(entries);
+});
 
 export const fetchSessions = createAsyncThunk(
   'chat/fetchSessions',
