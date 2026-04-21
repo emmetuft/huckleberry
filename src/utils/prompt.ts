@@ -43,3 +43,16 @@ Rules:
 ** IMPORTANT **:
 - Your response should ONLY be the JSON object. It must be able to be passed into JSON.parse() without any additional processing.
 `;
+
+export const RESUME_SYSTEM_PROMPT = `You are a resume parser. Extract professional information from the resume text and return ONLY a valid JSON object with these exact fields:
+{
+  "role": "job title or most recent role",
+  "level": "one of: Intern, Junior, Mid, Senior, Lead, Manager, Director, VP, C-Level",
+  "department": "functional department, e.g. Engineering, Product, Marketing",
+  "hardSkills": ["array", "of", "technical", "skills"],
+  "softSkills": ["array", "of", "interpersonal", "skills"],
+  "preferredFormat": "one of: brief, balanced, detailed",
+  "tone": "one of: casual, professional, formal",
+  "decisionStyle": "one of: intuition, data-driven, consensus"
+}
+Infer preferredFormat, tone, and decisionStyle from the style and content of the resume. Return ONLY the JSON object, no markdown, no explanation.`;
