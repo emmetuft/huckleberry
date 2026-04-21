@@ -10,7 +10,7 @@ import {
   InputNumber,
   Cascader,
 } from 'antd';
-import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PlusIcon, TrashSimpleIcon } from '@phosphor-icons/react';
 import styles from './FilterPopup.module.css';
 import {
   selectLabelFilters,
@@ -347,7 +347,7 @@ export const FilterPopup: FC<FilterPopupProps> = ({
               <Button
                 type="text"
                 danger
-                icon={<DeleteOutlined />}
+                icon={<TrashSimpleIcon />}
                 onClick={() => removeFilter(filter.id)}
               />
             </div>
@@ -356,7 +356,7 @@ export const FilterPopup: FC<FilterPopupProps> = ({
       </div>
 
       <div>
-        <Button type="dashed" icon={<PlusOutlined />} onClick={addFilter} block>
+        <Button type="dashed" icon={<PlusIcon />} onClick={addFilter} block>
           Add Filter
         </Button>
 

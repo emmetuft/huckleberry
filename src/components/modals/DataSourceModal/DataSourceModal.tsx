@@ -1,6 +1,6 @@
 import { FC, useEffect, useState, useRef } from 'react';
 import { Modal, Input, Checkbox, Empty, Spin, Button } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import { MagnifyingGlassIcon } from '@phosphor-icons/react';
 import { DataSource } from 'models/interfaces/dataSource';
 import { useDataSources } from 'hooks/useDataSources';
 import styles from './DataSourceModal.module.css';
@@ -116,7 +116,7 @@ export const DataSourceModal: FC<DataSourceModalProps> = ({
       <div className={styles.modalContent}>
         <Input
           placeholder="Search datasources..."
-          prefix={<SearchOutlined />}
+          prefix={<MagnifyingGlassIcon />}
           suffix={loading && searchTerm ? <Spin size="small" /> : null}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}

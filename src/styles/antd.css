@@ -36,6 +36,12 @@
   margin-bottom: 0;
 }
 
+/* List */
+.ant-list .ant-list-item {
+  justify-content: unset;
+  gap: 8px;
+}
+
 /* Segmented */
 .ant-segmented {
   padding: 8px;

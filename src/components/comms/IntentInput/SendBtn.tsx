@@ -1,8 +1,7 @@
 import { FC } from 'react';
 import { useSelector } from 'react-redux';
 import { Button } from 'antd';
-import { LoadingOutlined } from '@ant-design/icons';
-import { ArrowUpIcon } from '@phosphor-icons/react';
+import { ArrowUpIcon, CircleNotchIcon } from '@phosphor-icons/react';
 import { selectLoading } from 'reducers/chat/slice';
 
 interface SendButtonProps {
@@ -18,9 +17,10 @@ export const SendButton: FC<SendButtonProps> = ({ isEmpty, onClickSend }) => {
       type="text"
       icon={
         requestLoading ? (
-          <LoadingOutlined
-            style={{ fontSize: 16, color: 'var(--background)' }}
-            spin
+          <CircleNotchIcon
+            size={16}
+            color="var(--background)"
+            style={{ animation: 'spin 1s linear infinite' }}
           />
         ) : (
           <ArrowUpIcon

@@ -4,7 +4,7 @@ export interface Column {
   id: string;
   name: string;
   type: DataType;
-  metadata: any;
-  ai: any;
-  visible: boolean;
+  metadata?: any;
+  ai?: any;
+  visible?: boolean;
 }

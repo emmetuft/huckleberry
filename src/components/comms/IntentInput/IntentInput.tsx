@@ -1,13 +1,13 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Button } from 'antd';
-import { CloseOutlined } from '@ant-design/icons';
 import {
   CalendarBlankIcon,
   ChartLineIcon,
   DatabaseIcon,
   PaperPlaneTiltIcon,
   WrenchIcon,
+  XIcon,
 } from '@phosphor-icons/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import styles from './IntentInput.module.css';
@@ -324,7 +324,7 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
                   <div key={tool.toolId} className={styles.tool}>
                     <p>{tool.overrideToolName}</p>
                     <button onClick={() => onRemoveTool(tool)}>
-                      <CloseOutlined className={styles.closeIcon} />
+                      <XIcon className={styles.closeIcon} color="white" />
                     </button>
                   </div>
                 ))}

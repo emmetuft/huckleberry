@@ -1,0 +1,25 @@
+.GraphPlayback {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 8px;
+
+  .sliderWrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .timestamp {
+      font-size: 11px;
+      color: var(--text-secondary, #888);
+      white-space: nowrap;
+      flex-shrink: 0;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .slider {
+      flex: 1;
+    }
+  }
+}

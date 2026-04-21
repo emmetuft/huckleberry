@@ -1,11 +1,13 @@
-import { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Button, FloatButton, Tooltip } from 'antd';
 import {
-  ExportOutlined,
-  PlusSquareOutlined,
-  ClearOutlined,
-} from '@ant-design/icons';
+  BroomIcon,
+  ExportIcon,
+  PlusCircleIcon,
+  VectorThreeIcon,
+  VectorTwoIcon,
+} from '@phosphor-icons/react';
 import styles from './Ontology.module.css';
 import { useAppDispatch } from 'reducers';
 import {
@@ -15,24 +17,40 @@ import {
   selectLoading,
 } from 'reducers/ontology/slice';
 import { fetchAllNodeLabels } from 'reducers/ontology/actions';
-import { Neo4jNode } from 'models/interfaces/ontology';
-import { OntologyInitModal } from './OntologyInitModal/OntologyInitModal';
-import { ForceGraph } from './ForceGraph3d';
+import { NODE_LABELS, PEOPLE_SKILLS_GRAPH } from 'constants/graph';
+import { GraphNode } from 'models/interfaces/ontology';
+import { ForceGraph } from './ForceGraph';
+import { GraphLegend } from './GraphLegend/GraphLegend';
 import { NodeDrawer } from './NodeDrawer';
-import { SearchBar } from './SearchBar/SearchBar';
+import { OntologyInitModal } from './OntologyInitModal/OntologyInitModal';
+import { GraphControls } from './GraphControls/GraphControls';
 import LoadingAnimation from 'components/shared/Loader/Loader';
 
 interface OntologyProps {}
 
 export const Ontology: FC<OntologyProps> = ({}) => {
   const dispatch = useAppDispatch();
-  const graphData = useSelector(selectGraphData);
+  // const graphData = useSelector(selectGraphData);
+  const graphData = PEOPLE_SKILLS_GRAPH;
   const nodeLabels = useSelector(selectNodeLabels);
   const loading = useSelector(selectLoading).loadingNodes;
 
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
   const [initModalOpen, setInitModalOpen] = useState<boolean>(false);
+  const [graphMode, setGraphMode] = useState<'2d' | '3d'>('2d');
+  const [visibleNodeIds, setVisibleNodeIds] = useState<Set<string> | null>(
+    null,
+  );
+
+  const filteredGraphData = useMemo(() => {
+    if (!visibleNodeIds) return graphData;
+    const nodes = graphData.nodes.filter((n) => visibleNodeIds.has(n.id));
+    const edges = graphData.edges.filter(
+      (e) => visibleNodeIds.has(e.source) && visibleNodeIds.has(e.target),
+    );
+    return { nodes, edges };
+  }, [graphData, visibleNodeIds]);
 
   const init = useRef<boolean>(false);
 
@@ -53,7 +71,7 @@ export const Ontology: FC<OntologyProps> = ({}) => {
     }
   }, [graphData]);
 
-  const onNodeClick = useCallback((node: Neo4jNode) => {
+  const onNodeClick = useCallback((node: GraphNode) => {
     setSelectedNode(node.id);
     setDrawerOpen(true);
   }, []);
@@ -81,17 +99,21 @@ export const Ontology: FC<OntologyProps> = ({}) => {
         </div>
       ) : (
         <>
-          <ForceGraph onNodeClick={onNodeClick} />
+          <ForceGraph
+            onNodeClick={onNodeClick}
+            mode={graphMode}
+            data={filteredGraphData}
+          />
         </>
       )}
 
-      <SearchBar />
-
+      <GraphControls onPlaybackChange={setVisibleNodeIds} />
+      <GraphLegend labels={NODE_LABELS} />
       <FloatButton.Group shape="square">
         <FloatButton
           icon={
             <Tooltip title="Add node" placement="left">
-              <PlusSquareOutlined />
+              <PlusCircleIcon />
             </Tooltip>
           }
           onClick={onClickAddNode}
@@ -99,15 +121,26 @@ export const Ontology: FC<OntologyProps> = ({}) => {
         <FloatButton
           icon={
             <Tooltip title="Clear graph view" placement="left">
-              <ClearOutlined />
+              <BroomIcon />
             </Tooltip>
           }
           onClick={onClearGraph}
         />
         <FloatButton
           icon={
+            <Tooltip
+              title={`Switch to ${graphMode === '3d' ? '2D' : '3D'}`}
+              placement="left"
+            >
+              {graphMode === '3d' ? <VectorTwoIcon /> : <VectorThreeIcon />}
+            </Tooltip>
+          }
+          onClick={() => setGraphMode((m) => (m === '3d' ? '2d' : '3d'))}
+        />
+        <FloatButton
+          icon={
             <Tooltip title="Export graph" placement="left">
-              <ExportOutlined />
+              <ExportIcon />
             </Tooltip>
           }
         />

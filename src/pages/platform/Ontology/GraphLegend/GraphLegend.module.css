@@ -1,0 +1,25 @@
+.GraphLegend {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+
+  gap: 6px;
+
+  .item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .label {
+    font-size: 12px;
+  }
+}

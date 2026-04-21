@@ -4,6 +4,7 @@ import { Button, Drawer, Input, List, Popover, Select } from 'antd';
 import styles from './Ontology.module.css';
 import { selectGraphData, selectNodeLabels } from 'reducers/ontology/slice';
 import { getColorForGroup } from 'utils/styles';
+import { NODE_LABELS, PEOPLE_SKILLS_GRAPH } from 'constants/graph';
 
 interface NodeDrawerProps {
   selectedNode: string | null;
@@ -18,8 +19,10 @@ export const NodeDrawer: FC<NodeDrawerProps> = ({
   setSelectedNode,
   setDrawerOpen,
 }) => {
-  const graphData = useSelector(selectGraphData);
-  const nodeLabels = useSelector(selectNodeLabels);
+  // const graphData = useSelector(selectGraphData);
+  // const nodeLabels = useSelector(selectNodeLabels);
+  const graphData = PEOPLE_SKILLS_GRAPH;
+  const nodeLabels = NODE_LABELS;
 
   const [addNodeName, setAddNodeName] = useState<string>('');
   const [addNodeLabel, setAddNodeLabel] = useState<string>();
@@ -92,16 +95,19 @@ export const NodeDrawer: FC<NodeDrawerProps> = ({
         <div className={styles.drawerContent}>
           <div className={styles.section}>
             <h4>Properties</h4>
-            <div className={styles.properties}>
+            <div className={`${styles.properties} ${styles.propertyContainer}`}>
               {Object.keys(node.properties).map((key) => (
                 <div key={key} className={styles.propertyItem}>
-                  <strong>{key}:</strong> {String(node.properties[key])}
+                  <span className={styles.label}>{key}</span>
+                  <span className={styles.value}>
+                    {String(node.properties[key])}
+                  </span>
                 </div>
               ))}
             </div>
           </div>
           <div className={styles.section}>
-            <h4>Relationships</h4>
+            <h4>Relationships{` (${relatedLinks.length})`}</h4>
             <List
               dataSource={relatedLinks}
               renderItem={(link) => (
@@ -109,33 +115,41 @@ export const NodeDrawer: FC<NodeDrawerProps> = ({
                   <span
                     style={{
                       color: getNodeColor(link.source),
+                      fontWeight: 500,
                       cursor: 'pointer',
                     }}
                     onClick={() => setSelectedNode(link.source)}
                   >
                     {getNodeDisplayName(link.source)}
                   </span>
-                  <span>{'-'}</span>
+                  <span className={styles.arrow}>{'→'}</span>
                   <Popover
+                    placement="top"
                     content={
                       <div className={styles.properties}>
                         {Object.keys(link.properties).map((key) => (
                           <div key={key} className={styles.propertyItem}>
-                            <strong>{key}:</strong>{' '}
-                            {String(link.properties[key])}
+                            <span className={styles.label}>{key}</span>
+                            <span className={styles.value}>
+                              {String(link.properties[key])}
+                            </span>
                           </div>
                         ))}
                       </div>
                     }
-                    title="Properties"
-                    placement="top"
+                    styles={{
+                      body: {
+                        backgroundColor: 'var(--background)',
+                      },
+                    }}
                   >
-                    <div>{link.type}</div>
+                    <div className={styles.relationship}>{link.type}</div>
                   </Popover>
-                  <span>{'→'}</span>
+                  <span className={styles.arrow}>{'→'}</span>
                   <span
                     style={{
                       color: getNodeColor(link.target),
+                      fontWeight: 500,
                       cursor: 'pointer',
                     }}
                     onClick={() => setSelectedNode(link.target)}

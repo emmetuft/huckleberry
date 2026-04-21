@@ -1,6 +1,10 @@
 import { FC, useEffect, useState } from 'react';
-import { PlusOutlined, SyncOutlined, ApiOutlined } from '@ant-design/icons';
 import { Button, Popconfirm, Switch, message } from 'antd';
+import {
+  ArrowsClockwiseIcon,
+  PlugsIcon,
+  PlusIcon,
+} from '@phosphor-icons/react';
 import styles from './McpServers.module.css';
 import { MCPServerConfig } from 'models/interfaces/mcpServer';
 import { useAppDispatch } from 'reducers';
@@ -136,20 +140,14 @@ export const McpServers: FC = () => {
     <div className={styles.mcpSection}>
       <div className={styles.sectionHeader}>
         <h2>MCP Servers</h2>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={handleAddServer}
-        >
+        <Button type="primary" icon={<PlusIcon />} onClick={handleAddServer}>
           Add Server
         </Button>
       </div>
 
       {servers.length === 0 ? (
         <div className={styles.emptyState}>
-          <ApiOutlined
-            style={{ fontSize: 48, opacity: 0.3, marginBottom: 16 }}
-          />
+          <PlugsIcon />
           <h3>No MCP Servers Connected</h3>
           <p>Connect external MCP servers to use their tools in chat.</p>
           <Button type="primary" onClick={handleAddServer}>
@@ -219,7 +217,7 @@ export const McpServers: FC = () => {
                     </Button>
                     <Button
                       size="small"
-                      icon={<SyncOutlined />}
+                      icon={<ArrowsClockwiseIcon />}
                       onClick={() => handleSyncTools(server.id)}
                       loading={syncingServerId === server.id}
                     >

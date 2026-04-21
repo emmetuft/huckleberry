@@ -1,9 +1,12 @@
 export const nodeColors = [
-  '#01200F',
-  '#439A86',
-  '#F75E1C',
-  '#5a0cff',
-  '#81C14B',
+  '#705be7',
+  '#6d8ae9',
+  '#3a9e72',
+  '#c45a4a',
+  '#e0a030',
+  '#c048ae',
+  '#30b8b0',
+  '#bfff00',
 ];
 
 export const chartColors = [...nodeColors, '#2792c7'];
