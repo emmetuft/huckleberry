@@ -1,6 +1,5 @@
 import { FC } from 'react';
-import { CloseOutlined } from '@ant-design/icons';
-import { Database, File as FileIcon } from 'phosphor-react';
+import { DatabaseIcon, FileIcon, XIcon } from '@phosphor-icons/react';
 import { DataSource } from 'models/interfaces/dataSource';
 import styles from './Context.module.css';
 
@@ -28,16 +27,16 @@ export const ContextItems: FC<ContextItemsProps> = ({
           <FileIcon size={14} />
           <span className={styles.fileName}>{file.name}</span>
           <button onClick={() => onRemoveFile(file.name)}>
-            <CloseOutlined className={styles.closeIcon} />
+            <XIcon className={styles.closeIcon} />
           </button>
         </div>
       ))}
       {selectedDataSources.map((dataSource) => (
         <div key={dataSource.id} className={styles.uploadedFile}>
-          <Database size={14} />
+          <DatabaseIcon size={14} />
           <span className={styles.fileName}>{dataSource.name}</span>
           <button onClick={() => onRemoveDataSource(dataSource.id)}>
-            <CloseOutlined className={styles.closeIcon} />
+            <XIcon className={styles.closeIcon} />
           </button>
         </div>
       ))}

@@ -232,7 +232,6 @@ export function applyEventToTurn(
 
     // ── Action execution ────────────────────────────────────────────────────
     case AISessionEventType.ACTION_STARTED: {
-      console.log(event);
       const step = createActionStep(event);
       const parentIndex = base.processingSteps.findIndex(
         (s) => s.toolCallId && s.toolCallId === event.toolCallId,

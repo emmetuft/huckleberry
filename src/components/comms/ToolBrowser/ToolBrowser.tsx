@@ -1,7 +1,11 @@
 import { FC, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Modal, Input, Collapse, Button, Empty } from 'antd';
-import { SearchOutlined, PlusOutlined, CheckOutlined } from '@ant-design/icons';
+import {
+  CheckIcon,
+  MagnifyingGlassIcon,
+  PlusIcon,
+} from '@phosphor-icons/react';
 import styles from './ToolBrowser.module.css';
 import { selectToolkits } from 'reducers/toolkits/slice';
 import { Tool, Toolkit } from 'models/interfaces/toolkit';
@@ -77,7 +81,7 @@ export const ToolBrowser: FC<ToolBrowserProps> = ({
                 <Button
                   type={selected ? 'primary' : 'default'}
                   size="small"
-                  icon={selected ? <CheckOutlined /> : <PlusOutlined />}
+                  icon={selected ? <CheckIcon /> : <PlusIcon />}
                   onClick={(e) => {
                     e.stopPropagation();
                     handleToggleTool(tool);
@@ -108,7 +112,7 @@ export const ToolBrowser: FC<ToolBrowserProps> = ({
       <div className={styles.searchContainer}>
         <Input
           placeholder="Search tools..."
-          prefix={<SearchOutlined />}
+          prefix={<MagnifyingGlassIcon />}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           allowClear

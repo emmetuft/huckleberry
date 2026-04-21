@@ -1,14 +1,14 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Button } from 'antd';
-import { CloseOutlined } from '@ant-design/icons';
 import {
-  CalendarBlank,
-  ChartLine,
-  Database,
-  PaperPlaneTilt,
-  Wrench,
-} from 'phosphor-react';
+  CalendarBlankIcon,
+  ChartLineIcon,
+  DatabaseIcon,
+  PaperPlaneTiltIcon,
+  WrenchIcon,
+  XIcon,
+} from '@phosphor-icons/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import styles from './IntentInput.module.css';
 import { useAppDispatch } from 'reducers';
@@ -257,10 +257,10 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   };
 
   const actionIconMap = {
-    [ActionType.SCHEDULE]: <CalendarBlank size={16} />,
-    [ActionType.CHART]: <ChartLine size={16} />,
-    [ActionType.DATASET]: <Database size={16} />,
-    [ActionType.SEND]: <PaperPlaneTilt size={16} />,
+    [ActionType.SCHEDULE]: <CalendarBlankIcon size={16} />,
+    [ActionType.CHART]: <ChartLineIcon size={16} />,
+    [ActionType.DATASET]: <DatabaseIcon size={16} />,
+    [ActionType.SEND]: <PaperPlaneTiltIcon size={16} />,
   };
 
   return (
@@ -311,7 +311,7 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
               onDataSourceClick={handleDataSourceClick}
             />
             <IconBtn
-              icon={<Wrench />}
+              icon={<WrenchIcon size={16} />}
               onClick={() => setShowToolBrowser(true)}
             />
             <DictateButton
@@ -324,7 +324,7 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
                   <div key={tool.toolId} className={styles.tool}>
                     <p>{tool.overrideToolName}</p>
                     <button onClick={() => onRemoveTool(tool)}>
-                      <CloseOutlined className={styles.closeIcon} />
+                      <XIcon className={styles.closeIcon} color="white" />
                     </button>
                   </div>
                 ))}

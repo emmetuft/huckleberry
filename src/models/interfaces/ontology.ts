@@ -4,6 +4,8 @@ export interface GraphNode {
   id: string;
   labels: string[];
   properties: Record<string, any>;
+  createdAt?: string;
+  updatedAt?: string;
 }
 export interface GraphEdge {
   id: string;
@@ -11,6 +13,8 @@ export interface GraphEdge {
   target: string;
   type: string;
   properties: Record<string, any>;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface GraphData {

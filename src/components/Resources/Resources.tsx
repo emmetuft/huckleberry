@@ -1,5 +1,5 @@
 import { FC, useState } from 'react';
-// import { MagnifyingGlass } from 'phosphor-react';
+// import { MagnifyingGlassIcon } from '@phosphor-icons/react';
 import styles from './Resources.module.css';
 import { ResourceList } from './ResourceList/ResourceList';
 // import { IconBtn } from 'components/shared/IconBtn/IconBtn';

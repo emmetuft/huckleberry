@@ -1,15 +1,14 @@
 import { FC, useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { Button, Tag, Tooltip, Space } from 'antd';
 import {
-  CheckCircleOutlined,
-  ClockCircleOutlined,
-  ExclamationCircleOutlined,
-  LockOutlined,
-  UnlockOutlined,
-  SyncOutlined,
-  SearchOutlined,
-} from '@ant-design/icons';
+  ArrowsClockwiseIcon,
+  CheckCircleIcon,
+  ClockIcon,
+  LockIcon,
+  LockOpenIcon,
+  MagnifyingGlassIcon,
+  WarningCircleIcon,
+} from '@phosphor-icons/react';
 import { useAppDispatch } from 'reducers';
 import { MCPServerConfig, OAuth2AuthStatus } from 'models/interfaces/mcpServer';
 
@@ -86,13 +85,13 @@ export const OAuth2Status: FC<OAuth2StatusProps> = ({ server }) => {
     switch (status) {
       case 'authorized':
         return (
-          <Tag icon={<CheckCircleOutlined />} color="success">
+          <Tag icon={<CheckCircleIcon />} color="success">
             Authorized
           </Tag>
         );
       case 'discovering':
         return (
-          <Tag icon={<SyncOutlined spin />} color="processing">
+          <Tag icon={<ArrowsClockwiseIcon />} color="processing">
             Discovering...
           </Tag>
         );
@@ -103,7 +102,7 @@ export const OAuth2Status: FC<OAuth2StatusProps> = ({ server }) => {
               server.oauth2Error || statusData?.error || 'Discovery failed'
             }
           >
-            <Tag icon={<ExclamationCircleOutlined />} color="error">
+            <Tag icon={<WarningCircleIcon />} color="error">
               Discovery Failed
             </Tag>
           </Tooltip>
@@ -117,28 +116,28 @@ export const OAuth2Status: FC<OAuth2StatusProps> = ({ server }) => {
                 : undefined
             }
           >
-            <Tag icon={<ClockCircleOutlined />} color="processing">
+            <Tag icon={<ClockIcon />} color="processing">
               Ready to Authorize
             </Tag>
           </Tooltip>
         );
       case 'expired':
         return (
-          <Tag icon={<ExclamationCircleOutlined />} color="warning">
+          <Tag icon={<WarningCircleIcon />} color="warning">
             Expired
           </Tag>
         );
       case 'error':
         return (
           <Tooltip title={server.oauth2Error || statusData?.error}>
-            <Tag icon={<ExclamationCircleOutlined />} color="error">
+            <Tag icon={<WarningCircleIcon />} color="error">
               Error
             </Tag>
           </Tooltip>
         );
       default:
         return (
-          <Tag icon={<LockOutlined />} color="default">
+          <Tag icon={<LockIcon />} color="default">
             Not Discovered
           </Tag>
         );
@@ -154,7 +153,7 @@ export const OAuth2Status: FC<OAuth2StatusProps> = ({ server }) => {
       return (
         <Button
           size="small"
-          icon={<UnlockOutlined />}
+          icon={<LockOpenIcon />}
           onClick={handleRevoke}
           danger
         >
@@ -176,7 +175,7 @@ export const OAuth2Status: FC<OAuth2StatusProps> = ({ server }) => {
       return (
         <Button
           size="small"
-          icon={<SearchOutlined />}
+          icon={<MagnifyingGlassIcon />}
           onClick={handleDiscover}
           loading={isDiscovering}
         >
@@ -190,7 +189,7 @@ export const OAuth2Status: FC<OAuth2StatusProps> = ({ server }) => {
       <Button
         size="small"
         type="primary"
-        icon={<LockOutlined />}
+        icon={<LockIcon />}
         onClick={handleAuthorize}
         loading={isAuthorizing}
         disabled={!hasDiscoveredConfig && !server.oauth2Config}

@@ -1,5 +1,5 @@
 import { FC, useEffect, useRef } from 'react';
-import { X } from 'phosphor-react';
+import { XIcon } from '@phosphor-icons/react';
 import styles from './PopupCard.module.css';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
 
@@ -41,7 +41,7 @@ export const PopupCard: FC<PopupCardProps> = ({
       <div className={styles.heading}>
         <div className={styles.title}>
           <h3>{title}</h3>
-          <IconBtn icon={<X />} onClick={() => setShowCard(false)} />
+          <IconBtn icon={<XIcon />} onClick={() => setShowCard(false)} />
         </div>
         {description && <p>{description}</p>}
       </div>

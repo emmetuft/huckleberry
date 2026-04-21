@@ -9,6 +9,7 @@ import ChatReducer from './chat/slice';
 import MetricsReducer from './metrics/slice';
 import PeopleReducer from './people/slice';
 import ToolkitsReducer from './toolkits/slice';
+import WorkspaceReducer from './workspace/slice';
 //-- importRef
 import { useDispatch } from 'react-redux';
 
@@ -21,6 +22,7 @@ export const store = configureStore({
     metrics: MetricsReducer,
     people: PeopleReducer,
     toolkits: ToolkitsReducer,
+    workspace: WorkspaceReducer,
     //-- reducerRef
   },
 });

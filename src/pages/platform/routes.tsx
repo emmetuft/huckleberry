@@ -1,9 +1,11 @@
 import { RouteObject } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { selectFullScreen } from 'reducers/chat/slice';
+import { selectPersona } from 'reducers/app/slice';
+import { selectDismissedCards } from 'reducers/workspace/slice';
+import { getBentoLayout } from 'config/bentoConfig';
 import { AuthGuard } from './layouts/AuthGuard/AuthGuard';
 import { PlatformLayout } from './layouts/PlatformLayout/PlatformLayout';
-import { Agents } from './Agents/Agents';
 import { Applications } from './Applications/Applications';
 import { Automation } from './Automation/Automation';
 import { Background } from './layouts/PlatformLayout/Background/Background';
@@ -12,7 +14,7 @@ import { DataHub } from './DataHub/DataHub';
 import { Integrations } from './Integrations/Integrations';
 import { MetricCatalog } from './MetricCatalog/MetricCatalog';
 import { Ontology } from './Ontology/Ontology';
-import { FlowCanvas } from './Workflows/FlowCanvas';
+import { Agents } from './Agents/Agents';
 import { Workspace } from './Workspace/Workspace';
 import { ProfilePage } from './Profile/ProfilePage';
 import { platformRoutePaths, AppPage } from 'models/enums/appPage';
@@ -21,11 +23,21 @@ import styles from './layouts/PlatformLayout/PlatformLayout.module.css';
 // Home page component wrapper
 const HomePage = () => {
   const fullScreen = useSelector(selectFullScreen);
+  const persona = useSelector(selectPersona);
+  const dismissedCards = useSelector(selectDismissedCards);
+
+  const bentoLayout = getBentoLayout(persona?.department);
+  const isBentoMode =
+    !!bentoLayout &&
+    bentoLayout.cards.some((c) => !dismissedCards.includes(c.id));
+
+  if (isBentoMode) {
+    return <Workspace />;
+  }
 
   return (
     <div className={`${styles.home} ${fullScreen ? styles.fullScreen : ''}`}>
       <Workspace />
-      {/* <Background /> */}
     </div>
   );
 };
@@ -76,10 +88,6 @@ export const platformRoutes: RouteObject[] = [
           {
             path: platformRoutePaths[AppPage.PROFILE],
             element: <ProfilePage />,
-          },
-          {
-            path: platformRoutePaths[AppPage.WORKFLOW],
-            element: <FlowCanvas />,
           },
         ],
       },

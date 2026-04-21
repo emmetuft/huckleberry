@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Cube, Plus } from 'phosphor-react';
+import { CubeIcon, PlusIcon } from '@phosphor-icons/react';
 import { Tooltip } from 'antd';
 // import styles from './Integrations.module.css';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
@@ -22,7 +22,7 @@ export const ConnectorCard: FC<ConnectorCardProps> = ({
         width="100%"
       />
       {/* <div className="defaultAppIcon">
-        <Cube color="white" size={18} />
+        <CubeIcon color="white" size={18} />
       </div> */}
       <div className="appInfo">
         <h4>{connector.title}</h4>
@@ -32,7 +32,7 @@ export const ConnectorCard: FC<ConnectorCardProps> = ({
       </div>
       {showAddBtn && (
         <div className="quickAdd">
-          <IconBtn icon={<Plus />} />
+          <IconBtn icon={<PlusIcon />} />
         </div>
       )}
     </div>

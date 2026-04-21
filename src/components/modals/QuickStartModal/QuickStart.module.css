@@ -1,32 +1,47 @@
+.layout {
+  display: flex;
+  min-height: 460px;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 200px;
+  flex-shrink: 0;
+  background-color: var(--grey-bg);
+  border-radius: 10px;
+  padding: 16px 0;
+
+  .sidebarMenu {
+    background: transparent !important;
+    border-inline-end: none !important;
+  }
+
+  .continueLater {
+    margin-top: auto;
+    background: none;
+    border: none;
+    color: var(--grey-text);
+    cursor: pointer;
+
+    &:hover {
+      color: var(--text);
+    }
+  }
+}
+
+.mainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0 24px;
+}
+
 .header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   margin-bottom: 16px;
-
-  .progress {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-
-    .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--grey-light);
-      transition: all 0.2s;
-
-      &.dotDone {
-        background: var(--purple);
-      }
-
-      &.dotActive {
-        width: 24px;
-        border-radius: 4px;
-        background: var(--purple);
-      }
-    }
-  }
 
   .skipLink {
     padding: 0;
@@ -44,18 +59,21 @@
 .stepContent {
   display: flex;
   flex-direction: column;
-  gap: 20px;
 
   .stepHeading {
+    margin: 8px 0;
+    font-size: 36px;
   }
 
   .stepSubtext {
+    margin-bottom: 24px;
     color: var(--grey-text);
   }
 
   .stepActions {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: center;
     gap: 12px;
   }
 
@@ -113,17 +131,97 @@
   }
 }
 
-.animationClip {
-  overflow: hidden;
+.linkedinBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 16px;
+  background-color: #0a66c2;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
 
-  .stepWrapperModal {
-    padding: 8px 0 0;
+  &:hover {
+    background-color: #004182;
   }
+}
+
+.orDivider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0 12px;
+  color: var(--grey-text);
+  font-size: 12px;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background-color: var(--grey-light);
+  }
+}
+
+.presetGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.presetCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 12px;
+  background: var(--grey-bg);
+  border: 1.5px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+
+  &:hover {
+    border-color: var(--purple);
+    background-color: var(--purple-light);
+  }
+}
+
+.presetTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.presetDesc {
+  font-size: 12px;
+  color: var(--grey-text);
+  line-height: 1.4;
+}
+
+.landingFooter {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.animationClip {
+  flex: 1;
+  overflow: hidden;
 }
 
 .actionBtns {
   display: flex;
   flex-direction: row-reverse;
   justify-content: space-between;
-  padding: 20px 0 8px;
 }

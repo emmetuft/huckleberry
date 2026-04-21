@@ -1,0 +1,36 @@
+.GraphControls {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  width: 50vw;
+  max-width: 90%;
+
+  .top {
+    display: flex;
+    gap: 10px;
+
+    .searchInput {
+      flex: 1;
+    }
+
+    .labelSelect {
+      flex: 1;
+    }
+
+    .filterButton {
+      white-space: nowrap;
+    }
+  }
+
+  .playbackDrawer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+
+    &.open {
+      max-height: 100px;
+    }
+  }
+}

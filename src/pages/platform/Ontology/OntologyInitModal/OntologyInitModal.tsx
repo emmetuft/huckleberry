@@ -1,7 +1,7 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Modal, Select, Table } from 'antd';
-import { Database } from 'phosphor-react';
+import { DatabaseIcon } from '@phosphor-icons/react';
 import styles from './OntologyInitModal.module.css';
 import { useAppDispatch } from 'reducers';
 import { selectLoading } from 'reducers/ontology/slice';
@@ -194,7 +194,7 @@ export const OntologyInitModal: FC<OntologyInitModalProps> = ({
           {ontologySources.map((source) => (
             <div key={source.dataSourceId} className={styles.sourceWrapper}>
               <div className={styles.sourceName}>
-                <Database />
+                <DatabaseIcon />
                 <p>{source.name}</p>
               </div>
               <Table

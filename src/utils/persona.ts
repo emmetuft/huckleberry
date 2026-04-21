@@ -20,7 +20,7 @@ export const buildPersona = (data: any, persona?: Persona): Persona => ({
       type: 'soft' as const,
     })),
   ],
-  tools: data.tools as string[],
+  tools: persona?.tools ?? [],
   communicationStyle: {
     preferredFormat:
       data.preferredFormat as PersonaCommunicationStyle['preferredFormat'],

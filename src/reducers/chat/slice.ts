@@ -2,6 +2,7 @@ import { createAppSlice } from '../createAppSlice';
 import {
   deleteSession,
   executeStream,
+  fetchDataSources,
   fetchSession,
   fetchSessions,
   resumeStream,
@@ -24,6 +25,7 @@ import {
 interface State {
   sessions: AgentSession[];
   turns: ConversationTurn[];
+  dataSources: Record<string, any>;
   fullScreen: boolean;
   loading: boolean;
   error: string | null;
@@ -34,6 +36,7 @@ interface State {
 const initialState: State = {
   sessions: [],
   turns: [],
+  dataSources: {},
   fullScreen: false,
   loading: false,
   error: null,
@@ -196,11 +199,16 @@ export const ChatSlice = createAppSlice({
       })
       .addCase(resumeStream.fulfilled, (state) => {
         handleStreamFulfilled(state);
+      })
+      // Cache fetched data sources
+      .addCase(fetchDataSources.fulfilled, (state, { payload }) => {
+        Object.assign(state.dataSources, payload);
       });
   },
   selectors: {
     selectSessions: (state: State) => state.sessions,
     selectTurns: (state: State) => state.turns,
+    selectDataSources: (state: State) => state.dataSources,
     selectHasMessages: (state: State) => state.turns.length > 0,
     selectFullScreen: (state: State) => state.fullScreen,
     selectLoading: (state: State) => state.loading,
@@ -220,6 +228,7 @@ export const {
 export const {
   selectSessions,
   selectTurns,
+  selectDataSources,
   selectHasMessages,
   selectFullScreen,
   selectLoading,

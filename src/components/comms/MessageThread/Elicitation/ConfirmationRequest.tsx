@@ -1,7 +1,7 @@
 import { FC, useState } from 'react';
 import { Button, Form, Card, Collapse } from 'antd';
 import type { CollapseProps } from 'antd';
-import { Check, X } from 'phosphor-react';
+import { CheckIcon, XIcon } from '@phosphor-icons/react';
 import styles from './ConfirmationRequest.module.css';
 import { ConfirmationRequest as SessionConfirmationRequest } from 'models/interfaces/sessionEvent';
 import {
@@ -113,10 +113,10 @@ export const ConfirmationRequest: FC<ConfirmationRequestProps> = ({
         <Collapse className={styles.collapseContainer} items={items} />
         <Form.Item>
           <div className={styles.buttonGroup}>
-            <Button htmlType="submit" icon={<Check />} loading={loading}>
+            <Button htmlType="submit" icon={<CheckIcon />} loading={loading}>
               Accept
             </Button>
-            <Button icon={<X />} onClick={handleDecline} loading={loading}>
+            <Button icon={<XIcon />} onClick={handleDecline} loading={loading}>
               Decline
             </Button>
           </div>

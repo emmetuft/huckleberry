@@ -1,13 +1,13 @@
 import { FC } from 'react';
 import { Button } from 'antd';
 import {
-  CalendarBlank,
-  GithubLogo,
-  SlackLogo,
-  Kanban,
-  MicrosoftTeamsLogo,
-  Note,
-} from 'phosphor-react';
+  CalendarBlankIcon,
+  GithubLogoIcon,
+  SlackLogoIcon,
+  KanbanIcon,
+  MicrosoftTeamsLogoIcon,
+  NotionLogoIcon,
+} from '@phosphor-icons/react';
 import styles from './AccountsTab.module.css';
 
 interface AccountDef {
@@ -24,7 +24,7 @@ const accounts: AccountDef[] = [
     key: 'google',
     name: 'Google Workspace',
     description: 'Gmail, Calendar, and Drive',
-    icon: <CalendarBlank color="white" size={18} />,
+    icon: <CalendarBlankIcon color="white" size={18} />,
     iconColor: '#4285F4',
     connected: false,
   },
@@ -32,7 +32,7 @@ const accounts: AccountDef[] = [
     key: 'microsoft',
     name: 'Microsoft Teams',
     description: 'Teams, Outlook, and OneDrive',
-    icon: <MicrosoftTeamsLogo color="white" size={18} />,
+    icon: <MicrosoftTeamsLogoIcon color="white" size={18} />,
     iconColor: '#5059C9',
     connected: false,
   },
@@ -40,7 +40,7 @@ const accounts: AccountDef[] = [
     key: 'github',
     name: 'GitHub',
     description: 'Repositories, pull requests, and issues',
-    icon: <GithubLogo color="white" size={18} />,
+    icon: <GithubLogoIcon color="white" size={18} />,
     iconColor: '#101411',
     connected: false,
   },
@@ -48,7 +48,7 @@ const accounts: AccountDef[] = [
     key: 'slack',
     name: 'Slack',
     description: 'Channels, messages, and notifications',
-    icon: <SlackLogo color="white" size={18} />,
+    icon: <SlackLogoIcon color="white" size={18} />,
     iconColor: '#4A154B',
     connected: false,
   },
@@ -56,7 +56,7 @@ const accounts: AccountDef[] = [
     key: 'jira',
     name: 'Jira',
     description: 'Issues, projects, and cycles',
-    icon: <Kanban color="white" size={18} />,
+    icon: <KanbanIcon color="white" size={18} />,
     iconColor: '#0052CC',
     connected: false,
   },
@@ -64,7 +64,7 @@ const accounts: AccountDef[] = [
     key: 'notion',
     name: 'Notion',
     description: 'Docs, wikis, and databases',
-    icon: <Note color="white" size={18} />,
+    icon: <NotionLogoIcon color="white" size={18} />,
     iconColor: '#000000',
     connected: false,
   },

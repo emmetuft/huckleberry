@@ -1,0 +1,55 @@
+.timestamp {
+  text-align: center;
+  font-size: 12px;
+  color: var(--grey-text);
+  margin: 8px 0 16px 0;
+  font-weight: 500;
+}
+
+.message {
+  display: flex;
+  flex-direction: column;
+
+  .processingSteps {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .content {
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.5;
+    overflow-wrap: break-word;
+  }
+
+  &.user {
+    align-items: flex-end;
+
+    .content {
+      background-color: var(--grey-light);
+      max-width: 80%;
+    }
+
+    .dataSourcePills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 6px;
+      justify-content: flex-end;
+
+      .dataSourcePill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 2px 8px;
+        border-radius: 12px;
+        background-color: var(--purple-light);
+        border: 1px solid var(--purple);
+        font-size: 12px;
+        color: var(--purple);
+        white-space: nowrap;
+      }
+    }
+  }
+}

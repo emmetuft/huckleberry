@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { Trash } from 'phosphor-react';
+import { TrashIcon } from '@phosphor-icons/react';
 import styles from './HistoryCard.module.css';
 import { useAppDispatch } from 'reducers';
 import { selectSessions } from 'reducers/chat/slice';
@@ -91,7 +91,7 @@ export const HistoryCard: FC<HistoryCardProps> = ({ setShowCard }) => {
                       {session.name}
                     </p>
                     <IconBtn
-                      icon={<Trash />}
+                      icon={<TrashIcon />}
                       onClick={() => onClickDeleteSession(session.id)}
                     />
                   </div>

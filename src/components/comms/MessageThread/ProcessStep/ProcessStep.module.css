@@ -1,6 +1,4 @@
 .ProcessStep {
-  margin-bottom: 8px;
-
   .headerContent {
     display: flex;
     justify-content: space-between;
@@ -39,7 +37,8 @@
     gap: 10px;
 
     .subSteps {
-      margin-top: 8px;
+      background-color: var(--grey-bg);
+      border-radius: 12px;
     }
 
     .section {
