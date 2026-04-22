@@ -1,0 +1,51 @@
+.ModelEditor {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  height: 100%;
+  padding: 20px;
+  border: 1px solid var(--grey-light);
+  border-left: none;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+
+  .section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    h4 {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--grey-text);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+  }
+
+  .properties {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .propertyHeader,
+    .propertyItem {
+      display: grid;
+      grid-template-columns: auto 1fr 150px;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .propertyHeader {
+      .nameCol,
+      .typeCol {
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--grey-text);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+    }
+  }
+}

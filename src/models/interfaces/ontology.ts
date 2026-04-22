@@ -1,4 +1,16 @@
+import { GraphDataType } from 'models/enums/graphDataType';
 import { Column } from './column';
+
+export interface GraphNodeModel {
+  id: string;
+  label: string;
+  properties: GraphProperty[];
+}
+
+export interface GraphProperty {
+  name: string;
+  type: GraphDataType;
+}
 
 export interface GraphNode {
   id: string;

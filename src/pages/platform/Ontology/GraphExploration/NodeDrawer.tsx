@@ -1,7 +1,7 @@
 import { FC, useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Button, Drawer, Input, List, Popover, Select } from 'antd';
-import styles from './Ontology.module.css';
+import styles from './GraphExploration.module.css';
 import { selectGraphData, selectNodeLabels } from 'reducers/ontology/slice';
 import { getColorForGroup } from 'utils/styles';
 import { NODE_LABELS, PEOPLE_SKILLS_GRAPH } from 'constants/graph';
@@ -167,21 +167,22 @@ export const NodeDrawer: FC<NodeDrawerProps> = ({
     return (
       <div className={styles.drawerContent}>
         <div className={styles.section}>
-          <h4>Name</h4>
-          <Input
-            value={addNodeName}
-            onChange={(e) => setAddNodeName(e.target.value)}
-          />
-        </div>
-        <div className={styles.section}>
           <h4>Label</h4>
           <Select
+            mode="multiple"
             value={addNodeLabel}
             onChange={onChangeLabel}
             options={nodeLabels.map((label) => ({
               label,
               value: label,
             }))}
+          />
+        </div>
+        <div className={styles.section}>
+          <h4>Title</h4>
+          <Input
+            value={addNodeName}
+            onChange={(e) => setAddNodeName(e.target.value)}
           />
         </div>
         <div className={styles.section}>

@@ -2,8 +2,8 @@ import { FC } from 'react';
 import { Position } from '@xyflow/react';
 import { PlayIcon } from '@phosphor-icons/react';
 import styles from './index.module.css';
-import { MotionWrapper } from '../MotionWrapper';
-import { CustomHandle } from '../../Handle';
+import { CustomHandle } from 'components/flow/Handle';
+import { MotionWrapper } from 'components/flow/MotionWrapper';
 
 export const StartNode: FC = () => {
   // const onChange = useCallback((evt: any) => {
