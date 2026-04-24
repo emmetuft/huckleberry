@@ -525,6 +525,18 @@
   resolved "https://npm.labsdev.domotech.io/@csstools%2fcss-tokenizer/-/css-tokenizer-3.0.4.tgz"
   integrity sha512-Vd/9EVDiu6PPJt9yAh6roZP6El1xHrdvIVGjyBsHR0RYwNHgL7FJPyIIW4fANJNG6FtyZfvlRPpFI4ZM/lubvw==
 
+"@dagrejs/dagre@^3.0.0":
+  version "3.0.0"
+  resolved "https://npm.labsdev.domotech.io/@dagrejs%2fdagre/-/dagre-3.0.0.tgz#543f20188f7494db0f45d634f7b3760747f87f23"
+  integrity sha512-ZzhnTy1rfuoew9Ez3EIw4L2znPGnYYhfn8vc9c4oB8iw6QAsszbiU0vRhlxWPFnmmNSFAkrYeF1PhM5m4lAN0Q==
+  dependencies:
+    "@dagrejs/graphlib" "4.0.1"
+
+"@dagrejs/graphlib@4.0.1":
+  version "4.0.1"
+  resolved "https://npm.labsdev.domotech.io/@dagrejs%2fgraphlib/-/graphlib-4.0.1.tgz#a9cf907cc5ddf9140a64360ad487766f17d1ee36"
+  integrity sha512-IvcV6FduIIAmLwnH+yun+QtV36SC7mERqa86aClNqmMN09WhmPPYU8ckHrZBozErf+UvHPWOTJYaGYiIcs0DgA==
+
 "@dimforge/rapier3d-compat@~0.12.0":
   version "0.12.0"
   resolved "https://npm.labsdev.domotech.io/@dimforge%2frapier3d-compat/-/rapier3d-compat-0.12.0.tgz#7b3365e1dfdc5cd957b45afe920b4ac06c7cd389"

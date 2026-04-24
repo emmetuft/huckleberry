@@ -1,39 +1,36 @@
 import { FC } from 'react';
-import { Position } from '@xyflow/react';
+import { Handle, Position } from '@xyflow/react';
 import styles from './ModelCanvas.module.css';
-import { CustomHandle } from 'components/flow/Handle';
 import { MotionWrapper } from 'components/flow/MotionWrapper';
 
-export enum ActionType {
-  DATA_TRANSFORMATION = 'Data transformations',
-  DATA_VIS = 'Data visualization',
-  HUMAN_IN_LOOP = 'Human in the loop',
-  MESSAGING = 'Messaging',
+interface ModelNodeProps {
+  data: { label: string; isActive: boolean };
 }
 
-interface ModelNodeProps {}
-
-export const ModelNode: FC<ModelNodeProps> = () => {
-  // const onChange = useCallback((evt: any) => {
-  //   console.log(evt.target.value);
-  // }, []);
-
-  return (
-    <MotionWrapper
-      className={`agentNode ${styles.ModelNode}`}
-      //   style={{ border: `1px solid ${actionColorMap[actionType]}` }}
-    >
-      <div className="content">
-        <div className="left">
-          {/* {actionIconMap[actionType]}
-          <p>{actionType}</p> */}
-          temp
-        </div>
-      </div>
-      <CustomHandle id="top" type="target" position={Position.Top} />
-      <CustomHandle id="left" type="target" position={Position.Left} />
-      <CustomHandle id="right" type="source" position={Position.Right} />
-      <CustomHandle id="bottom" type="source" position={Position.Bottom} />
-    </MotionWrapper>
-  );
-};
+export const ModelNode: FC<ModelNodeProps> = ({
+  data: { label, isActive },
+}) => (
+  <MotionWrapper
+    className={`${styles.ModelNode} ${isActive ? styles.active : ''}`}
+  >
+    <p title={label}>{label}</p>
+    <Handle
+      id="circle"
+      type="source"
+      position={Position.Top}
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        borderRadius: '50%',
+        transform: 'none',
+        opacity: 0,
+        background: 'transparent',
+        border: 'none',
+        cursor: 'crosshair',
+      }}
+    />
+  </MotionWrapper>
+);

@@ -115,6 +115,7 @@ svg:focus {
   background-color: var(--background);
   border-radius: 10px;
   width: 200px;
+  box-sizing: border-box;
 
   .content {
     display: flex;

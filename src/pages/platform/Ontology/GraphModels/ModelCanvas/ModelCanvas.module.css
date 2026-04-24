@@ -1,2 +1,39 @@
 .ModelNode {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 100px;
+  padding: 10px;
+  box-sizing: border-box;
+  background-color: var(--background);
+  border-radius: 50%;
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.15s;
+
+  p {
+    font-weight: 600;
+    font-size: 13px;
+    text-align: center;
+    display: -webkit-box;
+    line-clamp: 3;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-break: break-word;
+    pointer-events: none;
+  }
+
+  &.active {
+    border: 1.5px solid var(--node-purple);
+    box-shadow: 0 0 0 3px
+      color-mix(in srgb, var(--node-purple) 15%, transparent);
+  }
+
+  &:hover {
+    box-shadow: 0 0 0 4px
+      color-mix(in srgb, var(--node-purple) 30%, transparent);
+  }
 }

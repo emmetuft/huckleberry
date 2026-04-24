@@ -3,6 +3,24 @@ import { commonHeaders, handleResponse } from 'utils/service';
 
 const GRAPH_DB_URL = '/api/graph';
 
+const fetchNodeModels = async <T = any>(): Promise<T[]> => {
+  // TODO: Not implemented on server yet
+  const response = await fetch(`${GRAPH_DB_URL}/nodes`, {
+    method: 'GET',
+    headers: commonHeaders(),
+  });
+  return handleResponse<T[]>(response);
+};
+
+const fetchRelationshipModels = async <T = any>(): Promise<T[]> => {
+  // TODO: Not implemented on server yet
+  const response = await fetch(`${GRAPH_DB_URL}/nodes`, {
+    method: 'GET',
+    headers: commonHeaders(),
+  });
+  return handleResponse<T[]>(response);
+};
+
 interface FetchNodesInput {
   filter: NodeFilter;
   limit?: number;
@@ -43,6 +61,8 @@ const fetchPropertyValues = async <T = unknown>(
 };
 
 export const GraphService = {
+  fetchNodeModels,
+  fetchRelationshipModels,
   fetchNodes,
   fetchNodeLabels,
   fetchPropertyValues,

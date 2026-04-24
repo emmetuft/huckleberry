@@ -1,27 +1,32 @@
 import { FC, useState } from 'react';
-import { PlusIcon, TrashIcon } from '@phosphor-icons/react';
+import { ArrowRightIcon, PlusIcon, TrashIcon } from '@phosphor-icons/react';
 import { Button, Checkbox, Input, Select } from 'antd';
 import styles from './ModelEditor.module.css';
-import { GraphNodeModel, GraphProperty } from 'models/interfaces/ontology';
+import {
+  GraphEditorModel,
+  GraphProperty,
+  isRelationshipModel,
+} from 'models/interfaces/ontology';
 import { GraphDataType, GraphDataTypes } from 'models/enums/graphDataType';
 
 interface ModelEditorProps {
-  model: GraphNodeModel;
+  model: GraphEditorModel;
+  onModelChange: (model: GraphEditorModel) => void;
 }
 
-export const ModelEditor: FC<ModelEditorProps> = ({ model }) => {
-  const [properties, setProperties] = useState<GraphProperty[]>(
-    model.properties,
-  );
+export const ModelEditor: FC<ModelEditorProps> = ({ model, onModelChange }) => {
   const [selectedIndices, setSelectedIndices] = useState<Set<number>>(
     new Set(),
   );
 
   const handleAddProperty = () => {
-    setProperties((prev) => [
-      ...prev,
-      { name: '', type: GraphDataType.STRING },
-    ]);
+    onModelChange({
+      ...model,
+      properties: [
+        ...model.properties,
+        { name: '', type: GraphDataType.STRING },
+      ],
+    });
   };
 
   const handleToggle = (index: number, checked: boolean) => {
@@ -34,7 +39,7 @@ export const ModelEditor: FC<ModelEditorProps> = ({ model }) => {
 
   const handleToggleAll = (checked: boolean) => {
     setSelectedIndices(
-      checked ? new Set(properties.map((_, i) => i)) : new Set(),
+      checked ? new Set(model.properties.map((_, i) => i)) : new Set(),
     );
   };
 
@@ -42,30 +47,58 @@ export const ModelEditor: FC<ModelEditorProps> = ({ model }) => {
     index: number,
     patch: Partial<GraphProperty>,
   ) => {
-    setProperties((prev) =>
-      prev.map((p, i) => (i === index ? { ...p, ...patch } : p)),
-    );
+    onModelChange({
+      ...model,
+      properties: model.properties.map((p, i) =>
+        i === index ? { ...p, ...patch } : p,
+      ),
+    });
   };
 
   const handleDeleteSelected = () => {
-    setProperties((prev) => prev.filter((_, i) => !selectedIndices.has(i)));
+    onModelChange({
+      ...model,
+      properties: model.properties.filter((_, i) => !selectedIndices.has(i)),
+    });
     setSelectedIndices(new Set());
   };
 
   const allChecked =
-    properties.length > 0 && selectedIndices.size === properties.length;
+    model.properties.length > 0 &&
+    selectedIndices.size === model.properties.length;
   const someChecked = selectedIndices.size > 0;
   const deleteLabel =
     selectedIndices.size === 1
       ? 'Delete 1 property'
       : `Delete ${selectedIndices.size} properties`;
 
+  const isRelationship = isRelationshipModel(model);
+
   return (
     <div className={styles.ModelEditor}>
-      <div className={styles.section}>
-        <h4>Label</h4>
-        <Input value={model.label} />
-      </div>
+      {isRelationship ? (
+        <div className={styles.section}>
+          <h4>Relationship</h4>
+          <Input
+            value={isRelationshipModel(model) ? model.name : ''}
+            placeholder="Relationship type"
+            onChange={(e) => onModelChange({ ...model, name: e.target.value })}
+          />
+          <div className={styles.connection}>
+            <span>{model.fromNodeId}</span>
+            <ArrowRightIcon size={14} />
+            <span>{model.toNodeId}</span>
+          </div>
+        </div>
+      ) : (
+        <div className={styles.section}>
+          <h4>Label</h4>
+          <Input
+            value={isRelationshipModel(model) ? '' : model.label}
+            onChange={(e) => onModelChange({ ...model, label: e.target.value })}
+          />
+        </div>
+      )}
       <div className={styles.section}>
         <h4>Properties</h4>
         <div className={`${styles.properties} ${styles.propertyContainer}`}>
@@ -78,7 +111,7 @@ export const ModelEditor: FC<ModelEditorProps> = ({ model }) => {
             <span className={styles.nameCol}>Name</span>
             <span className={styles.typeCol}>Type</span>
           </div>
-          {properties.map((property, index) => (
+          {model.properties.map((property, index) => (
             <div key={index} className={styles.propertyItem}>
               <Checkbox
                 checked={selectedIndices.has(index)}
