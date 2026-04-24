@@ -21,6 +21,15 @@
       letter-spacing: 1px;
       font-family: 'IBM Plex Mono', monospace;
     }
+
+    .nodeLabel {
+      padding: 2px 10px;
+      background-color: color-mix(in srgb, var(--node-color) 10%, white 90%);
+      border-radius: 30px;
+      border: 1px solid var(--node-color);
+      color: var(--node-color);
+      font-weight: 600;
+    }
   }
 
   .connection {

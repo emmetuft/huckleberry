@@ -32,5 +32,7 @@ export const ModelNode: FC<ModelNodeProps> = ({
         cursor: 'crosshair',
       }}
     />
+    {/* Sits on top of the Handle in the center area so drags there move the node instead of drawing an edge */}
+    <div className={styles.innerDragArea} />
   </MotionWrapper>
 );

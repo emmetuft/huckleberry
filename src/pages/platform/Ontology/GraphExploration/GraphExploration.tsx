@@ -17,7 +17,6 @@ import {
   selectLoading,
 } from 'reducers/ontology/slice';
 import { fetchAllNodeLabels } from 'reducers/ontology/actions';
-import { NODE_LABELS, PEOPLE_SKILLS_GRAPH } from 'constants/graph';
 import { GraphNode } from 'models/interfaces/ontology';
 import { ForceGraph } from './ForceGraph';
 import { GraphLegend } from './GraphLegend/GraphLegend';
@@ -30,8 +29,7 @@ interface GraphExplorationProps {}
 
 export const GraphExploration: FC<GraphExplorationProps> = ({}) => {
   const dispatch = useAppDispatch();
-  // const graphData = useSelector(selectGraphData);
-  const graphData = PEOPLE_SKILLS_GRAPH;
+  const graphData = useSelector(selectGraphData);
   const nodeLabels = useSelector(selectNodeLabels);
   const loading = useSelector(selectLoading).loadingNodes;
 
@@ -108,7 +106,7 @@ export const GraphExploration: FC<GraphExplorationProps> = ({}) => {
       )}
 
       <GraphControls onPlaybackChange={setVisibleNodeIds} />
-      <GraphLegend labels={NODE_LABELS} />
+      <GraphLegend labels={nodeLabels} />
       <FloatButton.Group shape="square">
         <FloatButton
           icon={

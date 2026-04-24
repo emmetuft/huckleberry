@@ -4,18 +4,16 @@ import ForceGraph3D from 'react-force-graph-3d';
 import ForceGraph2D from 'react-force-graph-2d';
 import SpriteText from 'three-spritetext';
 import {
-  selectNodeLabels,
   selectHighlightedNodeId,
-  selectGraphData,
+  selectNodeLabels,
 } from 'reducers/ontology/slice';
-import { NODE_LABELS, PEOPLE_SKILLS_GRAPH } from 'constants/graph';
 import { GraphData, GraphNode } from 'models/interfaces/ontology';
 import { getColorForGroup } from 'utils/styles';
 
 interface ForceGraphProps {
-  onNodeClick?: (node: GraphNode) => void;
+  data: GraphData;
   mode?: '2d' | '3d';
-  data?: GraphData;
+  onNodeClick?: (node: GraphNode) => void;
 }
 
 interface D3Node {
@@ -36,13 +34,11 @@ interface D3Link {
 }
 
 export const ForceGraph: React.FC<ForceGraphProps> = ({
-  onNodeClick,
+  data,
   mode = '3d',
-  data = PEOPLE_SKILLS_GRAPH,
+  onNodeClick,
 }) => {
-  // const nodeLabels = useSelector(selectNodeLabels);
-  // const data = useSelector(selectGraphData);
-  const nodeLabels = NODE_LABELS;
+  const nodeLabels = useSelector(selectNodeLabels);
   const highlightedNodeId = useSelector(selectHighlightedNodeId);
 
   const graphRef = useRef<any>();

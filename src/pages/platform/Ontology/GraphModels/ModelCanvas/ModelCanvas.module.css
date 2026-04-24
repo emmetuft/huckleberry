@@ -33,7 +33,22 @@
   }
 
   &:hover {
-    box-shadow: 0 0 0 4px
+    box-shadow: 0 0 2px 4px
       color-mix(in srgb, var(--node-purple) 30%, transparent);
+  }
+}
+
+.innerDragArea {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  pointer-events: auto;
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
   }
 }

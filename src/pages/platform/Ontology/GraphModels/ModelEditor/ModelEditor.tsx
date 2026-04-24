@@ -1,13 +1,19 @@
-import { FC, useState } from 'react';
+import { FC, useCallback, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { ArrowRightIcon, PlusIcon, TrashIcon } from '@phosphor-icons/react';
 import { Button, Checkbox, Input, Select } from 'antd';
 import styles from './ModelEditor.module.css';
+import {
+  selectGraphModelData,
+  selectNodeLabels,
+} from 'reducers/ontology/slice';
 import {
   GraphEditorModel,
   GraphProperty,
   isRelationshipModel,
 } from 'models/interfaces/ontology';
 import { GraphDataType, GraphDataTypes } from 'models/enums/graphDataType';
+import { getColorForGroup } from 'utils/styles';
 
 interface ModelEditorProps {
   model: GraphEditorModel;
@@ -15,6 +21,9 @@ interface ModelEditorProps {
 }
 
 export const ModelEditor: FC<ModelEditorProps> = ({ model, onModelChange }) => {
+  const { nodes } = useSelector(selectGraphModelData);
+  const nodeLabels = useSelector(selectNodeLabels);
+
   const [selectedIndices, setSelectedIndices] = useState<Set<number>>(
     new Set(),
   );
@@ -74,6 +83,17 @@ export const ModelEditor: FC<ModelEditorProps> = ({ model, onModelChange }) => {
 
   const isRelationship = isRelationshipModel(model);
 
+  const getNodeColor = useCallback(
+    (nodeId: string) => {
+      const node = nodes.find((n) => n.id === nodeId);
+      if (!node) return '#999';
+
+      const labelIndex = nodeLabels.indexOf(node.label);
+      return getColorForGroup(labelIndex);
+    },
+    [nodes, nodeLabels],
+  );
+
   return (
     <div className={styles.ModelEditor}>
       {isRelationship ? (
@@ -85,9 +105,29 @@ export const ModelEditor: FC<ModelEditorProps> = ({ model, onModelChange }) => {
             onChange={(e) => onModelChange({ ...model, name: e.target.value })}
           />
           <div className={styles.connection}>
-            <span>{model.fromNodeId}</span>
+            <div
+              className={styles.nodeLabel}
+              style={
+                {
+                  '--node-color': getNodeColor(model.fromNodeId),
+                } as React.CSSProperties
+              }
+            >
+              {nodes.find((n) => n.id === model.fromNodeId)?.label ||
+                model.fromNodeId}
+            </div>
             <ArrowRightIcon size={14} />
-            <span>{model.toNodeId}</span>
+            <div
+              className={styles.nodeLabel}
+              style={
+                {
+                  '--node-color': getNodeColor(model.toNodeId),
+                } as React.CSSProperties
+              }
+            >
+              {nodes.find((n) => n.id === model.toNodeId)?.label ||
+                model.toNodeId}
+            </div>
           </div>
         </div>
       ) : (

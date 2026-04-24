@@ -10,6 +10,7 @@ import {
   isRelationshipModel,
 } from 'models/interfaces/ontology';
 import { INITIAL_GRAPH_MODEL_DATA } from 'constants/ontologyModels';
+import { PEOPLE_SKILLS_GRAPH } from 'constants/graph';
 
 interface State {
   graphModelData: GraphModelData;
@@ -31,8 +32,8 @@ interface State {
 
 const initialState: State = {
   graphModelData: INITIAL_GRAPH_MODEL_DATA,
-  graphData: { nodes: [], edges: [] },
-  nodeLabels: [],
+  graphData: PEOPLE_SKILLS_GRAPH,
+  nodeLabels: INITIAL_GRAPH_MODEL_DATA.nodes.flatMap((n) => n.label),
   loading: {
     initGeneration: false,
     fetchNodeLabels: false,

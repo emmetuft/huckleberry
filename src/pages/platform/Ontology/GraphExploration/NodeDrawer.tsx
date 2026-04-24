@@ -4,7 +4,6 @@ import { Button, Drawer, Input, List, Popover, Select } from 'antd';
 import styles from './GraphExploration.module.css';
 import { selectGraphData, selectNodeLabels } from 'reducers/ontology/slice';
 import { getColorForGroup } from 'utils/styles';
-import { NODE_LABELS, PEOPLE_SKILLS_GRAPH } from 'constants/graph';
 
 interface NodeDrawerProps {
   selectedNode: string | null;
@@ -19,10 +18,8 @@ export const NodeDrawer: FC<NodeDrawerProps> = ({
   setSelectedNode,
   setDrawerOpen,
 }) => {
-  // const graphData = useSelector(selectGraphData);
-  // const nodeLabels = useSelector(selectNodeLabels);
-  const graphData = PEOPLE_SKILLS_GRAPH;
-  const nodeLabels = NODE_LABELS;
+  const graphData = useSelector(selectGraphData);
+  const nodeLabels = useSelector(selectNodeLabels);
 
   const [addNodeName, setAddNodeName] = useState<string>('');
   const [addNodeLabel, setAddNodeLabel] = useState<string>();

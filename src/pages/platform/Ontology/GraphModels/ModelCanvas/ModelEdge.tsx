@@ -1,5 +1,7 @@
 import { FC } from 'react';
 import { BaseEdge, EdgeProps, useReactFlow } from '@xyflow/react';
+import { useSelector } from 'react-redux';
+import { selectTheme } from 'reducers/app/slice';
 
 const NODE_RADIUS = 45;
 const LOOP_SIZE = 50;
@@ -63,6 +65,8 @@ export const ModelEdge: FC<EdgeProps> = ({
   const { getNode } = useReactFlow();
   const sourceNode = getNode(source);
   const targetNode = getNode(target);
+  const theme = useSelector(selectTheme);
+  const isDark = theme === 'dark';
 
   if (!sourceNode || !targetNode) return null;
 
@@ -91,7 +95,12 @@ export const ModelEdge: FC<EdgeProps> = ({
       label={label}
       labelX={labelX}
       labelY={labelY}
-      labelStyle={{ fontSize: 13, fontWeight: 500 }}
+      labelStyle={{
+        fontSize: 13,
+        fontWeight: 500,
+        fill: isDark ? '#fff' : '#000',
+      }}
+      labelBgStyle={{ fill: isDark ? '#000' : '#fff' }}
     />
   );
 };
