@@ -1,16 +1,26 @@
 import { createAppSlice } from '../createAppSlice';
 import { fetchAllNodeLabels, fetchNodes } from './actions';
 import { FilterCondition } from 'models/interfaces/graphFilter';
-import { GraphData } from 'models/interfaces/ontology';
+import {
+  GraphData,
+  GraphEditorModel,
+  GraphModelData,
+  GraphNodeModel,
+  GraphRelationshipModel,
+  isRelationshipModel,
+} from 'models/interfaces/ontology';
+import { INITIAL_GRAPH_MODEL_DATA } from 'constants/ontologyModels';
+import { PEOPLE_SKILLS_GRAPH } from 'constants/graph';
 
 interface State {
+  graphModelData: GraphModelData;
   graphData: GraphData;
   nodeLabels: string[];
   loading: {
     initGeneration: boolean;
     fetchNodeLabels: boolean;
     fetchGraph: boolean;
-    loadingNodes: boolean; // Generic loading for incremental operations
+    loadingNodes: boolean;
     searching: boolean;
   };
   controls: {
@@ -21,8 +31,9 @@ interface State {
 }
 
 const initialState: State = {
-  graphData: { nodes: [], edges: [] },
-  nodeLabels: [],
+  graphModelData: INITIAL_GRAPH_MODEL_DATA,
+  graphData: PEOPLE_SKILLS_GRAPH,
+  nodeLabels: INITIAL_GRAPH_MODEL_DATA.nodes.flatMap((n) => n.label),
   loading: {
     initGeneration: false,
     fetchNodeLabels: false,
@@ -65,6 +76,52 @@ export const OntologySlice = createAppSlice({
         state.controls.propertyFilters = payload;
       },
     ),
+    upsertModelNode: create.reducer<GraphNodeModel>((state, { payload }) => {
+      const idx = state.graphModelData.nodes.findIndex(
+        (n) => n.id === payload.id,
+      );
+      if (idx >= 0) state.graphModelData.nodes[idx] = payload;
+      else state.graphModelData.nodes.push(payload);
+    }),
+    deleteModelNode: create.reducer<string>((state, { payload: nodeId }) => {
+      state.graphModelData.nodes = state.graphModelData.nodes.filter(
+        (n) => n.id !== nodeId,
+      );
+      state.graphModelData.edges = state.graphModelData.edges.filter(
+        (e) => e.fromNodeId !== nodeId && e.toNodeId !== nodeId,
+      );
+    }),
+    upsertModelRelationship: create.reducer<GraphRelationshipModel>(
+      (state, { payload }) => {
+        const idx = state.graphModelData.edges.findIndex(
+          (e) => e.id === payload.id,
+        );
+        if (idx >= 0) state.graphModelData.edges[idx] = payload;
+        else state.graphModelData.edges.push(payload);
+      },
+    ),
+    deleteModelRelationship: create.reducer<string>(
+      (state, { payload: relId }) => {
+        state.graphModelData.edges = state.graphModelData.edges.filter(
+          (e) => e.id !== relId,
+        );
+      },
+    ),
+    updateGraphEditorModel: create.reducer<GraphEditorModel>(
+      (state, { payload }) => {
+        if (isRelationshipModel(payload)) {
+          const idx = state.graphModelData.edges.findIndex(
+            (e) => e.id === payload.id,
+          );
+          if (idx >= 0) state.graphModelData.edges[idx] = payload;
+        } else {
+          const idx = state.graphModelData.nodes.findIndex(
+            (n) => n.id === payload.id,
+          );
+          if (idx >= 0) state.graphModelData.nodes[idx] = payload;
+        }
+      },
+    ),
   }),
   extraReducers: (builder) => {
     builder
@@ -101,6 +158,7 @@ export const OntologySlice = createAppSlice({
   selectors: {
     selectNodeLabels: (state: State) => state.nodeLabels,
     selectGraphData: (state: State) => state.graphData,
+    selectGraphModelData: (state: State) => state.graphModelData,
     selectLoading: (state: State) => state.loading,
     selectHighlightedNodeId: (state: State) => state.controls.highlightedNodeId,
     selectLabelFilters: (state: State) => state.controls.selectedLabels,
@@ -114,11 +172,17 @@ export const {
   setLabelFilters,
   setPropertyFilters,
   clearGraphData,
+  upsertModelNode,
+  deleteModelNode,
+  upsertModelRelationship,
+  deleteModelRelationship,
+  updateGraphEditorModel,
 } = OntologySlice.actions;
 
 export const {
   selectNodeLabels,
   selectGraphData,
+  selectGraphModelData,
   selectLoading,
   selectHighlightedNodeId,
   selectLabelFilters,

@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Button, Menu, Modal } from 'antd';
@@ -22,6 +22,8 @@ import {
   StepDataKey,
 } from './quickStartConfig';
 import { buildPersona } from 'utils/persona';
+import { extractTextFromDocx } from 'utils/file';
+import { parseResumeWithAI } from 'services/ai';
 
 const stepVariants = {
   enter: (direction: number) => ({ x: direction > 0 ? 60 : -60, opacity: 0 }),
@@ -39,6 +41,9 @@ export const QuickStart: FC = () => {
 
   const [step, setStep] = useState<number>(0);
   const [direction, setDirection] = useState<number>(1);
+  const [resumeParsing, setResumeParsing] = useState(false);
+  const [resumeError, setResumeError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [data, setData] = useState<StepData>(() => ({
     ...defaultStepData,
@@ -75,6 +80,26 @@ export const QuickStart: FC = () => {
 
   const onSkip = () => dispatch(setOnboardingCompleted(true));
 
+  const handleResumeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setResumeError(null);
+    setResumeParsing(true);
+    try {
+      const text = await extractTextFromDocx(file);
+      const parsed = await parseResumeWithAI(text);
+      setData((d) => ({ ...d, ...parsed }));
+      goTo(1);
+    } catch {
+      setResumeError(
+        "We couldn't parse this document. Try a different file or enter info manually.",
+      );
+    } finally {
+      setResumeParsing(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
   const sidebarItems: MenuProps['items'] = sidebarLabels.map((label, i) => ({
     key: String(i),
     label,
@@ -94,19 +119,34 @@ export const QuickStart: FC = () => {
             Your profile helps AI agents understand who you are and how you like
             to work.
           </p>
-          <button className={styles.linkedinBtn} onClick={() => {}}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              width="18"
-              height="18"
-              aria-hidden="true"
+          <div className={styles.btnContainer}>
+            <Button
+              icon={
+                <div className={styles.linkedinBtnIcon}>
+                  <img src="/static/LinkedIn_logo.png" height="18px" />
+                </div>
+              }
             >
-              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-            </svg>
-            Connect with LinkedIn
-          </button>
+              Connect LinkedIn profile
+            </Button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+              style={{ display: 'none' }}
+              onChange={handleResumeUpload}
+            />
+            <Button
+              loading={resumeParsing}
+              onClick={() => {
+                setResumeError(null);
+                fileInputRef.current?.click();
+              }}
+            >
+              Upload resume
+            </Button>
+            {resumeError && <p className={styles.resumeError}>{resumeError}</p>}
+          </div>
           <div className={styles.orDivider}>
             <span>or pick a starting point</span>
           </div>

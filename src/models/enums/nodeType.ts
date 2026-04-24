@@ -3,3 +3,7 @@ export enum NodeType {
   END = 'end',
   ACTION = 'action',
 }
+
+export enum GraphNodeType {
+  ENTITY = 'entity',
+}

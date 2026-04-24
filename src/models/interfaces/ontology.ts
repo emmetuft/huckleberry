@@ -1,4 +1,39 @@
+import { GraphDataType } from 'models/enums/graphDataType';
 import { Column } from './column';
+
+// SECTION: Graph Models
+
+export interface GraphNodeModel {
+  id: string;
+  label: string;
+  properties: GraphProperty[];
+}
+
+export interface GraphRelationshipModel {
+  id: string;
+  name: string;
+  fromNodeId: string;
+  toNodeId: string;
+  properties: GraphProperty[];
+}
+
+export type GraphEditorModel = GraphNodeModel | GraphRelationshipModel;
+
+export const isRelationshipModel = (
+  model: GraphEditorModel,
+): model is GraphRelationshipModel => 'fromNodeId' in model;
+
+export interface GraphProperty {
+  name: string;
+  type: GraphDataType;
+}
+
+export interface GraphModelData {
+  nodes: GraphNodeModel[];
+  edges: GraphRelationshipModel[];
+}
+
+// SECTION: Graph Data
 
 export interface GraphNode {
   id: string;

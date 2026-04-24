@@ -7,8 +7,8 @@ import {
 } from '@phosphor-icons/react';
 import { Position } from '@xyflow/react';
 import styles from './index.module.css';
-import { MotionWrapper } from '../MotionWrapper';
-import { CustomHandle } from '../../Handle';
+import { CustomHandle } from 'components/flow/Handle';
+import { MotionWrapper } from 'components/flow/MotionWrapper';
 
 export enum ActionType {
   DATA_TRANSFORMATION = 'Data transformations',
