@@ -1,3 +1,4 @@
+import { current } from '@reduxjs/toolkit';
 import { createAppSlice } from '../createAppSlice';
 import { fetchAllNodeLabels, fetchNodes } from './actions';
 import { FilterCondition } from 'models/interfaces/graphFilter';
@@ -5,15 +6,16 @@ import {
   GraphData,
   GraphEditorModel,
   GraphModelData,
-  GraphNodeModel,
-  GraphRelationshipModel,
   isRelationshipModel,
 } from 'models/interfaces/ontology';
 import { INITIAL_GRAPH_MODEL_DATA } from 'constants/ontologyModels';
 import { PEOPLE_SKILLS_GRAPH } from 'constants/graph';
 
+const MAX_GRAPH_MODEL_HISTORY = 50;
+
 interface State {
   graphModelData: GraphModelData;
+  graphModelPast: GraphModelData[];
   graphData: GraphData;
   nodeLabels: string[];
   loading: {
@@ -32,6 +34,7 @@ interface State {
 
 const initialState: State = {
   graphModelData: INITIAL_GRAPH_MODEL_DATA,
+  graphModelPast: [],
   graphData: PEOPLE_SKILLS_GRAPH,
   nodeLabels: INITIAL_GRAPH_MODEL_DATA.nodes.flatMap((n) => n.label),
   loading: {
@@ -76,35 +79,24 @@ export const OntologySlice = createAppSlice({
         state.controls.propertyFilters = payload;
       },
     ),
-    upsertModelNode: create.reducer<GraphNodeModel>((state, { payload }) => {
-      const idx = state.graphModelData.nodes.findIndex(
-        (n) => n.id === payload.id,
-      );
-      if (idx >= 0) state.graphModelData.nodes[idx] = payload;
-      else state.graphModelData.nodes.push(payload);
+    setGraphModelData: create.reducer<GraphModelData>((state, { payload }) => {
+      state.graphModelPast.push(current(state.graphModelData));
+      if (state.graphModelPast.length > MAX_GRAPH_MODEL_HISTORY)
+        state.graphModelPast.shift();
+      state.graphModelData = payload;
     }),
-    deleteModelNode: create.reducer<string>((state, { payload: nodeId }) => {
-      state.graphModelData.nodes = state.graphModelData.nodes.filter(
-        (n) => n.id !== nodeId,
-      );
-      state.graphModelData.edges = state.graphModelData.edges.filter(
-        (e) => e.fromNodeId !== nodeId && e.toNodeId !== nodeId,
-      );
+    undoGraphModel: create.reducer((state) => {
+      const prev = state.graphModelPast.pop();
+      if (prev) state.graphModelData = prev;
     }),
-    upsertModelRelationship: create.reducer<GraphRelationshipModel>(
+    // Fills in missing positions without creating an undo entry.
+    // Used to persist initial dagre layout so undo has a real position to revert to.
+    setNodePositions: create.reducer<Record<string, { x: number; y: number }>>(
       (state, { payload }) => {
-        const idx = state.graphModelData.edges.findIndex(
-          (e) => e.id === payload.id,
-        );
-        if (idx >= 0) state.graphModelData.edges[idx] = payload;
-        else state.graphModelData.edges.push(payload);
-      },
-    ),
-    deleteModelRelationship: create.reducer<string>(
-      (state, { payload: relId }) => {
-        state.graphModelData.edges = state.graphModelData.edges.filter(
-          (e) => e.id !== relId,
-        );
+        state.graphModelData.nodes = state.graphModelData.nodes.map((n) => ({
+          ...n,
+          position: n.position ?? payload[n.id],
+        }));
       },
     ),
     updateGraphEditorModel: create.reducer<GraphEditorModel>(
@@ -172,11 +164,10 @@ export const {
   setLabelFilters,
   setPropertyFilters,
   clearGraphData,
-  upsertModelNode,
-  deleteModelNode,
-  upsertModelRelationship,
-  deleteModelRelationship,
+  setGraphModelData,
   updateGraphEditorModel,
+  undoGraphModel,
+  setNodePositions,
 } = OntologySlice.actions;
 
 export const {

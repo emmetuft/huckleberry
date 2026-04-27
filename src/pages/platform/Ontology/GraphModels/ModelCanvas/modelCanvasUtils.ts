@@ -41,7 +41,10 @@ export const buildNodes = (
     return {
       id: model.id,
       type: GraphNodeType.ENTITY,
-      position: { x: x - NODE_SIZE / 2, y: y - NODE_SIZE / 2 },
+      position: model.position ?? {
+        x: x - NODE_SIZE / 2,
+        y: y - NODE_SIZE / 2,
+      },
       data: { label: model.label, isActive: model.id === selectedModelId },
     };
   });

@@ -1,7 +1,4 @@
 .GraphModels {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
   height: 100%;
   width: 100%;
-  border-radius: 8px;
 }

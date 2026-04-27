@@ -1,11 +1,12 @@
 import { FC, useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ArrowRightIcon, PlusIcon, TrashIcon } from '@phosphor-icons/react';
-import { Button, Checkbox, Input, Select } from 'antd';
+import { Button, Checkbox, Drawer, Input, Select } from 'antd';
 import styles from './ModelEditor.module.css';
+import { useAppDispatch } from 'reducers';
 import {
   selectGraphModelData,
-  selectNodeLabels,
+  updateGraphEditorModel,
 } from 'reducers/ontology/slice';
 import {
   GraphEditorModel,
@@ -17,16 +18,29 @@ import { getColorForGroup } from 'utils/styles';
 
 interface ModelEditorProps {
   model: GraphEditorModel;
-  onModelChange: (model: GraphEditorModel) => void;
+  open: boolean;
+  onClose: () => void;
 }
 
-export const ModelEditor: FC<ModelEditorProps> = ({ model, onModelChange }) => {
+export const ModelEditor: FC<ModelEditorProps> = ({ model, open, onClose }) => {
+  const dispatch = useAppDispatch();
   const { nodes } = useSelector(selectGraphModelData);
-  const nodeLabels = useSelector(selectNodeLabels);
 
   const [selectedIndices, setSelectedIndices] = useState<Set<number>>(
     new Set(),
   );
+
+  const getNodeColor = useCallback(
+    (nodeId: string) => {
+      const index = nodes.findIndex((n) => n.id === nodeId);
+      return getColorForGroup(index >= 0 ? index : 0);
+    },
+    [nodes],
+  );
+
+  const onModelChange = (updatedModel: GraphEditorModel) => {
+    dispatch(updateGraphEditorModel(updatedModel));
+  };
 
   const handleAddProperty = () => {
     onModelChange({
@@ -83,114 +97,125 @@ export const ModelEditor: FC<ModelEditorProps> = ({ model, onModelChange }) => {
 
   const isRelationship = isRelationshipModel(model);
 
-  const getNodeColor = useCallback(
-    (nodeId: string) => {
-      const node = nodes.find((n) => n.id === nodeId);
-      if (!node) return '#999';
-
-      const labelIndex = nodeLabels.indexOf(node.label);
-      return getColorForGroup(labelIndex);
-    },
-    [nodes, nodeLabels],
+  const drawerTitle = isRelationship ? (
+    <p>Model relationship</p>
+  ) : (
+    <p>Model node</p>
   );
 
   return (
-    <div className={styles.ModelEditor}>
-      {isRelationship ? (
-        <div className={styles.section}>
-          <h4>Relationship</h4>
-          <Input
-            value={isRelationshipModel(model) ? model.name : ''}
-            placeholder="Relationship type"
-            onChange={(e) => onModelChange({ ...model, name: e.target.value })}
-          />
-          <div className={styles.connection}>
-            <div
-              className={styles.nodeLabel}
-              style={
-                {
-                  '--node-color': getNodeColor(model.fromNodeId),
-                } as React.CSSProperties
+    <Drawer
+      title={drawerTitle}
+      mask={false}
+      width={500}
+      open={open}
+      onClose={onClose}
+    >
+      <div className={styles.ModelEditor}>
+        {isRelationship ? (
+          <div className={styles.section}>
+            <h4>Relationship</h4>
+            <Input
+              value={model.name}
+              placeholder="Relationship type"
+              onChange={(e) =>
+                onModelChange({ ...model, name: e.target.value })
               }
-            >
-              {nodes.find((n) => n.id === model.fromNodeId)?.label ||
-                model.fromNodeId}
-            </div>
-            <ArrowRightIcon size={14} />
-            <div
-              className={styles.nodeLabel}
-              style={
-                {
-                  '--node-color': getNodeColor(model.toNodeId),
-                } as React.CSSProperties
-              }
-            >
-              {nodes.find((n) => n.id === model.toNodeId)?.label ||
-                model.toNodeId}
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className={styles.section}>
-          <h4>Label</h4>
-          <Input
-            value={isRelationshipModel(model) ? '' : model.label}
-            onChange={(e) => onModelChange({ ...model, label: e.target.value })}
-          />
-        </div>
-      )}
-      <div className={styles.section}>
-        <h4>Properties</h4>
-        <div className={`${styles.properties} ${styles.propertyContainer}`}>
-          <div className={styles.propertyHeader}>
-            <Checkbox
-              checked={allChecked}
-              indeterminate={someChecked && !allChecked}
-              onChange={(e) => handleToggleAll(e.target.checked)}
             />
-            <span className={styles.nameCol}>Name</span>
-            <span className={styles.typeCol}>Type</span>
-          </div>
-          {model.properties.map((property, index) => (
-            <div key={index} className={styles.propertyItem}>
-              <Checkbox
-                checked={selectedIndices.has(index)}
-                onChange={(e) => handleToggle(index, e.target.checked)}
-              />
-              <Input
-                value={property.name}
-                onChange={(e) =>
-                  handlePropertyChange(index, { name: e.target.value })
+            <div className={styles.connection}>
+              <div
+                className={styles.nodeLabel}
+                style={
+                  {
+                    '--node-color': getNodeColor(model.fromNodeId),
+                  } as React.CSSProperties
                 }
-              />
-              <Select
-                value={property.type}
-                options={GraphDataTypes.map((type) => ({
-                  label: type,
-                  value: type,
-                }))}
-                onChange={(value) =>
-                  handlePropertyChange(index, { type: value })
+              >
+                {nodes.find((n) => n.id === model.fromNodeId)?.label ||
+                  model.fromNodeId}
+              </div>
+              <ArrowRightIcon size={14} />
+              <div
+                className={styles.nodeLabel}
+                style={
+                  {
+                    '--node-color': getNodeColor(model.toNodeId),
+                  } as React.CSSProperties
                 }
-              />
+              >
+                {nodes.find((n) => n.id === model.toNodeId)?.label ||
+                  model.toNodeId}
+              </div>
             </div>
-          ))}
-          {someChecked ? (
-            <Button
-              type="text"
-              danger
-              icon={<TrashIcon />}
-              onClick={handleDeleteSelected}
-            >
-              {deleteLabel}
-            </Button>
-          ) : (
-            <Button type="text" icon={<PlusIcon />} onClick={handleAddProperty}>
-              Add property
-            </Button>
-          )}
+          </div>
+        ) : (
+          <div className={styles.section}>
+            <h4>Label</h4>
+            <Input
+              value={model.label}
+              onChange={(e) =>
+                onModelChange({ ...model, label: e.target.value })
+              }
+            />
+          </div>
+        )}
+        <div className={styles.section}>
+          <h4>Properties</h4>
+          <div className={`${styles.properties} ${styles.propertyContainer}`}>
+            <div className={styles.propertyHeader}>
+              <Checkbox
+                checked={allChecked}
+                indeterminate={someChecked && !allChecked}
+                onChange={(e) => handleToggleAll(e.target.checked)}
+              />
+              <span className={styles.nameCol}>Name</span>
+              <span className={styles.typeCol}>Type</span>
+            </div>
+            {model.properties.map((property, index) => (
+              <div key={index} className={styles.propertyItem}>
+                <Checkbox
+                  checked={selectedIndices.has(index)}
+                  onChange={(e) => handleToggle(index, e.target.checked)}
+                />
+                <Input
+                  value={property.name}
+                  onChange={(e) =>
+                    handlePropertyChange(index, { name: e.target.value })
+                  }
+                />
+                <Select
+                  value={property.type}
+                  options={GraphDataTypes.map((type) => ({
+                    label: type,
+                    value: type,
+                  }))}
+                  onChange={(value) =>
+                    handlePropertyChange(index, { type: value })
+                  }
+                />
+              </div>
+            ))}
+            {someChecked ? (
+              <Button
+                type="text"
+                danger
+                icon={<TrashIcon />}
+                onClick={handleDeleteSelected}
+              >
+                {deleteLabel}
+              </Button>
+            ) : (
+              <Button
+                type="text"
+                icon={<PlusIcon />}
+                onClick={handleAddProperty}
+              >
+                Add property
+              </Button>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </Drawer>
   );
 };
