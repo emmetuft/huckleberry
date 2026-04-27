@@ -1,35 +1,53 @@
-import { FC, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { FC, useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { v4 as uuidv4 } from 'uuid';
+import { FloatButton, Tooltip } from 'antd';
+import { ExportIcon, PlusCircleIcon } from '@phosphor-icons/react';
 import styles from './GraphModels.module.css';
-import { ModelCanvas } from './ModelCanvas/ModelCanvas';
-import { ModelEditor } from './ModelEditor/ModelEditor';
+import { useAppDispatch } from 'reducers';
+import { selectGraphModelData, undoGraphModel } from 'reducers/ontology/slice';
 import {
-  GraphEditorModel,
-  GraphRelationshipModel,
-} from 'models/interfaces/ontology';
-import {
-  selectGraphModelData,
   upsertModelNode,
   deleteModelNode,
   upsertModelRelationship,
   deleteModelRelationship,
-  updateGraphEditorModel,
-} from 'reducers/ontology/slice';
+} from 'reducers/ontology/actions';
+import {
+  GraphEditorModel,
+  GraphRelationshipModel,
+} from 'models/interfaces/ontology';
+import { ModelCanvas } from './ModelCanvas/ModelCanvas';
+import { ModelEditor } from './ModelEditor/ModelEditor';
 
 interface GraphModelsProps {}
 
 export const GraphModels: FC<GraphModelsProps> = ({}) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { nodes: models, edges: relationships } =
     useSelector(selectGraphModelData);
-  const [selectedId, setSelectedId] = useState<string>('1');
 
-  const selectedItem: GraphEditorModel =
+  const [selectedId, setSelectedId] = useState<string>('');
+  const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+
+  const selectedItem: GraphEditorModel | undefined =
     relationships.find((r) => r.id === selectedId) ??
-    models.find((m) => m.id === selectedId) ??
-    models[0];
+    models.find((m) => m.id === selectedId);
 
-  const handleSelectModel = (id: string) => setSelectedId(id);
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && !e.shiftKey && e.key === 'z') {
+        e.preventDefault();
+        dispatch(undoGraphModel());
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [dispatch]);
+
+  const handleSelectModel = (id: string) => {
+    setSelectedId(id);
+    setDrawerOpen(true);
+  };
 
   const handleCreateRelationship = (
     id: string,
@@ -45,15 +63,22 @@ export const GraphModels: FC<GraphModelsProps> = ({}) => {
     };
     dispatch(upsertModelRelationship(newRelationship));
     setSelectedId(id);
+    setDrawerOpen(true);
   };
 
   const handleCreateNode = (
     nodeId: string,
     relId: string,
     fromNodeId: string,
+    position: { x: number; y: number },
   ) => {
     dispatch(
-      upsertModelNode({ id: nodeId, label: 'New Node', properties: [] }),
+      upsertModelNode({
+        id: nodeId,
+        label: 'New Node',
+        properties: [],
+        position,
+      }),
     );
     dispatch(
       upsertModelRelationship({
@@ -65,22 +90,40 @@ export const GraphModels: FC<GraphModelsProps> = ({}) => {
       }),
     );
     setSelectedId(nodeId);
+    setDrawerOpen(true);
+  };
+
+  const handleMoveNode = (
+    nodeId: string,
+    position: { x: number; y: number },
+  ) => {
+    const model = models.find((m) => m.id === nodeId);
+    if (model) dispatch(upsertModelNode({ ...model, position }));
   };
 
   const handleDeleteNode = (nodeId: string) => {
     dispatch(deleteModelNode(nodeId));
-    setSelectedId((prev) =>
-      prev === nodeId ? (models.find((m) => m.id !== nodeId)?.id ?? '') : prev,
-    );
+    if (selectedId === nodeId) {
+      setDrawerOpen(false);
+      setSelectedId('');
+    }
   };
 
   const handleDeleteRelationship = (relId: string) => {
     dispatch(deleteModelRelationship(relId));
-    setSelectedId((prev) => (prev === relId ? (models[0]?.id ?? '') : prev));
+    if (selectedId === relId) {
+      setDrawerOpen(false);
+      setSelectedId('');
+    }
   };
 
-  const handleModelChange = (updated: GraphEditorModel) => {
-    dispatch(updateGraphEditorModel(updated));
+  const onClickAddNode = () => {
+    const nodeId = uuidv4();
+    dispatch(
+      upsertModelNode({ id: nodeId, label: 'New Node', properties: [] }),
+    );
+    setSelectedId(nodeId);
+    setDrawerOpen(true);
   };
 
   return (
@@ -88,18 +131,39 @@ export const GraphModels: FC<GraphModelsProps> = ({}) => {
       <ModelCanvas
         models={models}
         relationships={relationships}
-        selectedModelId={selectedItem?.id ?? ''}
+        selectedModelId={selectedId}
         onSelectModel={handleSelectModel}
         onCreateRelationship={handleCreateRelationship}
         onCreateNode={handleCreateNode}
+        onMoveNode={handleMoveNode}
         onDeleteNode={handleDeleteNode}
         onDeleteRelationship={handleDeleteRelationship}
       />
-      <ModelEditor
-        key={selectedId}
-        model={selectedItem}
-        onModelChange={handleModelChange}
-      />
+      {selectedItem && (
+        <ModelEditor
+          key={selectedId}
+          model={selectedItem}
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+        />
+      )}
+      <FloatButton.Group shape="square">
+        <FloatButton
+          icon={
+            <Tooltip title="Add node" placement="left">
+              <PlusCircleIcon />
+            </Tooltip>
+          }
+          onClick={onClickAddNode}
+        />
+        <FloatButton
+          icon={
+            <Tooltip title="Export graph" placement="left">
+              <ExportIcon />
+            </Tooltip>
+          }
+        />
+      </FloatButton.Group>
     </div>
   );
 };

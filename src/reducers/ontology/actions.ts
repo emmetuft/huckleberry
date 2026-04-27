@@ -1,7 +1,12 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { RootState } from 'reducers';
+import { AppThunk, RootState } from 'reducers';
+import { selectGraphModelData, setGraphModelData } from './slice';
 import { FilterCondition, NodeFilter } from 'models/interfaces/graphFilter';
-import { GraphData } from 'models/interfaces/ontology';
+import {
+  GraphData,
+  GraphNodeModel,
+  GraphRelationshipModel,
+} from 'models/interfaces/ontology';
 import { GraphService } from 'services/graph';
 import { parseFilterConditions } from 'utils/ontology';
 
@@ -54,3 +59,50 @@ export const fetchNodes = createAsyncThunk<
     };
   },
 );
+
+export const upsertModelNode =
+  (node: GraphNodeModel): AppThunk =>
+  (dispatch, getState) => {
+    const data = selectGraphModelData(getState());
+    const nodes = data.nodes.some((n) => n.id === node.id)
+      ? data.nodes.map((n) => (n.id === node.id ? node : n))
+      : [...data.nodes, node];
+    dispatch(setGraphModelData({ ...data, nodes }));
+  };
+
+export const deleteModelNode =
+  (nodeId: string): AppThunk =>
+  (dispatch, getState) => {
+    const data = selectGraphModelData(getState());
+    dispatch(
+      setGraphModelData({
+        nodes: data.nodes.filter((n) => n.id !== nodeId),
+        edges: data.edges.filter(
+          (e) => e.fromNodeId !== nodeId && e.toNodeId !== nodeId,
+        ),
+      }),
+    );
+  };
+
+export const upsertModelRelationship =
+  (rel: GraphRelationshipModel): AppThunk =>
+  (dispatch, getState) => {
+    const data = selectGraphModelData(getState());
+    const edges = data.edges.some((e) => e.id === rel.id)
+      ? data.edges.map((e) => (e.id === rel.id ? rel : e))
+      : [...data.edges, rel];
+    dispatch(setGraphModelData({ ...data, edges }));
+  };
+
+export const deleteModelRelationship =
+  (relId: string): AppThunk =>
+  (dispatch, getState) => {
+    const data = selectGraphModelData(getState());
+    if (!data.edges.some((e) => e.id === relId)) return;
+    dispatch(
+      setGraphModelData({
+        ...data,
+        edges: data.edges.filter((e) => e.id !== relId),
+      }),
+    );
+  };

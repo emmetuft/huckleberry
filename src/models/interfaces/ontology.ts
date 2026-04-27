@@ -7,6 +7,7 @@ export interface GraphNodeModel {
   id: string;
   label: string;
   properties: GraphProperty[];
+  position?: { x: number; y: number };
 }
 
 export interface GraphRelationshipModel {
