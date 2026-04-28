@@ -4,7 +4,7 @@
   align-items: center;
 
   .title {
-    font-family: 'Inter';
+    font-family: Inter, sans-serif;
     font-weight: 600;
     font-size: 12rem;
     color: var(--grey-dark);
@@ -28,7 +28,7 @@
       text-align: center;
 
       .sectionTitle {
-        font-family: 'Inter';
+        font-family: Inter, sans-serif;
         font-weight: 500;
         font-size: 3rem;
         color: var(--grey-dark);

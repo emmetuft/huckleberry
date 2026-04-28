@@ -27,12 +27,12 @@
 
 .cancelBtn {
   &:hover {
-    background-color: rgba(229, 57, 53, 0.1);
+    background-color: rgb(229 57 53 / 10%);
   }
 }
 
 .confirmBtn {
   &:hover {
-    background-color: rgba(76, 175, 80, 0.1);
+    background-color: rgb(76 175 80 / 10%);
   }
 }

@@ -49,6 +49,8 @@
 
     .description {
       margin-top: 8px;
+
+      /* stylelint-disable-next-line no-descending-specificity */
       p {
         font-size: 13px;
         color: var(--grey-text);

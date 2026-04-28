@@ -1,6 +1,6 @@
-@import './styles/variables.css';
-@import './styles/shared.css';
-@import './styles/antd.css';
+@import url('./styles/variables.css');
+@import url('./styles/shared.css');
+@import url('./styles/antd.css');
 @import url('https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
@@ -9,6 +9,7 @@
 :root {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
   --node-color: #5a0cff;
 }
 
@@ -22,10 +23,10 @@ body,
 
 body {
   margin: 0;
-  font-family: 'Inter', sans-serif;
+  font-family: Inter, sans-serif;
   font-synthesis: none;
   color: var(--text);
-  text-rendering: optimizeLegibility;
+  text-rendering: optimizelegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -45,5 +46,5 @@ p {
 
 input,
 button {
-  font-family: 'Inter', sans-serif;
+  font-family: Inter, sans-serif;
 }

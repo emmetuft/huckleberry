@@ -93,12 +93,14 @@
 
 @keyframes breathe {
   0% {
-    box-shadow: 0 0 0px rgba(73, 35, 209, 0.15);
+    box-shadow: 0 0 0 rgb(73 35 209 / 15%);
   }
+
   50% {
-    box-shadow: 0 0 12px rgba(73, 35, 209, 0.15);
+    box-shadow: 0 0 12px rgb(73 35 209 / 15%);
   }
+
   100% {
-    box-shadow: 0 0 0px rgba(73, 35, 209, 0.15);
+    box-shadow: 0 0 0 rgb(73 35 209 / 15%);
   }
 }

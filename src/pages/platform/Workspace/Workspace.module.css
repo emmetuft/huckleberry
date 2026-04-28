@@ -17,7 +17,6 @@
   position: fixed;
   inset: 0;
   padding: 20px 20px 20px 102px;
-
   display: grid;
   grid-template-columns: 1fr 1fr;
   column-gap: 20px;

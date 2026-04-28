@@ -1,7 +1,7 @@
 .confirmationCard {
   border-radius: 8px;
   background: transparent;
-  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.15);
+  box-shadow: 0 4px 12px rgb(24 144 255 / 15%);
 }
 
 .collapseContainer {

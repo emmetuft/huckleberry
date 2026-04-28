@@ -5,7 +5,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   /* background: white; */
+
   /* border-bottom: 1px solid var(--grey-light); */
   padding: 1rem 3rem;
 
@@ -36,7 +38,9 @@
     text-decoration: none;
 
     /* &:hover { */
+
     /*   color: var(--purple); */
+
     /* } */
   }
 
