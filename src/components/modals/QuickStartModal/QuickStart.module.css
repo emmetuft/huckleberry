@@ -13,7 +13,9 @@
   padding: 16px 0;
 
   .sidebarMenu {
+    /* stylelint-disable-next-line declaration-no-important */
     background: transparent !important;
+    /* stylelint-disable-next-line declaration-no-important */
     border-inline-end: none !important;
   }
 

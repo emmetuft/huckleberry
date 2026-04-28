@@ -4,7 +4,9 @@
 
 .trendChart {
   padding: 20px;
+
   /*   border: 1px solid var(--grey-border); */
+
   /*   border-radius: 8px; */
 
   h3 {
@@ -19,8 +21,7 @@
   .metricsGrid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    column-gap: 112px;
-    row-gap: 40px;
+    gap: 40px 112px;
 
     .metricCard {
       display: flex;

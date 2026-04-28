@@ -12,15 +12,19 @@
         color: var(--purple);
         animation: spin 1s linear infinite;
       }
+
       .check {
         color: var(--success-icon);
       }
+
       .error {
         color: var(--error-icon);
       }
+
       .paused {
         color: var(--warning-icon);
       }
+
       .resumed {
         color: var(--purple);
       }
@@ -59,7 +63,7 @@
   overflow-x: auto;
   font-size: 11px;
   font-family:
-    'SF Mono', 'Monaco', 'Inconsolata', 'Fira Mono', 'Droid Sans Mono',
+    'SF Mono', Monaco, Inconsolata, 'Fira Mono', 'Droid Sans Mono',
     'Source Code Pro', monospace;
   line-height: 1.5;
 }
@@ -68,6 +72,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }

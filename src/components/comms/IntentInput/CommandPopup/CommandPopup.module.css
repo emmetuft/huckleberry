@@ -6,10 +6,9 @@
   max-width: 300px;
   box-sizing: border-box;
   z-index: 100;
-
   display: flex;
   flex-direction: column;
-  padding: 8px 0 !important;
+  padding: 8px 0;
 
   .itemList {
     overflow-y: auto;
@@ -17,7 +16,7 @@
 
     .itemGroup {
       .groupName {
-        padding: 8px 12px 4px 12px;
+        padding: 8px 12px 4px;
         font-size: 10px;
         font-weight: 600;
         color: var(--grey-text);
@@ -70,7 +69,7 @@
   .hint {
     display: flex;
     gap: 12px;
-    padding: 8px 12px 4px 12px;
+    padding: 8px 12px 4px;
     border-top: 1px solid var(--grey-light);
     margin-top: 4px;
     font-size: 10px;

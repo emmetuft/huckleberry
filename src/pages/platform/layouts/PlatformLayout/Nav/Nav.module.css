@@ -62,13 +62,8 @@
   object-fit: cover;
   cursor: pointer;
 
-  .defaultAppIcon {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  .appIcon {
     height: 30px;
     width: 30px;
-    background-color: var(--purple);
-    border-radius: 6px;
   }
 }

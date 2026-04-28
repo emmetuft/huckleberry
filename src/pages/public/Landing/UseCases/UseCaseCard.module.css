@@ -46,7 +46,7 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .useCaseCard {
     padding: 32px;
   }

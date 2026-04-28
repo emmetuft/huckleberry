@@ -51,7 +51,8 @@
 .ant-segmented .ant-segmented-item-selected,
 .ant-segmented-thumb,
 .ant-segmented
-  .ant-segmented-item:hover:not(.ant-segmented-item-selected):not(
+  .ant-segmented-item:hover:not(
+    .ant-segmented-item-selected,
     .ant-segmented-item-disabled
   )::after {
   border-radius: 20px !important;

@@ -32,12 +32,12 @@
 
   &:hover {
     border-color: #ababab;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
   }
 
   &.selected {
     border-color: var(--purple);
-    background: rgba(90, 12, 255, 0.05);
+    background: rgb(90 12 255 / 5%);
   }
 
   .cardHeader {
@@ -51,7 +51,7 @@
       min-width: 0;
 
       h3 {
-        margin: 0 0 4px 0;
+        margin: 0 0 4px;
         font-size: 16px;
         font-weight: 500;
         color: var(--grey-dark);
@@ -87,12 +87,15 @@
         &.connected {
           background: #52c41a;
         }
+
         &.disconnected {
           background: #ff4d4f;
         }
+
         &.error {
           background: #faad14;
         }
+
         &.unknown {
           background: #8c8c8c;
         }
@@ -132,15 +135,16 @@
   border: 1px dashed var(--grey-border);
   border-radius: 12px;
 
+  /* stylelint-disable-next-line no-descending-specificity */
   h3 {
-    margin: 0 0 8px 0;
+    margin: 0 0 8px;
     font-size: 16px;
     font-weight: 500;
     color: var(--grey-dark);
   }
 
   p {
-    margin: 0 0 16px 0;
+    margin: 0 0 16px;
     color: var(--grey-text);
     font-size: 14px;
   }
@@ -160,8 +164,9 @@
     display: none; /* Chrome/Safari/Edge */
   }
 
+  /* stylelint-disable-next-line no-descending-specificity */
   h3 {
-    margin: 0 0 16px 0;
+    margin: 0 0 16px;
     font-size: 18px;
     font-weight: 500;
     color: var(--grey-dark);

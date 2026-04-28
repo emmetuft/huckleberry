@@ -1,7 +1,6 @@
 :root {
   --background: white;
   --text: black;
-
   --purple: #5a0cff;
   --purple-light: #e6e9ff;
   --pink: #db2777;
@@ -12,25 +11,19 @@
   --grey-border: #bfbfbf;
   --grey-text: #6c6c6c;
   --grey-bg: #f8f8f8;
-
-  --error-bg: rgba(253, 222, 223, 0.5);
+  --error-bg: rgb(253 222 223 / 50%);
   --error-icon: #e45621;
-  --success-bg: rgba(221, 253, 221, 0.5);
+  --success-bg: rgb(221 253 221 / 50%);
   --success-icon: #1c9c6f;
-  --medium-bg: rgba(249, 242, 175, 0.5);
+  --medium-bg: rgb(249 242 175 / 50%);
   --medium-icon: #ba9f19;
-  --info-bg: rgba(221, 242, 253, 0.5);
+  --info-bg: rgb(221 242 253 / 50%);
   --info-icon: #21a0e4;
-
   --data-blue-dark: #2792c7;
-
-  --box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-
+  --box-shadow: 0 4px 30px rgb(0 0 0 / 10%);
   --default-page-padding: 60px 20px 20px 102px;
-
   --card-bg: white;
   --card-border: white;
-
   --node-green: #1c9c6f;
   --node-red: #e42121;
   --node-blue: #2792c7;
@@ -41,7 +34,6 @@
 [data-theme='dark'] {
   --background: #1a1a1a;
   --text: white;
-
   --purple: #8673ffff;
   --purple-light: #341879;
   --grey: #3a3a3a;
@@ -50,21 +42,17 @@
   --grey-border: #4a4a4a;
   --grey-text: #9a9a9a;
   --grey-bg: #1a1a1a;
-
-  --error-bg: rgba(120, 30, 30, 0.5);
+  --error-bg: rgb(120 30 30 / 50%);
   --error-icon: #ff6b4a;
-  --success-bg: rgba(30, 80, 50, 0.5);
+  --success-bg: rgb(30 80 50 / 50%);
   --success-icon: #4ade80;
-  --medium-bg: rgba(80, 65, 10, 0.5);
+  --medium-bg: rgb(80 65 10 / 50%);
   --medium-icon: #facc15;
-  --info-bg: rgba(20, 60, 100, 0.5);
+  --info-bg: rgb(20 60 100 / 50%);
   --info-icon: #38bdf8;
-
-  --box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-
-  --card-bg: rgba(255, 255, 255, 0.05);
-  --card-border: rgba(255, 255, 255, 0.1);
-
+  --box-shadow: 0 4px 30px rgb(0 0 0 / 50%);
+  --card-bg: rgb(255 255 255 / 5%);
+  --card-border: rgb(255 255 255 / 10%);
   --node-green: #4ade80;
   --node-red: #ff6b4a;
   --node-blue: #38bdf8;

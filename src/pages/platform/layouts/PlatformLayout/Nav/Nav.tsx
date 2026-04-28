@@ -155,7 +155,7 @@ export const Nav: FC<NavProps> = ({}) => {
                 {app.iconUrl ? (
                   <img src={app.iconUrl} height="100%" width="100%" />
                 ) : (
-                  <div className={styles.defaultAppIcon}>
+                  <div className={`defaultAppIcon ${styles.appIcon}`}>
                     <CubeIcon color="white" size={18} />
                   </div>
                 )}

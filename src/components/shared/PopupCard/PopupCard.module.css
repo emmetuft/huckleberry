@@ -4,7 +4,7 @@
   left: calc(62px + 40px);
   width: 400px;
   z-index: 200;
-  padding: 0 !important;
+  padding: 0;
   border: none;
   padding-bottom: 10px;
 
@@ -21,6 +21,7 @@
       font-size: 16px;
       font-weight: 400;
     }
+
     p {
       margin-top: 5px;
       font-size: 12px;
