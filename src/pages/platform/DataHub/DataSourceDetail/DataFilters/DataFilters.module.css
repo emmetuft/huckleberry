@@ -1,0 +1,37 @@
+.filtersContainer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  .filterPill {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    background-color: var(--purple-light);
+    color: var(--purple);
+    border-radius: 30px;
+    font-size: 14px;
+
+    .filterOperator {
+      font-weight: 600;
+    }
+
+    .filterValue {
+      max-width: 200px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    button {
+      display: flex;
+      align-items: center;
+      background-color: transparent;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+    }
+  }
+}

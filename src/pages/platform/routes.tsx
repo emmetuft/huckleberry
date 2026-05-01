@@ -1,24 +1,24 @@
-import { RouteObject } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { selectFullScreen } from 'reducers/chat/slice';
+import { RouteObject } from 'react-router-dom';
+import styles from 'components/layouts/PlatformLayout/PlatformLayout.module.css';
 import { selectPersona } from 'reducers/app/slice';
+import { selectFullScreen } from 'reducers/chat/slice';
 import { selectDismissedCards } from 'reducers/workspace/slice';
-import { getBentoLayout } from 'config/bentoConfig';
-import { AuthGuard } from './layouts/AuthGuard/AuthGuard';
-import { PlatformLayout } from './layouts/PlatformLayout/PlatformLayout';
+import { platformRoutePaths, AppPage } from 'models/enums/appPage';
+import { AuthGuard } from 'components/layouts/AuthGuard/AuthGuard';
+import { PlatformLayout } from 'components/layouts/PlatformLayout/PlatformLayout';
+import { Agents } from './Agents/Agents';
 import { Applications } from './Applications/Applications';
 import { Automation } from './Automation/Automation';
-import { Background } from './layouts/PlatformLayout/Background/Background';
 import { DataHealth } from './DataHealth/DataHealth';
 import { DataHub } from './DataHub/DataHub';
+import { DataSourceDetail } from './DataHub/DataSourceDetail/DataSourceDetail';
 import { Integrations } from './Integrations/Integrations';
 import { MetricCatalog } from './MetricCatalog/MetricCatalog';
 import { Ontology } from './Ontology/Ontology';
-import { Agents } from './Agents/Agents';
-import { Workspace } from './Workspace/Workspace';
 import { ProfilePage } from './Profile/ProfilePage';
-import { platformRoutePaths, AppPage } from 'models/enums/appPage';
-import styles from './layouts/PlatformLayout/PlatformLayout.module.css';
+import { Workspace } from './Workspace/Workspace';
+import { getBentoLayout } from 'config/bentoConfig';
 
 // Home page component wrapper
 const HomePage = () => {
@@ -72,6 +72,10 @@ export const platformRoutes: RouteObject[] = [
           {
             path: platformRoutePaths[AppPage.DATA_HUB],
             element: <DataHub />,
+          },
+          {
+            path: platformRoutePaths[AppPage.DATASOURCE],
+            element: <DataSourceDetail />,
           },
           {
             path: platformRoutePaths[AppPage.INTEGRATIONS],

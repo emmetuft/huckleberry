@@ -72,3 +72,22 @@ export const buildFilters = (
 
   return filters;
 };
+
+export const formatNumber = (num: number): string => {
+  if (num === null || num === undefined) {
+    return '';
+  }
+  if (num < 1000) {
+    return num.toFixed(2).replace(/\.00$/, '');
+  }
+  const units = ['K', 'M', 'B', 'T'];
+  let unitIndex = -1;
+  let formattedNumber = num;
+
+  while (formattedNumber >= 1000 && unitIndex < units.length - 1) {
+    formattedNumber /= 1000;
+    unitIndex += 1;
+  }
+
+  return `${formattedNumber.toFixed(2)}${units[unitIndex]}`;
+};

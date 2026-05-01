@@ -10,6 +10,7 @@ import MetricsReducer from './metrics/slice';
 import PeopleReducer from './people/slice';
 import ToolkitsReducer from './toolkits/slice';
 import WorkspaceReducer from './workspace/slice';
+import DatasourceReducer from './datasource/slice';
 //-- importRef
 import { useDispatch } from 'react-redux';
 
@@ -23,6 +24,7 @@ export const store = configureStore({
     people: PeopleReducer,
     toolkits: ToolkitsReducer,
     workspace: WorkspaceReducer,
+    datasource: DatasourceReducer,
     //-- reducerRef
   },
 });

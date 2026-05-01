@@ -39,29 +39,19 @@ const fetchDataSources = async ({
   }
 };
 
-const fetchDataSourceSchema = async (
+const fetchDataSource = async (
   dataSourceId: string,
-): Promise<Column[]> => {
+): Promise<{ dataSource: DataSource; columns: Column[] }> => {
   try {
     const response = await fetch(`${DATA_SOURCES_URL}/${dataSourceId}/schema`);
     const data = await handleResponse<{
       dataSource: any;
       schemaContract: any;
     }>(response);
-    return data.schemaContract.schema.columns;
-  } catch (error: any) {
-    throw error;
-  }
-};
-
-const fetchDataSource = async (dataSourceId: string) => {
-  try {
-    const response = await fetch(`${DATA_SOURCES_URL}/${dataSourceId}/schema`);
-    const data = await handleResponse<{
-      dataSource: any;
-      schemaContract: any;
-    }>(response);
-    return data.dataSource;
+    return {
+      dataSource: data.dataSource,
+      columns: data.schemaContract.schema.columns,
+    };
   } catch (error: any) {
     throw error;
   }
@@ -95,7 +85,7 @@ const fetchDataSourceRows = async ({
   if (response.ok) {
     const result = await response.json();
     const datasetResponse = result.data ?? result;
-    const dataContent = datasetResponse.content;
+    const dataContent = datasetResponse.rows;
     const datasetRows = formatRowsWithKeys(schema, dataContent);
     return datasetRows;
   }
@@ -114,7 +104,6 @@ const formatRowsWithKeys = (schema: Column[], rows: string[][]) =>
 
 export const DataService = {
   fetchDataSources,
-  fetchDataSourceSchema,
   fetchDataSource,
   fetchDataSourceRows,
 };

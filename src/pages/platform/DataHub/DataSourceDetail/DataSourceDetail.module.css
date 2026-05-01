@@ -1,0 +1,22 @@
+.datasourceDetail {
+  padding-top: 20px;
+
+  .topSection {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 16px;
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .name {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 600;
+      }
+    }
+  }
+}

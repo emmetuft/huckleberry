@@ -1,6 +1,7 @@
 @import url('./styles/variables.css');
 @import url('./styles/shared.css');
 @import url('./styles/antd.css');
+@import url('./styles/ag-grid.css');
 @import url('https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
@@ -47,4 +48,5 @@ p {
 input,
 button {
   font-family: Inter, sans-serif;
+  color: inherit;
 }
