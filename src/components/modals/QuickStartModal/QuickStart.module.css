@@ -9,7 +9,7 @@
   width: 200px;
   flex-shrink: 0;
   background-color: var(--grey-bg);
-  border-radius: 10px;
+  border-radius: var(--br-large);
   padding: 16px 0;
 
   .sidebarMenu {
@@ -111,7 +111,7 @@
   gap: 12px;
   padding: 20px;
   background: var(--grey-bg);
-  border-radius: 12px;
+  border-radius: var(--br-large);
 
   .summaryItem {
     display: flex;
@@ -147,7 +147,7 @@
   .resumeError {
     width: fit-content;
     padding: 3px 8px;
-    border-radius: 6px;
+    border-radius: var(--br-medium);
     font-size: 12px;
     font-weight: 500;
     color: var(--error-icon);
@@ -186,7 +186,7 @@
   padding: 12px;
   background: var(--grey-bg);
   border: 1.5px solid transparent;
-  border-radius: 10px;
+  border-radius: var(--br-medium);
   cursor: pointer;
   text-align: left;
   transition:

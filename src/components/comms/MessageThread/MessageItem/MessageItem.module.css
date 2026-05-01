@@ -17,7 +17,7 @@
 
   .content {
     padding: 10px 14px;
-    border-radius: 12px;
+    border-radius: var(--br-large);
     font-size: 14px;
     line-height: 1.5;
     overflow-wrap: break-word;
@@ -43,7 +43,7 @@
         align-items: center;
         gap: 4px;
         padding: 2px 8px;
-        border-radius: 12px;
+        border-radius: var(--br-large);
         background-color: var(--purple-light);
         border: 1px solid var(--purple);
         font-size: 12px;

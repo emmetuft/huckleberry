@@ -11,7 +11,7 @@
     font-size: 12px;
     padding: 4px 8px;
     border: 1px solid var(--grey);
-    border-radius: 6px;
+    border-radius: var(--br-medium);
     max-width: 150px;
 
     .contextItemTitle {

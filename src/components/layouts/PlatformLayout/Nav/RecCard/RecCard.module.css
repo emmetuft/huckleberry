@@ -28,7 +28,7 @@
           height: 30px;
           min-width: 30px;
           border: 1px solid var(--grey-border);
-          border-radius: 8px;
+          border-radius: var(--br-medium);
         }
 
         p {
@@ -42,7 +42,7 @@
         font-weight: 600;
         color: var(--purple);
         background-color: var(--purple-light);
-        border-radius: 8px;
+        border-radius: var(--br-medium);
         height: fit-content;
       }
     }

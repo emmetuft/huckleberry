@@ -11,7 +11,7 @@
     align-items: center;
     padding: 20px 10px 10px;
     box-shadow: var(--box-shadow);
-    border-radius: 8px;
+    border-radius: var(--br-medium);
 
     .chartTitle {
       position: absolute;
@@ -23,7 +23,7 @@
 
 .dataTable {
   box-shadow: var(--box-shadow);
-  border-radius: 8px;
+  border-radius: var(--br-medium);
 
   .owner {
     display: flex;
@@ -45,10 +45,11 @@
 
     .tag {
       padding: 2px 6px;
-      border-radius: 6px;
+      border-radius: var(--br-medium);
       background-color: var(--purple-light);
       color: var(--purple);
       font-size: 11px;
+      font-weight: 500;
     }
   }
 }

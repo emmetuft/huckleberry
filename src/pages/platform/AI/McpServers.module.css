@@ -25,7 +25,7 @@
 .serverCard {
   background: white;
   border: 1px solid var(--grey-border);
-  border-radius: 12px;
+  border-radius: var(--br-large);
   padding: 16px;
   transition: all 0.2s ease;
   cursor: pointer;
@@ -75,7 +75,7 @@
       gap: 6px;
       font-size: 12px;
       padding: 4px 8px;
-      border-radius: 12px;
+      border-radius: var(--br-large);
       background: var(--grey-bg);
       color: var(--grey-text);
 
@@ -133,7 +133,7 @@
   padding: 48px 24px;
   background: var(--grey-bg);
   border: 1px dashed var(--grey-border);
-  border-radius: 12px;
+  border-radius: var(--br-large);
 
   /* stylelint-disable-next-line no-descending-specificity */
   h3 {
@@ -153,7 +153,7 @@
 .selectedServerPanel {
   background: white;
   border: 1px solid var(--grey-border);
-  border-radius: 12px;
+  border-radius: var(--br-large);
   padding: 20px;
   max-height: 500px;
   overflow-y: auto;
@@ -180,7 +180,7 @@
     .toolItem {
       background: var(--grey-bg);
       border: 1px solid var(--grey-border);
-      border-radius: 8px;
+      border-radius: var(--br-medium);
       padding: 12px;
 
       .toolName {

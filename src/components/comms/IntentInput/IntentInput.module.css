@@ -39,7 +39,7 @@
       color: var(--purple);
       background-color: var(--purple-light);
       padding: 1px 4px;
-      border-radius: 4px;
+      border-radius: var(--br-small);
     }
 
     span.mention {
@@ -47,7 +47,7 @@
       color: var(--pink);
       background-color: var(--pink-light);
       padding: 1px 4px;
-      border-radius: 4px;
+      border-radius: var(--br-small);
     }
   }
 

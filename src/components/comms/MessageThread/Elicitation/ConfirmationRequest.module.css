@@ -1,5 +1,5 @@
 .confirmationCard {
-  border-radius: 8px;
+  border-radius: var(--br-medium);
   background: transparent;
   box-shadow: 0 4px 12px rgb(24 144 255 / 15%);
 }

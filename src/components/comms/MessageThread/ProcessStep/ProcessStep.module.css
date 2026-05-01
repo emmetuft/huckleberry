@@ -42,7 +42,7 @@
 
     .subSteps {
       background-color: var(--grey-bg);
-      border-radius: 12px;
+      border-radius: var(--br-large);
     }
 
     .section {
@@ -59,7 +59,7 @@
   margin: 0;
   padding: 12px;
   background-color: var(--background);
-  border-radius: 6px;
+  border-radius: var(--br-medium);
   overflow-x: auto;
   font-size: 11px;
   font-family:

@@ -25,7 +25,7 @@
       position: relative;
       padding: 10px;
       background-color: var(--grey-bg);
-      border-radius: 8px;
+      border-radius: var(--br-medium);
 
       .sourceName {
         display: flex;

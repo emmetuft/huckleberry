@@ -24,6 +24,6 @@
     margin-bottom: 8px;
     padding: 8px;
     background: var(--grey-bg);
-    border-radius: 8px;
+    border-radius: var(--br-medium);
   }
 }

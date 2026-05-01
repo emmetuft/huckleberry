@@ -23,7 +23,7 @@
     .preview {
       height: 60px;
       margin-bottom: 10px;
-      border-radius: 8px;
+      border-radius: var(--br-medium);
       background-color: white;
     }
   }

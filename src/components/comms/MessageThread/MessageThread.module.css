@@ -17,7 +17,7 @@
     align-items: center;
     margin-top: 8px;
     padding: 16px;
-    border-radius: 8px;
+    border-radius: var(--br-medium);
   }
 
   &.panel {

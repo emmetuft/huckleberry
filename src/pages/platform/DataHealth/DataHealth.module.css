@@ -37,7 +37,7 @@
           height: 48px;
           width: 48px;
           background-color: var(--grey-light);
-          border-radius: 8px;
+          border-radius: var(--br-medium);
 
           &.warning {
             background: var(--error-bg);

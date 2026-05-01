@@ -1,12 +1,12 @@
 .dataTable {
   box-shadow: var(--box-shadow);
-  border-radius: 8px;
+  border-radius: var(--br-medium);
 }
 
 .tag {
   width: fit-content;
   padding: 2px 6px;
-  border-radius: 6px;
+  border-radius: var(--br-medium);
   background-color: #d4bfff;
   color: var(--purple);
   font-size: 11px;

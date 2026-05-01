@@ -20,7 +20,7 @@
 
       .sampleBadge {
         padding: 3px 8px;
-        border-radius: 10px;
+        border-radius: var(--br-medium);
         background: var(--purple-light);
         color: var(--purple);
         font-size: 12px;
@@ -114,14 +114,14 @@
 .barTrack {
   height: 10px;
   background: var(--grey-light);
-  border-radius: 5px;
+  border-radius: var(--br-small);
   overflow: hidden;
 }
 
 .bar {
   height: 100%;
   background: var(--purple);
-  border-radius: 5px;
+  border-radius: var(--br-small);
 }
 
 .stageValue {
@@ -266,7 +266,7 @@
 .badge {
   font-size: 11px;
   padding: 3px 8px;
-  border-radius: 10px;
+  border-radius: var(--br-medium);
   font-weight: 600;
   white-space: nowrap;
   flex-shrink: 0;
@@ -342,7 +342,7 @@
 
 .ticket {
   background: var(--grey-bg);
-  border-radius: 6px;
+  border-radius: var(--br-medium);
   padding: 7px 8px;
   font-size: 11px;
   color: var(--text);
@@ -376,7 +376,7 @@
 
 .heatmapCell {
   flex: 1;
-  border-radius: 2px;
+  border-radius: var(--br-small);
   min-height: 0;
 }
 

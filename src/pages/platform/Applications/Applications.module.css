@@ -21,7 +21,7 @@
     margin-bottom: 20px;
     background-color: var(--purple);
     height: 300px;
-    border-radius: 8px;
+    border-radius: var(--br-medium);
   }
 
   .layout {

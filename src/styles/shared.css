@@ -40,7 +40,7 @@ svg:focus {
     background: var(--card-bg);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border-radius: 12px;
+    border-radius: var(--br-large);
     box-shadow: var(--box-shadow);
     border: 1px solid var(--card-border);
   }
@@ -52,7 +52,7 @@ svg:focus {
     min-width: 0;
     gap: 10px;
     padding: 10px;
-    border-radius: 8px;
+    border-radius: var(--br-medium);
     background-color: var(--card-bg);
     box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
     transition: transform 0.3s ease;
@@ -65,7 +65,7 @@ svg:focus {
     img {
       height: 50px;
       width: 50px;
-      border-radius: 6px;
+      border-radius: var(--br-medium);
       object-fit: cover;
     }
 
@@ -106,14 +106,14 @@ svg:focus {
     height: 40px;
     width: 40px;
     background-color: var(--purple);
-    border-radius: 6px;
+    border-radius: var(--br-medium);
   }
 }
 
 .agentNode {
   padding: 24px;
   background-color: var(--background);
-  border-radius: 10px;
+  border-radius: var(--br-large);
   width: 200px;
   box-sizing: border-box;
 

@@ -69,7 +69,7 @@
 
   .sectionCard {
     border: 1px solid var(--grey-light);
-    border-radius: 12px;
+    border-radius: var(--br-large);
     overflow: hidden;
     background: var(--card-bg);
     transition: border-color 0.15s;
@@ -101,7 +101,7 @@
       .sectionIcon {
         width: 36px;
         height: 36px;
-        border-radius: 8px;
+        border-radius: var(--br-medium);
         background: var(--purple-light);
         color: var(--purple);
         display: flex;

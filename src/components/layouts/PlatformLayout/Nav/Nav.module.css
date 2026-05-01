@@ -57,7 +57,7 @@
   width: 30px;
   background: none;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--br-medium);
   padding: 0;
   object-fit: cover;
   cursor: pointer;
