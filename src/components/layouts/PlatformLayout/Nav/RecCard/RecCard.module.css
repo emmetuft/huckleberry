@@ -3,7 +3,7 @@
   flex-direction: column;
 
   .item {
-    padding: 16px;
+    padding: var(--space-lg);
     border-top: 1px solid var(--grey-light);
     cursor: pointer;
 
@@ -18,7 +18,7 @@
       .title {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: var(--space-sm);
         max-width: 65%;
 
         .icon {
@@ -28,7 +28,7 @@
           height: 30px;
           min-width: 30px;
           border: 1px solid var(--grey-border);
-          border-radius: var(--br-medium);
+          border-radius: var(--br-md);
         }
 
         p {
@@ -37,18 +37,18 @@
       }
 
       .actionPill {
-        padding: 3px 8px;
+        padding: var(--space-xs) var(--space-sm);
         font-size: 10px;
         font-weight: 600;
         color: var(--purple);
         background-color: var(--purple-light);
-        border-radius: var(--br-medium);
+        border-radius: var(--br-md);
         height: fit-content;
       }
     }
 
     .description {
-      margin-top: 8px;
+      margin-top: var(--space-sm);
 
       /* stylelint-disable-next-line no-descending-specificity */
       p {

@@ -1,13 +1,13 @@
 .AccountsTab {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--space-sm);
 }
 
 .accountsGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
+  gap: var(--space-sm);
 }
 
 .connectAction {

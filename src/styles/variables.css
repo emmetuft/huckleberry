@@ -31,9 +31,14 @@
 
   /* Spacing + Sizing */
   --default-page-padding: 60px 20px 20px 102px;
-  --br-small: 4px;
-  --br-medium: 8px;
-  --br-large: 12px;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 20px;
+  --br-sm: 4px;
+  --br-md: 8px;
+  --br-lg: 12px;
 }
 
 [data-theme='dark'] {

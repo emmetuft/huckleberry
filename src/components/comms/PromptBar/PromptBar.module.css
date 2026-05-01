@@ -31,7 +31,7 @@
     right: 8px;
     display: flex;
     gap: 2px;
-    border-radius: var(--br-medium);
+    border-radius: var(--br-md);
     background-color: var(--background);
 
     .chatIcons {

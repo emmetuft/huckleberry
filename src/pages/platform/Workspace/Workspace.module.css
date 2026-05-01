@@ -1,7 +1,7 @@
 .Workspace {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: var(--space-xl);
   max-width: 48rem;
   margin-left: auto;
   margin-right: auto;
@@ -16,13 +16,13 @@
 .bentoWorkspace {
   position: fixed;
   inset: 0;
-  padding: 20px 20px 20px 102px;
+  padding: var(--space-xl) var(--space-xl) var(--space-xl) 102px;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  column-gap: 20px;
+  column-gap: var(--space-xl);
 
   .leftPanel {
-    gap: 20px;
+    gap: var(--space-xl);
 
     .greeting {
       font-size: 20px;

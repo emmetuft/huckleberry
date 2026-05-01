@@ -1,16 +1,16 @@
 .datasourceDetail {
-  padding-top: 20px;
+  padding-top: var(--space-xl);
 
   .topSection {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    margin-bottom: 16px;
+    gap: var(--space-lg);
+    margin-bottom: var(--space-lg);
 
     .header {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: var(--space-md);
 
       .name {
         margin: 0;

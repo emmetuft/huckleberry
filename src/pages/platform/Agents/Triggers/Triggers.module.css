@@ -1,12 +1,12 @@
 .TriggerList {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: var(--space-md);
 
   .trigger {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: var(--space-sm);
     background-color: var(--grey-bg);
     box-shadow: none;
     cursor: pointer;
@@ -14,7 +14,7 @@
     .heading {
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: var(--space-xs);
     }
 
     h4 {

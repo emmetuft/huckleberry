@@ -1,7 +1,7 @@
 .mcpSection {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: var(--space-xl);
 
   .sectionHeader {
     display: flex;
@@ -19,14 +19,14 @@
 .serverGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 16px;
+  gap: var(--space-lg);
 }
 
 .serverCard {
   background: white;
   border: 1px solid var(--grey-border);
-  border-radius: var(--br-large);
-  padding: 16px;
+  border-radius: var(--br-lg);
+  padding: var(--space-lg);
   transition: all 0.2s ease;
   cursor: pointer;
 
@@ -44,14 +44,14 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 12px;
+    margin-bottom: var(--space-md);
 
     .serverInfo {
       flex: 1;
       min-width: 0;
 
       h3 {
-        margin: 0 0 4px;
+        margin: 0 0 var(--space-xs);
         font-size: 16px;
         font-weight: 500;
         color: var(--grey-dark);
@@ -72,10 +72,10 @@
     .statusBadge {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: var(--space-xs);
       font-size: 12px;
-      padding: 4px 8px;
-      border-radius: var(--br-large);
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: var(--br-lg);
       background: var(--grey-bg);
       color: var(--grey-text);
 
@@ -106,24 +106,24 @@
   .cardDescription {
     font-size: 13px;
     color: var(--grey-text);
-    margin-bottom: 12px;
+    margin-bottom: var(--space-md);
     line-height: 1.4;
   }
 
   .toolCount {
     font-size: 12px;
     color: var(--grey-text);
-    margin-bottom: 12px;
+    margin-bottom: var(--space-md);
   }
 
   .oauth2Status {
-    margin-bottom: 12px;
+    margin-bottom: var(--space-md);
   }
 
   .cardActions {
     display: flex;
-    gap: 8px;
-    padding-top: 12px;
+    gap: var(--space-sm);
+    padding-top: var(--space-md);
     border-top: 1px solid var(--grey-border);
   }
 }
@@ -133,18 +133,18 @@
   padding: 48px 24px;
   background: var(--grey-bg);
   border: 1px dashed var(--grey-border);
-  border-radius: var(--br-large);
+  border-radius: var(--br-lg);
 
   /* stylelint-disable-next-line no-descending-specificity */
   h3 {
-    margin: 0 0 8px;
+    margin: 0 0 var(--space-sm);
     font-size: 16px;
     font-weight: 500;
     color: var(--grey-dark);
   }
 
   p {
-    margin: 0 0 16px;
+    margin: 0 0 var(--space-lg);
     color: var(--grey-text);
     font-size: 14px;
   }
@@ -153,8 +153,8 @@
 .selectedServerPanel {
   background: white;
   border: 1px solid var(--grey-border);
-  border-radius: var(--br-large);
-  padding: 20px;
+  border-radius: var(--br-lg);
+  padding: var(--space-xl);
   max-height: 500px;
   overflow-y: auto;
   scrollbar-width: none; /* Firefox */
@@ -166,7 +166,7 @@
 
   /* stylelint-disable-next-line no-descending-specificity */
   h3 {
-    margin: 0 0 16px;
+    margin: 0 0 var(--space-lg);
     font-size: 18px;
     font-weight: 500;
     color: var(--grey-dark);
@@ -175,18 +175,18 @@
   .toolsList {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: var(--space-md);
 
     .toolItem {
       background: var(--grey-bg);
       border: 1px solid var(--grey-border);
-      border-radius: var(--br-medium);
-      padding: 12px;
+      border-radius: var(--br-md);
+      padding: var(--space-md);
 
       .toolName {
         font-weight: 500;
         font-size: 14px;
-        margin-bottom: 4px;
+        margin-bottom: var(--space-xs);
         color: var(--purple);
       }
 

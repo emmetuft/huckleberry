@@ -2,13 +2,13 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--space-sm);
 
   .filterPill {
     display: flex;
     align-items: center;
-    gap: 5px;
-    padding: 5px 12px;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-md);
     background-color: var(--purple-light);
     color: var(--purple);
     border-radius: 30px;

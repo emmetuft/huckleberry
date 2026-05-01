@@ -4,7 +4,7 @@
   justify-content: center;
   width: 100px;
   height: 100px;
-  padding: 10px;
+  padding: var(--space-md);
   box-sizing: border-box;
   background-color: var(--purple-light);
   border-radius: 50%;

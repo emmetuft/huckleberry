@@ -1,18 +1,18 @@
 .columnFilterPopup {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-sm);
   width: 250px;
 
   .betweenInput {
     display: flex;
-    gap: 8px;
+    gap: var(--space-sm);
   }
 
   .buttons {
     display: flex;
     justify-content: space-between;
-    gap: 8px;
+    gap: var(--space-sm);
 
     button {
       flex: 1;

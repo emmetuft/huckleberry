@@ -6,10 +6,10 @@
   z-index: 200;
   padding: 0;
   border: none;
-  padding-bottom: 10px;
+  padding-bottom: var(--space-md);
 
   .heading {
-    padding: 15px;
+    padding: var(--space-lg);
 
     .title {
       display: flex;

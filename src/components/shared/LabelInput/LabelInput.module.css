@@ -1,28 +1,28 @@
 .freeformTags {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-sm);
 }
 
 .tagList {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: var(--space-sm);
 }
 
 .radioCards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 8px;
+  gap: var(--space-sm);
 }
 
 .radioCard {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding: 10px 12px;
+  padding: var(--space-md);
   border: 1.5px solid var(--grey-light);
-  border-radius: var(--br-medium);
+  border-radius: var(--br-md);
   background: transparent;
   cursor: pointer;
   text-align: left;

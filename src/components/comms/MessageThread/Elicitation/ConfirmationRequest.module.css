@@ -1,16 +1,16 @@
 .confirmationCard {
-  border-radius: var(--br-medium);
+  border-radius: var(--br-md);
   background: transparent;
   box-shadow: 0 4px 12px rgb(24 144 255 / 15%);
 }
 
 .collapseContainer {
-  margin-top: 8px;
-  margin-bottom: 16px;
+  margin-top: var(--space-sm);
+  margin-bottom: var(--space-lg);
 
   .requestSection {
     .requestMessage {
-      margin-bottom: 16px;
+      margin-bottom: var(--space-lg);
       color: var(--grey-text);
     }
   }
@@ -18,5 +18,5 @@
 
 .buttonGroup {
   display: flex;
-  gap: 12px;
+  gap: var(--space-md);
 }

@@ -6,7 +6,7 @@
   .section {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: var(--space-sm);
 
     h4 {
       font-size: 12px;
@@ -21,14 +21,14 @@
   .properties {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: var(--space-sm);
 
     .propertyHeader,
     .propertyItem {
       display: grid;
       grid-template-columns: auto 1fr 150px;
       align-items: center;
-      gap: 12px;
+      gap: var(--space-md);
     }
 
     .propertyHeader {
@@ -45,7 +45,7 @@
 }
 
 .nodeLabel {
-  padding: 2px 10px;
+  padding: var(--space-xs) var(--space-sm);
   background-color: color-mix(in srgb, var(--node-color) 10%, white 90%);
   border-radius: 30px;
   border: 1px solid var(--node-color);
@@ -57,6 +57,6 @@
 .connection {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-xs);
   font-size: 13px;
 }

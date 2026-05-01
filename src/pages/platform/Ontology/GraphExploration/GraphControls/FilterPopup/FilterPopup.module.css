@@ -8,22 +8,22 @@
     flex: 1;
     overflow-y: auto;
     max-height: 400px;
-    margin-bottom: 12px;
+    margin-bottom: var(--space-md);
   }
 
   .emptyState {
-    padding: 20px;
+    padding: var(--space-xl);
     text-align: center;
     color: var(--grey-text);
   }
 
   .filterRow {
     display: flex;
-    gap: 8px;
+    gap: var(--space-sm);
     align-items: center;
-    margin-bottom: 8px;
-    padding: 8px;
+    margin-bottom: var(--space-sm);
+    padding: var(--space-sm);
     background: var(--grey-bg);
-    border-radius: var(--br-medium);
+    border-radius: var(--br-md);
   }
 }

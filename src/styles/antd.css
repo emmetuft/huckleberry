@@ -6,7 +6,7 @@
 .ant-collapse-header {
   min-width: 0;
   overflow: hidden;
-  padding: 10px 16px !important;
+  padding: var(--space-sm) var(--space-lg) !important;
 }
 
 .ant-collapse-header-text {
@@ -16,7 +16,7 @@
 }
 
 .ant-collapse-content-box {
-  padding-block: 8px !important;
+  padding-block: var(--space-sm) !important;
 }
 
 /* Drawer */
@@ -39,12 +39,12 @@
 /* List */
 .ant-list .ant-list-item {
   justify-content: unset;
-  gap: 8px;
+  gap: var(--space-sm);
 }
 
 /* Segmented */
 .ant-segmented {
-  padding: 8px;
+  padding: var(--space-sm);
 }
 
 .ant-segmented,
@@ -61,7 +61,7 @@
 /* Table */
 .ant-table-pagination {
   margin: 0 !important;
-  padding: 16px;
+  padding: var(--space-lg);
   border-top: 1px solid var(--grey-bg);
   border-radius: 0 0 8px 8px;
 }

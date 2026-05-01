@@ -1,7 +1,7 @@
 .modalContent {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--space-lg);
 
   .description {
     color: rgb(0 0 0 / 65%);
@@ -12,7 +12,7 @@
   .queryPreview {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: var(--space-sm);
 
     .label {
       font-weight: 500;
@@ -22,10 +22,10 @@
 
     .query {
       margin: 0;
-      padding: 12px;
+      padding: var(--space-md);
       background-color: #f6f8fa;
       border: 1px solid #e1e4e8;
-      border-radius: var(--br-medium);
+      border-radius: var(--br-md);
       overflow: auto;
       font-size: 12px;
       font-family:

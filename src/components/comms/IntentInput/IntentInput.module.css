@@ -1,7 +1,7 @@
 .IntentInput {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: var(--space-xl);
   position: relative;
 
   .inputWrapper {
@@ -38,16 +38,16 @@
       font-weight: 600;
       color: var(--purple);
       background-color: var(--purple-light);
-      padding: 1px 4px;
-      border-radius: var(--br-small);
+      padding: 1px var(--space-xs);
+      border-radius: var(--br-sm);
     }
 
     span.mention {
       font-weight: 600;
       color: var(--pink);
       background-color: var(--pink-light);
-      padding: 1px 4px;
-      border-radius: var(--br-small);
+      padding: 1px var(--space-xs);
+      border-radius: var(--br-sm);
     }
   }
 
@@ -59,7 +59,7 @@
 
     .buttons {
       display: flex;
-      gap: 5px;
+      gap: var(--space-xs);
       align-items: center;
     }
   }

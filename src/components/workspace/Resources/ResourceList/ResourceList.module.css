@@ -1,12 +1,12 @@
 .TemplateList {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 10px;
+  gap: var(--space-sm);
 
   .template {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: var(--space-sm);
     box-shadow: var(--box-shadow);
     cursor: pointer;
 
@@ -23,7 +23,7 @@
     .preview {
       height: 60px;
       margin-bottom: 10px;
-      border-radius: var(--br-medium);
+      border-radius: var(--br-md);
       background-color: white;
     }
   }

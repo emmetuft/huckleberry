@@ -8,7 +8,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 6px 16px;
+    padding: var(--space-sm) var(--space-lg);
     border-top: 1px solid var(--grey-light);
     cursor: pointer;
 
@@ -23,13 +23,13 @@
       text-overflow: ellipsis;
       min-width: 0;
       flex: 1;
-      margin-right: 8px;
+      margin-right: var(--space-sm);
     }
   }
 }
 
 .groupLabel {
-  padding: 8px 16px 4px;
+  padding: var(--space-sm) var(--space-lg) var(--space-xs);
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--grey-mid, #888);
@@ -38,5 +38,5 @@
 }
 
 .noHistory {
-  padding: 16px;
+  padding: var(--space-lg);
 }
