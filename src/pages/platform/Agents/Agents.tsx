@@ -37,7 +37,6 @@ export const Agents: FC<AgentsProps> = ({}) => {
 
   const onConnect = useCallback(
     (params: Parameters<typeof addEdge>[0]) => {
-      console.log('onConnect', params);
       setEdges((eds) =>
         addEdge({ ...params, type: ConnectionLineType.SmoothStep }, eds),
       );

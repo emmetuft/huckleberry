@@ -29,6 +29,7 @@ export const Heading: FC<HeadingProps> = ({}) => {
           </div>
         );
       case AppPage.AGENTS:
+      case AppPage.DATASOURCE:
       case AppPage.HOME:
       case AppPage.ONTOLOGY:
         return null;

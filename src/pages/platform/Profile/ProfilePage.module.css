@@ -1,7 +1,2 @@
 .ProfilePage {
-  height: 100%;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  padding: var(--default-page-padding);
 }

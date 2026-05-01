@@ -1,8 +1,5 @@
 .automation {
-  display: flex;
-  flex-direction: column;
   gap: 24px;
-  padding: var(--default-page-padding);
 
   .heading {
     display: flex;

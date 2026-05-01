@@ -293,8 +293,10 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
         <ContextItems
           uploadedFiles={uploadedFiles}
           selectedDataSources={selectedDataSources}
+          selectedTools={selectedTools}
           onRemoveFile={onRemoveFile}
           onRemoveDataSource={onRemoveDataSource}
+          onRemoveTool={onRemoveTool}
         />
         <EditableInput
           ref={editableRef}
@@ -318,18 +320,6 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
               onTranscript={handleTranscript}
               disabled={requestLoading}
             />
-            {selectedTools.length > 0 && (
-              <div className={styles.selectedTools}>
-                {selectedTools.map((tool) => (
-                  <div key={tool.toolId} className={styles.tool}>
-                    <p>{tool.overrideToolName}</p>
-                    <button onClick={() => onRemoveTool(tool)}>
-                      <XIcon className={styles.closeIcon} color="white" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
             <AnimatePresence>
               {suggestedActions.map((action) => (
                 <motion.div

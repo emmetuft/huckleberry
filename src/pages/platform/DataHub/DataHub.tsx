@@ -1,5 +1,6 @@
 import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { Table } from 'antd';
 import styles from './DataHub.module.css';
 import { selectIdentity } from 'reducers/app/slice';
@@ -15,6 +16,7 @@ interface DataHubProps {}
 
 export const DataHub: FC<DataHubProps> = ({}) => {
   const identity = useSelector(selectIdentity);
+  const navigate = useNavigate();
 
   const [dataSourceList, setDataSourceList] = useState<any[]>([]);
   const [page, setPage] = useState<number>(1);
@@ -29,8 +31,8 @@ export const DataHub: FC<DataHubProps> = ({}) => {
   useEffect(() => {
     const resize = () => {
       const topHeight = topSectionRef.current?.offsetHeight || 0;
-      const padding = 100;
-      const extraTableHeight = 61 + 64;
+      const padding = 80;
+      const extraTableHeight = 61 + 65; // header + pagination
       setTableHeight(
         window.innerHeight - topHeight - padding - extraTableHeight,
       );
@@ -110,7 +112,7 @@ export const DataHub: FC<DataHubProps> = ({}) => {
   };
 
   return (
-    <div className={styles.DataHub}>
+    <div className="platformPage">
       {/* <div ref={topSectionRef} className={styles.topSection}>
         <div className={styles.chartContainer}>
           <p className={styles.chartTitle}>Top 5 Data Providers</p>
@@ -144,6 +146,10 @@ export const DataHub: FC<DataHubProps> = ({}) => {
         }}
         tableLayout="auto"
         className={styles.dataTable}
+        onRow={(record) => ({
+          onClick: () => navigate(`/data-hub/${record.id}`),
+          style: { cursor: 'pointer' },
+        })}
       />
     </div>
   );

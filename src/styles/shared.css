@@ -13,6 +13,14 @@ svg:focus {
 }
 
 @layer base {
+  .platformPage {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    padding: var(--default-page-padding);
+  }
+
   .loadingOverlay {
     position: absolute;
     top: 0;

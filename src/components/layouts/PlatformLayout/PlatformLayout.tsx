@@ -12,6 +12,8 @@ import { fetchGroups, fetchUsers } from 'reducers/people/actions';
 import { fetchToolkits } from 'reducers/toolkits/actions';
 import { getAppPageFromPath } from 'models/enums/appPage';
 import { PromptBar } from 'components/comms/PromptBar/PromptBar';
+import { DuckDBProvider } from 'components/duckdb/DuckDBProvider';
+import Database from 'components/duckdb/Database';
 import { Heading } from './Heading/Heading';
 import { Nav } from './Nav/Nav';
 
@@ -64,12 +66,15 @@ export const PlatformLayout: FC = () => {
         },
       }}
     >
-      <div className={styles.PlatformLayout}>
-        <Heading />
-        <Nav />
-        {!hidePromptBar && <PromptBar />}
-        <Outlet />
-      </div>
+      <DuckDBProvider>
+        <div className={styles.PlatformLayout}>
+          <Heading />
+          <Nav />
+          {!hidePromptBar && <PromptBar />}
+          <Outlet />
+        </div>
+        <Database />
+      </DuckDBProvider>
       <Toaster position="top-right" theme="light" richColors />
     </ConfigProvider>
   );

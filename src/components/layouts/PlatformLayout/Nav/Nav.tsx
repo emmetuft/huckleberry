@@ -16,7 +16,6 @@ import {
   PuzzlePieceIcon,
   SquaresFourIcon,
   SunIcon,
-  TreeStructureIcon,
   UserCircleIcon,
 } from '@phosphor-icons/react';
 import { Button, Tooltip } from 'antd';
@@ -33,8 +32,8 @@ import { setFullScreen } from 'reducers/chat/slice';
 import { appList } from 'constants/applications';
 import { AppPage, AppPageLabel } from 'models/enums/appPage';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
-import { RecCard } from 'components/RecCard/RecCard';
-import { HistoryCard } from 'components/HistoryCard/HistoryCard';
+import { HistoryCard } from './HistoryCard/HistoryCard';
+import { RecCard } from './RecCard/RecCard';
 import { getAvatarUrl } from 'utils/misc';
 
 interface NavProps {}

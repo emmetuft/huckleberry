@@ -1,21 +1,6 @@
-.MetricCatalog {
-  /*   display: flex; */
-
-  /*   flex-direction: column; */
-
-  /*   justify-content: center; */
-
-  /*   align-items: center; */
-
-  /*   height: 100%; */
-
-  /*   width: 100%; */
-  padding: var(--default-page-padding);
-
-  .dataTable {
-    box-shadow: var(--box-shadow);
-    border-radius: 8px;
-  }
+.dataTable {
+  box-shadow: var(--box-shadow);
+  border-radius: 8px;
 }
 
 .tag {

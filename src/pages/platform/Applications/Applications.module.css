@@ -1,23 +1,19 @@
-.Applications {
-  padding: var(--default-page-padding);
+.tabContent {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
 
-  .tabContent {
-    display: flex;
-    flex-direction: column;
-    gap: 50px;
-
-    h2 {
-      margin-bottom: 10px;
-      font-weight: 400;
-      font-size: 20px;
-    }
+  h2 {
+    margin-bottom: 10px;
+    font-weight: 400;
+    font-size: 20px;
   }
+}
 
-  .appGrid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    gap: 20px;
-  }
+.appGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 20px;
 }
 
 .Marketplace {

@@ -1,13 +1,5 @@
-.DataHealth {
-  padding: var(--default-page-padding);
-}
-
 .trendChart {
   padding: 20px;
-
-  /*   border: 1px solid var(--grey-border); */
-
-  /*   border-radius: 8px; */
 
   h3 {
     font-size: 14px;
