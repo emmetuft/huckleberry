@@ -1,12 +1,8 @@
 /* Collapse */
-.ant-collapse {
-  /* border: 1px solid var(--grey); */
-}
-
 .ant-collapse-header {
   min-width: 0;
   overflow: hidden;
-  padding: 10px 16px !important;
+  padding: var(--space-sm) var(--space-lg) !important;
 }
 
 .ant-collapse-header-text {
@@ -16,7 +12,7 @@
 }
 
 .ant-collapse-content-box {
-  padding-block: 8px !important;
+  padding-block: var(--space-sm) !important;
 }
 
 /* Drawer */
@@ -39,12 +35,12 @@
 /* List */
 .ant-list .ant-list-item {
   justify-content: unset;
-  gap: 8px;
+  gap: var(--space-sm);
 }
 
 /* Segmented */
 .ant-segmented {
-  padding: 8px;
+  padding: var(--space-sm);
 }
 
 .ant-segmented,
@@ -59,16 +55,25 @@
 }
 
 /* Table */
+.ant-table-wrapper .ant-table {
+  border-radius: var(--br-lg) var(--br-lg) 0 0;
+  background: none;
+}
+
+.ant-table-wrapper .ant-table .ant-table-header {
+  border-radius: var(--br-lg) var(--br-lg) 0 0;
+}
+
 .ant-table-pagination {
   margin: 0 !important;
-  padding: 16px;
-  border-top: 1px solid var(--grey-bg);
-  border-radius: 0 0 8px 8px;
+  padding: var(--space-lg);
+  border-top: 1px solid var(--card-border);
+  border-radius: 0 0 var(--br-lg) var(--br-lg);
 }
 
 .ant-table-wrapper .ant-table-thead > tr > th {
   line-height: 14px;
-  border-bottom: 1px solid var(--grey-light);
+  border-bottom: 1px solid var(--card-border);
 }
 
 .ant-table-wrapper .ant-table-tbody > tr > td {
@@ -77,4 +82,13 @@
 
 .ant-empty-normal {
   margin-block: unset;
+}
+
+.ant-table-wrapper
+  .ant-table-ping-right:not(.ant-table-has-fix-right)
+  .ant-table-container::after,
+.ant-table-wrapper
+  .ant-table-ping-left:not(.ant-table-has-fix-left)
+  .ant-table-container::before {
+  box-shadow: none;
 }

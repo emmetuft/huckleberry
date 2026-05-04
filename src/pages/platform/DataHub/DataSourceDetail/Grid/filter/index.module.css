@@ -1,0 +1,21 @@
+.columnFilterPopup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  width: 250px;
+
+  .betweenInput {
+    display: flex;
+    gap: var(--space-sm);
+  }
+
+  .buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-sm);
+
+    button {
+      flex: 1;
+    }
+  }
+}

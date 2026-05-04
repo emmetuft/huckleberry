@@ -5,6 +5,7 @@ import {
   CheckIcon,
   MagnifyingGlassIcon,
   PlusIcon,
+  WrenchIcon,
 } from '@phosphor-icons/react';
 import styles from './ToolBrowser.module.css';
 import { selectToolkits } from 'reducers/toolkits/slice';
@@ -59,7 +60,6 @@ export const ToolBrowser: FC<ToolBrowserProps> = ({
     } else {
       onToolsChange([...selectedTools, tool]);
     }
-    onClose();
   };
 
   const collapseItems = filteredToolkits.map((toolkit) => ({
@@ -75,23 +75,26 @@ export const ToolBrowser: FC<ToolBrowserProps> = ({
         {toolkit.tools.map((tool) => {
           const selected = isToolSelected(tool);
           return (
-            <div key={tool.toolId} className={styles.toolItem}>
-              <div className={styles.toolHeader}>
-                <div className={styles.toolName}>{tool.overrideToolName}</div>
+            <div key={tool.toolId} className={`appCard ${styles.toolItem}`}>
+              <div className={styles.toolIcon}>
+                <WrenchIcon />
+              </div>
+              <div className="appInfo">
+                <h4>{tool.overrideToolName}</h4>
+                <p title={tool.overrideToolDescription}>
+                  {tool.overrideToolDescription || 'No description'}
+                </p>
+              </div>
+              <div className={styles.connectAction}>
                 <Button
-                  type={selected ? 'primary' : 'default'}
                   size="small"
+                  type={selected ? 'primary' : 'default'}
                   icon={selected ? <CheckIcon /> : <PlusIcon />}
                   onClick={(e) => {
                     e.stopPropagation();
                     handleToggleTool(tool);
                   }}
-                >
-                  {selected ? 'Added' : 'Add'}
-                </Button>
-              </div>
-              <div className={styles.toolDescription}>
-                {tool.overrideToolDescription || 'No description'}
+                />
               </div>
             </div>
           );

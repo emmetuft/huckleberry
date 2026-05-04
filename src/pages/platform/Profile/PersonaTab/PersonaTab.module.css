@@ -1,7 +1,7 @@
 .ProfileHub {
   height: 100%;
   overflow-y: auto;
-  padding-top: 8px;
+  padding-top: var(--space-sm);
   display: flex;
   flex-direction: column;
   gap: 32px;
@@ -10,7 +10,7 @@
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 20px;
+    gap: var(--space-xl);
 
     .pageTitle {
       font-size: 28px;
@@ -64,12 +64,12 @@
   .sections {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: var(--space-sm);
   }
 
   .sectionCard {
     border: 1px solid var(--grey-light);
-    border-radius: 12px;
+    border-radius: var(--br-lg);
     overflow: hidden;
     background: var(--card-bg);
     transition: border-color 0.15s;
@@ -85,9 +85,9 @@
     .sectionHeader {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: var(--space-md);
       width: 100%;
-      padding: 16px 20px;
+      padding: var(--space-lg) var(--space-xl);
       background: none;
       border: none;
       cursor: pointer;
@@ -101,7 +101,7 @@
       .sectionIcon {
         width: 36px;
         height: 36px;
-        border-radius: 8px;
+        border-radius: var(--br-md);
         background: var(--purple-light);
         color: var(--purple);
         display: flex;
@@ -132,7 +132,7 @@
       .completionPill {
         font-size: 11px;
         font-weight: 600;
-        padding: 3px 10px;
+        padding: var(--space-xs) var(--space-sm);
         border-radius: 20px;
         flex-shrink: 0;
 
@@ -155,7 +155,7 @@
 
     .sectionBody {
       border-top: 1px solid var(--grey-light);
-      padding: 20px;
+      padding: var(--space-xl);
     }
   }
 
@@ -164,12 +164,12 @@
   .editor {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: var(--space-lg);
 
     .editorField {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: var(--space-sm);
 
       p {
         font-size: 12px;
@@ -189,7 +189,7 @@
       .editorTags {
         display: flex;
         flex-wrap: wrap;
-        gap: 6px;
+        gap: var(--space-xs);
         min-height: 24px;
       }
     }
@@ -197,7 +197,7 @@
     .editorRow {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
+      gap: var(--space-lg);
 
       p {
         font-size: 12px;
@@ -212,6 +212,6 @@
   .editorActions {
     display: flex;
     justify-content: flex-end;
-    padding-top: 4px;
+    padding-top: var(--space-xs);
   }
 }

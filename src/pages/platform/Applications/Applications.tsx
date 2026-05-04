@@ -14,7 +14,7 @@ export const Applications: FC<ApplicationsProps> = ({}) => {
   const tab = useSelector(selectTab);
 
   return (
-    <div className={styles.Applications}>
+    <div className="platformPage">
       {tab === 'Apps' ? (
         <div className={styles.tabContent}>
           <motion.div {...defaultMotionProps}>

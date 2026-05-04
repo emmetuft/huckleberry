@@ -2,22 +2,22 @@
   max-height: 40vh;
   overflow-y: auto;
   position: relative;
-  padding: 16px 0;
+  padding: var(--space-lg) 0;
 
   .messages {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    padding: 0 16px;
+    gap: var(--space-md);
+    padding: 0 var(--space-lg);
   }
 
   .metricChart {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 8px;
-    padding: 16px;
-    border-radius: 8px;
+    margin-top: var(--space-sm);
+    padding: var(--space-lg);
+    border-radius: var(--br-md);
   }
 
   &.panel {

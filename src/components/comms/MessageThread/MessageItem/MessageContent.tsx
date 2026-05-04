@@ -6,7 +6,7 @@ import styles from './MessageItem.module.css';
 
 const BUBBLE_FONT = '14px Inter, sans-serif';
 const BUBBLE_LINE_HEIGHT = 21; // 14px × 1.5
-const BUBBLE_PADDING_H = 14; // matches CSS padding: 10px 14px
+const BUBBLE_PADDING_H = 16; // matches CSS padding
 const BUBBLE_MAX_RATIO = 0.8;
 
 interface MessageContentProps {
@@ -66,7 +66,7 @@ export const MessageContent: FC<MessageContentProps> = ({
         if (line.width > tightMaxLineWidth) tightMaxLineWidth = line.width;
       });
 
-      // Set content width only — CSS padding: 10px 14px is content-box, so it adds on top
+      // Set content width only — CSS padding is content-box, so it adds on top
       setTightWidth(Math.ceil(tightMaxLineWidth));
     };
 

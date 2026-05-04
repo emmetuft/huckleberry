@@ -1,13 +1,5 @@
-.DataHealth {
-  padding: var(--default-page-padding);
-}
-
 .trendChart {
-  padding: 20px;
-
-  /*   border: 1px solid var(--grey-border); */
-
-  /*   border-radius: 8px; */
+  padding: var(--space-xl);
 
   h3 {
     font-size: 14px;
@@ -16,7 +8,7 @@
 }
 
 .metrics {
-  padding: 20px;
+  padding: var(--space-xl);
 
   .metricsGrid {
     display: grid;
@@ -36,7 +28,7 @@
 
       .left {
         display: flex;
-        gap: 15px;
+        gap: var(--space-lg);
 
         .metricIcon {
           display: flex;
@@ -45,7 +37,7 @@
           height: 48px;
           width: 48px;
           background-color: var(--grey-light);
-          border-radius: 8px;
+          border-radius: var(--br-md);
 
           &.warning {
             background: var(--error-bg);
@@ -56,7 +48,7 @@
         .details {
           display: flex;
           flex-direction: column;
-          gap: 7px;
+          gap: var(--space-sm);
 
           h3 {
             font-size: 20px;

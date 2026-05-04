@@ -3,7 +3,7 @@
   flex-direction: column;
 
   .searchContainer {
-    margin-bottom: 16px;
+    margin-bottom: var(--space-lg);
   }
 
   .serverCollapse {
@@ -26,7 +26,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-size: 12px;
   }
 
   .toolCount {
@@ -41,30 +40,27 @@
   flex-direction: column;
 
   .toolItem {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    border-bottom: 1px solid var(--grey-light);
-    cursor: default;
+    padding-left: 0;
+    padding-right: 0;
+    box-shadow: none;
+    background-color: transparent;
 
-    &:last-child {
-      border-bottom: none;
-    }
-
-    .toolHeader {
+    .toolIcon {
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
-
-      .toolName {
-        font-weight: 500;
-        color: var(--purple);
-      }
+      height: 40px;
+      width: 40px;
+      min-width: 40px;
+      border: 1px solid var(--grey-border);
+      border-radius: var(--br-md);
     }
 
-    .toolDescription {
-      font-size: 11px;
-      line-height: 14px;
+    .connectAction {
+      display: flex;
+      align-items: center;
+      margin-left: auto;
+      flex-shrink: 0;
     }
   }
 }

@@ -1,3 +1,5 @@
+import { matchPath } from 'react-router-dom';
+
 // Public pages (unauthenticated)
 export enum PublicPage {
   LANDING = 'landing',
@@ -19,6 +21,7 @@ export enum AppPage {
   AUTOMATION = 'automation',
   DATA_HEALTH = 'data_health',
   DATA_HUB = 'data_hub',
+  DATASOURCE = 'datasource',
   HOME = 'home',
   INTEGRATIONS = 'integrations',
   METRICS = 'metrics',
@@ -60,6 +63,7 @@ export const platformRoutePaths: Record<AppPage, string> = {
   [AppPage.AUTOMATION]: '/automation',
   [AppPage.DATA_HEALTH]: '/data-health',
   [AppPage.DATA_HUB]: '/data-hub',
+  [AppPage.DATASOURCE]: '/data-hub/:id',
   [AppPage.HOME]: '/workspace',
   [AppPage.INTEGRATIONS]: '/integrations',
   [AppPage.METRICS]: '/metrics',
@@ -70,7 +74,7 @@ export const platformRoutePaths: Record<AppPage, string> = {
 // Helper to get AppPage from platform path
 export const getAppPageFromPath = (path: string): AppPage => {
   const entry = Object.entries(platformRoutePaths).find(
-    ([_, routePath]) => routePath === path,
+    ([_, routePath]) => matchPath(routePath, path) !== null,
   );
   return entry ? (entry[0] as AppPage) : AppPage.HOME;
 };

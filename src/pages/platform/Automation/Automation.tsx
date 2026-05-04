@@ -354,7 +354,7 @@ export const Automation = () => {
   ).length;
 
   return (
-    <div className={styles.automation}>
+    <div className={`platformPage ${styles.automation}`}>
       <div className={styles.heading}>
         <div className={styles.tags}>
           {numActive > 0 && (

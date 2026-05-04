@@ -2,7 +2,7 @@ import { FC, useMemo, useState } from 'react';
 import { Button, Segmented } from 'antd';
 import styles from './Landing.module.css';
 import UseCasesCarousel from './UseCases/UseCases';
-import { Background } from 'pages/platform/layouts/PlatformLayout/Background/Background';
+import { Background } from 'components/layouts/PlatformLayout/Background/Background';
 
 export enum UseCase {
   Finance = 'Finance',

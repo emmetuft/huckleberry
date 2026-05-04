@@ -35,70 +35,70 @@ export const OntologyInitModal: FC<OntologyInitModalProps> = ({
   // synchronous loading state to prevent duplicate fetches
   const schemaLoadingRef = useRef<Set<string>>(new Set());
 
-  useEffect(() => {
-    const fetchSchemasForEmptySources = async () => {
-      const sourcesNeedingSchema = ontologySources.filter(
-        (source) =>
-          source.schema.length === 0 &&
-          !source.error &&
-          !schemaLoadingRef.current.has(source.dataSourceId),
-      );
+  // useEffect(() => {
+  //   const fetchSchemasForEmptySources = async () => {
+  //     const sourcesNeedingSchema = ontologySources.filter(
+  //       (source) =>
+  //         source.schema.length === 0 &&
+  //         !source.error &&
+  //         !schemaLoadingRef.current.has(source.dataSourceId),
+  //     );
 
-      if (sourcesNeedingSchema.length === 0) return;
+  //     if (sourcesNeedingSchema.length === 0) return;
 
-      // Mark sources as loading
-      sourcesNeedingSchema.forEach((source) => {
-        schemaLoadingRef.current.add(source.dataSourceId);
-      });
-      setSchemaLoadingIds(new Set(schemaLoadingRef.current));
+  //     // Mark sources as loading
+  //     sourcesNeedingSchema.forEach((source) => {
+  //       schemaLoadingRef.current.add(source.dataSourceId);
+  //     });
+  //     setSchemaLoadingIds(new Set(schemaLoadingRef.current));
 
-      const updatedSources = await Promise.all(
-        sourcesNeedingSchema.map(async (source) => {
-          try {
-            const schema = await DataService.fetchDataSourceSchema(
-              source.dataSourceId,
-            );
+  //     const updatedSources = await Promise.all(
+  //       sourcesNeedingSchema.map(async (source) => {
+  //         try {
+  //           const schema = await DataService.fetchDataSourceSchema(
+  //             source.dataSourceId,
+  //           );
 
-            let sampleRows: Record<string, any>[] = [];
-            let error: string | undefined = undefined;
-            try {
-              sampleRows = await DataService.fetchDataSourceRows({
-                dataSourceId: source.dataSourceId,
-                schema,
-                page: 1,
-                pageSize: 3,
-              });
-            } catch (err) {
-              console.error(
-                `Failed to fetch sample rows for ${source.name}:`,
-                err,
-              );
-              error = 'Failed to fetch sample rows';
-            }
+  //           let sampleRows: Record<string, any>[] = [];
+  //           let error: string | undefined = undefined;
+  //           try {
+  //             sampleRows = await DataService.fetchDataSourceRows({
+  //               dataSourceId: source.dataSourceId,
+  //               schema,
+  //               page: 1,
+  //               pageSize: 3,
+  //             });
+  //           } catch (err) {
+  //             console.error(
+  //               `Failed to fetch sample rows for ${source.name}:`,
+  //               err,
+  //             );
+  //             error = 'Failed to fetch sample rows';
+  //           }
 
-            return { ...source, schema, sampleRows, error };
-          } catch (error) {
-            console.error(`Failed to fetch schema for ${source.name}:`, error);
-            return { ...source, error: 'Failed to fetch schema' };
-          } finally {
-            schemaLoadingRef.current.delete(source.dataSourceId);
-            setSchemaLoadingIds(new Set(schemaLoadingRef.current));
-          }
-        }),
-      );
+  //           return { ...source, schema, sampleRows, error };
+  //         } catch (error) {
+  //           console.error(`Failed to fetch schema for ${source.name}:`, error);
+  //           return { ...source, error: 'Failed to fetch schema' };
+  //         } finally {
+  //           schemaLoadingRef.current.delete(source.dataSourceId);
+  //           setSchemaLoadingIds(new Set(schemaLoadingRef.current));
+  //         }
+  //       }),
+  //     );
 
-      setOntologySources((prev) =>
-        prev.map((source) => {
-          const updated = updatedSources.find(
-            (updated) => updated.dataSourceId === source.dataSourceId,
-          );
-          return updated || source;
-        }),
-      );
-    };
+  //     setOntologySources((prev) =>
+  //       prev.map((source) => {
+  //         const updated = updatedSources.find(
+  //           (updated) => updated.dataSourceId === source.dataSourceId,
+  //         );
+  //         return updated || source;
+  //       }),
+  //     );
+  //   };
 
-    fetchSchemasForEmptySources();
-  }, [ontologySources]);
+  //   fetchSchemasForEmptySources();
+  // }, [ontologySources]);
 
   const onSearch = (value: string) => {
     setSearchTerm(value);

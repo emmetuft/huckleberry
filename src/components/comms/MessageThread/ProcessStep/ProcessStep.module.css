@@ -6,7 +6,7 @@
     .details {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: var(--space-sm);
 
       .spinner {
         color: var(--purple);
@@ -38,18 +38,18 @@
   .stepDetails {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: var(--space-sm);
 
     .subSteps {
       background-color: var(--grey-bg);
-      border-radius: 12px;
+      border-radius: var(--br-lg);
     }
 
     .section {
       .sectionLabel {
         font-weight: 500;
         font-size: 13px;
-        margin-bottom: 4px;
+        margin-bottom: var(--space-xs);
       }
     }
   }
@@ -57,9 +57,9 @@
 
 .codeBlock {
   margin: 0;
-  padding: 12px;
+  padding: var(--space-md);
   background-color: var(--background);
-  border-radius: 6px;
+  border-radius: var(--br-md);
   overflow-x: auto;
   font-size: 11px;
   font-family:

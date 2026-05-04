@@ -173,7 +173,7 @@ export const Integrations: FC<IntegrationsProps> = () => {
   ];
 
   return (
-    <div className={styles.Integrations}>
+    <div className="platformPage">
       <Tabs
         items={tabItems}
         defaultActiveKey="connected"

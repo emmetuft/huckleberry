@@ -1,27 +1,37 @@
 import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { Table } from 'antd';
 import styles from './DataHub.module.css';
+import { useAppDispatch } from 'reducers';
 import { selectIdentity } from 'reducers/app/slice';
+import { fetchDataSourceList } from 'reducers/datasource/actions';
+import {
+  selectDataSourceList,
+  selectDataSourceLoading,
+  selectTotalSources,
+} from 'reducers/datasource/slice';
 import { dataSourceColumns } from 'constants/data';
 // import { DataProvidersChart } from './charts/DataProviders';
 // import { RecentRunsChart } from './charts/RecentRuns';
 // import { DataSourceUsageTrendChart } from './charts/DataSourceUsageTrendChart';
-import { DataService } from 'services/data';
 import { renderVal } from 'utils/data';
 import { getAvatarUrl } from 'utils/misc';
+import { DataControls } from './DataControls/DataControls';
 
 interface DataHubProps {}
 
 export const DataHub: FC<DataHubProps> = ({}) => {
+  const dispatch = useAppDispatch();
   const identity = useSelector(selectIdentity);
+  const navigate = useNavigate();
 
-  const [dataSourceList, setDataSourceList] = useState<any[]>([]);
+  const dataSourceList = useSelector(selectDataSourceList);
+  const totalRows = useSelector(selectTotalSources);
+  const loading = useSelector(selectDataSourceLoading).dataSourceList;
+
   const [page, setPage] = useState<number>(1);
   const [size, setSize] = useState<number>(20);
-  const [totalRows, setTotalRows] = useState<number>(0);
-  const [loading, setLoading] = useState<boolean>(false);
-  const loadingRef = useRef<boolean>(false);
 
   const topSectionRef = useRef<HTMLDivElement>(null);
   const [tableHeight, setTableHeight] = useState<number>(500);
@@ -29,10 +39,11 @@ export const DataHub: FC<DataHubProps> = ({}) => {
   useEffect(() => {
     const resize = () => {
       const topHeight = topSectionRef.current?.offsetHeight || 0;
-      const padding = 100;
-      const extraTableHeight = 61 + 64;
+      const topMargin = 12;
+      const padding = 80;
+      const extraTableHeight = 61 + 65 + 2; // header + pagination + borders
       setTableHeight(
-        window.innerHeight - topHeight - padding - extraTableHeight,
+        window.innerHeight - topHeight - topMargin - padding - extraTableHeight,
       );
     };
 
@@ -42,27 +53,16 @@ export const DataHub: FC<DataHubProps> = ({}) => {
   }, []);
 
   useEffect(() => {
-    if (!loadingRef.current) fetchDataSources();
+    if (!loading) fetchDataSources();
   }, [page, size]);
 
   const fetchDataSources = async () => {
-    loadingRef.current = true;
-    setLoading(true);
-    const res = await DataService.fetchDataSources({
-      page,
-      size,
-      searchTerm: '',
-    });
-    setDataSourceList(res.sources);
-    setTotalRows(res.total);
-    loadingRef.current = false;
-    setLoading(false);
+    dispatch(fetchDataSourceList({ page, size }));
   };
 
   const commonColConfig = {
     minWidth: 100,
     maxWidth: 200,
-    width: loadingRef.current ? 100 : undefined,
   };
 
   const columns = useMemo(
@@ -110,21 +110,22 @@ export const DataHub: FC<DataHubProps> = ({}) => {
   };
 
   return (
-    <div className={styles.DataHub}>
-      {/* <div ref={topSectionRef} className={styles.topSection}>
-        <div className={styles.chartContainer}>
+    <div className="platformPage">
+      <div ref={topSectionRef} className={styles.topSection}>
+        {/* <div className={styles.chartContainer}>
           <p className={styles.chartTitle}>Top 5 Data Providers</p>
           <DataProvidersChart height={260} />
-        </div>
-        <div className={styles.chartContainer}>
+          </div>
+          <div className={styles.chartContainer}>
           <p className={styles.chartTitle}>Current Week DataSource Runs</p>
           <RecentRunsChart height={260} />
-        </div>
-        <div className={styles.chartContainer}>
+          </div>
+          <div className={styles.chartContainer}>
           <p className={styles.chartTitle}>Current Week Avg Run Time</p>
           <DataSourceUsageTrendChart height={260} />
-        </div>
-      </div> */}
+          </div> */}
+        <DataControls />
+      </div>
       <Table
         dataSource={dataSourceList}
         columns={columns}
@@ -143,7 +144,11 @@ export const DataHub: FC<DataHubProps> = ({}) => {
           y: tableHeight,
         }}
         tableLayout="auto"
-        className={styles.dataTable}
+        className={`card ${styles.dataTable}`}
+        onRow={(record) => ({
+          onClick: () => navigate(`/data-hub/${record.id}`),
+          style: { cursor: 'pointer' },
+        })}
       />
     </div>
   );

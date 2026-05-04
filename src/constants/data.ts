@@ -1,6 +1,12 @@
 import { DataType } from 'models/enums/dataType';
 import { Column } from 'models/interfaces/column';
 
+export const DEFAULT_PAGE_SIZE = 50;
+export const EXPANDED_PAGE_SIZE = 1000;
+export const BLANK_LABEL = 'NULL';
+export const COLUMN_FILTER_RESULTS_LIMIT = 200;
+export const DEBOUNCE_DELAY = 1000;
+
 export const dataSourceColumns: (Column & { dataIndex: string })[] = [
   {
     name: 'Name',

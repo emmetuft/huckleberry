@@ -9,7 +9,7 @@
 
   .top {
     display: flex;
-    gap: 10px;
+    gap: var(--space-sm);
 
     .searchInput {
       flex: 1;

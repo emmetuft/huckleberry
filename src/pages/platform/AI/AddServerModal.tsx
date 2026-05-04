@@ -243,7 +243,7 @@ export const AddServerModal: FC<AddServerModalProps> = ({
             <div
               style={{
                 marginBottom: 16,
-                padding: '8px 12px',
+                padding: 'var(--space-sm) var(--space-md)',
                 background: '#f5f5f5',
                 borderRadius: 4,
               }}

@@ -1,7 +1,7 @@
 .IntentInput {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: var(--space-xl);
   position: relative;
 
   .inputWrapper {
@@ -11,32 +11,6 @@
     &.animate {
       animation: breathe 4s ease-in-out infinite;
       transition: box-shadow 0.3s ease;
-    }
-
-    .selectedTools {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-
-      .tool {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        font-size: 14px;
-        color: white;
-        background-color: var(--grey-dark);
-        padding: 2px 6px;
-        border-radius: 4px;
-
-        button {
-          display: flex;
-          align-items: center;
-          padding: 0;
-          background-color: transparent;
-          border: none;
-          cursor: pointer;
-        }
-      }
     }
   }
 
@@ -64,16 +38,16 @@
       font-weight: 600;
       color: var(--purple);
       background-color: var(--purple-light);
-      padding: 1px 4px;
-      border-radius: 4px;
+      padding: 1px var(--space-xs);
+      border-radius: var(--br-sm);
     }
 
     span.mention {
       font-weight: 600;
       color: var(--pink);
       background-color: var(--pink-light);
-      padding: 1px 4px;
-      border-radius: 4px;
+      padding: 1px var(--space-xs);
+      border-radius: var(--br-sm);
     }
   }
 
@@ -85,7 +59,7 @@
 
     .buttons {
       display: flex;
-      gap: 5px;
+      gap: var(--space-xs);
       align-items: center;
     }
   }

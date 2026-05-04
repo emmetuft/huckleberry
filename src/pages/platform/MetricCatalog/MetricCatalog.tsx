@@ -53,7 +53,7 @@ export const MetricCatalog: FC = () => {
   };
 
   return (
-    <div className={styles.MetricCatalog}>
+    <div className="platformPage">
       <Table
         dataSource={data}
         columns={columns}

@@ -1,8 +1,5 @@
 .automation {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  padding: var(--default-page-padding);
+  gap: var(--space-xl);
 
   .heading {
     display: flex;
@@ -11,13 +8,13 @@
     .tags {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: var(--space-sm);
 
       .pill {
         display: flex;
         align-items: center;
-        gap: 4px;
-        padding: 3px 10px;
+        gap: var(--space-xs);
+        padding: var(--space-xs) var(--space-sm);
         border-radius: 30px;
         font-size: 14px;
         font-weight: 500;
@@ -41,7 +38,7 @@
 
     .buttons {
       display: flex;
-      gap: 10px;
+      gap: var(--space-sm);
     }
   }
 
@@ -51,7 +48,7 @@
 
     .ruleName {
       display: flex;
-      gap: 8px;
+      gap: var(--space-sm);
 
       .saveIcon {
         color: var(--success-icon);
@@ -75,12 +72,12 @@
   .ruleContent {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: var(--space-md);
 
     .dataSource {
-      padding: 8px 12px;
+      padding: var(--space-sm) var(--space-md);
       background-color: var(--grey);
-      border-radius: 6px;
+      border-radius: var(--br-md);
     }
 
     h4 {
@@ -90,15 +87,15 @@
     .conditionsWrapper {
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      margin-left: 20px;
+      gap: var(--space-xs);
+      margin-left: var(--space-xl);
 
       .condition {
         display: flex;
-        gap: 10px;
-        padding: 6px 8px;
+        gap: var(--space-sm);
+        padding: var(--space-sm);
         background-color: var(--grey);
-        border-radius: 6px;
+        border-radius: var(--br-md);
       }
 
       .conditionOptions {
@@ -106,10 +103,9 @@
 
         .addBtn {
           display: flex;
-          gap: 5px;
+          gap: var(--space-xs);
           background-color: transparent;
           border: none;
-          color: var(--data-blue-dark);
           cursor: pointer;
         }
       }
@@ -118,7 +114,7 @@
     .btnWrapper {
       display: flex;
       justify-content: flex-end;
-      gap: 8px;
+      gap: var(--space-sm);
     }
   }
 }

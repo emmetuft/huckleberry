@@ -1,36 +1,32 @@
-.Applications {
-  padding: var(--default-page-padding);
+.tabContent {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
 
-  .tabContent {
-    display: flex;
-    flex-direction: column;
-    gap: 50px;
-
-    h2 {
-      margin-bottom: 10px;
-      font-weight: 400;
-      font-size: 20px;
-    }
+  h2 {
+    margin-bottom: 10px;
+    font-weight: 400;
+    font-size: 20px;
   }
+}
 
-  .appGrid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    gap: 20px;
-  }
+.appGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: var(--space-xl);
 }
 
 .Marketplace {
   .heroBanner {
-    margin-bottom: 20px;
+    margin-bottom: var(--space-xl);
     background-color: var(--purple);
     height: 300px;
-    border-radius: 8px;
+    border-radius: var(--br-md);
   }
 
   .layout {
     display: flex;
-    gap: 20px;
+    gap: var(--space-xl);
 
     .left {
       flex: 1;

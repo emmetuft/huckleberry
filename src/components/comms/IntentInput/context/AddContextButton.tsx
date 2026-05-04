@@ -60,7 +60,13 @@ export const AddContextButton: FC<AddContextButtonProps> = ({
           showUploadList={false}
           accept=".pdf,application/pdf"
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 'var(--space-sm)',
+            }}
+          >
             <UploadSimpleIcon size={16} />
             <span>Upload PDF</span>
           </div>
@@ -71,7 +77,11 @@ export const AddContextButton: FC<AddContextButtonProps> = ({
       key: 'connect-datasource',
       label: (
         <div
-          style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 'var(--space-sm)',
+          }}
           onClick={onDataSourceClick}
         >
           <DatabaseIcon size={16} />

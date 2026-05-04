@@ -1,0 +1,133 @@
+.gridWrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--grey-light);
+  border-radius: var(--br-md);
+  overflow: hidden;
+
+  &.fullscreen {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    border-radius: 0;
+    border: none;
+  }
+
+  .gridFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-lg) var(--space-xl);
+    border-top: 1px solid var(--grey-light);
+    background-color: var(--background);
+    font-size: 14px;
+    color: var(--grey-text);
+
+    .footerLeft {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: var(--space-xl);
+
+      .lastUpdated {
+        display: flex;
+        align-items: center;
+        gap: var(--space-xs);
+      }
+
+      .dataSummary {
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+      }
+    }
+
+    .status {
+      flex: 1;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: var(--space-lg);
+
+      .statusPill {
+        padding: var(--space-sm) var(--space-md);
+        background-color: var(--success-bg);
+        color: var(--success-icon);
+        border-radius: 100px;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+.expandBtn {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 10;
+}
+
+.customHeader {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: hidden auto;
+
+  .top {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-sm);
+
+    .colName {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  .chart {
+    display: flex;
+    flex-direction: column;
+    padding: 0 var(--space-sm) var(--space-sm);
+    max-width: 200px;
+    max-height: 230px;
+    overflow-y: auto;
+  }
+
+  .bottom {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 80px;
+    min-height: 80px;
+    box-sizing: border-box;
+    margin-top: auto;
+    padding: var(--space-sm);
+    border-top: 1px solid var(--grey-light);
+
+    .stats {
+      p {
+        font-size: 11px;
+        color: var(--grey-text);
+      }
+    }
+
+    .btnWrapper {
+      display: flex;
+      justify-content: flex-end;
+
+      > button {
+        border: none;
+      }
+    }
+  }
+
+  &:hover {
+    .sortIcon {
+      visibility: visible;
+    }
+  }
+}

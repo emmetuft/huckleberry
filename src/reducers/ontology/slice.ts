@@ -1,7 +1,7 @@
 import { current } from '@reduxjs/toolkit';
 import { createAppSlice } from '../createAppSlice';
 import { fetchAllNodeLabels, fetchNodes } from './actions';
-import { FilterCondition } from 'models/interfaces/graphFilter';
+import { GraphFilterCondition } from 'models/interfaces/graphFilter';
 import {
   GraphData,
   GraphEditorModel,
@@ -28,7 +28,7 @@ interface State {
   controls: {
     highlightedNodeId: string | null;
     selectedLabels: string[];
-    propertyFilters: FilterCondition[];
+    propertyFilters: GraphFilterCondition[];
   };
 }
 
@@ -74,7 +74,7 @@ export const OntologySlice = createAppSlice({
       // Clear highlighted node when filter changes to prevent issues with filtered-out nodes
       state.controls.highlightedNodeId = null;
     }),
-    setPropertyFilters: create.reducer<FilterCondition[]>(
+    setPropertyFilters: create.reducer<GraphFilterCondition[]>(
       (state, { payload }) => {
         state.controls.propertyFilters = payload;
       },

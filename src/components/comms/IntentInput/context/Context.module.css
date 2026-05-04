@@ -1,34 +1,34 @@
 .contextItems {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
-  margin-bottom: 12px;
-}
+  gap: var(--space-xs);
+  margin-bottom: var(--space-md);
 
-.uploadedFile {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 12px;
-  padding: 4px 8px;
-  border: 1px solid var(--grey);
-  border-radius: 6px;
-  max-width: 150px;
-
-  .fileName {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100px;
-  }
-
-  button {
-    padding: 0;
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
+  .contextItem {
     display: flex;
     align-items: center;
-    flex-shrink: 0;
+    gap: var(--space-xs);
+    font-size: 12px;
+    padding: var(--space-xs) var(--space-sm);
+    border: 1px solid var(--grey);
+    border-radius: var(--br-md);
+    max-width: 150px;
+
+    .contextItemTitle {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100px;
+    }
+
+    button {
+      padding: 0;
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
   }
 }

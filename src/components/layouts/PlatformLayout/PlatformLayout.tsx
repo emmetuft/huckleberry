@@ -1,0 +1,79 @@
+import { FC, useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
+import { useLocation, Outlet } from 'react-router-dom';
+import { ConfigProvider } from 'antd';
+import { Toaster } from 'sonner';
+import styles from './PlatformLayout.module.css';
+import { useAppDispatch } from 'reducers';
+import { fetchUserPersona } from 'reducers/app/actions';
+import { selectIdentity, selectTheme, setPage } from 'reducers/app/slice';
+import { fetchSessions } from 'reducers/chat/actions';
+import { fetchGroups, fetchUsers } from 'reducers/people/actions';
+import { fetchToolkits } from 'reducers/toolkits/actions';
+import { getAppPageFromPath } from 'models/enums/appPage';
+import { PromptBar } from 'components/comms/PromptBar/PromptBar';
+import { DuckDBProvider } from 'components/duckdb/DuckDBProvider';
+import Database from 'components/duckdb/Database';
+import { Heading } from './Heading/Heading';
+import { Nav } from './Nav/Nav';
+
+export const PlatformLayout: FC = () => {
+  const dispatch = useAppDispatch();
+  const location = useLocation();
+  const identity = useSelector(selectIdentity);
+  const theme = useSelector(selectTheme);
+  const loading = useRef<boolean>(false);
+
+  const isDark = theme === 'dark';
+
+  // Fetch platform data when identity is available
+  useEffect(() => {
+    if (loading.current) return;
+    if (identity) {
+      loading.current = true;
+      dispatch(fetchUserPersona());
+      dispatch(fetchUsers());
+      dispatch(fetchGroups());
+      dispatch(fetchToolkits());
+      dispatch(fetchSessions());
+    }
+  }, [identity]);
+
+  // Sync Redux state with current route
+  useEffect(() => {
+    const appPage = getAppPageFromPath(location.pathname);
+    dispatch(setPage(appPage));
+  }, [location.pathname, dispatch]);
+
+  const hidePromptBar = ['/workspace', '/agents'].includes(location.pathname);
+
+  return (
+    <ConfigProvider
+      theme={{
+        token: {
+          colorPrimary: isDark ? '#8673ffff' : '#5a0cff',
+        },
+        components: {
+          Menu: {
+            itemSelectedColor: isDark ? '#fff' : '#000',
+          },
+          Table: {
+            headerBg: 'none',
+            footerBg: 'none',
+          },
+        },
+      }}
+    >
+      <DuckDBProvider>
+        <div className={styles.PlatformLayout}>
+          <Heading />
+          <Nav />
+          {!hidePromptBar && <PromptBar />}
+          <Outlet />
+        </div>
+        <Database />
+      </DuckDBProvider>
+      <Toaster position="top-right" theme="light" richColors />
+    </ConfigProvider>
+  );
+};

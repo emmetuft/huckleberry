@@ -7,13 +7,13 @@ import { selectIdentity } from 'reducers/app/slice';
 import { selectPersona } from 'reducers/app/slice';
 import { selectFullScreen } from 'reducers/chat/slice';
 import { dismissCard, selectDismissedCards } from 'reducers/workspace/slice';
-import { QuickStart } from 'components/modals/QuickStartModal/QuickStart';
-import { IntentInput } from 'components/comms/IntentInput/IntentInput';
-import { Resources } from 'components/Resources/Resources';
-import { ChatContainer } from 'components/comms/ChatContainer/ChatContainer';
 import { ChatMode } from 'models/enums/chatMode';
+import { IntentInput } from 'components/comms/IntentInput/IntentInput';
+import { ChatContainer } from 'components/comms/ChatContainer/ChatContainer';
 import { QuickStarts } from 'components/comms/QuickStarts/QuickStarts';
+import { QuickStart } from 'components/modals/QuickStartModal/QuickStart';
 import { BentoGrid } from 'components/workspace/BentoGrid/BentoGrid';
+import { Resources } from 'components/workspace/Resources/Resources';
 import { getBentoLayout } from 'config/bentoConfig';
 import { getFirstName, getTimeOfDay } from 'utils/misc';
 

@@ -3,12 +3,12 @@
   top: 20px;
   right: 20px;
   z-index: 100;
-  gap: 6px;
+  gap: var(--space-sm);
 
   .item {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--space-sm);
   }
 
   .dot {

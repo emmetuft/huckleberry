@@ -8,7 +8,7 @@
   z-index: 100;
   display: flex;
   flex-direction: column;
-  padding: 8px 0;
+  padding: var(--space-sm) 0;
 
   .itemList {
     overflow-y: auto;
@@ -16,7 +16,7 @@
 
     .itemGroup {
       .groupName {
-        padding: 8px 12px 4px;
+        padding: var(--space-sm) var(--space-md) var(--space-xs);
         font-size: 10px;
         font-weight: 600;
         color: var(--grey-text);
@@ -28,7 +28,7 @@
         display: flex;
         flex-direction: column;
         gap: 2px;
-        padding: 8px 12px;
+        padding: var(--space-sm) var(--space-md);
         transition: background-color 0.15s ease;
         cursor: pointer;
 
@@ -52,7 +52,7 @@
         .nameWithAvatar {
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: var(--space-sm);
 
           .avatar {
             display: flex;
@@ -68,10 +68,10 @@
 
   .hint {
     display: flex;
-    gap: 12px;
-    padding: 8px 12px 4px;
+    gap: var(--space-md);
+    padding: var(--space-sm) var(--space-md) var(--space-xs);
     border-top: 1px solid var(--grey-light);
-    margin-top: 4px;
+    margin-top: var(--space-xs);
     font-size: 10px;
     color: var(--grey-text);
   }

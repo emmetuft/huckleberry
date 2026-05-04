@@ -3,7 +3,6 @@ import { Tabs, TabsProps } from 'antd';
 import { AccountsTab } from 'pages/platform/Profile/AccountsTab/AccountsTab';
 import { SettingsTab } from 'pages/platform/Profile/SettingsTab/SettingsTab';
 import { PersonaTab } from './PersonaTab/PersonaTab';
-import styles from './ProfilePage.module.css';
 
 export const ProfilePage: FC = () => {
   const tabItems: TabsProps['items'] = [
@@ -25,7 +24,7 @@ export const ProfilePage: FC = () => {
   ];
 
   return (
-    <div className={styles.ProfilePage}>
+    <div className="platformPage">
       <Tabs items={tabItems} />
     </div>
   );

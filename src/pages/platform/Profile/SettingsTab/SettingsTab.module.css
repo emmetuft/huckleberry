@@ -1,25 +1,25 @@
 .tab {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--space-lg);
 }
 
 .grid {
   columns: 2;
-  column-gap: 12px;
-  padding: 20px;
+  column-gap: var(--space-md);
+  padding: var(--space-xl);
 }
 
 .grid :global(.card) {
   padding: 0;
   box-shadow: none;
   border: 1px solid var(--grey);
-  margin-bottom: 12px;
+  margin-bottom: var(--space-md);
   break-inside: avoid;
 }
 
 .sectionHeader {
-  padding: 15px;
+  padding: var(--space-lg);
   border-bottom: 1px solid var(--grey-light);
 
   h3 {
@@ -34,8 +34,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 8px 15px;
+  gap: var(--space-lg);
+  padding: var(--space-sm) var(--space-lg);
 }
 
 .settingLabel {
