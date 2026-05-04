@@ -19,9 +19,16 @@ import {
   clearHighlightedNode,
 } from 'reducers/ontology/slice';
 import { fetchNodes } from 'reducers/ontology/actions';
-import { FilterCondition } from 'models/interfaces/graphFilter';
-import { FilterPopup } from './FilterPopup/FilterPopup';
+import { Filter } from 'models/interfaces/filter';
+import { FilterPopup } from 'components/shared/FilterPopup/FilterPopup';
 import { GraphPlayback } from './GraphPlayback/GraphPlayback';
+import { GraphService } from 'services/graph';
+import {
+  buildFilterColumns,
+  filtersToGraphConditions,
+  graphConditionsToFilters,
+} from 'utils/ontology';
+import { VALUE_QUERY_LIMIT } from 'constants/service';
 
 interface GraphControlsProps {
   onPlaybackChange: (visibleNodeIds: Set<string> | null) => void;
@@ -97,8 +104,31 @@ export const GraphControls: FC<GraphControlsProps> = ({ onPlaybackChange }) => {
     dispatch(fetchNodes({ labels }));
   };
 
-  const handleApplyFilters = (filters: FilterCondition[]) => {
-    dispatch(fetchNodes({ filters }));
+  // TODO: Get all graph labels via API
+  const labelsInGraph = [...new Set(graphData.nodes.flatMap((n) => n.labels))];
+  const filterColumns = buildFilterColumns(graphData.nodes, labelsInGraph);
+
+  const handleLoadOptions = async (columnKey: string) => {
+    const colonIdx = columnKey.indexOf(':');
+    if (colonIdx === -1) return [];
+    const nodeLabel = columnKey.substring(0, colonIdx);
+    const property = columnKey.substring(colonIdx + 1);
+    const values = await GraphService.fetchPropertyValues(
+      nodeLabel,
+      property,
+      VALUE_QUERY_LIMIT,
+    );
+    return values.length < VALUE_QUERY_LIMIT
+      ? values.map((v: any) => ({ label: String(v), value: v }))
+      : [];
+  };
+
+  const handleApplyFilters = (filters: Filter[]) => {
+    dispatch(
+      fetchNodes({
+        filters: filtersToGraphConditions(filters, graphData.nodes),
+      }),
+    );
     setFilterPopoverOpen(false);
   };
 
@@ -129,8 +159,10 @@ export const GraphControls: FC<GraphControlsProps> = ({ onPlaybackChange }) => {
         <Popover
           content={
             <FilterPopup
-              nodes={graphData.nodes}
-              onApplyFilters={handleApplyFilters}
+              columns={filterColumns}
+              initialFilters={graphConditionsToFilters(activeFilters)}
+              onLoadOptions={handleLoadOptions}
+              onApply={handleApplyFilters}
             />
           }
           title="Filter Graph Data"

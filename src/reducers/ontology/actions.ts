@@ -1,7 +1,10 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { AppThunk, RootState } from 'reducers';
 import { selectGraphModelData, setGraphModelData } from './slice';
-import { FilterCondition, NodeFilter } from 'models/interfaces/graphFilter';
+import {
+  GraphFilterCondition,
+  NodeFilter,
+} from 'models/interfaces/graphFilter';
 import {
   GraphData,
   GraphNodeModel,
@@ -17,7 +20,7 @@ export const fetchAllNodeLabels = createAsyncThunk<string[]>(
 
 export const fetchNodes = createAsyncThunk<
   { graphData: GraphData; labels: string[] },
-  { labels?: string[]; filters?: FilterCondition[]; limit?: number },
+  { labels?: string[]; filters?: GraphFilterCondition[]; limit?: number },
   { state: RootState }
 >(
   'ontology/fetchNodes',

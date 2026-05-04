@@ -55,13 +55,11 @@ export const PlatformLayout: FC = () => {
         },
         components: {
           Menu: {
-            itemActiveBg: '#e6e9ff',
-            itemSelectedBg: '#e6e9ff',
+            itemSelectedColor: isDark ? '#fff' : '#000',
           },
           Table: {
-            borderColor: '#f8f8f8',
-            headerBg: isDark ? 'transparent' : '#fff',
-            footerBg: isDark ? 'transparent' : '#fff',
+            headerBg: 'none',
+            footerBg: 'none',
           },
         },
       }}

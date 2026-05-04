@@ -1,7 +1,7 @@
 .topSection {
   display: flex;
   gap: var(--space-xl);
-  margin-bottom: var(--space-xl);
+  margin-bottom: var(--space-md);
 
   .chartContainer {
     position: relative;
@@ -22,8 +22,7 @@
 }
 
 .dataTable {
-  box-shadow: var(--box-shadow);
-  border-radius: var(--br-md);
+  padding: 0;
 
   .owner {
     display: flex;

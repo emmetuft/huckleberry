@@ -25,5 +25,10 @@
     padding: var(--space-sm);
     background: var(--grey-bg);
     border-radius: var(--br-md);
+
+    .filterRowItem {
+      flex: 1;
+      min-width: 0;
+    }
   }
 }

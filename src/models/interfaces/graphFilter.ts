@@ -1,19 +1,19 @@
-export interface FilterCondition {
+export interface GraphFilterCondition {
   id: string;
   nodeLabel: string;
   property: string;
-  operator: FilterOperator | '';
+  operator: GraphFilterOperator | '';
   value: any;
-  valueType?: FilterDataType;
+  valueType?: GraphFilterDataType;
 }
 
-export enum FilterDataType {
+export enum GraphFilterDataType {
   STRING = 'string',
   NUMBER = 'number',
   DATE = 'date',
 }
 
-export enum FilterOperator {
+export enum GraphFilterOperator {
   EQUALS = 'equals',
   NOT_EQUALS = 'notEquals',
   CONTAINS = 'contains',
@@ -24,15 +24,15 @@ export enum FilterOperator {
   BETWEEN = 'between',
 }
 
-export const OperatorOptionMap: Record<FilterOperator, string> = {
-  [FilterOperator.EQUALS]: 'Equals',
-  [FilterOperator.NOT_EQUALS]: 'Not equals',
-  [FilterOperator.CONTAINS]: 'Contains',
-  [FilterOperator.GT]: 'Greater than',
-  [FilterOperator.LT]: 'Less than',
-  [FilterOperator.GTE]: 'Greater than or equal to',
-  [FilterOperator.LTE]: 'Less than or equal to',
-  [FilterOperator.BETWEEN]: 'Between',
+export const OperatorOptionMap: Record<GraphFilterOperator, string> = {
+  [GraphFilterOperator.EQUALS]: 'Equals',
+  [GraphFilterOperator.NOT_EQUALS]: 'Not equals',
+  [GraphFilterOperator.CONTAINS]: 'Contains',
+  [GraphFilterOperator.GT]: 'Greater than',
+  [GraphFilterOperator.LT]: 'Less than',
+  [GraphFilterOperator.GTE]: 'Greater than or equal to',
+  [GraphFilterOperator.LTE]: 'Less than or equal to',
+  [GraphFilterOperator.BETWEEN]: 'Between',
 };
 
 export interface PropertyFilter {

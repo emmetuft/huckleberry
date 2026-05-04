@@ -36,3 +36,57 @@ export const operatorLabelMap: Record<FilterOperator, string> = {
   [FilterOperator.IS_NOT_NULL]: 'is not null',
   [FilterOperator.BETWEEN]: 'between',
 };
+
+export enum FilterDataType {
+  STRING = 'string',
+  NUMBER = 'number',
+  DATE = 'date',
+  BOOLEAN = 'boolean',
+}
+
+export interface FilterColumn {
+  key: string;
+  label: string;
+  type: FilterDataType;
+  group?: string;
+  options?: { label: string; value: any }[];
+}
+
+export const operatorsByType: Record<FilterDataType, FilterOperator[]> = {
+  [FilterDataType.STRING]: [
+    FilterOperator.EQUALS,
+    FilterOperator.NOT_EQUALS,
+    FilterOperator.LIKE,
+    FilterOperator.NOT_LIKE,
+    FilterOperator.IS_NULL,
+    FilterOperator.IS_NOT_NULL,
+  ],
+  [FilterDataType.NUMBER]: [
+    FilterOperator.EQUALS,
+    FilterOperator.NOT_EQUALS,
+    FilterOperator.GREATER_THAN,
+    FilterOperator.LESS_THAN,
+    FilterOperator.GREATER_THAN_OR_EQUALS,
+    FilterOperator.LESS_THAN_OR_EQUALS,
+    FilterOperator.BETWEEN,
+    FilterOperator.IS_NULL,
+    FilterOperator.IS_NOT_NULL,
+  ],
+  [FilterDataType.DATE]: [
+    FilterOperator.EQUALS,
+    FilterOperator.NOT_EQUALS,
+    FilterOperator.GREATER_THAN,
+    FilterOperator.LESS_THAN,
+    FilterOperator.GREATER_THAN_OR_EQUALS,
+    FilterOperator.LESS_THAN_OR_EQUALS,
+    FilterOperator.BETWEEN,
+    FilterOperator.IS_NULL,
+    FilterOperator.IS_NOT_NULL,
+  ],
+  [FilterDataType.BOOLEAN]: [
+    FilterOperator.EQUALS,
+    FilterOperator.NOT_EQUALS,
+    FilterOperator.IS_NULL,
+    FilterOperator.IS_NOT_NULL,
+  ],
+};

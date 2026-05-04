@@ -1,10 +1,13 @@
 import { createAppSlice } from '../createAppSlice';
 import { DataSource } from 'models/interfaces/dataSource';
 import { Column } from 'models/interfaces/column';
-import { fetchDataSource } from './actions';
+import { fetchDataSource, fetchDataSourceList } from './actions';
 import { Filter } from 'models/interfaces/filter';
 
 interface State {
+  dataSourceList: DataSource[];
+  totalSources: number;
+  dataSourceFilters: Filter[];
   dataSource: DataSource | null;
   schema: Column[];
   columnDistributions: Record<string, Record<string, number>>;
@@ -14,12 +17,16 @@ interface State {
   page: number;
   numRows: number;
   loading: {
+    dataSourceList: boolean;
     dataSource: boolean;
     schema: boolean;
   };
 }
 
 const initialState: State = {
+  dataSourceList: [],
+  totalSources: 0,
+  dataSourceFilters: [],
   dataSource: null,
   schema: [],
   columnDistributions: {},
@@ -29,6 +36,7 @@ const initialState: State = {
   page: 1,
   numRows: 0,
   loading: {
+    dataSourceList: false,
     dataSource: false,
     schema: false,
   },
@@ -38,6 +46,11 @@ export const DatasourceReducer = createAppSlice({
   name: 'datasource',
   initialState,
   reducers: (create) => ({
+    setDataSourceFilters: create.reducer(
+      (state, action: { payload: Filter[] }) => {
+        state.dataSourceFilters = action.payload;
+      },
+    ),
     clearDataSource: create.reducer((state) => {
       state.dataSource = null;
       state.schema = [];
@@ -69,6 +82,17 @@ export const DatasourceReducer = createAppSlice({
   }),
   extraReducers: (builder) => {
     builder
+      .addCase(fetchDataSourceList.pending, (state) => {
+        state.loading.dataSourceList = true;
+      })
+      .addCase(fetchDataSourceList.rejected, (state) => {
+        state.loading.dataSourceList = false;
+      })
+      .addCase(fetchDataSourceList.fulfilled, (state, { payload }) => {
+        state.dataSourceList = payload.sources;
+        state.totalSources = payload.total;
+        state.loading.dataSourceList = false;
+      })
       .addCase(fetchDataSource.pending, (state) => {
         state.loading.dataSource = true;
       })
@@ -82,6 +106,9 @@ export const DatasourceReducer = createAppSlice({
       });
   },
   selectors: {
+    selectDataSourceList: (state) => state.dataSourceList,
+    selectTotalSources: (state) => state.totalSources,
+    selectDataSourceFilters: (state) => state.dataSourceFilters,
     selectDataSource: (state) => state.dataSource,
     selectDataSourceSchema: (state) => state.schema,
     selectColumnDistributions: (state) => state.columnDistributions,
@@ -95,6 +122,7 @@ export const DatasourceReducer = createAppSlice({
 });
 
 export const {
+  setDataSourceFilters,
   clearDataSource,
   setColumnDistributions,
   setPageData,
@@ -104,6 +132,9 @@ export const {
   setNumRows,
 } = DatasourceReducer.actions;
 export const {
+  selectDataSourceList,
+  selectTotalSources,
+  selectDataSourceFilters,
   selectDataSource,
   selectDataSourceSchema,
   selectColumnDistributions,
