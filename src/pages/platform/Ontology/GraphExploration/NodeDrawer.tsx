@@ -1,6 +1,7 @@
 import { FC, useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Button, Drawer, Input, List, Popover, Select } from 'antd';
+import { ArrowRightIcon } from '@phosphor-icons/react';
 import styles from './GraphExploration.module.css';
 import { selectGraphData, selectNodeLabels } from 'reducers/ontology/slice';
 import { getColorForGroup } from 'utils/styles';
@@ -119,7 +120,7 @@ export const NodeDrawer: FC<NodeDrawerProps> = ({
                   >
                     {getNodeDisplayName(link.source)}
                   </span>
-                  <span className={styles.arrow}>{'→'}</span>
+                  <ArrowRightIcon size={14} color="var(--grey-text)" />
                   <Popover
                     placement="top"
                     content={
@@ -142,7 +143,7 @@ export const NodeDrawer: FC<NodeDrawerProps> = ({
                   >
                     <div className={styles.relationship}>{link.type}</div>
                   </Popover>
-                  <span className={styles.arrow}>{'→'}</span>
+                  <ArrowRightIcon size={14} color="var(--grey-text)" />
                   <span
                     style={{
                       color: getNodeColor(link.target),

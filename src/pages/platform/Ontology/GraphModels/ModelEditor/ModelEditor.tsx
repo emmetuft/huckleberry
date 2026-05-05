@@ -16,6 +16,51 @@ import {
 import { GraphDataType, GraphDataTypes } from 'models/enums/graphDataType';
 import { getColorForGroup } from 'utils/styles';
 
+const RelationshipConnection: FC<{
+  fromNodeId: string;
+  toNodeId: string;
+  text?: string;
+}> = ({ fromNodeId, toNodeId, text }) => {
+  const { nodes } = useSelector(selectGraphModelData);
+  const getNodeColor = useCallback(
+    (nodeId: string) => {
+      const index = nodes.findIndex((n) => n.id === nodeId);
+      return getColorForGroup(index >= 0 ? index : 0);
+    },
+    [nodes],
+  );
+  const getLabel = (nodeId: string) =>
+    nodes.find((n) => n.id === nodeId)?.label || nodeId;
+
+  return (
+    <div className={styles.connection}>
+      <div
+        className={styles.nodeLabel}
+        style={
+          { '--node-color': getNodeColor(fromNodeId) } as React.CSSProperties
+        }
+      >
+        {getLabel(fromNodeId)}
+      </div>
+      <ArrowRightIcon size={14} color="var(--grey-text)" />
+      {text && (
+        <>
+          <span className={styles.relationshipName}>{text}</span>
+          <ArrowRightIcon size={14} color="var(--grey-text)" />
+        </>
+      )}
+      <div
+        className={styles.nodeLabel}
+        style={
+          { '--node-color': getNodeColor(toNodeId) } as React.CSSProperties
+        }
+      >
+        {getLabel(toNodeId)}
+      </div>
+    </div>
+  );
+};
+
 interface ModelEditorProps {
   model: GraphEditorModel;
   open: boolean;
@@ -24,18 +69,10 @@ interface ModelEditorProps {
 
 export const ModelEditor: FC<ModelEditorProps> = ({ model, open, onClose }) => {
   const dispatch = useAppDispatch();
-  const { nodes } = useSelector(selectGraphModelData);
+  const { edges } = useSelector(selectGraphModelData);
 
   const [selectedIndices, setSelectedIndices] = useState<Set<number>>(
     new Set(),
-  );
-
-  const getNodeColor = useCallback(
-    (nodeId: string) => {
-      const index = nodes.findIndex((n) => n.id === nodeId);
-      return getColorForGroup(index >= 0 ? index : 0);
-    },
-    [nodes],
   );
 
   const onModelChange = (updatedModel: GraphEditorModel) => {
@@ -122,31 +159,10 @@ export const ModelEditor: FC<ModelEditorProps> = ({ model, open, onClose }) => {
                 onModelChange({ ...model, name: e.target.value })
               }
             />
-            <div className={styles.connection}>
-              <div
-                className={styles.nodeLabel}
-                style={
-                  {
-                    '--node-color': getNodeColor(model.fromNodeId),
-                  } as React.CSSProperties
-                }
-              >
-                {nodes.find((n) => n.id === model.fromNodeId)?.label ||
-                  model.fromNodeId}
-              </div>
-              <ArrowRightIcon size={14} />
-              <div
-                className={styles.nodeLabel}
-                style={
-                  {
-                    '--node-color': getNodeColor(model.toNodeId),
-                  } as React.CSSProperties
-                }
-              >
-                {nodes.find((n) => n.id === model.toNodeId)?.label ||
-                  model.toNodeId}
-              </div>
-            </div>
+            <RelationshipConnection
+              fromNodeId={model.fromNodeId}
+              toNodeId={model.toNodeId}
+            />
           </div>
         ) : (
           <div className={styles.section}>
@@ -215,6 +231,26 @@ export const ModelEditor: FC<ModelEditorProps> = ({ model, open, onClose }) => {
             )}
           </div>
         </div>
+        {!isRelationship && (
+          <div className={styles.section}>
+            <h4>Relationships</h4>
+            <div className={styles.relationships}>
+              {edges
+                .filter(
+                  (e) => e.fromNodeId === model.id || e.toNodeId === model.id,
+                )
+                .map((edge) => (
+                  <div key={edge.id}>
+                    <RelationshipConnection
+                      fromNodeId={edge.fromNodeId}
+                      toNodeId={edge.toNodeId}
+                      text={edge.name}
+                    />
+                  </div>
+                ))}
+            </div>
+          </div>
+        )}
       </div>
     </Drawer>
   );

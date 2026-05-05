@@ -1,6 +1,5 @@
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import classnames from 'classnames';
 import { Input, Spin } from 'antd';
 import styles from './index.module.css';
 import { BLANK_LABEL } from 'constants/data';
@@ -249,11 +248,7 @@ export const OptionList: FC<Props> = ({
         </div>
       )}
 
-      <div
-        className={classnames(styles.optionList, {
-          [styles.loading]: loading,
-        })}
-      >
+      <div className={`${styles.optionList} ${loading ? styles.loading : ''}`}>
         {loading ? (
           <div className={styles.loading}>
             <Spin />
