@@ -42,21 +42,30 @@
       }
     }
   }
-}
 
-.nodeLabel {
-  padding: var(--space-xs) var(--space-sm);
-  background-color: color-mix(in srgb, var(--node-color) 10%, white 90%);
-  border-radius: 30px;
-  border: 1px solid var(--node-color);
-  color: var(--node-color);
-  font-weight: 600;
-  font-size: 13px;
+  .relationships {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    margin-top: var(--space-md);
+  }
 }
 
 .connection {
   display: flex;
   align-items: center;
-  gap: var(--space-xs);
-  font-size: 13px;
+  gap: var(--space-sm);
+
+  .nodeLabel {
+    padding: var(--space-xs) var(--space-sm);
+    background-color: color-mix(in srgb, var(--node-color) 10%, white 90%);
+    border-radius: 30px;
+    border: 1px solid var(--node-color);
+    color: var(--node-color);
+    font-weight: 600;
+  }
+
+  .relationshipName {
+    font-family: 'IBM Plex Mono', monospace;
+  }
 }
