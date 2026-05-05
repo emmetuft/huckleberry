@@ -1,13 +1,16 @@
+import { Spin, SpinProps } from 'antd';
 import styles from './Loader.module.css';
 
 export default function LoadingAnimation() {
+  const stylesObject: SpinProps['styles'] = {
+    indicator: {
+      color: 'var(--purple)',
+    },
+  };
+
   return (
     <div className={styles.loaderContainer}>
-      <div className={styles.glowOrb}>
-        <div className={styles.innerOrb}></div>
-      </div>
-
-      {/* <p className={styles.loadingText}>Loading...</p> */}
+      <Spin size="large" styles={stylesObject} />
     </div>
   );
 }
