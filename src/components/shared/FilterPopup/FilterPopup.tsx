@@ -45,7 +45,7 @@ export const FilterPopup: FC<FilterPopupProps> = ({
   initialFilters = [],
   onApply,
   onLoadOptions,
-  emptyStateMessage = 'No filters added. Click "Add Filter" to start filtering.',
+  emptyStateMessage = 'No filters added.',
 }) => {
   const [filters, setFilters] = useState<FilterDraft[]>(initialFilters);
   const [loadedOptions, setLoadedOptions] = useState<

@@ -17,16 +17,24 @@
       align-items: center;
     }
 
-    h3 {
-      font-size: 16px;
-      font-weight: 400;
-    }
-
     p {
       margin-top: 5px;
       font-size: 12px;
       font-weight: 500;
       color: var(--grey-text);
     }
+  }
+}
+
+@media (width <= 768px) {
+  .PopupCard {
+    /* top: 0;
+    left: 62px;
+    width: calc(100vw - 62px);
+    height: 100vh;
+    border-radius: 0;
+    max-height: unset;
+    overflow-y: auto;
+    animation: slideInFromLeft 0.25s ease; */
   }
 }

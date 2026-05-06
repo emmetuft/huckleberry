@@ -25,11 +25,13 @@ import { DataFilters } from './DataFilters/DataFilters';
 import { DetailItems } from './DetailItems/DetailItems';
 import Grid from './Grid/Grid';
 import { getWhereClause } from 'utils/duckdb';
+import { useIsMobile } from 'hooks/useIsMobile';
 
 export const DataSourceDetail: FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const isMobile = useIsMobile();
 
   const schema = useSelector(selectDataSourceSchema);
   const dataSource = useSelector(selectDataSource);
@@ -37,7 +39,7 @@ export const DataSourceDetail: FC = () => {
   const page = useSelector(selectPage);
   const dataLoadedList = useSelector(selectDataLoadedList);
 
-  const [tableHeight, setTableHeight] = useState<number>(500);
+  const [tableHeight, setTableHeight] = useState<number>(800);
   const topSectionRef = useRef<HTMLDivElement>(null);
 
   const { dbConn } = useContext(DuckDBContext);
@@ -80,16 +82,17 @@ export const DataSourceDetail: FC = () => {
   }, [page]);
 
   useEffect(() => {
+    if (isMobile) return;
     const resize = () => {
       const topHeight = topSectionRef.current?.offsetHeight || 0;
-      const padding = 40;
+      const padding = 40 + 16 + 2; // page, top section, border
       setTableHeight(window.innerHeight - topHeight - padding);
     };
 
     resize();
     window.addEventListener('resize', resize);
     return () => window.removeEventListener('resize', resize);
-  }, []);
+  }, [topSectionRef.current?.offsetHeight]);
 
   async function fetchNumRows() {
     if (dbConn === null || dataSource === null) return;

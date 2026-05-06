@@ -11,12 +11,11 @@
     cursor: pointer;
 
     h4 {
-      font-size: 14px;
       font-weight: 500;
     }
 
     p {
-      font-size: 14px;
+      font-size: var(--font-sm);
       color: var(--grey-text);
     }
 

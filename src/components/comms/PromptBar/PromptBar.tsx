@@ -14,12 +14,14 @@ import { AppPage, platformRoutePaths } from 'models/enums/appPage';
 import { ChatMode } from 'models/enums/chatMode';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
 import { ChatContainer } from '../ChatContainer/ChatContainer';
+import { useIsMobile } from 'hooks/useIsMobile';
 
 interface PromptBarProps {}
 
 export const PromptBar: FC<PromptBarProps> = ({}) => {
   const dispatch = useAppDispatch();
   const hasMessages = useSelector(selectHasMessages);
+  const isMobile = useIsMobile();
 
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false);
 
@@ -72,13 +74,13 @@ export const PromptBar: FC<PromptBarProps> = ({}) => {
       <Popover
         content={popoverContent}
         placement="top"
-        trigger="hover"
+        trigger={isMobile ? 'click' : 'hover'}
         open={popoverOpen}
         onOpenChange={setPopoverOpen}
         styles={{
-          body: {
+          content: {
             padding: 0,
-            width: 600,
+            width: isMobile ? '80vw' : 600,
             borderRadius: 12,
             boxShadow: 'var(--box-shadow)',
             backgroundColor: 'var(--background)',

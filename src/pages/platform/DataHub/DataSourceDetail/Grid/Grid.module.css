@@ -2,6 +2,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
   border: 1px solid var(--grey-light);
   border-radius: var(--br-md);
   overflow: hidden;
@@ -23,6 +24,22 @@
     background-color: var(--background);
     font-size: 14px;
     color: var(--grey-text);
+
+    @media (width <= 768px) {
+      flex-wrap: wrap;
+      padding: var(--space-md);
+      gap: var(--space-sm);
+
+      .footerLeft {
+        order: 2;
+        flex: 1;
+      }
+
+      .status {
+        order: 3;
+        flex: 1;
+      }
+    }
 
     .footerLeft {
       flex: 1;

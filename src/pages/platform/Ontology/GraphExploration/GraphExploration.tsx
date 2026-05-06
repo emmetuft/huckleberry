@@ -24,6 +24,7 @@ import { NodeDrawer } from './NodeDrawer';
 import { OntologyInitModal } from './OntologyInitModal/OntologyInitModal';
 import { GraphControls } from './GraphControls/GraphControls';
 import LoadingAnimation from 'components/shared/Loader/Loader';
+import { useIsMobile } from 'hooks/useIsMobile';
 
 interface GraphExplorationProps {}
 
@@ -32,6 +33,7 @@ export const GraphExploration: FC<GraphExplorationProps> = ({}) => {
   const graphData = useSelector(selectGraphData);
   const nodeLabels = useSelector(selectNodeLabels);
   const loading = useSelector(selectLoading).loadingNodes;
+  const isMobile = useIsMobile();
 
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
@@ -51,6 +53,8 @@ export const GraphExploration: FC<GraphExplorationProps> = ({}) => {
   }, [graphData, visibleNodeIds]);
 
   const init = useRef<boolean>(false);
+
+  const iconSize = isMobile ? 14 : 18;
 
   // Fetch node labels when component mounts
   // We no longer load the full graph - users will search/explore incrementally
@@ -107,11 +111,14 @@ export const GraphExploration: FC<GraphExplorationProps> = ({}) => {
 
       <GraphControls onPlaybackChange={setVisibleNodeIds} />
       <GraphLegend labels={nodeLabels} />
-      <FloatButton.Group shape="square">
+      <FloatButton.Group
+        shape="square"
+        style={{ insetInlineEnd: 20, insetBlockEnd: 20 }}
+      >
         <FloatButton
           icon={
             <Tooltip title="Add node" placement="left">
-              <PlusCircleIcon />
+              <PlusCircleIcon size={iconSize} />
             </Tooltip>
           }
           onClick={onClickAddNode}
@@ -119,7 +126,7 @@ export const GraphExploration: FC<GraphExplorationProps> = ({}) => {
         <FloatButton
           icon={
             <Tooltip title="Clear graph view" placement="left">
-              <BroomIcon />
+              <BroomIcon size={iconSize} />
             </Tooltip>
           }
           onClick={onClearGraph}
@@ -130,7 +137,11 @@ export const GraphExploration: FC<GraphExplorationProps> = ({}) => {
               title={`Switch to ${graphMode === '3d' ? '2D' : '3D'}`}
               placement="left"
             >
-              {graphMode === '3d' ? <VectorTwoIcon /> : <VectorThreeIcon />}
+              {graphMode === '3d' ? (
+                <VectorTwoIcon size={iconSize} />
+              ) : (
+                <VectorThreeIcon size={iconSize} />
+              )}
             </Tooltip>
           }
           onClick={() => setGraphMode((m) => (m === '3d' ? '2d' : '3d'))}
@@ -138,7 +149,7 @@ export const GraphExploration: FC<GraphExplorationProps> = ({}) => {
         <FloatButton
           icon={
             <Tooltip title="Export graph" placement="left">
-              <ExportIcon />
+              <ExportIcon size={iconSize} />
             </Tooltip>
           }
         />

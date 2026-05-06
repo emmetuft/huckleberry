@@ -40,7 +40,7 @@ export const Workspace: FC<WorkspaceProps> = ({}) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      {`Good ${getTimeOfDay()}${identity ? `, ${getFirstName(identity.displayName)}` : ''}!`}
+      <h2>{`Good ${getTimeOfDay()}${identity ? `, ${getFirstName(identity.displayName)}` : ''}!`}</h2>
     </motion.p>
   );
 
@@ -68,7 +68,7 @@ export const Workspace: FC<WorkspaceProps> = ({}) => {
   return (
     <>
       <QuickStart />
-      <div className={styles.Workspace}>
+      <div className={styles.workspace}>
         <AnimatePresence>{!fullScreen && greetingComponent}</AnimatePresence>
         {fullScreen ? (
           <ChatContainer

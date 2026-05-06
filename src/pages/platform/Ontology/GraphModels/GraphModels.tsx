@@ -18,6 +18,7 @@ import {
 } from 'models/interfaces/ontology';
 import { ModelCanvas } from './ModelCanvas/ModelCanvas';
 import { ModelEditor } from './ModelEditor/ModelEditor';
+import { useIsMobile } from 'hooks/useIsMobile';
 
 interface GraphModelsProps {}
 
@@ -25,6 +26,7 @@ export const GraphModels: FC<GraphModelsProps> = ({}) => {
   const dispatch = useAppDispatch();
   const { nodes: models, edges: relationships } =
     useSelector(selectGraphModelData);
+  const isMobile = useIsMobile();
 
   const [selectedId, setSelectedId] = useState<string>('');
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
@@ -32,6 +34,8 @@ export const GraphModels: FC<GraphModelsProps> = ({}) => {
   const selectedItem: GraphEditorModel | undefined =
     relationships.find((r) => r.id === selectedId) ??
     models.find((m) => m.id === selectedId);
+
+  const iconSize = isMobile ? 14 : 18;
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -151,7 +155,7 @@ export const GraphModels: FC<GraphModelsProps> = ({}) => {
         <FloatButton
           icon={
             <Tooltip title="Add node" placement="left">
-              <PlusCircleIcon />
+              <PlusCircleIcon size={iconSize} />
             </Tooltip>
           }
           onClick={onClickAddNode}
@@ -159,7 +163,7 @@ export const GraphModels: FC<GraphModelsProps> = ({}) => {
         <FloatButton
           icon={
             <Tooltip title="Export graph" placement="left">
-              <ExportIcon />
+              <ExportIcon size={iconSize} />
             </Tooltip>
           }
         />

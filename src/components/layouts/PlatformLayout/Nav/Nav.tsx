@@ -1,6 +1,6 @@
 import React, { FC, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { platformRoutePaths } from 'models/enums/appPage';
 import {
   AtomIcon,
@@ -11,6 +11,7 @@ import {
   HeartbeatIcon,
   LightbulbIcon,
   LightningIcon,
+  ListIcon,
   MoonIcon,
   NotebookIcon,
   PuzzlePieceIcon,
@@ -34,6 +35,7 @@ import { AppPage, AppPageLabel } from 'models/enums/appPage';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
 import { HistoryCard } from './HistoryCard/HistoryCard';
 import { RecCard } from './RecCard/RecCard';
+import { useIsMobile } from 'hooks/useIsMobile';
 import { getAvatarUrl } from 'utils/misc';
 
 interface NavProps {}
@@ -41,12 +43,14 @@ interface NavProps {}
 export const Nav: FC<NavProps> = ({}) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const incognitoMode = useSelector(selectIncognitoMode);
   const theme = useSelector(selectTheme);
   const isDark = theme === 'dark';
 
   const [showHistory, setShowHistory] = useState<boolean>(false);
   const [showRecs, setShowRecs] = useState<boolean>(false);
+  const [mobileOpen, setMobileOpen] = useState<boolean>(false);
 
   const identity = useSelector(selectIdentity);
 
@@ -62,7 +66,8 @@ export const Nav: FC<NavProps> = ({}) => {
     navigate(platformRoutePaths[AppPage.PROFILE]);
   };
 
-  const iconSize = 22;
+  const isMobile = useIsMobile();
+  const iconSize = isMobile ? 18 : 22;
 
   const navIconMap: Record<string, any> = {
     [AppPage.APPS]: <SquaresFourIcon size={iconSize} />,
@@ -91,6 +96,10 @@ export const Nav: FC<NavProps> = ({}) => {
 
   const avatar = identity !== undefined ? getAvatarUrl(identity.id) : undefined;
 
+  React.useEffect(() => {
+    setMobileOpen(false);
+  }, [location.pathname]);
+
   const renderIconBtn = (page: AppPage) => (
     <Tooltip
       key={page}
@@ -106,7 +115,17 @@ export const Nav: FC<NavProps> = ({}) => {
 
   return (
     <React.Fragment>
-      <div className={`${styles.Nav} card`}>
+      <div className={styles.navBar}>
+        <Button
+          size="small"
+          icon={<ListIcon size={18} />}
+          onClick={() => setMobileOpen(true)}
+        />
+      </div>
+      {mobileOpen && (
+        <div className={styles.overlay} onClick={() => setMobileOpen(false)} />
+      )}
+      <div className={`${styles.Nav} ${mobileOpen ? styles.navOpen : ''} card`}>
         <Link
           to={platformRoutePaths[AppPage.HOME]}
           className={styles.logo}

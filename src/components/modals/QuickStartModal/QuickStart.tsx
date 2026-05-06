@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Button, Menu, Modal } from 'antd';
 import type { MenuProps } from 'antd';
+import { UploadIcon } from '@phosphor-icons/react';
 import styles from './QuickStart.module.css';
 import { useAppDispatch } from 'reducers';
 import {
@@ -24,6 +25,7 @@ import {
 import { buildPersona } from 'utils/persona';
 import { extractTextFromDocx } from 'utils/file';
 import { parseResumeWithAI } from 'services/ai';
+import { useIsMobile } from 'hooks/useIsMobile';
 
 const stepVariants = {
   enter: (direction: number) => ({ x: direction > 0 ? 60 : -60, opacity: 0 }),
@@ -38,6 +40,7 @@ export const QuickStart: FC = () => {
   const persona = useSelector(selectPersona);
   const isNewUser = useSelector(selectIsNewUser);
   const onboardingCompleted = useSelector(selectOnboardingCompleted);
+  const isMobile = useIsMobile();
 
   const [step, setStep] = useState<number>(0);
   const [direction, setDirection] = useState<number>(1);
@@ -137,6 +140,7 @@ export const QuickStart: FC = () => {
               onChange={handleResumeUpload}
             />
             <Button
+              icon={<UploadIcon />}
               loading={resumeParsing}
               onClick={() => {
                 setResumeError(null);
@@ -230,20 +234,22 @@ export const QuickStart: FC = () => {
       styles={{ body: { padding: 0 } }}
     >
       <div className={styles.layout}>
-        <div className={styles.sidebar}>
-          <Menu
-            mode="inline"
-            selectedKeys={[String(step)]}
-            items={sidebarItems}
-            onClick={handleMenuClick}
-            className={styles.sidebarMenu}
-          />
-          {step > 0 && (
-            <button className={styles.continueLater} onClick={mergeAndSave}>
-              Continue later
-            </button>
-          )}
-        </div>
+        {!isMobile && (
+          <div className={styles.sidebar}>
+            <Menu
+              mode="inline"
+              selectedKeys={[String(step)]}
+              items={sidebarItems}
+              onClick={handleMenuClick}
+              className={styles.sidebarMenu}
+            />
+            {step > 0 && (
+              <button className={styles.continueLater} onClick={mergeAndSave}>
+                Continue later
+              </button>
+            )}
+          </div>
+        )}
 
         <div className={styles.mainContent}>
           <div className={styles.animationClip}>

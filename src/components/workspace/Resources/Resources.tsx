@@ -16,7 +16,7 @@ export const Resources: FC<ResourcesProps> = ({}) => {
     <div className={styles.Resources}>
       <div className={styles.subHeader}>
         <div className={styles.currentDate}>{formatCurrentDate()}</div>
-        For you
+        <h4>For you</h4>
         {/* <div className={styles.subTabs}>
           <button
             style={selectedTab !== 'templates' ? { opacity: 0.3 } : {}}
@@ -31,9 +31,7 @@ export const Resources: FC<ResourcesProps> = ({}) => {
             Agents
           </button>
         </div>
-        <div>
-          <IconBtn icon={<MagnifyingGlass />} />
-        </div> */}
+        <IconBtn icon={<MagnifyingGlassIcon />} /> */}
       </div>
       <ResourceList tab={selectedTab} />
     </div>

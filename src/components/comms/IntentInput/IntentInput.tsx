@@ -7,7 +7,6 @@ import {
   DatabaseIcon,
   PaperPlaneTiltIcon,
   WrenchIcon,
-  XIcon,
 } from '@phosphor-icons/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import styles from './IntentInput.module.css';

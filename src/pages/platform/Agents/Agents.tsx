@@ -55,6 +55,8 @@ export const Agents: FC<AgentsProps> = ({}) => {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         connectionLineType={ConnectionLineType.SmoothStep}
+        fitView
+        fitViewOptions={{ padding: 2 }}
       >
         <Background
           variant={BackgroundVariant.Dots}

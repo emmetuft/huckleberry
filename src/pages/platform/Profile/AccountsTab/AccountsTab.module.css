@@ -1,4 +1,4 @@
-.AccountsTab {
+.accountsTab {
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
@@ -8,6 +8,7 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: var(--space-sm);
+  padding: var(--space-sm);
 }
 
 .connectAction {
@@ -15,4 +16,10 @@
   align-items: center;
   margin-left: auto;
   flex-shrink: 0;
+}
+
+@media (width <= 768px) {
+  .accountsGrid {
+    grid-template-columns: 1fr;
+  }
 }
