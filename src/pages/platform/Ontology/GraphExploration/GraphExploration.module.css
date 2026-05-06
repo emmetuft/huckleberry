@@ -10,7 +10,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-sm);
+    text-align: center;
+    gap: var(--space-lg);
   }
 }
 
@@ -85,5 +86,11 @@
       font-weight: 600;
       font-family: 'IBM Plex Mono', monospace;
     }
+  }
+}
+
+@media (width <= 768px) {
+  .emptyWrapper {
+    margin: 0 var(--space-xl);
   }
 }

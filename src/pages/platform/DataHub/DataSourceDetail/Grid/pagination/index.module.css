@@ -8,3 +8,11 @@
     gap: var(--space-lg);
   }
 }
+
+@media (width <= 768px) {
+  .pagination {
+    order: 1;
+    width: 100%;
+    justify-content: center;
+  }
+}

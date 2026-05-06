@@ -32,3 +32,9 @@
     }
   }
 }
+
+@media (width <= 768px) {
+  .FilterPopup {
+    width: 70vw;
+  }
+}

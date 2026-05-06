@@ -19,6 +19,11 @@ svg:focus {
     height: 100%;
     overflow: hidden;
     padding: var(--default-page-padding);
+
+    @media (width <= 768px) {
+      height: auto;
+      overflow: visible;
+    }
   }
 
   .loadingOverlay {
@@ -82,7 +87,7 @@ svg:focus {
       }
 
       p {
-        font-size: 12px;
+        font-size: var(--font-xs);
         line-height: 14px;
         overflow: hidden;
         display: -webkit-box;
@@ -107,6 +112,17 @@ svg:focus {
     width: 40px;
     background-color: var(--purple);
     border-radius: var(--br-md);
+  }
+
+  @media (width <= 768px) {
+    .appCard {
+      gap: var(--space-md);
+    }
+
+    .defaultAppIcon {
+      height: 30px;
+      width: 30px;
+    }
   }
 }
 

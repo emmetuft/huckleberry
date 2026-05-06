@@ -151,7 +151,6 @@ const Grid: FC<Props> = ({ height }) => {
         <Pagination pageSize={DEFAULT_PAGE_SIZE} />
         <div className={styles.status}>
           <div className={styles.statusPill}>Healthy</div>
-          <span>All systems operational</span>
         </div>
       </div>
     </div>

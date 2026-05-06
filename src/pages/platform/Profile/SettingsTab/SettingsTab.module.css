@@ -7,7 +7,6 @@
 .grid {
   columns: 2;
   column-gap: var(--space-md);
-  padding: var(--space-xl);
 }
 
 .grid :global(.card) {
@@ -53,4 +52,10 @@
 
 .settingControl {
   flex-shrink: 0;
+}
+
+@media (width <= 768px) {
+  .grid {
+    columns: 1;
+  }
 }

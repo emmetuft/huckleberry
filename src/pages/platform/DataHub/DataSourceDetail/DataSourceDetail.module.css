@@ -11,12 +11,22 @@
       display: flex;
       align-items: center;
       gap: var(--space-md);
-
-      .name {
-        margin: 0;
-        font-size: 24px;
-        font-weight: 600;
-      }
     }
+  }
+}
+
+.name {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+@media (width <= 768px) {
+  .name {
+    font-size: 16px;
+  }
+
+  .datasourceDetail {
+    overflow-y: auto;
   }
 }

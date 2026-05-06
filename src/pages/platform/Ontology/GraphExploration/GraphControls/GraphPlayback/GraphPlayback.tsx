@@ -122,17 +122,10 @@ export const GraphPlayback: React.FC<GraphPlaybackProps> = ({
   return (
     <div className={styles.GraphPlayback}>
       <div>
-        <IconBtn
-          icon={<ArrowCounterClockwiseIcon size={16} />}
-          onClick={handleReset}
-        />
+        <IconBtn icon={<ArrowCounterClockwiseIcon />} onClick={handleReset} />
         <IconBtn
           icon={
-            isPlaying ? (
-              <PauseIcon size={18} weight="fill" />
-            ) : (
-              <PlayIcon size={18} weight="fill" />
-            )
+            isPlaying ? <PauseIcon weight="fill" /> : <PlayIcon weight="fill" />
           }
           onClick={() => setIsPlaying((p) => !p)}
         />

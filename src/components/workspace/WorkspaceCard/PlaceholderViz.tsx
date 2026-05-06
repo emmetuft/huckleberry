@@ -202,7 +202,9 @@ export const PlaceholderViz: FC<{ type: CardType }> = ({ type }) => {
             ].map(({ label, count, color, tickets }) => (
               <div key={label} className={styles.kanbanCol}>
                 <div className={styles.kanbanHeader}>
-                  <span style={{ color }}>{label}</span>
+                  <span className={styles.kanbanLabel} style={{ color }}>
+                    {label}
+                  </span>
                   <span className={styles.kanbanCount} style={{ color }}>
                     {count}
                   </span>

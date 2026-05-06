@@ -72,7 +72,7 @@ const accounts: AccountDef[] = [
 
 export const AccountsTab: FC = () => {
   return (
-    <div className={styles.AccountsTab}>
+    <div className={styles.accountsTab}>
       <div className={styles.accountsGrid}>
         {accounts.map((account) => (
           <div key={account.key} className="appCard">

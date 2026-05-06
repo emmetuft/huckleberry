@@ -1,3 +1,5 @@
+@layer reset, base;
+
 @import url('./styles/variables.css');
 @import url('./styles/shared.css');
 @import url('./styles/antd.css');
@@ -37,16 +39,68 @@ code {
     source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
-h1,
-h2,
-h3,
-h4,
-p {
-  margin: 0;
-}
+@layer reset {
+  h1,
+  h2,
+  h3,
+  h4,
+  p {
+    margin: 0;
+    font-weight: 400;
+  }
 
-input,
-button {
-  font-family: Inter, sans-serif;
-  color: inherit;
+  h1 {
+    font-size: 28px;
+  }
+
+  h2 {
+    font-size: 22px;
+  }
+
+  h3 {
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  h4 {
+    font-size: 14px;
+  }
+
+  p,
+  div,
+  span,
+  li {
+    font-size: 14px;
+  }
+
+  input,
+  button {
+    font-family: Inter, sans-serif;
+    color: inherit;
+  }
+
+  @media (width <= 768px) {
+    h1 {
+      font-size: 22px;
+    }
+
+    h2 {
+      font-size: 18px;
+    }
+
+    h3 {
+      font-size: 14px;
+    }
+
+    h4 {
+      font-size: 12px;
+    }
+
+    p,
+    div,
+    span,
+    li {
+      font-size: 12px;
+    }
+  }
 }

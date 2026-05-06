@@ -18,6 +18,7 @@ import { dataSourceColumns } from 'constants/data';
 import { renderVal } from 'utils/data';
 import { getAvatarUrl } from 'utils/misc';
 import { DataControls } from './DataControls/DataControls';
+import { useIsMobile } from 'hooks/useIsMobile';
 
 interface DataHubProps {}
 
@@ -35,13 +36,14 @@ export const DataHub: FC<DataHubProps> = ({}) => {
 
   const topSectionRef = useRef<HTMLDivElement>(null);
   const [tableHeight, setTableHeight] = useState<number>(500);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const resize = () => {
       const topHeight = topSectionRef.current?.offsetHeight || 0;
-      const topMargin = 12;
-      const padding = 80;
-      const extraTableHeight = 61 + 65 + 2; // header + pagination + borders
+      const topMargin = isMobile ? 10 : 12;
+      const padding = isMobile ? 50 * 2 : 80;
+      const extraTableHeight = isMobile ? 39 + 57 : 61 + 65 + 2; // header + pagination + borders
       setTableHeight(
         window.innerHeight - topHeight - topMargin - padding - extraTableHeight,
       );

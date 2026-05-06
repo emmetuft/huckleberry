@@ -11,3 +11,11 @@
     z-index: 100;
   }
 }
+
+@media (width <= 768px) {
+  .Ontology {
+    .tabBtn {
+      top: var(--space-sm);
+    }
+  }
+}

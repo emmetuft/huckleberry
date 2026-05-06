@@ -10,7 +10,6 @@
 
     h2 {
       margin: 0;
-      font-weight: 400;
       font-size: 20px;
     }
   }
@@ -52,8 +51,6 @@
 
       h3 {
         margin: 0 0 var(--space-xs);
-        font-size: 16px;
-        font-weight: 500;
         color: var(--grey-dark);
         white-space: nowrap;
         overflow: hidden;
@@ -138,8 +135,6 @@
   /* stylelint-disable-next-line no-descending-specificity */
   h3 {
     margin: 0 0 var(--space-sm);
-    font-size: 16px;
-    font-weight: 500;
     color: var(--grey-dark);
   }
 
@@ -167,8 +162,6 @@
   /* stylelint-disable-next-line no-descending-specificity */
   h3 {
     margin: 0 0 var(--space-lg);
-    font-size: 18px;
-    font-weight: 500;
     color: var(--grey-dark);
   }
 

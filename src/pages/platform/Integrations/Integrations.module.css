@@ -44,6 +44,19 @@
   }
 }
 
+.searchRow {
+  display: flex;
+  gap: var(--space-sm);
+
+  .categorySelect {
+    flex: 1;
+  }
+
+  .searchInput {
+    flex: 2;
+  }
+}
+
 .gridWrapper {
   flex: 1;
   min-height: 0;
@@ -65,4 +78,22 @@
   display: flex;
   justify-content: center;
   padding: var(--space-lg) 0;
+}
+
+@media (width <= 768px) {
+  .layout {
+    flex-direction: column;
+
+    .right {
+      gap: var(--space-md);
+    }
+  }
+
+  .integrationGrid {
+    grid-template-columns: 1fr 1fr;
+
+    &.available {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
 }

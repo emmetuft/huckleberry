@@ -39,6 +39,11 @@
   --br-sm: 4px;
   --br-md: 8px;
   --br-lg: 12px;
+  --font-xs: 12px;
+  --font-sm: 14px;
+  --font-md: 16px;
+  --font-lg: 20px;
+  --font-xl: 32px;
 }
 
 [data-theme='dark'] {
@@ -68,4 +73,25 @@
   --node-blue: #38bdf8;
   --node-purple: #c084fc;
   --node-yellow: #facc15;
+}
+
+@media (width <= 768px) {
+  :root {
+    --header-height: 40px;
+    --header-margin: 45px;
+    --default-page-padding: 50px 16px;
+    --space-xs: 2px;
+    --space-sm: 4px;
+    --space-md: 8px;
+    --space-lg: 12px;
+    --space-xl: 16px;
+    --font-xs: 10px;
+    --font-sm: 12px;
+    --font-md: 14px;
+    --font-lg: 18px;
+    --font-xl: 26px;
+
+    /* Antd variables */
+    --ant-table-cell-padding-block: 12px;
+  }
 }

@@ -5,7 +5,7 @@
   gap: var(--space-sm);
 
   .option {
-    font-size: 12px;
+    font-size: var(--font-xs);
     cursor: pointer;
   }
 }

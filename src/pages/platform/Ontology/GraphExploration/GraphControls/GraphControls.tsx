@@ -19,6 +19,7 @@ import {
   clearHighlightedNode,
 } from 'reducers/ontology/slice';
 import { fetchNodes } from 'reducers/ontology/actions';
+import { VALUE_QUERY_LIMIT } from 'constants/service';
 import { Filter } from 'models/interfaces/filter';
 import { FilterPopup } from 'components/shared/FilterPopup/FilterPopup';
 import { GraphPlayback } from './GraphPlayback/GraphPlayback';
@@ -28,7 +29,6 @@ import {
   filtersToGraphConditions,
   graphConditionsToFilters,
 } from 'utils/ontology';
-import { VALUE_QUERY_LIMIT } from 'constants/service';
 
 interface GraphControlsProps {
   onPlaybackChange: (visibleNodeIds: Set<string> | null) => void;
@@ -183,7 +183,7 @@ export const GraphControls: FC<GraphControlsProps> = ({ onPlaybackChange }) => {
         </Popover>
         <Button
           type={playbackOpen ? 'primary' : 'default'}
-          icon={<ClockCountdownIcon size={16} />}
+          icon={<ClockCountdownIcon />}
           onClick={() => {
             const next = !playbackOpen;
             setPlaybackOpen(next);

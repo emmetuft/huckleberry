@@ -1,6 +1,7 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Input, Menu, MenuProps, Segmented, Spin, Tabs } from 'antd';
+import { Input, Menu, MenuProps, Segmented, Select, Spin, Tabs } from 'antd';
+import { useIsMobile } from 'hooks/useIsMobile';
 import styles from './Integrations.module.css';
 import { connectorTypes, integrationCategories } from 'constants/integrations';
 import { defaultMotionProps } from 'constants/styles';
@@ -16,6 +17,7 @@ const PAGE_SIZE = 51;
 interface IntegrationsProps {}
 
 export const Integrations: FC<IntegrationsProps> = () => {
+  const isMobile = useIsMobile();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedType, setSelectedType] = useState<string | null>(null);
@@ -120,21 +122,39 @@ export const Integrations: FC<IntegrationsProps> = () => {
               {...defaultMotionProps}
             >
               <div className={styles.layout}>
-                <div className={styles.left}>
-                  <Menu
-                    selectedKeys={selectedCategory ? [selectedCategory] : []}
-                    onClick={onClickCategory}
-                    mode="inline"
-                    items={items}
-                  />
-                </div>
+                {!isMobile && (
+                  <div className={styles.left}>
+                    <Menu
+                      selectedKeys={selectedCategory ? [selectedCategory] : []}
+                      onClick={onClickCategory}
+                      mode="inline"
+                      items={items}
+                    />
+                  </div>
+                )}
                 <div className={styles.right}>
-                  <Input.Search
-                    placeholder="Search connectors..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    allowClear
-                  />
+                  <div className={styles.searchRow}>
+                    {isMobile && (
+                      <Select
+                        placeholder="All categories"
+                        allowClear
+                        value={selectedCategory}
+                        onChange={(val) => setSelectedCategory(val ?? null)}
+                        options={integrationCategories.map((c) => ({
+                          label: c,
+                          value: c,
+                        }))}
+                        className={styles.categorySelect}
+                      />
+                    )}
+                    <Input.Search
+                      placeholder="Search connectors..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      allowClear
+                      className={styles.searchInput}
+                    />
+                  </div>
                   <Segmented
                     options={connectorTypes}
                     value={selectedType ?? 'All'}
