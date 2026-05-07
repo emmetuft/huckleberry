@@ -16,7 +16,7 @@ export const ChatContainer: FC<ChatContainerProps> = ({
   animate,
 }) => {
   return (
-    <div className={`${styles.ChatContainer} ${styles[chatMode]}`}>
+    <div className={`${styles.chatContainer} ${styles[chatMode]}`}>
       <MessageThread chatMode={chatMode} />
       <div className={styles.inputArea}>
         <IntentInput placeholder={placeholder} animate={animate} />

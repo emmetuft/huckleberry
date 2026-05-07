@@ -19,7 +19,7 @@ import {
   SunIcon,
   UserCircleIcon,
 } from '@phosphor-icons/react';
-import { Button, Tooltip } from 'antd';
+import { Button } from 'antd';
 import styles from './Nav.module.css';
 import { useAppDispatch } from 'reducers';
 import {
@@ -33,6 +33,7 @@ import { setFullScreen } from 'reducers/chat/slice';
 import { appList } from 'constants/applications';
 import { AppPage, AppPageLabel } from 'models/enums/appPage';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
+import AppTooltip from 'components/shared/Tooltip';
 import { HistoryCard } from './HistoryCard/HistoryCard';
 import { RecCard } from './RecCard/RecCard';
 import { useIsMobile } from 'hooks/useIsMobile';
@@ -101,7 +102,7 @@ export const Nav: FC<NavProps> = ({}) => {
   }, [location.pathname]);
 
   const renderIconBtn = (page: AppPage) => (
-    <Tooltip
+    <AppTooltip
       key={page}
       title={AppPageLabel[page]}
       placement="right"
@@ -110,7 +111,7 @@ export const Nav: FC<NavProps> = ({}) => {
       <Link to={platformRoutePaths[page]}>
         <IconBtn icon={navIconMap[page]} />
       </Link>
-    </Tooltip>
+    </AppTooltip>
   );
 
   return (
@@ -125,7 +126,7 @@ export const Nav: FC<NavProps> = ({}) => {
       {mobileOpen && (
         <div className={styles.overlay} onClick={() => setMobileOpen(false)} />
       )}
-      <div className={`${styles.Nav} ${mobileOpen ? styles.navOpen : ''} card`}>
+      <div className={`${styles.nav} ${mobileOpen ? styles.navOpen : ''} card`}>
         <Link
           to={platformRoutePaths[AppPage.HOME]}
           className={styles.logo}
@@ -134,7 +135,7 @@ export const Nav: FC<NavProps> = ({}) => {
           <img src={`/static/logo${isDark ? '-light' : ''}.svg`} width="100%" />
         </Link>
         <div className={styles.buttons}>
-          <Tooltip
+          <AppTooltip
             title="Recommendations"
             placement="right"
             mouseEnterDelay={0.5}
@@ -145,15 +146,15 @@ export const Nav: FC<NavProps> = ({}) => {
                 onClick={() => setShowRecs(true)}
               />
             </div>
-          </Tooltip>
-          <Tooltip title="History" placement="right" mouseEnterDelay={0.5}>
+          </AppTooltip>
+          <AppTooltip title="History" placement="right" mouseEnterDelay={0.5}>
             <div>
               <IconBtn
                 icon={<ChatsIcon size={iconSize} />}
                 onClick={() => setShowHistory(true)}
               />
             </div>
-          </Tooltip>
+          </AppTooltip>
         </div>
         <div className={styles.divider} />
         <div className={styles.buttons}>
@@ -163,7 +164,7 @@ export const Nav: FC<NavProps> = ({}) => {
         <div className={styles.buttons}>
           {lowerPages.map((page) => renderIconBtn(page))}
           {apps.map((app) => (
-            <Tooltip
+            <AppTooltip
               key={app.id}
               title={app.name}
               placement="right"
@@ -178,11 +179,11 @@ export const Nav: FC<NavProps> = ({}) => {
                   </div>
                 )}
               </button>
-            </Tooltip>
+            </AppTooltip>
           ))}
         </div>
         <div className={`${styles.buttons} ${styles.bottom}`}>
-          <Tooltip title={incognitoMode ? 'Memory off' : 'Memory on'}>
+          <AppTooltip title={incognitoMode ? 'Memory off' : 'Memory on'}>
             <Button
               icon={
                 <div
@@ -196,8 +197,8 @@ export const Nav: FC<NavProps> = ({}) => {
               }
               onClick={() => dispatch(setIncognitoMode(!incognitoMode))}
             />
-          </Tooltip>
-          <Tooltip title={isDark ? 'Dark mode' : 'Light mode'}>
+          </AppTooltip>
+          <AppTooltip title={isDark ? 'Dark mode' : 'Light mode'}>
             <div>
               <IconBtn
                 icon={
@@ -210,7 +211,7 @@ export const Nav: FC<NavProps> = ({}) => {
                 onClick={() => dispatch(setTheme(isDark ? 'light' : 'dark'))}
               />
             </div>
-          </Tooltip>
+          </AppTooltip>
           <IconBtn
             icon={
               avatar ? (

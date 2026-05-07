@@ -11,7 +11,7 @@ export const EndNode: FC = () => {
   // }, []);
 
   return (
-    <MotionWrapper className={`agentNode ${styles.EndNode}`}>
+    <MotionWrapper className={`agentNode ${styles.endNode}`}>
       <div className="content">
         <div className="left">
           <StopIcon color="var(--node-red)" weight="duotone" size={24} />

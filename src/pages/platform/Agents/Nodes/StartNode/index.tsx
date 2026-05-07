@@ -11,7 +11,7 @@ export const StartNode: FC = () => {
   // }, []);
 
   return (
-    <MotionWrapper className={`agentNode ${styles.StartNode}`}>
+    <MotionWrapper className={`agentNode ${styles.startNode}`}>
       <div className="content">
         <div className="left">
           <PlayIcon color="var(--node-green)" weight="duotone" size={24} />

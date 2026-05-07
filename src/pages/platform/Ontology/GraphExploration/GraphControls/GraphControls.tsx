@@ -133,7 +133,7 @@ export const GraphControls: FC<GraphControlsProps> = ({ onPlaybackChange }) => {
   };
 
   return (
-    <div className={`${styles.GraphControls} card`}>
+    <div className={`${styles.graphControls} card`}>
       <div className={styles.top}>
         <Select
           mode="multiple"

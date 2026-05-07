@@ -42,7 +42,7 @@ export const PersonaTab: FC = () => {
   };
 
   return (
-    <div className={styles.ProfileHub}>
+    <div className={styles.profileHub}>
       <div className={styles.pageHeader}>
         <div>
           <h1 className={styles.pageTitle}>Your Persona</h1>

@@ -5,7 +5,7 @@ import styles from './Login.module.css';
 
 export const Login: FC = () => {
   return (
-    <div className={styles.Login}>
+    <div className={styles.login}>
       <div className={styles.card}>
         <h1>Login</h1>
         <p>Sign in to your account</p>

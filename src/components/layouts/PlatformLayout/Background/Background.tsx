@@ -27,7 +27,7 @@ export const Background: FC<BackgroundProps> = ({}) => {
         };
 
   return (
-    <div className={styles.Background}>
+    <div className={styles.background}>
       <Shader style={{ height: '100%', width: '100%' }}>
         <LinearGradient colorA={colors.gradientA} colorB={colors.gradientB} />
         <Blob

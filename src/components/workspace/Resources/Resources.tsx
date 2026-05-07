@@ -13,7 +13,7 @@ export const Resources: FC<ResourcesProps> = ({}) => {
   );
 
   return (
-    <div className={styles.Resources}>
+    <div className={styles.resources}>
       <div className={styles.subHeader}>
         <div className={styles.currentDate}>{formatCurrentDate()}</div>
         <h4>For you</h4>

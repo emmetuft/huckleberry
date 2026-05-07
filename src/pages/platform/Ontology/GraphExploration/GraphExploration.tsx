@@ -1,6 +1,6 @@
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Button, FloatButton, Tooltip } from 'antd';
+import { Button, FloatButton } from 'antd';
 import {
   BroomIcon,
   ExportIcon,
@@ -24,6 +24,7 @@ import { NodeDrawer } from './NodeDrawer';
 import { OntologyInitModal } from './OntologyInitModal/OntologyInitModal';
 import { GraphControls } from './GraphControls/GraphControls';
 import LoadingAnimation from 'components/shared/Loader/Loader';
+import AppTooltip from 'components/shared/Tooltip';
 import { useIsMobile } from 'hooks/useIsMobile';
 
 interface GraphExplorationProps {}
@@ -87,7 +88,7 @@ export const GraphExploration: FC<GraphExplorationProps> = ({}) => {
   };
 
   return (
-    <div className={styles.GraphExploration}>
+    <div className={styles.graphExploration}>
       {loading && <LoadingAnimation />}
       {graphData.nodes.length === 0 ? (
         <div className={styles.emptyWrapper}>
@@ -113,27 +114,30 @@ export const GraphExploration: FC<GraphExplorationProps> = ({}) => {
       <GraphLegend labels={nodeLabels} />
       <FloatButton.Group
         shape="square"
-        style={{ insetInlineEnd: 20, insetBlockEnd: 20 }}
+        style={{
+          insetInlineEnd: 'var(--space-md)',
+          insetBlockEnd: 'var(--space-md)',
+        }}
       >
         <FloatButton
           icon={
-            <Tooltip title="Add node" placement="left">
+            <AppTooltip title="Add node" placement="left">
               <PlusCircleIcon size={iconSize} />
-            </Tooltip>
+            </AppTooltip>
           }
           onClick={onClickAddNode}
         />
         <FloatButton
           icon={
-            <Tooltip title="Clear graph view" placement="left">
+            <AppTooltip title="Clear graph view" placement="left">
               <BroomIcon size={iconSize} />
-            </Tooltip>
+            </AppTooltip>
           }
           onClick={onClearGraph}
         />
         <FloatButton
           icon={
-            <Tooltip
+            <AppTooltip
               title={`Switch to ${graphMode === '3d' ? '2D' : '3D'}`}
               placement="left"
             >
@@ -142,15 +146,15 @@ export const GraphExploration: FC<GraphExplorationProps> = ({}) => {
               ) : (
                 <VectorThreeIcon size={iconSize} />
               )}
-            </Tooltip>
+            </AppTooltip>
           }
           onClick={() => setGraphMode((m) => (m === '3d' ? '2d' : '3d'))}
         />
         <FloatButton
           icon={
-            <Tooltip title="Export graph" placement="left">
+            <AppTooltip title="Export graph" placement="left">
               <ExportIcon size={iconSize} />
-            </Tooltip>
+            </AppTooltip>
           }
         />
       </FloatButton.Group>

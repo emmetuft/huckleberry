@@ -5,7 +5,7 @@ import styles from './PublicFooter.module.css';
 
 export const PublicFooter: FC = () => {
   return (
-    <footer className={styles.PublicFooter}>
+    <footer className={styles.publicFooter}>
       <div className={styles.container}>
         <div className={styles.section}>
           <h4>Huckleberry</h4>

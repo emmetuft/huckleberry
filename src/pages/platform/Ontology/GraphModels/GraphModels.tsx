@@ -1,7 +1,7 @@
 import { FC, useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
-import { FloatButton, Tooltip } from 'antd';
+import { FloatButton } from 'antd';
 import { ExportIcon, PlusCircleIcon } from '@phosphor-icons/react';
 import styles from './GraphModels.module.css';
 import { useAppDispatch } from 'reducers';
@@ -17,6 +17,7 @@ import {
   GraphRelationshipModel,
 } from 'models/interfaces/ontology';
 import { ModelCanvas } from './ModelCanvas/ModelCanvas';
+import AppTooltip from 'components/shared/Tooltip';
 import { ModelEditor } from './ModelEditor/ModelEditor';
 import { useIsMobile } from 'hooks/useIsMobile';
 
@@ -131,7 +132,7 @@ export const GraphModels: FC<GraphModelsProps> = ({}) => {
   };
 
   return (
-    <div className={styles.GraphModels}>
+    <div className={styles.graphModels}>
       <ModelCanvas
         models={models}
         relationships={relationships}
@@ -154,17 +155,17 @@ export const GraphModels: FC<GraphModelsProps> = ({}) => {
       <FloatButton.Group shape="square">
         <FloatButton
           icon={
-            <Tooltip title="Add node" placement="left">
+            <AppTooltip title="Add node" placement="left">
               <PlusCircleIcon size={iconSize} />
-            </Tooltip>
+            </AppTooltip>
           }
           onClick={onClickAddNode}
         />
         <FloatButton
           icon={
-            <Tooltip title="Export graph" placement="left">
+            <AppTooltip title="Export graph" placement="left">
               <ExportIcon size={iconSize} />
-            </Tooltip>
+            </AppTooltip>
           }
         />
       </FloatButton.Group>

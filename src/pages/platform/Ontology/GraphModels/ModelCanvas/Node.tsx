@@ -11,7 +11,7 @@ export const ModelNode: FC<ModelNodeProps> = ({
   data: { label, isActive },
 }) => (
   <MotionWrapper
-    className={`${styles.ModelNode} ${isActive ? styles.active : ''}`}
+    className={`${styles.modelNode} ${isActive ? styles.active : ''}`}
   >
     <p title={label}>{label}</p>
     <Handle

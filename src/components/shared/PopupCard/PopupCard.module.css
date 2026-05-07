@@ -1,4 +1,4 @@
-.PopupCard {
+.popupCard {
   position: fixed;
   top: 20px;
   left: calc(62px + 40px);
@@ -6,7 +6,6 @@
   z-index: 200;
   padding: 0;
   border: none;
-  padding-bottom: var(--space-md);
 
   .heading {
     padding: var(--space-lg);
@@ -18,8 +17,7 @@
     }
 
     p {
-      margin-top: 5px;
-      font-size: 12px;
+      font-size: var(--font-xs);
       font-weight: 500;
       color: var(--grey-text);
     }
@@ -27,14 +25,9 @@
 }
 
 @media (width <= 768px) {
-  .PopupCard {
-    /* top: 0;
-    left: 62px;
-    width: calc(100vw - 62px);
-    height: 100vh;
-    border-radius: 0;
-    max-height: unset;
-    overflow-y: auto;
-    animation: slideInFromLeft 0.25s ease; */
+  .popupCard {
+    top: var(--space-md);
+    left: 68px;
+    width: calc(100vw - 76px);
   }
 }

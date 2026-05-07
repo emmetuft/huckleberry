@@ -28,7 +28,7 @@ export const PublicLayout: FC = () => {
         },
       }}
     >
-      <div className={styles.PublicLayout}>
+      <div className={styles.publicLayout}>
         <PublicHeader />
         <main className={styles.content}>
           <Outlet />

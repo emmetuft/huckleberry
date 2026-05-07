@@ -22,7 +22,7 @@ export const QuickStarts: FC = () => {
   ];
 
   return (
-    <div className={styles.QuickStarts}>
+    <div className={styles.quickStarts}>
       {options.map((option) => (
         <div key={option.id} className={`${styles.option} card`}>
           {option.content}

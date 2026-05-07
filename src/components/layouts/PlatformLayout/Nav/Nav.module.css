@@ -1,4 +1,4 @@
-.Nav {
+.nav {
   position: fixed;
   top: 0;
   left: 20px;
@@ -7,7 +7,7 @@
   margin-top: var(--space-xl);
   margin-bottom: var(--space-xl);
   box-sizing: border-box;
-  z-index: 200;
+  z-index: 3000;
 
   .logo {
     margin-bottom: 60px;
@@ -55,7 +55,7 @@
 }
 
 @media (width <= 768px) {
-  .Nav {
+  .nav {
     left: 0;
     top: 0;
     height: 100vh;
@@ -85,8 +85,8 @@
     display: block;
     position: fixed;
     inset: 0;
-    background: rgb(0 0 0 / 40%);
-    z-index: 99;
+    background: rgb(0 0 0 / 15.4%);
+    z-index: 2000;
   }
 }
 

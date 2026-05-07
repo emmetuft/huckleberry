@@ -31,7 +31,7 @@ export const Triggers: FC = () => {
   };
 
   return (
-    <div className={styles.TriggerList}>
+    <div className={styles.triggerList}>
       {DEFAULT_WORKFLOW_STARTS.map((trigger) => (
         <motion.div
           {...defaultMotionProps}

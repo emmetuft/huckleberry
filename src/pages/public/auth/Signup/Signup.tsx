@@ -5,7 +5,7 @@ import styles from './Signup.module.css';
 
 export const Signup: FC = () => {
   return (
-    <div className={styles.Signup}>
+    <div className={styles.signup}>
       <div className={styles.card}>
         <h1>Sign Up</h1>
         <p>Create your account</p>

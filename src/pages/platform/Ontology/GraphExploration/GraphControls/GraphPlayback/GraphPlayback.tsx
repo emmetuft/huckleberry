@@ -120,7 +120,7 @@ export const GraphPlayback: React.FC<GraphPlaybackProps> = ({
   if (!sortedNodes.length) return null;
 
   return (
-    <div className={styles.GraphPlayback}>
+    <div className={styles.graphPlayback}>
       <div>
         <IconBtn icon={<ArrowCounterClockwiseIcon />} onClick={handleReset} />
         <IconBtn

@@ -18,6 +18,6 @@ export const IconBtn: FC<IconBtnProps> = ({
     icon={icon}
     disabled={disabled}
     onClick={onClick}
-    className={styles.IconBtn}
+    className={styles.iconBtn}
   />
 );

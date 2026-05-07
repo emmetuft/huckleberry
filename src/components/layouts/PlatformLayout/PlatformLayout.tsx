@@ -65,7 +65,7 @@ export const PlatformLayout: FC = () => {
       }}
     >
       <DuckDBProvider>
-        <div className={styles.PlatformLayout}>
+        <div className={styles.platformLayout}>
           <Heading />
           <Nav />
           {!hidePromptBar && <PromptBar />}

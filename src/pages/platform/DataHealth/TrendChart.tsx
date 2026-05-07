@@ -43,7 +43,11 @@ const TrendChart = () => {
               dataKey="date"
               ticks={data.filter((_, i) => i % 2 === 0).map((d) => d.date)}
             />
-            <YAxis domain={[0, 100]} ticks={[0, 20, 40, 60, 80, 100]} />
+            <YAxis
+              domain={[0, 100]}
+              ticks={[0, 20, 40, 60, 80, 100]}
+              width={25}
+            />
             <Tooltip
               formatter={(value: number) => value.toFixed(1)}
               contentStyle={{

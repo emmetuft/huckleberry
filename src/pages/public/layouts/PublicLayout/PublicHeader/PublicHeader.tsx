@@ -6,7 +6,7 @@ import styles from './PublicHeader.module.css';
 
 export const PublicHeader: FC = () => {
   return (
-    <header className={styles.PublicHeader}>
+    <header className={styles.publicHeader}>
       <Link
         to={publicRoutePaths[PublicPage.LANDING]}
         className={styles.logoDetails}

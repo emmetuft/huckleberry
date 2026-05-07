@@ -9,15 +9,19 @@ import {
 import styles from './DataHealth.module.css';
 import { IconType, metricList } from 'constants/health';
 import { Quality, qualityColorMap } from 'models/enums/quality';
+import { useIsMobile } from 'hooks/useIsMobile';
 
 const Metrics = () => {
+  const isMobile = useIsMobile();
+  const iconSize = isMobile ? 18 : 24;
+
   const actionIconMap = {
-    [IconType.SHIELD_CHECK]: <ShieldCheckIcon size={24} />,
-    [IconType.SPEEDOMETER]: <GaugeIcon size={24} />,
-    [IconType.EYE]: <EyeIcon size={24} />,
-    [IconType.HOURGLASS]: <HourglassMediumIcon size={24} />,
-    [IconType.DATABASE]: <DatabaseIcon size={24} />,
-    [IconType.TIMER]: <TimerIcon size={24} />,
+    [IconType.SHIELD_CHECK]: <ShieldCheckIcon size={iconSize} />,
+    [IconType.SPEEDOMETER]: <GaugeIcon size={iconSize} />,
+    [IconType.EYE]: <EyeIcon size={iconSize} />,
+    [IconType.HOURGLASS]: <HourglassMediumIcon size={iconSize} />,
+    [IconType.DATABASE]: <DatabaseIcon size={iconSize} />,
+    [IconType.TIMER]: <TimerIcon size={iconSize} />,
   };
 
   return (
@@ -34,8 +38,8 @@ const Metrics = () => {
                 {actionIconMap[metric.icon]}
               </div>
               <div className={styles.details}>
-                <h3>{metric.title}</h3>
-                <p>{metric.description}</p>
+                <h2>{metric.title}</h2>
+                {!isMobile && <p>{metric.description}</p>}
               </div>
             </div>
             <div className={styles.right}>

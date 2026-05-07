@@ -1,4 +1,4 @@
-.FilterPopup {
+.filterPopup {
   width: 650px;
   max-height: 500px;
   display: flex;
@@ -34,7 +34,7 @@
 }
 
 @media (width <= 768px) {
-  .FilterPopup {
+  .filterPopup {
     width: 70vw;
   }
 }

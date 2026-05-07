@@ -1,4 +1,4 @@
-.GraphControls {
+.graphControls {
   position: absolute;
   top: 20px;
   left: 50%;
@@ -35,8 +35,9 @@
 }
 
 @media (width <= 768px) {
-  .GraphControls {
+  .graphControls {
     top: var(--header-margin);
-    width: 90vw;
+    width: calc(100vw - 16px);
+    box-sizing: border-box;
   }
 }

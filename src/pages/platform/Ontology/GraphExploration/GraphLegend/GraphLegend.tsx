@@ -10,7 +10,7 @@ export const GraphLegend: React.FC<GraphLegendProps> = ({ labels }) => {
   if (!labels.length) return null;
 
   return (
-    <div className={`${styles.GraphLegend} card`}>
+    <div className={`${styles.graphLegend} card`}>
       {labels.map((label, index) => (
         <div key={label} className={styles.item}>
           <span

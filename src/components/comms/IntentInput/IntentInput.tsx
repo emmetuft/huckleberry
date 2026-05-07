@@ -263,7 +263,7 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   };
 
   return (
-    <div className={styles.IntentInput}>
+    <div className={styles.intentInput}>
       <DataSourceModal
         open={showDataSourceModal}
         onCancel={handleDataSourceModalCancel}

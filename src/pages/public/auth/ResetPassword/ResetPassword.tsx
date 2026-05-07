@@ -5,7 +5,7 @@ import styles from './ResetPassword.module.css';
 
 export const ResetPassword: FC = () => {
   return (
-    <div className={styles.ResetPassword}>
+    <div className={styles.resetPassword}>
       <div className={styles.card}>
         <h1>Reset Password</h1>
         <p>Enter your email to receive a reset link</p>

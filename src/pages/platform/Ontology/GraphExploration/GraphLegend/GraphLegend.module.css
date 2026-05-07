@@ -1,4 +1,4 @@
-.GraphLegend {
+.graphLegend {
   position: absolute;
   top: 20px;
   right: 20px;
@@ -24,10 +24,10 @@
 }
 
 @media (width <= 768px) {
-  .GraphLegend {
+  .graphLegend {
     top: unset;
     right: unset;
-    bottom: 20px;
-    left: 20px;
+    bottom: var(--space-md);
+    left: var(--space-md);
   }
 }
