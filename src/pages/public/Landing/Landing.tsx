@@ -3,6 +3,7 @@ import { Button, Segmented } from 'antd';
 import styles from './Landing.module.css';
 import UseCasesCarousel from './UseCases/UseCases';
 import { Background } from 'components/layouts/PlatformLayout/Background/Background';
+import { useIsMobile } from 'hooks/useIsMobile';
 
 export enum UseCase {
   Finance = 'Finance',
@@ -20,17 +21,19 @@ export enum UseCase {
 export const Landing: FC = () => {
   const useCaseOptions = useMemo(() => Object.values(UseCase), []);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
+  const isMobile = useIsMobile();
 
   return (
     <div className={styles.landing}>
       <Background />
       <h1 className={styles.title}>Huckleberry</h1>
       <p className={styles.subtitle}>
-        No matter the team, and no matter the task, Huckleberry elevates your
-        teams to focus on the work that moves your business forward.
+        No matter the team, and no matter the task, Huckleberry elevates you to
+        focus on the work that moves your business forward.
       </p>
       <Segmented
-        options={useCaseOptions}
+        size={isMobile ? 'small' : 'medium'}
+        options={isMobile ? useCaseOptions.slice(0, 6) : useCaseOptions}
         value={useCaseOptions[selectedIndex]}
         onChange={(value) =>
           setSelectedIndex(useCaseOptions.indexOf(value as UseCase))

@@ -5,16 +5,12 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-
-  /* background: white; */
-
-  /* border-bottom: 1px solid var(--grey-light); */
-  padding: 1rem 3rem;
+  padding: 16px 48px;
 
   .logoDetails {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: var(--space-lg);
     text-decoration: none;
 
     .logo {
@@ -34,17 +30,31 @@
   a {
     color: var(--grey-dark);
     text-decoration: none;
-
-    /* &:hover { */
-
-    /*   color: var(--purple); */
-
-    /* } */
   }
 
   .authButtons {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: var(--space-lg);
+  }
+}
+
+@media (width <= 768px) {
+  .publicHeader {
+    padding: 8px 12px;
+
+    .logoDetails {
+      .logo {
+        height: 25px;
+      }
+
+      h2 {
+        font-size: var(--font-md);
+      }
+    }
+
+    .authButtons {
+      gap: var(--space-md);
+    }
   }
 }

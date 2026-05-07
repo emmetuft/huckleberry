@@ -2,35 +2,35 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow-x: hidden;
 
   .title {
     font-family: Inter, sans-serif;
     font-weight: 600;
     font-size: 12rem;
     color: var(--grey-dark);
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--space-lg);
   }
 
   .subtitle {
-    font-size: 20px;
+    font-size: var(--font-lg);
     color: var(--grey-text);
-    margin-bottom: 2rem;
+    margin-bottom: var(--space-lg);
   }
 
   .section {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2rem;
-    margin: 4rem 0;
+    gap: var(--space-lg);
+    margin: 32px 0;
 
     .sectionHeading {
       text-align: center;
 
       .sectionTitle {
-        font-family: Inter, sans-serif;
         font-weight: 500;
-        font-size: 3rem;
+        font-size: 48px;
         color: var(--grey-dark);
       }
 
@@ -42,14 +42,14 @@
     .graphs {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 0.5rem;
+      gap: var(--space-sm);
 
       .graphContainer {
         display: flex;
         flex-direction: column;
         width: 30vw;
         height: 500px;
-        padding: 2rem;
+        padding: 32px;
         border: 1px solid black;
         border-radius: 30px;
         box-sizing: border-box;
@@ -64,6 +64,47 @@
           font-size: 18px;
           font-weight: 500;
           color: var(--grey-text);
+        }
+      }
+    }
+  }
+}
+
+@media (width <= 768px) {
+  .landing {
+    .title {
+      font-size: 4rem;
+    }
+
+    .subtitle {
+      font-size: var(--font-xs);
+      max-width: 80vw;
+      text-align: center;
+    }
+
+    .section {
+      .sectionHeading {
+        .sectionTitle {
+          font-size: 30px;
+        }
+      }
+
+      .graphs {
+        grid-template-columns: 1fr;
+        gap: var(--space-lg);
+
+        .graphContainer {
+          width: 70vw;
+          height: 300px;
+          padding: 20px;
+
+          h2 {
+            font-size: 20px;
+          }
+
+          h4 {
+            font-size: 14px;
+          }
         }
       }
     }
