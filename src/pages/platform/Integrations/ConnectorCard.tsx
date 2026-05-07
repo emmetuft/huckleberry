@@ -1,9 +1,9 @@
 import { FC } from 'react';
 import { PlusIcon } from '@phosphor-icons/react';
-import { Tooltip } from 'antd';
 // import styles from './Integrations.module.css';
 import { Connector } from 'models/interfaces/connector';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
+import AppTooltip from 'components/shared/Tooltip';
 
 interface ConnectorCardProps {
   connector: Connector;
@@ -23,9 +23,9 @@ export const ConnectorCard: FC<ConnectorCardProps> = ({
       />
       <div className="appInfo">
         <h4>{connector.title}</h4>
-        <Tooltip title={connector.description} mouseEnterDelay={1}>
+        <AppTooltip title={connector.description} mouseEnterDelay={1}>
           <p>{connector.description}</p>
-        </Tooltip>
+        </AppTooltip>
       </div>
       {showAddBtn && (
         <div className="quickAdd">

@@ -2,7 +2,7 @@
   padding: var(--space-xl);
 
   h3 {
-    font-size: 14px;
+    margin-bottom: var(--space-sm);
   }
 }
 
@@ -20,7 +20,6 @@
       align-items: center;
 
       p {
-        font-size: 15px;
         font-weight: 500;
         color: var(--grey-text);
       }
@@ -49,9 +48,8 @@
           flex-direction: column;
           gap: var(--space-sm);
 
-          h3 {
-            font-size: 20px;
-            font-weight: normal;
+          h2 {
+            font-size: var(--font-lg);
           }
         }
       }
@@ -62,11 +60,45 @@
         align-items: flex-end;
 
         span {
-          font-size: 32px;
+          font-size: var(--font-xl);
         }
 
         p {
-          font-size: 13px;
+          font-size: var(--font-xs);
+        }
+      }
+    }
+  }
+}
+
+@media (width <= 768px) {
+  .trendChart {
+    padding: 0;
+    margin-bottom: var(--space-xl);
+  }
+
+  .metrics {
+    padding: 0;
+
+    .metricsGrid {
+      grid-template-columns: 1fr;
+      gap: 20px;
+
+      .metricCard {
+        .left {
+          .metricIcon {
+            height: 30px;
+            width: 30px;
+            min-width: 30px;
+          }
+
+          .details {
+            justify-content: center;
+
+            h2 {
+              font-size: var(--font-md);
+            }
+          }
         }
       }
     }

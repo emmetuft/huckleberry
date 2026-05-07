@@ -1,8 +1,8 @@
 import { FC } from 'react';
 import { useSelector } from 'react-redux';
-import { Tooltip } from 'antd';
 import { FunnelIcon, XIcon } from '@phosphor-icons/react';
 import styles from './DataFilters.module.css';
+import AppTooltip from 'components/shared/Tooltip';
 import { useAppDispatch } from 'reducers';
 import { selectFilters, setFilters } from 'reducers/datasource/slice';
 import { FilterOperator, operatorLabelMap } from 'models/interfaces/filter';
@@ -28,9 +28,9 @@ export const DataFilters: FC = () => {
             </p>
             {filter.operator !== FilterOperator.IS_NULL &&
               filter.operator !== FilterOperator.IS_NOT_NULL && (
-                <Tooltip title={filter.value}>
+                <AppTooltip title={filter.value}>
                   <p className={styles.filterValue}>{filter.value}</p>
-                </Tooltip>
+                </AppTooltip>
               )}
             <button onClick={() => onClickRemoveFilter(filter.id)}>
               <XIcon />

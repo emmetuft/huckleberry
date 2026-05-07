@@ -10,7 +10,7 @@ export const Ontology: FC<OntologyProps> = ({}) => {
   const [tab, setTab] = useState<string>('graph');
 
   return (
-    <div className={styles.Ontology}>
+    <div className={styles.ontology}>
       <Segmented<string>
         className={styles.tabBtn}
         value={tab}

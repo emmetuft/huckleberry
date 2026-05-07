@@ -1,4 +1,4 @@
-.Ontology {
+.ontology {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -13,7 +13,7 @@
 }
 
 @media (width <= 768px) {
-  .Ontology {
+  .ontology {
     .tabBtn {
       top: var(--space-sm);
     }

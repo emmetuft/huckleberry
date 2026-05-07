@@ -33,7 +33,7 @@ export const ResourceList: FC<ResourceListProps> = ({ tab }) => {
   };
 
   return (
-    <div className={styles.TemplateList}>
+    <div className={styles.templateList}>
       {resources.map((resource) => (
         <motion.div
           {...defaultMotionProps}

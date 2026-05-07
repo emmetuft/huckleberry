@@ -148,7 +148,7 @@ export const ModelEditor: FC<ModelEditorProps> = ({ model, open, onClose }) => {
       open={open}
       onClose={onClose}
     >
-      <div className={styles.ModelEditor}>
+      <div className={styles.modelEditor}>
         {isRelationship ? (
           <div className={styles.section}>
             <h4>Relationship</h4>

@@ -22,7 +22,7 @@ export const Landing: FC = () => {
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
   return (
-    <div className={styles.Landing}>
+    <div className={styles.landing}>
       <Background />
       <h1 className={styles.title}>Huckleberry</h1>
       <p className={styles.subtitle}>

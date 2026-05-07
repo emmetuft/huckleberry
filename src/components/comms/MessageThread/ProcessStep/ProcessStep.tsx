@@ -90,7 +90,7 @@ export const ProcessStep: FC<ProcessStepProps> = ({ step, onToggle }) => {
   );
 
   return (
-    <div className={styles.ProcessStep}>
+    <div className={styles.processStep}>
       <Collapse
         bordered={false}
         activeKey={isOpen ? [id] : []}

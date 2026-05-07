@@ -38,5 +38,5 @@ export const Heading: FC<HeadingProps> = ({}) => {
     }
   }, [appPage, applicationTab]);
 
-  return pageTitle ? <div className={styles.Heading}>{pageTitle}</div> : null;
+  return pageTitle ? <div className={styles.heading}>{pageTitle}</div> : null;
 };

@@ -272,7 +272,7 @@ export const FilterPopup: FC<FilterPopupProps> = ({
   };
 
   return (
-    <div className={styles.FilterPopup}>
+    <div className={styles.filterPopup}>
       <div className={styles.filterList}>
         {filters.length === 0 ? (
           <div className={styles.emptyState}>

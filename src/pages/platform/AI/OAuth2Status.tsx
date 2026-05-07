@@ -1,5 +1,5 @@
 import { FC, useEffect } from 'react';
-import { Button, Tag, Tooltip, Space } from 'antd';
+import { Button, Tag, Space } from 'antd';
 import {
   ArrowsClockwiseIcon,
   CheckCircleIcon,
@@ -11,6 +11,7 @@ import {
 } from '@phosphor-icons/react';
 import { useAppDispatch } from 'reducers';
 import { MCPServerConfig, OAuth2AuthStatus } from 'models/interfaces/mcpServer';
+import AppTooltip from 'components/shared/Tooltip';
 
 interface OAuth2StatusProps {
   server: MCPServerConfig;
@@ -97,7 +98,7 @@ export const OAuth2Status: FC<OAuth2StatusProps> = ({ server }) => {
         );
       case 'discovery_failed':
         return (
-          <Tooltip
+          <AppTooltip
             title={
               server.oauth2Error || statusData?.error || 'Discovery failed'
             }
@@ -105,11 +106,11 @@ export const OAuth2Status: FC<OAuth2StatusProps> = ({ server }) => {
             <Tag icon={<WarningCircleIcon />} color="error">
               Discovery Failed
             </Tag>
-          </Tooltip>
+          </AppTooltip>
         );
       case 'pending':
         return (
-          <Tooltip
+          <AppTooltip
             title={
               scopesSupported.length > 0
                 ? `Scopes: ${scopesSupported.join(', ')}`
@@ -119,7 +120,7 @@ export const OAuth2Status: FC<OAuth2StatusProps> = ({ server }) => {
             <Tag icon={<ClockIcon />} color="processing">
               Ready to Authorize
             </Tag>
-          </Tooltip>
+          </AppTooltip>
         );
       case 'expired':
         return (
@@ -129,11 +130,11 @@ export const OAuth2Status: FC<OAuth2StatusProps> = ({ server }) => {
         );
       case 'error':
         return (
-          <Tooltip title={server.oauth2Error || statusData?.error}>
+          <AppTooltip title={server.oauth2Error || statusData?.error}>
             <Tag icon={<WarningCircleIcon />} color="error">
               Error
             </Tag>
-          </Tooltip>
+          </AppTooltip>
         );
       default:
         return (

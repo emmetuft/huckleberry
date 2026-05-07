@@ -1,7 +1,7 @@
 import { FC, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Popover, Tooltip } from 'antd';
+import { Popover } from 'antd';
 import { ArrowsOutSimpleIcon, ChatIcon, XIcon } from '@phosphor-icons/react';
 import styles from './PromptBar.module.css';
 import { useAppDispatch } from 'reducers';
@@ -13,6 +13,7 @@ import {
 import { AppPage, platformRoutePaths } from 'models/enums/appPage';
 import { ChatMode } from 'models/enums/chatMode';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
+import AppTooltip from 'components/shared/Tooltip';
 import { ChatContainer } from '../ChatContainer/ChatContainer';
 import { useIsMobile } from 'hooks/useIsMobile';
 
@@ -39,7 +40,11 @@ export const PromptBar: FC<PromptBarProps> = ({}) => {
       <ChatContainer chatMode={ChatMode.modal} placeholder="What's up?" />
       {hasMessages && (
         <div className={styles.actionBtns}>
-          <Tooltip title={'Clear chat'} placement="top" mouseEnterDelay={0.5}>
+          <AppTooltip
+            title={'Clear chat'}
+            placement="top"
+            mouseEnterDelay={0.5}
+          >
             <div>
               <IconBtn
                 icon={
@@ -51,8 +56,8 @@ export const PromptBar: FC<PromptBarProps> = ({}) => {
                 onClick={onClickNewChat}
               />
             </div>
-          </Tooltip>
-          <Tooltip
+          </AppTooltip>
+          <AppTooltip
             title={'View in full screen'}
             placement="top"
             mouseEnterDelay={0.5}
@@ -63,14 +68,14 @@ export const PromptBar: FC<PromptBarProps> = ({}) => {
                 onClick={onClickFullScreen}
               />
             </Link>
-          </Tooltip>
+          </AppTooltip>
         </div>
       )}
     </div>
   );
 
   return (
-    <div className={styles.PromptBar}>
+    <div className={styles.promptBar}>
       <Popover
         content={popoverContent}
         placement="top"

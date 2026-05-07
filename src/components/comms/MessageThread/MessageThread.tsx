@@ -31,7 +31,7 @@ export const MessageThread: FC<MessageThreadProps> = ({ chatMode }) => {
 
   return (
     <div
-      className={`${styles.MessageThread} ${styles[chatMode]}`}
+      className={`${styles.messageThread} ${styles[chatMode]}`}
       ref={scrollRef}
     >
       <div className={styles.messages}>

@@ -50,7 +50,7 @@ export const ActionNode: FC<ActionNodeProps> = ({ data: { actionType } }) => {
 
   return (
     <MotionWrapper
-      className={`agentNode ${styles.ActionNode}`}
+      className={`agentNode ${styles.actionNode}`}
       style={{ border: `1px solid ${actionColorMap[actionType]}` }}
     >
       <div className="content">

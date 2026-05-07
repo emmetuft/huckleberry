@@ -2,6 +2,7 @@ import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Input, Spin } from 'antd';
 import styles from './index.module.css';
+import AppTooltip from 'components/shared/Tooltip';
 import { BLANK_LABEL } from 'constants/data';
 import { Filter, FilterOperator } from 'models/interfaces/filter';
 import { Column } from 'models/interfaces/column';
@@ -63,9 +64,9 @@ const OptionListItem: FC<OptionListItemProp> = ({ item, checked, onClick }) => (
           <>
             {item.label === BLANK_LABEL ? (
               <div className={styles.blankText}>
-                <LocalTooltip title="Null" placement="right">
+                <AppTooltip title="Null" placement="right">
                   <span>{item.label}</span>
-                </LocalTooltip>
+                </AppTooltip>
               </div>
             ) : (
               <div className={styles.optionText}>{item.label}</div>
