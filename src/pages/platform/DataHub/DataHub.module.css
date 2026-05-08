@@ -24,19 +24,6 @@
 .dataTable {
   padding: 0;
 
-  .owner {
-    display: flex;
-    gap: var(--space-xs);
-
-    .avatar {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      border-radius: 50%;
-      height: 20px;
-    }
-  }
-
   .tags {
     display: flex;
     flex-wrap: wrap;

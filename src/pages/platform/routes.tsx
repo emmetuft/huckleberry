@@ -17,6 +17,8 @@ import { Integrations } from './Integrations/Integrations';
 import { MetricCatalog } from './MetricCatalog/MetricCatalog';
 import { Ontology } from './Ontology/Ontology';
 import { ProfilePage } from './Profile/ProfilePage';
+import { Projects } from './Projects/Projects';
+import { ProjectDetail } from './Projects/ProjectDetail/ProjectDetail';
 import { Workspace } from './Workspace/Workspace';
 import { getBentoLayout } from 'config/bentoConfig';
 
@@ -92,6 +94,14 @@ export const platformRoutes: RouteObject[] = [
           {
             path: platformRoutePaths[AppPage.PROFILE],
             element: <ProfilePage />,
+          },
+          {
+            path: platformRoutePaths[AppPage.PROJECTS],
+            element: <Projects />,
+          },
+          {
+            path: platformRoutePaths[AppPage.PROJECT_DETAIL],
+            element: <ProjectDetail />,
           },
         ],
       },

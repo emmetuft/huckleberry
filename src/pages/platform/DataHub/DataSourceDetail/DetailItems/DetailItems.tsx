@@ -3,14 +3,13 @@ import { useSelector } from 'react-redux';
 import styles from './DetailItems.module.css';
 import { selectDataSource } from 'reducers/datasource/slice';
 import { formatDateTime } from 'utils/datetime';
-import { getAvatarUrl } from 'utils/misc';
+import { Avatar } from 'components/shared/Avatar/Avatar';
 
 export const DetailItems: FC = () => {
   const dataSource = useSelector(selectDataSource);
+  const userId = dataSource ? Number(dataSource.owner.id) : undefined;
 
   if (!dataSource) return null;
-
-  const avatar = getAvatarUrl(dataSource.owner?.id);
 
   const metaItems: { label: string; value: ReactNode }[] = [
     { label: 'Type', value: dataSource.type },
@@ -18,14 +17,12 @@ export const DetailItems: FC = () => {
     {
       label: 'Owner',
       value: (
-        <div className={styles.ownerCell}>
-          <img
-            className={styles.avatar}
-            src={avatar}
-            alt={dataSource.owner?.name}
-          />
-          {dataSource.owner?.name}
-        </div>
+        <Avatar
+          userId={userId}
+          name={dataSource.owner?.name}
+          showName
+          height={20}
+        />
       ),
     },
     { label: 'Rows', value: dataSource.rowCount?.toLocaleString() },

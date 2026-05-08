@@ -32,6 +32,7 @@ export const Heading: FC<HeadingProps> = ({}) => {
       case AppPage.DATASOURCE:
       case AppPage.HOME:
       case AppPage.ONTOLOGY:
+      case AppPage.PROJECT_DETAIL:
         return null;
       default:
         return AppPageLabel[appPage];

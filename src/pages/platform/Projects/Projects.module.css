@@ -1,0 +1,150 @@
+.controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+  flex-wrap: wrap;
+
+  .search {
+    flex: 1;
+    min-width: 200px;
+    max-width: 360px;
+  }
+
+  .filterGroup {
+    display: flex;
+    gap: var(--space-sm);
+
+    .filterBtnActive {
+      border-color: var(--purple);
+      background-color: var(--purple-light);
+      color: var(--purple);
+
+      &:hover {
+        border-color: var(--purple);
+        background-color: var(--purple-light);
+        color: var(--purple);
+      }
+    }
+  }
+}
+
+.projectGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-xl);
+  overflow-y: auto;
+  padding: var(--space-sm);
+
+  .emptyState {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-md);
+    padding: 80px 0;
+    color: var(--grey-text);
+
+    p {
+      font-size: var(--font-sm);
+    }
+  }
+}
+
+/* ProjectCard styles */
+.projectCard {
+  position: relative;
+  padding: 0;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  .cardAccent {
+    height: 4px;
+    width: 100%;
+    flex-shrink: 0;
+  }
+
+  .cardBody {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+
+    .cardHeader {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      .projectName {
+        font-weight: 600;
+      }
+    }
+
+    .projectDescription {
+      font-size: var(--font-xs);
+      color: var(--grey-text);
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+    }
+
+    .cardFooter {
+      padding-top: var(--space-sm);
+      border-top: 1px solid var(--grey-light);
+    }
+  }
+}
+
+/* Status tag overrides */
+.statusActive {
+  background-color: var(--info-bg);
+  color: var(--info-icon);
+  border-color: var(--info-icon);
+}
+
+.statusCompleted {
+  background-color: var(--success-bg);
+  color: var(--success-icon);
+  border-color: var(--success-icon);
+}
+
+.statusOnHold {
+  background-color: var(--medium-bg);
+  color: var(--medium-icon);
+  border-color: var(--medium-icon);
+}
+
+.statusArchived {
+  background-color: var(--grey-bg);
+  color: var(--grey-text);
+  border-color: var(--grey-text);
+}
+
+@media (width <= 768px) {
+  .projectGrid {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  .search {
+    max-width: 100%;
+  }
+}

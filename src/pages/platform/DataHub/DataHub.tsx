@@ -15,9 +15,9 @@ import { dataSourceColumns } from 'constants/data';
 // import { DataProvidersChart } from './charts/DataProviders';
 // import { RecentRunsChart } from './charts/RecentRuns';
 // import { DataSourceUsageTrendChart } from './charts/DataSourceUsageTrendChart';
-import { renderVal } from 'utils/data';
-import { getAvatarUrl } from 'utils/misc';
+import { Avatar } from 'components/shared/Avatar/Avatar';
 import { DataControls } from './DataControls/DataControls';
+import { renderVal } from 'utils/data';
 import { useIsMobile } from 'hooks/useIsMobile';
 
 interface DataHubProps {}
@@ -81,13 +81,7 @@ export const DataHub: FC<DataHubProps> = ({}) => {
 
   const cellRenderer = (col: any, val: any) => {
     if (col.id === 'owner') {
-      const avatar = getAvatarUrl(val.id);
-      return (
-        <div className={styles.owner}>
-          <img className={styles.avatar} src={avatar} alt={val.name} />
-          <span>{val.name}</span>
-        </div>
-      );
+      return <Avatar userId={val.id} name={val.name} showName height={25} />;
     }
 
     if (col.id === 'tags' && typeof val === 'string') {
