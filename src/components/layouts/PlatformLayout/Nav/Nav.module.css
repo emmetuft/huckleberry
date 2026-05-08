@@ -7,7 +7,7 @@
   margin-top: var(--space-xl);
   margin-bottom: var(--space-xl);
   box-sizing: border-box;
-  z-index: 3000;
+  z-index: 1000;
 
   .logo {
     margin-bottom: 60px;
@@ -38,14 +38,6 @@
     border-radius: 50%;
     background-color: var(--purple);
     box-shadow: var(--purple) 0 0 6px;
-  }
-
-  .avatar {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 50%;
-    height: 30px;
   }
 }
 
@@ -86,7 +78,7 @@
     position: fixed;
     inset: 0;
     background: rgb(0 0 0 / 15.4%);
-    z-index: 2000;
+    z-index: 100;
   }
 }
 

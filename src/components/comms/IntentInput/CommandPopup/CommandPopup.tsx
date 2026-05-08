@@ -4,8 +4,8 @@ import styles from './CommandPopup.module.css';
 import { selectIdentity } from 'reducers/app/slice';
 import { InputCommand } from 'models/enums/inputCommand';
 import { CommandPopupItem } from 'models/interfaces/commandPopup';
+import { Avatar } from 'components/shared/Avatar/Avatar';
 import { CommandPopupState, CommandPopupActions } from 'hooks/useCommandPopup';
-import { getAvatarUrl } from 'utils/misc';
 
 interface CommandPopupProps {
   popupRef: React.RefObject<HTMLDivElement>;
@@ -72,19 +72,10 @@ export const CommandPopup = ({ popupRef, popup }: CommandPopupProps) => {
         </>
       );
     } else if (trigger === InputCommand.MENTION) {
-      const avatar = identity !== undefined ? getAvatarUrl(item.id) : undefined;
-
-      return (
-        <div className={styles.nameWithAvatar}>
-          {avatar && (
-            <img
-              src={avatar}
-              alt={`${item.name}'s avatar`}
-              className={styles.avatar}
-            />
-          )}
-          <span className={styles.itemName}>{item.name}</span>
-        </div>
+      return identity ? (
+        <Avatar userId={identity.id} name={identity?.displayName} showName />
+      ) : (
+        <span className={styles.itemName}>{item.name}</span>
       );
     }
     return null;

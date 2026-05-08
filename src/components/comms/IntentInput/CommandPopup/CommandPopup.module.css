@@ -48,20 +48,6 @@
           text-overflow: ellipsis;
           white-space: nowrap;
         }
-
-        .nameWithAvatar {
-          display: flex;
-          align-items: center;
-          gap: var(--space-sm);
-
-          .avatar {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 50%;
-            height: 20px;
-          }
-        }
       }
     }
   }

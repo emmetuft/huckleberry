@@ -7,6 +7,7 @@ import {
   ChatsIcon,
   CubeIcon,
   DatabaseIcon,
+  FolderIcon,
   GraphIcon,
   HeartbeatIcon,
   LightbulbIcon,
@@ -17,7 +18,6 @@ import {
   PuzzlePieceIcon,
   SquaresFourIcon,
   SunIcon,
-  UserCircleIcon,
 } from '@phosphor-icons/react';
 import { Button } from 'antd';
 import styles from './Nav.module.css';
@@ -32,12 +32,12 @@ import {
 import { setFullScreen } from 'reducers/chat/slice';
 import { appList } from 'constants/applications';
 import { AppPage, AppPageLabel } from 'models/enums/appPage';
+import { Avatar } from 'components/shared/Avatar/Avatar';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
 import AppTooltip from 'components/shared/Tooltip';
 import { HistoryCard } from './HistoryCard/HistoryCard';
 import { RecCard } from './RecCard/RecCard';
 import { useIsMobile } from 'hooks/useIsMobile';
-import { getAvatarUrl } from 'utils/misc';
 
 interface NavProps {}
 
@@ -80,6 +80,7 @@ export const Nav: FC<NavProps> = ({}) => {
     [AppPage.INTEGRATIONS]: <PuzzlePieceIcon size={iconSize} />,
     [AppPage.METRICS]: <NotebookIcon size={iconSize} />,
     [AppPage.ONTOLOGY]: <GraphIcon size={iconSize} />,
+    [AppPage.PROJECTS]: <FolderIcon size={iconSize} />,
   };
 
   const upperPages = [
@@ -87,6 +88,7 @@ export const Nav: FC<NavProps> = ({}) => {
     AppPage.DATA_HUB,
     AppPage.DATA_HEALTH,
     AppPage.METRICS,
+    AppPage.PROJECTS,
   ];
   const lowerPages = [
     AppPage.AGENTS,
@@ -94,8 +96,6 @@ export const Nav: FC<NavProps> = ({}) => {
     // AppPage.AUTOMATION,
     AppPage.APPS,
   ];
-
-  const avatar = identity !== undefined ? getAvatarUrl(identity.id) : undefined;
 
   React.useEffect(() => {
     setMobileOpen(false);
@@ -212,14 +212,10 @@ export const Nav: FC<NavProps> = ({}) => {
               />
             </div>
           </AppTooltip>
-          <IconBtn
-            icon={
-              avatar ? (
-                <img src={avatar} alt="User Avatar" className={styles.avatar} />
-              ) : (
-                <UserCircleIcon size={iconSize} />
-              )
-            }
+          <Button
+            type="text"
+            shape="round"
+            icon={<Avatar userId={identity?.id} name={identity?.displayName} />}
             onClick={onClickAvatar}
           />
         </div>

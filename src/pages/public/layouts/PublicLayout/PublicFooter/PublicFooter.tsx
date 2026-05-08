@@ -2,15 +2,20 @@ import { FC } from 'react';
 import { Link } from 'react-router-dom';
 import { publicRoutePaths, PublicPage } from 'models/enums/appPage';
 import styles from './PublicFooter.module.css';
+import { useIsMobile } from 'hooks/useIsMobile';
 
 export const PublicFooter: FC = () => {
+  const isMobile = useIsMobile();
+
   return (
     <footer className={styles.publicFooter}>
       <div className={styles.container}>
-        <div className={styles.section}>
-          <h4>Huckleberry</h4>
-          <p>AI-powered data intelligence platform</p>
-        </div>
+        {!isMobile && (
+          <div className={styles.section}>
+            <h4>Huckleberry</h4>
+            <p>AI-powered data intelligence platform</p>
+          </div>
+        )}
 
         <div className={styles.section}>
           <h4>Product</h4>

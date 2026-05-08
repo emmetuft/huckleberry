@@ -1,10 +1,13 @@
 import { FC } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from 'antd';
-import { publicRoutePaths, PublicPage } from 'models/enums/appPage';
 import styles from './PublicHeader.module.css';
+import { publicRoutePaths, PublicPage } from 'models/enums/appPage';
+import { useIsMobile } from 'hooks/useIsMobile';
 
 export const PublicHeader: FC = () => {
+  const isMobile = useIsMobile();
+
   return (
     <header className={styles.publicHeader}>
       <Link
@@ -23,10 +26,14 @@ export const PublicHeader: FC = () => {
       </nav> */}
 
       <div className={styles.authButtons}>
-        <Button shape="round" size="large">
+        <Button shape="round" size={isMobile ? 'small' : 'large'}>
           Sign in
         </Button>
-        <Button type="primary" shape="round" size="large">
+        <Button
+          type="primary"
+          shape="round"
+          size={isMobile ? 'small' : 'large'}
+        >
           Try for free
         </Button>
       </div>
