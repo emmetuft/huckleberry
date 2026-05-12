@@ -9,8 +9,8 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { sharedTooltipProps } from 'constants/chart';
-import { DATA_ALIAS } from 'constants/mapping';
 import { chartColors } from 'constants/styles';
+import { FilterOperator } from 'models/interfaces/filter';
 import { useChartData } from 'hooks/useChartData';
 
 interface DataProvidersChartProps {
@@ -21,12 +21,13 @@ export const DataProvidersChart: React.FC<DataProvidersChartProps> = ({
   height = 300,
 }) => {
   const { data, loading } = useChartData<any>({
-    alias: DATA_ALIAS.DOMOSTATS_DATASETS,
-    schema: ['dataProvider', 'count'],
+    dataSourceId: '',
+    schema: [],
     filters: [
       {
+        id: '',
         column: 'dataProvider',
-        operator: '!=',
+        operator: FilterOperator.NOT_EQUALS,
         value: '',
       },
     ],

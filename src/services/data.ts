@@ -1,10 +1,6 @@
 import { Column } from 'models/interfaces/column';
 import { DataSource } from 'models/interfaces/dataSource';
-import {
-  commonHeaders,
-  getDatasetRequestBody,
-  handleResponse,
-} from 'utils/service';
+import { getDatasetRequestBody, handleResponse } from 'utils/service';
 
 const DATA_SOURCES_URL = '/api/datasources';
 
@@ -77,7 +73,6 @@ const fetchDataSourceRows = async ({
   const url = `${DATA_SOURCES_URL}/${dataSourceId}/data?page=${page - 1}&size=${pageSize}`;
   const options = {
     method: 'POST',
-    headers: commonHeaders(),
     body: JSON.stringify(requestBody),
   };
 

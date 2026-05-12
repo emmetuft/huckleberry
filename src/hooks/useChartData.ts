@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { Filter } from 'models/interfaces/filter';
-import { ChartService } from 'services/chart';
+import { DataService } from 'services/data';
+import { DEFAULT_PAGE_SIZE } from 'constants/data';
+import { Column } from 'models/interfaces/column';
 
 type UseChartDataOptions<T> = {
-  alias: string;
-  schema: string[];
+  dataSourceId: string;
+  schema: Column[];
   filters?: Filter[];
   customSelect?: string;
   groupBy?: string[];
@@ -13,7 +15,7 @@ type UseChartDataOptions<T> = {
 };
 
 export function useChartData<T>({
-  alias,
+  dataSourceId,
   schema,
   filters,
   customSelect,
@@ -35,18 +37,15 @@ export function useChartData<T>({
     setLoading(true);
     setError(null);
     try {
-      const res = await ChartService.fetchDataSource({
+      const res = await DataService.fetchDataSourceRows({
+        dataSourceId,
         schema,
-        alias,
-        customSelect,
-        filters,
-        groupBy,
-        orderBy,
-        limit,
+        page: 1,
+        pageSize: limit ?? DEFAULT_PAGE_SIZE,
       });
       setData(res as T[]);
     } catch (error) {
-      console.error(`Error fetching data for ${alias}:`, error);
+      console.error(`Error fetching data for ${dataSourceId}:`, error);
       setError(error as Error);
     } finally {
       loadingRef.current = false;
