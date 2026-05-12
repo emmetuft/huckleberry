@@ -29,8 +29,8 @@ Huckleberry AI is a sophisticated data management and automation platform that p
 
 ### Prerequisites
 
-- Node.js (v16 or higher recommended)
-- Yarn package manager
+- Node.js 20+
+- pnpm 8+ (`npm install -g pnpm` if you don't have it)
 - Domo Developer Account (for deployment)
 
 ### Installation
@@ -45,18 +45,20 @@ Huckleberry AI is a sophisticated data management and automation platform that p
 2. Install dependencies:
 
    ```bash
-   yarn install
+   pnpm install
    ```
+
+> This project uses **pnpm** exclusively. `pnpm-lock.yaml` is the source of truth; `package-lock.json` and `yarn.lock` are gitignored.
 
 ### Running the Application
 
-Start the development server:
-
 ```bash
-yarn start
-```
+# Standard dev server (Vite) — runs at http://localhost:5173 with /api proxied to huckleberry-server on :3000
+pnpm dev
 
-The application will run at `http://localhost:3000` (or the next available port).
+# Custom Express + Vite server (legacy, used for SSR experiments)
+pnpm start
+```
 
 ## Project Structure
 
@@ -119,7 +121,7 @@ This project uses automated code quality checks:
 2. Make your changes and ensure they pass checks:
 
    ```bash
-   yarn run-checks
+   pnpm run-checks
    ```
 
 3. Commit your changes:
@@ -180,7 +182,6 @@ Configure AI personas with:
 ### Domo Platform
 
 - **@domoinc/toolkit** - Domo platform integration
-- **@appteam6/domoapps.js** - Domo apps framework
 - **ryuu.js** - Domo data API client
 
 ### Development Tools
@@ -226,8 +227,8 @@ Write tests for:
 Run tests:
 
 ```bash
-yarn test          # Watch mode
-yarn test:ci       # Single run
+pnpm test          # Watch mode
+pnpm test:ci       # Single run
 ```
 
 ## Support

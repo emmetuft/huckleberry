@@ -52,5 +52,18 @@ export default defineConfig(({ command }) => {
       },
     },
     clearScreen: false,
+    server: {
+      port: 5173,
+      strictPort: true,
+      proxy: {
+        // Forward all BFF API calls to huckleberry-server. Keeps the browser
+        // talking only to localhost:5173 so the hb_session cookie stays
+        // same-origin (no CORS pre-flights, no cross-site cookie quirks).
+        '/api': {
+          target: 'http://localhost:3000',
+          changeOrigin: true,
+        },
+      },
+    },
   };
 });
