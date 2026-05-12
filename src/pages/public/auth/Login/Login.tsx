@@ -18,11 +18,6 @@ export const Login: FC = () => {
           Don't have an account?{' '}
           <Link to={publicRoutePaths[PublicPage.SIGNUP]}>Sign up</Link>
         </p>
-        <p className={styles.link}>
-          <Link to={publicRoutePaths[PublicPage.RESET_PASSWORD]}>
-            Forgot password?
-          </Link>
-        </p>
       </div>
     </div>
   );

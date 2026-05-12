@@ -115,8 +115,8 @@ export const GraphExploration: FC<GraphExplorationProps> = ({}) => {
       <FloatButton.Group
         shape="square"
         style={{
-          insetInlineEnd: 'var(--space-md)',
-          insetBlockEnd: 'var(--space-md)',
+          insetInlineEnd: isMobile ? 'var(--space-md)' : 'var(--space-xl)',
+          insetBlockEnd: isMobile ? 'var(--space-md)' : 'var(--space-xl)',
         }}
       >
         <FloatButton
