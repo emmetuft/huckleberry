@@ -6,10 +6,8 @@ export enum PublicPage {
   ABOUT = 'about',
   FEATURES = 'features',
   PRICING = 'pricing',
-  DOCS = 'docs',
   LOGIN = 'login',
   SIGNUP = 'signup',
-  RESET_PASSWORD = 'reset_password',
   TERMS = 'terms',
   PRIVACY = 'privacy',
 }
@@ -52,10 +50,8 @@ export const publicRoutePaths: Record<PublicPage, string> = {
   [PublicPage.ABOUT]: '/about',
   [PublicPage.FEATURES]: '/features',
   [PublicPage.PRICING]: '/pricing',
-  [PublicPage.DOCS]: '/docs',
   [PublicPage.LOGIN]: '/login',
   [PublicPage.SIGNUP]: '/signup',
-  [PublicPage.RESET_PASSWORD]: '/reset-password',
   [PublicPage.TERMS]: '/terms',
   [PublicPage.PRIVACY]: '/privacy',
 };

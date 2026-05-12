@@ -177,12 +177,6 @@ Configure AI personas with:
 - **D3.js** - Advanced visualizations
 - **Phosphor Icons** - Icon library
 
-### Domo Platform
-
-- **@domoinc/toolkit** - Domo platform integration
-- **@appteam6/domoapps.js** - Domo apps framework
-- **ryuu.js** - Domo data API client
-
 ### Development Tools
 
 - **ESLint** - Code linting

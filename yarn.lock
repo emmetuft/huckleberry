@@ -166,15 +166,6 @@
     json2mq "^0.2.0"
     throttle-debounce "^5.0.0"
 
-"@appteam6/domoapps.js@^4.2.3":
-  version "4.2.3"
-  resolved "https://npm.labsdev.domotech.io/@appteam6%2fdomoapps.js/-/domoapps.js-4.2.3.tgz"
-  integrity sha512-SMwlE7S/EfceyR7HLz+0qzkGZiYfmMFFGb9kuvuMpIBJkMOZl56Avvt95Ihme9Hfko/v/AA/6YgqEeWGo2P0iQ==
-  dependencies:
-    "@domoinc/toolkit" "2.0.4"
-    js-cookie "^3.0.1"
-    pusher-js "^7.4.0"
-
 "@asamuzakjp/css-color@^3.2.0":
   version "3.2.0"
   resolved "https://npm.labsdev.domotech.io/@asamuzakjp%2fcss-color/-/css-color-3.2.0.tgz"
@@ -639,26 +630,6 @@
     https-proxy-agent "^5.0.1"
     ryuu-client "^4.4.0"
     tough-cookie "^4.0.0"
-
-"@domoinc/toolkit@2.0.4":
-  version "2.0.4"
-  resolved "https://npm.labsdev.domotech.io/@domoinc%2ftoolkit/-/toolkit-2.0.4.tgz"
-  integrity sha512-QF/KhvMYDfJwtwuFK3gSmTFkwiTzlGEwxpHbiN3IBGnsGuicPcK2ty1SJS88yQA20Ja5+ToBkldXP5Kze1eGWw==
-  dependencies:
-    downloadjs "^1.4.7"
-    generic-type-guard "^3.7.0"
-    json2csv "^5.0.7"
-    mongodb "^3.7.3"
-
-"@domoinc/toolkit@^2.3.0":
-  version "2.3.0"
-  resolved "https://npm.labsdev.domotech.io/@domoinc%2ftoolkit/-/toolkit-2.3.0.tgz"
-  integrity sha512-Yk2LUzRd0LZj2Sq2OU0+2XJwsm1PVm2dvu+mlOy0Vdg1bXKFA7VGvStYDL6FuFWPU1Lw4WOTWTGErBc2+V+hVw==
-  dependencies:
-    downloadjs "^1.4.7"
-    generic-type-guard "^3.7.0"
-    json2csv "^5.0.7"
-    mongodb "^3.7.3"
 
 "@duckdb/duckdb-wasm@1.32.0":
   version "1.32.0"
@@ -2893,15 +2864,6 @@
   resolved "https://npm.labsdev.domotech.io/@types%2festree/-/estree-1.0.8.tgz"
   integrity sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==
 
-"@types/express-serve-static-core@4.17.28":
-  version "4.17.28"
-  resolved "https://npm.labsdev.domotech.io/@types%2fexpress-serve-static-core/-/express-serve-static-core-4.17.28.tgz"
-  integrity sha512-P1BJAEAW3E2DJUlkgq4tOL3RyMunoWXqbSCygWo5ZIWTjUgN1YnaXWW4VWl/oc8vs/XoYibEGBKP0uZyF4AHig==
-  dependencies:
-    "@types/node" "*"
-    "@types/qs" "*"
-    "@types/range-parser" "*"
-
 "@types/express-serve-static-core@^5.0.0":
   version "5.1.0"
   resolved "https://npm.labsdev.domotech.io/@types%2fexpress-serve-static-core/-/express-serve-static-core-5.1.0.tgz#74f47555b3d804b54cb7030e6f9aa0c7485cfc5b"
@@ -2951,11 +2913,6 @@
     "@types/through" "*"
     rxjs "^7.2.0"
 
-"@types/js-cookie@^3.0.6":
-  version "3.0.6"
-  resolved "https://npm.labsdev.domotech.io/@types%2fjs-cookie/-/js-cookie-3.0.6.tgz"
-  integrity sha512-wkw9yd1kEXOPnvEeEV1Go1MmxtBJL0RR79aOTAApecWFVu7w0NNXNqhcWgvw2YgZDYadliXkl14pa3WXw5jlCQ==
-
 "@types/json-schema@^7.0.15", "@types/json-schema@^7.0.9":
   version "7.0.15"
   resolved "https://npm.labsdev.domotech.io/@types%2fjson-schema/-/json-schema-7.0.15.tgz"
@@ -3002,11 +2959,6 @@
   integrity sha512-ENHwaH+JIRTDIEEbDK6QSQntAYGtbvdDXnMXnZaZ6k13Du1dPMmprkEHIL7ok2Wl2aZevetwTAb5S+7yIF+enA==
   dependencies:
     undici-types "~7.8.0"
-
-"@types/node@^14.14.31":
-  version "14.18.63"
-  resolved "https://npm.labsdev.domotech.io/@types%2fnode/-/node-14.18.63.tgz"
-  integrity sha512-fAtCfv4jJg+ExtXhvCkCqUKZ+4ok/JQk01qDKhL5BDDoS3AxKXhV5/MAVUZyQnSEd2GT92fkgZl0pz0Q0AzcIQ==
 
 "@types/node@^20.13.0":
   version "20.19.39"
@@ -3932,14 +3884,6 @@ binary-extensions@^2.0.0:
   resolved "https://npm.labsdev.domotech.io/binary-extensions/-/binary-extensions-2.3.0.tgz"
   integrity sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==
 
-bl@^2.2.1:
-  version "2.2.1"
-  resolved "https://npm.labsdev.domotech.io/bl/-/bl-2.2.1.tgz"
-  integrity sha512-6Pesp1w0DEX1N550i/uGV/TqucVL4AM/pgThFSN/Qq9si1/DF9aIHs1BxD8V/QU0HoeHO6cQRTAuYnLPKq1e4g==
-  dependencies:
-    readable-stream "^2.3.5"
-    safe-buffer "^5.1.1"
-
 bl@^4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/bl/-/bl-4.1.0.tgz#451535264182bec2fbbc83a62ab98cf11d9f7b3a"
@@ -4008,11 +3952,6 @@ browserslist@^4.24.0:
     electron-to-chromium "^1.5.173"
     node-releases "^2.0.19"
     update-browserslist-db "^1.1.3"
-
-bson@^1.1.4:
-  version "1.1.6"
-  resolved "https://npm.labsdev.domotech.io/bson/-/bson-1.1.6.tgz"
-  integrity sha512-EvVNVeGo4tHxwi8L6bPj3y3itEvStdwvvlojVxxbyYfoaxJ6keLgrTuKdyfEAszFK+H3olzBuafE0yoh0D1gdg==
 
 buffer@^5.5.0:
   version "5.7.1"
@@ -4369,11 +4308,6 @@ commander@^13.1.0:
   version "13.1.0"
   resolved "https://npm.labsdev.domotech.io/commander/-/commander-13.1.0.tgz"
   integrity sha512-/rFeCpNJQbhSZjGVwO9RFV3xPqbnERS8MmIQzCtD/zl6gpJuV/bMLuN92oG3F7d8oDEHHRrujSXNUr8fpjntKw==
-
-commander@^6.1.0:
-  version "6.2.1"
-  resolved "https://npm.labsdev.domotech.io/commander/-/commander-6.2.1.tgz"
-  integrity sha512-U7VdrJFnJgo4xjrHpTzu0yrHPGImdsmD95ZlgYSEajAn2JKzDhDTPG9kBTefmObL2w/ngeZnilk+OV9CG3d7UA==
 
 commander@^8.0.0:
   version "8.3.0"
@@ -4964,11 +4898,6 @@ delayed-stream@~1.0.0:
   resolved "https://npm.labsdev.domotech.io/delayed-stream/-/delayed-stream-1.0.0.tgz"
   integrity sha1-3zrhmayt+31ECqrgsp4icrJOxhk=
 
-denque@^1.4.1:
-  version "1.5.1"
-  resolved "https://npm.labsdev.domotech.io/denque/-/denque-1.5.1.tgz"
-  integrity sha512-XwE+iZ4D6ZUB7mfYRMb5wByE8L74HCn30FBN7sWnXksWc1LO1bPDl67pBR9o/kC4z/xSNAwkMYcGgqDV3BE3Hw==
-
 depd@2.0.0:
   version "2.0.0"
   resolved "https://npm.labsdev.domotech.io/depd/-/depd-2.0.0.tgz"
@@ -5069,11 +4998,6 @@ dotenv@^17.2.3:
   version "17.2.3"
   resolved "https://npm.labsdev.domotech.io/dotenv/-/dotenv-17.2.3.tgz#ad995d6997f639b11065f419a22fabf567cdb9a2"
   integrity sha512-JVUnt+DUIzu87TABbhPmNfVdBDt18BLOWjMUFJMSi/Qqg7NTYtabbvSNJGOJ7afbRuv9D/lngizHtP7QyLQ+9w==
-
-downloadjs@^1.4.7:
-  version "1.4.7"
-  resolved "https://npm.labsdev.domotech.io/downloadjs/-/downloadjs-1.4.7.tgz"
-  integrity sha1-9p+W+UDg0FU9rCkROYZaPNAQHjw=
 
 duck@^0.1.12:
   version "0.1.12"
@@ -6016,11 +5940,6 @@ functions-have-names@^1.2.3:
   version "1.2.3"
   resolved "https://npm.labsdev.domotech.io/functions-have-names/-/functions-have-names-1.2.3.tgz"
   integrity sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ==
-
-generic-type-guard@^3.7.0:
-  version "3.7.2"
-  resolved "https://npm.labsdev.domotech.io/generic-type-guard/-/generic-type-guard-3.7.2.tgz"
-  integrity sha512-RNlGtQI/TTU+maM5aClPKAabzTRVQX10P27clabAnYiNk1M5bPIrhxNt5wJ7bTukSe/+1c/jrRZeGpm89y4i/A==
 
 gensync@^1.0.0-beta.2:
   version "1.0.0-beta.2"
@@ -7011,11 +6930,6 @@ jerrypick@^1.1.1:
   resolved "https://npm.labsdev.domotech.io/jerrypick/-/jerrypick-1.1.2.tgz#eb5016304aeb9ac9b7dea6714aa5fe85b24cb8ad"
   integrity sha512-YKnxXEekXKzhpf7CLYA0A+oDP8V0OhICNCr5lv96FvSsDEmrb0GKM776JgQvHTMjr7DTTPEVv/1Ciaw0uEWzBA==
 
-js-cookie@^3.0.1, js-cookie@^3.0.5:
-  version "3.0.5"
-  resolved "https://npm.labsdev.domotech.io/js-cookie/-/js-cookie-3.0.5.tgz"
-  integrity sha512-cEiJEAEoIbWfCZYKWhVwFuvPX1gETRYPw6LlaTKoxD3s2AkXzkCjnp6h0V77ozyqj0jakteJ4YqDJT830+lVGw==
-
 "js-tokens@^3.0.0 || ^4.0.0", js-tokens@^4.0.0:
   version "4.0.0"
   resolved "https://npm.labsdev.domotech.io/js-tokens/-/js-tokens-4.0.0.tgz"
@@ -7100,15 +7014,6 @@ json-stable-stringify-without-jsonify@^1.0.1:
   resolved "https://npm.labsdev.domotech.io/json-stable-stringify-without-jsonify/-/json-stable-stringify-without-jsonify-1.0.1.tgz"
   integrity sha1-nbe1lJatPzz+8wp1FC0tkwrXJlE=
 
-json2csv@^5.0.7:
-  version "5.0.7"
-  resolved "https://npm.labsdev.domotech.io/json2csv/-/json2csv-5.0.7.tgz"
-  integrity sha512-YRZbUnyaJZLZUJSRi2G/MqahCyRv9n/ds+4oIetjDF3jWQA7AG7iSeKTiZiCNqtMZM7HDyt0e/W6lEnoGEmMGA==
-  dependencies:
-    commander "^6.1.0"
-    jsonparse "^1.3.1"
-    lodash.get "^4.4.2"
-
 json2mq@^0.2.0:
   version "0.2.0"
   resolved "https://npm.labsdev.domotech.io/json2mq/-/json2mq-0.2.0.tgz"
@@ -7129,11 +7034,6 @@ jsonfile@^6.0.1, jsonfile@^6.1.0:
     universalify "^2.0.0"
   optionalDependencies:
     graceful-fs "^4.1.6"
-
-jsonparse@^1.3.1:
-  version "1.3.1"
-  resolved "https://npm.labsdev.domotech.io/jsonparse/-/jsonparse-1.3.1.tgz"
-  integrity sha1-P02uSpH6wxX3EGL4UhzCOfE2YoA=
 
 "jsx-ast-utils@^2.4.1 || ^3.0.0":
   version "3.3.5"
@@ -7638,11 +7538,6 @@ memoizerific@^1.11.3:
   dependencies:
     map-or-similar "^1.5.0"
 
-memory-pager@^1.0.2:
-  version "1.5.0"
-  resolved "https://npm.labsdev.domotech.io/memory-pager/-/memory-pager-1.5.0.tgz"
-  integrity sha512-ZS4Bp4r/Zoeq6+NLJpP+0Zzm0pR8whtGPf1XExKLJBAczGMnSi3It14OiNCStjQjM6NU1okjQGSxgEZN8eBYKg==
-
 meow@^14.1.0:
   version "14.1.0"
   resolved "https://npm.labsdev.domotech.io/meow/-/meow-14.1.0.tgz#3cd2d16ad534829ab12fcb5010fc2fdb89facd31"
@@ -8032,19 +7927,6 @@ mkdirp@^3.0.1:
   resolved "https://npm.labsdev.domotech.io/mkdirp/-/mkdirp-3.0.1.tgz"
   integrity sha512-+NsyUUAZDmo6YVHzL/stxSu3t9YS1iljliy3BSDrXJ/dkn1KYdmtZODGGjLcc9XLgVVpH4KshHB8XmZgMhaBXg==
 
-mongodb@^3.7.3:
-  version "3.7.4"
-  resolved "https://npm.labsdev.domotech.io/mongodb/-/mongodb-3.7.4.tgz"
-  integrity sha512-K5q8aBqEXMwWdVNh94UQTwZ6BejVbFhh1uB6c5FKtPE9eUMZPUO3sRZdgIEcHSrAWmxzpG/FeODDKL388sqRmw==
-  dependencies:
-    bl "^2.2.1"
-    bson "^1.1.4"
-    denque "^1.4.1"
-    optional-require "^1.1.8"
-    safe-buffer "^5.1.2"
-  optionalDependencies:
-    saslprep "^1.0.0"
-
 motion-dom@^12.22.0:
   version "12.22.0"
   resolved "https://npm.labsdev.domotech.io/motion-dom/-/motion-dom-12.22.0.tgz"
@@ -8337,13 +8219,6 @@ option@~0.2.1:
   version "0.2.4"
   resolved "https://npm.labsdev.domotech.io/option/-/option-0.2.4.tgz#fd475cdf98dcabb3cb397a3ba5284feb45edbfe4"
   integrity sha512-pkEqbDyl8ou5cpq+VsnQbe/WlEy5qS7xPzMS1U55OCG9KPvwFD46zDbxQIj3egJSFc3D+XhYOPUzz49zQAVy7A==
-
-optional-require@^1.1.8:
-  version "1.1.10"
-  resolved "https://npm.labsdev.domotech.io/optional-require/-/optional-require-1.1.10.tgz"
-  integrity sha512-0r3OB9EIQsP+a5HVATHq2ExIy2q/Vaffoo4IAikW1spCYswhLxqWQS0i3GwS3AdY/OIP4SWZHLGz8CMU558PGw==
-  dependencies:
-    require-at "^1.0.6"
 
 optionator@^0.9.3:
   version "0.9.4"
@@ -8868,15 +8743,6 @@ punycode@^2.1.0, punycode@^2.1.1, punycode@^2.3.1:
   resolved "https://npm.labsdev.domotech.io/punycode/-/punycode-2.3.1.tgz"
   integrity sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==
 
-pusher-js@^7.4.0:
-  version "7.6.0"
-  resolved "https://npm.labsdev.domotech.io/pusher-js/-/pusher-js-7.6.0.tgz"
-  integrity sha512-5CJ7YN5ZdC24E0ETraCU5VYFv0IY5ziXhrS0gS5+9Qrro1E4M1lcZhtr9H1H+6jNSLj1LKKAgcLeE1EH9GxMlw==
-  dependencies:
-    "@types/express-serve-static-core" "4.17.28"
-    "@types/node" "^14.14.31"
-    tweetnacl "^1.0.3"
-
 qified@^0.9.0:
   version "0.9.1"
   resolved "https://npm.labsdev.domotech.io/qified/-/qified-0.9.1.tgz#7d3fc03abf293bac97525f9b046a09cf7cbf5385"
@@ -9058,7 +8924,16 @@ react-router@7.9.5:
   dependencies:
     loose-envify "^1.1.0"
 
-readable-stream@^2.3.5, readable-stream@~2.3.6:
+readable-stream@^3.4.0:
+  version "3.6.2"
+  resolved "https://npm.labsdev.domotech.io/readable-stream/-/readable-stream-3.6.2.tgz"
+  integrity sha512-9u/sniCrY3D5WdsERHzHE4G2YCXqoG5FTHUiCC4SIbr6XcLZBY05ya9EKjYek9O5xOAwjGq+1JdGBAS7Q9ScoA==
+  dependencies:
+    inherits "^2.0.3"
+    string_decoder "^1.1.1"
+    util-deprecate "^1.0.1"
+
+readable-stream@~2.3.6:
   version "2.3.8"
   resolved "https://npm.labsdev.domotech.io/readable-stream/-/readable-stream-2.3.8.tgz"
   integrity sha512-8p0AUk4XODgIewSi0l8Epjs+EVnWiK7NoDIEGU0HhE7+ZyY8D1IMY7odu5lRrFXGg71L15KG8QrPmum45RTtdA==
@@ -9070,15 +8945,6 @@ readable-stream@^2.3.5, readable-stream@~2.3.6:
     safe-buffer "~5.1.1"
     string_decoder "~1.1.1"
     util-deprecate "~1.0.1"
-
-readable-stream@^3.4.0:
-  version "3.6.2"
-  resolved "https://npm.labsdev.domotech.io/readable-stream/-/readable-stream-3.6.2.tgz"
-  integrity sha512-9u/sniCrY3D5WdsERHzHE4G2YCXqoG5FTHUiCC4SIbr6XcLZBY05ya9EKjYek9O5xOAwjGq+1JdGBAS7Q9ScoA==
-  dependencies:
-    inherits "^2.0.3"
-    string_decoder "^1.1.1"
-    util-deprecate "^1.0.1"
 
 readdirp@~3.6.0:
   version "3.6.0"
@@ -9207,11 +9073,6 @@ remark-stringify@^11.0.0:
     "@types/mdast" "^4.0.0"
     mdast-util-to-markdown "^2.0.0"
     unified "^11.0.0"
-
-require-at@^1.0.6:
-  version "1.0.6"
-  resolved "https://npm.labsdev.domotech.io/require-at/-/require-at-1.0.6.tgz"
-  integrity sha512-7i1auJbMUrXEAZCOQ0VNJgmcT2VOKPRl2YGJwgpHpC9CE91Mv4/4UYIUm4chGJaI381ZDq1JUicFii64Hapd8g==
 
 require-directory@^2.1.1:
   version "2.1.1"
@@ -9401,11 +9262,6 @@ ryuu-client@^4.4.0:
     open "^8.4.0"
     qs "^6.11.0"
 
-ryuu.js@^4.4.7:
-  version "4.7.0"
-  resolved "https://npm.labsdev.domotech.io/ryuu.js/-/ryuu.js-4.7.0.tgz"
-  integrity sha512-44Scrg+XAKCaDn2v3YvyDy2pE6dvv9U/7fS/GW5rxqOgtxocK6YwIOinDEIhBxVg2TR8I64k4u3y3Y1d5shwOQ==
-
 safe-array-concat@^1.1.3:
   version "1.1.3"
   resolved "https://npm.labsdev.domotech.io/safe-array-concat/-/safe-array-concat-1.1.3.tgz"
@@ -9417,7 +9273,7 @@ safe-array-concat@^1.1.3:
     has-symbols "^1.1.0"
     isarray "^2.0.5"
 
-safe-buffer@5.2.1, safe-buffer@^5.1.1, safe-buffer@^5.1.2, safe-buffer@~5.2.0:
+safe-buffer@5.2.1, safe-buffer@~5.2.0:
   version "5.2.1"
   resolved "https://npm.labsdev.domotech.io/safe-buffer/-/safe-buffer-5.2.1.tgz"
   integrity sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==
@@ -9448,13 +9304,6 @@ safe-regex-test@^1.1.0:
   version "2.1.2"
   resolved "https://npm.labsdev.domotech.io/safer-buffer/-/safer-buffer-2.1.2.tgz"
   integrity sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==
-
-saslprep@^1.0.0:
-  version "1.0.3"
-  resolved "https://npm.labsdev.domotech.io/saslprep/-/saslprep-1.0.3.tgz"
-  integrity sha512-/MY/PEMbk2SuY5sScONwhUDsV2p77Znkb/q3nSVstq/yQzYJOH/Azh29p9oJLsl3LnQwSvZDKagDGBsBwSooag==
-  dependencies:
-    sparse-bitfield "^3.0.3"
 
 saxes@^6.0.0:
   version "6.0.0"
@@ -9710,13 +9559,6 @@ space-separated-tokens@^2.0.0:
   version "2.0.2"
   resolved "https://npm.labsdev.domotech.io/space-separated-tokens/-/space-separated-tokens-2.0.2.tgz#1ecd9d2350a3844572c3f4a312bceb018348859f"
   integrity sha512-PEGlAwrG8yXGXRjW32fGbg66JAlOAwbObuqVoJpv/mRgoWDQfgH1wDPvtzWyUSNAXBGSk8h755YDbbcEy3SH2Q==
-
-sparse-bitfield@^3.0.3:
-  version "3.0.3"
-  resolved "https://npm.labsdev.domotech.io/sparse-bitfield/-/sparse-bitfield-3.0.3.tgz"
-  integrity sha1-/0rm5oZWBWuks+eSqzM004JzyhE=
-  dependencies:
-    memory-pager "^1.0.2"
 
 sprintf-js@~1.0.2:
   version "1.0.3"
@@ -10334,11 +10176,6 @@ tween-functions@^1.2.0:
   version "1.2.0"
   resolved "https://npm.labsdev.domotech.io/tween-functions/-/tween-functions-1.2.0.tgz"
   integrity sha1-GuOlDnxguz3vd06scHrLynO7w/8=
-
-tweetnacl@^1.0.3:
-  version "1.0.3"
-  resolved "https://npm.labsdev.domotech.io/tweetnacl/-/tweetnacl-1.0.3.tgz"
-  integrity sha512-6rt+RN7aOi1nGMyC4Xa5DdYiukl2UWCbcJft7YhxReBGQD7OAM8Pbxw6YMo4r2diNEA8FEmu32YOn9rhaiE5yw==
 
 type-check@^0.4.0, type-check@~0.4.0:
   version "0.4.0"

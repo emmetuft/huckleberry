@@ -34,14 +34,14 @@ export const Workspace: FC<WorkspaceProps> = ({}) => {
   const handleDismiss = (id: string) => dispatch(dismissCard(id));
 
   const greetingComponent = (
-    <motion.p
+    <motion.div
       className={styles.greeting}
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
       <h2>{`Good ${getTimeOfDay()}${identity ? `, ${getFirstName(identity.displayName)}` : ''}!`}</h2>
-    </motion.p>
+    </motion.div>
   );
 
   if (isBentoMode) {

@@ -12,7 +12,6 @@ import {
   Label,
 } from 'recharts';
 import { sharedTooltipProps } from 'constants/chart';
-import { DATA_ALIAS } from 'constants/mapping';
 import { chartColors } from 'constants/styles';
 import { useChartData } from 'hooks/useChartData';
 
@@ -24,8 +23,8 @@ export const RecentRunsChart: React.FC<RecentRunsChartProps> = ({
   height = 300,
 }) => {
   const { data, loading } = useChartData<any>({
-    alias: DATA_ALIAS.DOMOSTATS_DATASETS_HISTORY,
-    schema: ['startTime', 'count'],
+    dataSourceId: '',
+    schema: [],
     groupBy: ["DATE_TRUNC('day', startTime)"],
     customSelect: "DATE_TRUNC('day', startTime), COUNT(*) as count",
     orderBy: ['startTime'],
