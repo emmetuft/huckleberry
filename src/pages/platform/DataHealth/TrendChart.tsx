@@ -1,4 +1,6 @@
 import { useMemo } from 'react';
+import { useSelector } from 'react-redux';
+import { selectTheme } from 'reducers/app/slice';
 import {
   LineChart,
   Line,
@@ -9,9 +11,12 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts';
-import styles from './DataHealth.module.scss';
+import styles from './DataHealth.module.css';
 
 const TrendChart = () => {
+  const theme = useSelector(selectTheme);
+  const isDark = theme === 'dark';
+
   // Generate the same fake data with sine + randomness
   const data = useMemo(() => {
     return Array.from({ length: 30 }, (_, i) => {
@@ -38,16 +43,30 @@ const TrendChart = () => {
               dataKey="date"
               ticks={data.filter((_, i) => i % 2 === 0).map((d) => d.date)}
             />
-            <YAxis domain={[0, 100]} ticks={[0, 20, 40, 60, 80, 100]} />
+            <YAxis
+              domain={[0, 100]}
+              ticks={[0, 20, 40, 60, 80, 100]}
+              width={25}
+            />
             <Tooltip
               formatter={(value: number) => value.toFixed(1)}
-              labelStyle={{ fontWeight: 'bold' }}
+              contentStyle={{
+                backgroundColor: isDark ? '#000' : '#fff',
+                border: 'none',
+                borderRadius: 8,
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+                color: isDark ? '#f0f0f0' : '#2a2a2a',
+              }}
+              labelStyle={{
+                fontWeight: 'bold',
+                color: isDark ? '#f0f0f0' : '#2a2a2a',
+              }}
             />
             <Legend />
             <Line
               type="monotone"
               dataKey="value"
-              stroke="#5a0cff"
+              stroke={isDark ? '#8673ffff' : '#5a0cff'}
               strokeWidth={2}
               dot={{ r: 3, fill: '#5a0cff' }}
               activeDot={{ r: 6, fill: '#5a0cff' }}

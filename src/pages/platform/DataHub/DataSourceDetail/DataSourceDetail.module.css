@@ -1,0 +1,32 @@
+.datasourceDetail {
+  padding-top: var(--space-xl);
+
+  .topSection {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    margin-bottom: var(--space-lg);
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+  }
+}
+
+.name {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+@media (width <= 768px) {
+  .name {
+    font-size: 16px;
+  }
+
+  .datasourceDetail {
+    overflow-y: auto;
+  }
+}

@@ -1,0 +1,192 @@
+.profileHub {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  overflow-y: auto;
+
+  .pageHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .pageTitle {
+      font-size: var(--font-lg);
+      font-weight: 700;
+    }
+
+    .pageSubtitle {
+      color: var(--grey-text);
+      line-height: var(--font-md);
+    }
+
+    .completionBadge {
+      .completionRing {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: conic-gradient(
+          var(--purple) calc(var(--pct) * 1%),
+          var(--grey-light) 0%
+        );
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+
+        &::before {
+          content: '';
+          position: absolute;
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          background: var(--background);
+        }
+
+        .completionPct {
+          position: relative;
+          font-weight: 700;
+        }
+      }
+    }
+  }
+
+  .sections {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .sectionCard {
+    border: 1px solid var(--grey-light);
+    border-radius: var(--br-lg);
+    background: var(--card-bg);
+    overflow: hidden;
+    transition: border-color 0.15s;
+
+    &:hover {
+      border-color: var(--grey-border);
+    }
+
+    &.expanded {
+      border-color: var(--purple);
+    }
+
+    .sectionHeader {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      width: 100%;
+      padding: var(--space-md);
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.15s;
+
+      &:hover {
+        background: var(--grey-bg);
+      }
+
+      .sectionIcon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        width: 36px;
+        height: 36px;
+        border-radius: var(--br-md);
+        background: var(--purple-light);
+        color: var(--purple);
+      }
+
+      .sectionMeta {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        flex: 1;
+
+        .sectionLabel {
+          font-weight: 600;
+          color: var(--text);
+        }
+
+        .sectionDesc {
+          font-size: var(--font-xs);
+          color: var(--grey-text);
+        }
+      }
+
+      .completionPill {
+        font-size: var(--font-xs);
+        font-weight: 600;
+        padding: var(--space-xs) var(--space-sm);
+        border-radius: 20px;
+
+        &.done {
+          background: var(--success-bg);
+          color: var(--success-icon);
+        }
+
+        &.inProgress {
+          background: var(--purple-light);
+          color: var(--purple);
+        }
+
+        &.empty {
+          background: var(--grey-light);
+          color: var(--grey-text);
+        }
+      }
+    }
+
+    .sectionBody {
+      border-top: 1px solid var(--grey-light);
+      padding: var(--space-lg);
+    }
+  }
+
+  /* Editor styles */
+
+  .editor {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+
+    .editorField {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+
+      .editorTags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-xs);
+        min-height: 24px;
+      }
+    }
+
+    .editorRow {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-lg);
+    }
+  }
+
+  .editorActions {
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+
+@media (width <= 768px) {
+  .profileHub {
+    .sectionCard {
+      .sectionHeader {
+        .sectionIcon {
+          height: 30px;
+          width: 30px;
+        }
+      }
+    }
+  }
+}

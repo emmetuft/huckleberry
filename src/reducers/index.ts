@@ -7,8 +7,10 @@ import OntologyReducer from './ontology/slice';
 import ApplicationsReducer from './applications/slice';
 import ChatReducer from './chat/slice';
 import MetricsReducer from './metrics/slice';
-import MCPReducer from './mcp/slice';
 import PeopleReducer from './people/slice';
+import ToolkitsReducer from './toolkits/slice';
+import WorkspaceReducer from './workspace/slice';
+import DatasourceReducer from './datasource/slice';
 //-- importRef
 import { useDispatch } from 'react-redux';
 
@@ -19,8 +21,10 @@ export const store = configureStore({
     applications: ApplicationsReducer,
     chat: ChatReducer,
     metrics: MetricsReducer,
-    mcp: MCPReducer,
     people: PeopleReducer,
+    toolkits: ToolkitsReducer,
+    workspace: WorkspaceReducer,
+    datasource: DatasourceReducer,
     //-- reducerRef
   },
 });

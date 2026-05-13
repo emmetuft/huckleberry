@@ -1,3 +1,4 @@
+import mammoth from 'mammoth';
 import { ProcessedFile } from 'models/interfaces/files';
 
 /**
@@ -69,3 +70,9 @@ export const processFile = async (file: File): Promise<ProcessedFile> => {
 export const processFiles = async (files: File[]): Promise<ProcessedFile[]> => {
   return Promise.all(files.map(processFile));
 };
+
+export async function extractTextFromDocx(file: File): Promise<string> {
+  const arrayBuffer = await file.arrayBuffer();
+  const result = await mammoth.extractRawText({ arrayBuffer });
+  return result.value;
+}

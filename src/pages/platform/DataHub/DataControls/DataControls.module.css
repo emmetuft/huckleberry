@@ -1,0 +1,17 @@
+.dataControls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+
+  .searchInput {
+    width: 300px;
+  }
+}
+
+@media (width <= 768px) {
+  .dataControls {
+    .searchInput {
+      width: unset;
+    }
+  }
+}

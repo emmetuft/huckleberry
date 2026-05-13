@@ -1,33 +1,42 @@
+import { current } from '@reduxjs/toolkit';
 import { createAppSlice } from '../createAppSlice';
+import { fetchAllNodeLabels, fetchNodes } from './actions';
+import { GraphFilterCondition } from 'models/interfaces/graphFilter';
 import {
-  fetchAllNodeLabels,
-  fetchNodes,
-  loadSubgraph,
-  searchAndLoadNodes,
-} from './actions';
-import { FilterCondition } from 'models/interfaces/graphFilter';
-import { GraphData, Neo4jNode } from 'models/interfaces/ontology';
+  GraphData,
+  GraphEditorModel,
+  GraphModelData,
+  isRelationshipModel,
+} from 'models/interfaces/ontology';
+import { INITIAL_GRAPH_MODEL_DATA } from 'constants/ontologyModels';
+import { PEOPLE_SKILLS_GRAPH } from 'constants/graph';
+
+const MAX_GRAPH_MODEL_HISTORY = 50;
 
 interface State {
+  graphModelData: GraphModelData;
+  graphModelPast: GraphModelData[];
   graphData: GraphData;
   nodeLabels: string[];
   loading: {
     initGeneration: boolean;
     fetchNodeLabels: boolean;
     fetchGraph: boolean;
-    loadingNodes: boolean; // Generic loading for incremental operations
+    loadingNodes: boolean;
     searching: boolean;
   };
   controls: {
     highlightedNodeId: string | null;
     selectedLabels: string[];
-    propertyFilters: FilterCondition[];
+    propertyFilters: GraphFilterCondition[];
   };
 }
 
 const initialState: State = {
-  graphData: { nodes: [], relationships: [] },
-  nodeLabels: [],
+  graphModelData: INITIAL_GRAPH_MODEL_DATA,
+  graphModelPast: [],
+  graphData: PEOPLE_SKILLS_GRAPH,
+  nodeLabels: INITIAL_GRAPH_MODEL_DATA.nodes.flatMap((n) => n.label),
   loading: {
     initGeneration: false,
     fetchNodeLabels: false,
@@ -42,38 +51,12 @@ const initialState: State = {
   },
 };
 
-/**
- * Helper function to merge new graph data into existing graph data
- * without duplicates
- */
-const mergeGraphData = (
-  existing: GraphData,
-  incoming: GraphData,
-): GraphData => {
-  // Use Maps to deduplicate by ID
-  const nodesMap = new Map<string, Neo4jNode>();
-  const relationshipsMap = new Map<string, any>();
-
-  // Add existing nodes and relationships
-  existing.nodes.forEach((node) => nodesMap.set(node.id, node));
-  existing.relationships.forEach((rel) => relationshipsMap.set(rel.id, rel));
-
-  // Add incoming nodes and relationships (will overwrite if same ID)
-  incoming.nodes.forEach((node) => nodesMap.set(node.id, node));
-  incoming.relationships.forEach((rel) => relationshipsMap.set(rel.id, rel));
-
-  return {
-    nodes: Array.from(nodesMap.values()),
-    relationships: Array.from(relationshipsMap.values()),
-  };
-};
-
 export const OntologySlice = createAppSlice({
   name: 'ontology',
   initialState,
   reducers: (create) => ({
     clearGraphData: create.reducer((state) => {
-      state.graphData = { nodes: [], relationships: [] };
+      state.graphData = { nodes: [], edges: [] };
       state.controls = {
         highlightedNodeId: null,
         selectedLabels: [],
@@ -91,9 +74,44 @@ export const OntologySlice = createAppSlice({
       // Clear highlighted node when filter changes to prevent issues with filtered-out nodes
       state.controls.highlightedNodeId = null;
     }),
-    setPropertyFilters: create.reducer<FilterCondition[]>(
+    setPropertyFilters: create.reducer<GraphFilterCondition[]>(
       (state, { payload }) => {
         state.controls.propertyFilters = payload;
+      },
+    ),
+    setGraphModelData: create.reducer<GraphModelData>((state, { payload }) => {
+      state.graphModelPast.push(current(state.graphModelData));
+      if (state.graphModelPast.length > MAX_GRAPH_MODEL_HISTORY)
+        state.graphModelPast.shift();
+      state.graphModelData = payload;
+    }),
+    undoGraphModel: create.reducer((state) => {
+      const prev = state.graphModelPast.pop();
+      if (prev) state.graphModelData = prev;
+    }),
+    // Fills in missing positions without creating an undo entry.
+    // Used to persist initial dagre layout so undo has a real position to revert to.
+    setNodePositions: create.reducer<Record<string, { x: number; y: number }>>(
+      (state, { payload }) => {
+        state.graphModelData.nodes = state.graphModelData.nodes.map((n) => ({
+          ...n,
+          position: n.position ?? payload[n.id],
+        }));
+      },
+    ),
+    updateGraphEditorModel: create.reducer<GraphEditorModel>(
+      (state, { payload }) => {
+        if (isRelationshipModel(payload)) {
+          const idx = state.graphModelData.edges.findIndex(
+            (e) => e.id === payload.id,
+          );
+          if (idx >= 0) state.graphModelData.edges[idx] = payload;
+        } else {
+          const idx = state.graphModelData.nodes.findIndex(
+            (n) => n.id === payload.id,
+          );
+          if (idx >= 0) state.graphModelData.nodes[idx] = payload;
+        }
       },
     ),
   }),
@@ -124,42 +142,15 @@ export const OntologySlice = createAppSlice({
       })
       .addCase(fetchNodes.fulfilled, (state, { payload }) => {
         state.loading = { ...state.loading, loadingNodes: false };
-
-        // Merge the fetched graph data (nodes and relationships)
-        // state.graphData = mergeGraphData(state.graphData, payload.graphData);
         state.graphData = payload.graphData;
-
         // Clear highlighted node when filter changes
         state.controls.highlightedNodeId = null;
-      })
-
-      // Load subgraph
-      .addCase(loadSubgraph.pending, (state) => {
-        state.loading = { ...state.loading, loadingNodes: true };
-      })
-      .addCase(loadSubgraph.rejected, (state) => {
-        state.loading = { ...state.loading, loadingNodes: false };
-      })
-      .addCase(loadSubgraph.fulfilled, (state, { payload }) => {
-        state.loading = { ...state.loading, loadingNodes: false };
-        state.graphData = mergeGraphData(state.graphData, payload);
-      })
-
-      // Search and load nodes
-      .addCase(searchAndLoadNodes.pending, (state) => {
-        state.loading = { ...state.loading, searching: true };
-      })
-      .addCase(searchAndLoadNodes.rejected, (state) => {
-        state.loading = { ...state.loading, searching: false };
-      })
-      .addCase(searchAndLoadNodes.fulfilled, (state, { payload }) => {
-        state.loading = { ...state.loading, searching: false };
-        state.graphData = payload;
       });
   },
   selectors: {
     selectNodeLabels: (state: State) => state.nodeLabels,
     selectGraphData: (state: State) => state.graphData,
+    selectGraphModelData: (state: State) => state.graphModelData,
     selectLoading: (state: State) => state.loading,
     selectHighlightedNodeId: (state: State) => state.controls.highlightedNodeId,
     selectLabelFilters: (state: State) => state.controls.selectedLabels,
@@ -173,11 +164,16 @@ export const {
   setLabelFilters,
   setPropertyFilters,
   clearGraphData,
+  setGraphModelData,
+  updateGraphEditorModel,
+  undoGraphModel,
+  setNodePositions,
 } = OntologySlice.actions;
 
 export const {
   selectNodeLabels,
   selectGraphData,
+  selectGraphModelData,
   selectLoading,
   selectHighlightedNodeId,
   selectLabelFilters,

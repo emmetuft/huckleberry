@@ -1,26 +1,24 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Button } from 'antd';
-import { CloseOutlined } from '@ant-design/icons';
 import {
-  CalendarBlank,
-  ChartLine,
-  Database,
-  PaperPlaneTilt,
-  Wrench,
-} from 'phosphor-react';
+  CalendarBlankIcon,
+  ChartLineIcon,
+  DatabaseIcon,
+  PaperPlaneTiltIcon,
+  WrenchIcon,
+} from '@phosphor-icons/react';
 import { AnimatePresence, motion } from 'framer-motion';
-import styles from './IntentInput.module.scss';
+import styles from './IntentInput.module.css';
 import { useAppDispatch } from 'reducers';
 import { selectPage } from 'reducers/app/slice';
-import { sendStreamingRequest } from 'reducers/chat/actions';
+import { executeStream } from 'reducers/chat/actions';
 import { selectLoading, setFullScreen } from 'reducers/chat/slice';
-import { sharedIconProps } from 'constants/styles';
-import { MCPToolDefinition, MCPToolCall } from 'models/interfaces/mcpServer';
 import { AppPage } from 'models/enums/appPage';
 import { InputCommand } from 'models/enums/inputCommand';
 import { DataSource } from 'models/interfaces/dataSource';
 import { MentionItem } from 'models/interfaces/mention';
+import { Tool } from 'models/interfaces/toolkit';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
 import { DataSourceModal } from 'components/modals/DataSourceModal/DataSourceModal';
 import { SendModal, SendData } from 'components/modals/SendModal/SendModal';
@@ -40,16 +38,23 @@ interface IntentInputProps {
   animate?: boolean;
 }
 
+const DEFAULT_PLACEHOLDERS = [
+  'Start something new',
+  'Type / for toolkits',
+  'Type @ to mention a person or group',
+];
+
 export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   const dispatch = useAppDispatch();
   const appPage = useSelector(selectPage);
   const requestLoading = useSelector(selectLoading);
 
   const [isEmpty, setIsEmpty] = useState<boolean>(true);
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [suggestedActions, setSuggestedActions] = useState<
     { type: ActionType; text: string }[]
   >([]);
-  const [selectedTools, setSelectedTools] = useState<MCPToolDefinition[]>([]);
+  const [selectedTools, setSelectedTools] = useState<Tool[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [showToolBrowser, setShowToolBrowser] = useState<boolean>(false);
   const [selectedDataSources, setSelectedDataSources] = useState<DataSource[]>(
@@ -63,17 +68,13 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   const editableRef = useRef<HTMLDivElement>(null);
   const popupRef = useRef<HTMLDivElement>(null);
 
-  const toolPopup = useCommandPopup<MCPToolDefinition>(editableRef, {
+  const toolPopup = useCommandPopup<Tool>(editableRef, {
     trigger: InputCommand.TOOL,
     removeOnSelect: true,
     popupRef,
     onSelect: (tool) => {
       // Avoid duplicates
-      if (
-        selectedTools.some(
-          (t) => t.name === tool.name && t.serverId === tool.serverId,
-        )
-      ) {
+      if (selectedTools.some((t) => t.toolId === tool.toolId)) {
         return;
       }
       setSelectedTools([...selectedTools, tool]);
@@ -102,6 +103,14 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   });
 
   useEffect(() => {
+    if (placeholder) return;
+    const interval = setInterval(() => {
+      setPlaceholderIndex((i) => (i + 1) % DEFAULT_PLACEHOLDERS.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [placeholder]);
+
+  useEffect(() => {
     const el = editableRef.current;
     if (!el) return;
     const text = el.innerText;
@@ -121,12 +130,8 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     }
   };
 
-  const onRemoveTool = (tool: MCPToolDefinition) => {
-    setSelectedTools(
-      selectedTools.filter(
-        (t) => !(t.name === tool.name && t.serverId === tool.serverId),
-      ),
-    );
+  const onRemoveTool = (tool: Tool) => {
+    setSelectedTools(selectedTools.filter((t) => !(t.toolId === tool.toolId)));
   };
 
   const handleFileUpload = (file: File) => {
@@ -191,26 +196,17 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     const processedFiles =
       uploadedFiles.length > 0 ? await processFiles(uploadedFiles) : undefined;
 
-    // Convert selected tools to MCPToolCall format
-    const toolCalls: MCPToolCall[] | undefined =
-      selectedTools.length > 0
-        ? selectedTools.map((tool) => ({
-            toolName: tool.name,
-            serverId: tool.serverId,
-            params: {},
-          }))
-        : undefined;
     // Process datasources to send only id and name
     const processedDataSources =
       selectedDataSources.length > 0
-        ? selectedDataSources.map((ds) => ({ id: ds.id, name: ds.name }))
+        ? selectedDataSources.map((ds) => ds.id)
         : undefined;
 
     dispatch(
-      sendStreamingRequest({
+      executeStream({
         userInput,
         files: processedFiles,
-        tools: toolCalls,
+        tools: selectedTools,
         dataSources: processedDataSources,
       }),
     );
@@ -260,14 +256,14 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   };
 
   const actionIconMap = {
-    [ActionType.SCHEDULE]: <CalendarBlank {...sharedIconProps} size={16} />,
-    [ActionType.CHART]: <ChartLine {...sharedIconProps} size={16} />,
-    [ActionType.DATASET]: <Database {...sharedIconProps} size={16} />,
-    [ActionType.SEND]: <PaperPlaneTilt {...sharedIconProps} size={16} />,
+    [ActionType.SCHEDULE]: <CalendarBlankIcon size={16} />,
+    [ActionType.CHART]: <ChartLineIcon size={16} />,
+    [ActionType.DATASET]: <DatabaseIcon size={16} />,
+    [ActionType.SEND]: <PaperPlaneTiltIcon size={16} />,
   };
 
   return (
-    <div className={styles.IntentInput}>
+    <div className={styles.intentInput}>
       <DataSourceModal
         open={showDataSourceModal}
         onCancel={handleDataSourceModalCancel}
@@ -291,22 +287,21 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
         onToolsChange={setSelectedTools}
       />
       <div
-        className={`${styles.inputWrapper} ${animate ? styles.animate : ''}`}
+        className={`${styles.inputWrapper} ${animate ? styles.animate : ''} card`}
       >
         <ContextItems
           uploadedFiles={uploadedFiles}
           selectedDataSources={selectedDataSources}
+          selectedTools={selectedTools}
           onRemoveFile={onRemoveFile}
           onRemoveDataSource={onRemoveDataSource}
+          onRemoveTool={onRemoveTool}
         />
         <EditableInput
           ref={editableRef}
           isEmpty={isEmpty}
           disabled={requestLoading}
-          placeholder={
-            placeholder ??
-            'Start something new: a workflow, an app, an agent—your call.'
-          }
+          placeholder={placeholder ?? DEFAULT_PLACEHOLDERS[placeholderIndex]}
           onTextChange={handleTextChange}
           onKeyDown={onKeyDown}
         />
@@ -317,28 +312,13 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
               onDataSourceClick={handleDataSourceClick}
             />
             <IconBtn
-              icon={<Wrench />}
+              icon={<WrenchIcon size={16} />}
               onClick={() => setShowToolBrowser(true)}
             />
             <DictateButton
               onTranscript={handleTranscript}
               disabled={requestLoading}
             />
-            {selectedTools.length > 0 && (
-              <div className={styles.selectedTools}>
-                {selectedTools.map((tool) => (
-                  <div
-                    key={`${tool.serverId}-${tool.name}`}
-                    className={styles.tool}
-                  >
-                    <p>{tool.name}</p>
-                    <button onClick={() => onRemoveTool(tool)}>
-                      <CloseOutlined className={styles.closeIcon} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
             <AnimatePresence>
               {suggestedActions.map((action) => (
                 <motion.div

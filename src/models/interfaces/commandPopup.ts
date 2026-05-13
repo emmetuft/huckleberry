@@ -1,5 +1,5 @@
-import { MCPToolDefinition } from 'models/interfaces/mcpServer';
 import { User, Group, MentionItem } from './mention';
+import { Tool } from './toolkit';
 
 export interface CommandPopupItem {
   id: string;
@@ -10,14 +10,10 @@ export interface CommandPopupItem {
 }
 
 // Conversion utilities
-export const toolToCommandItem = (
-  tool: MCPToolDefinition,
-): CommandPopupItem => ({
-  id: `${tool.serverId}-${tool.name}`,
-  name: tool.name,
-  description: tool.description,
-  groupKey: tool.serverId,
-  groupName: tool.serverName || tool.serverId,
+export const toolToCommandItem = (tool: Tool): CommandPopupItem => ({
+  id: tool.toolId,
+  name: tool.overrideToolName,
+  description: tool.overrideToolDescription,
 });
 
 export const userToCommandItem = (user: User): CommandPopupItem => ({

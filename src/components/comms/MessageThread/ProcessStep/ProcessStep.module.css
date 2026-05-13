@@ -1,0 +1,79 @@
+.processStep {
+  .headerContent {
+    display: flex;
+    justify-content: space-between;
+
+    .details {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+
+      .spinner {
+        color: var(--purple);
+        animation: spin 1s linear infinite;
+      }
+
+      .check {
+        color: var(--success-icon);
+      }
+
+      .error {
+        color: var(--error-icon);
+      }
+
+      .paused {
+        color: var(--warning-icon);
+      }
+
+      .resumed {
+        color: var(--purple);
+      }
+
+      .title {
+        font-weight: 500;
+      }
+    }
+  }
+
+  .stepDetails {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+
+    .subSteps {
+      background-color: var(--grey-bg);
+      border-radius: var(--br-lg);
+    }
+
+    .section {
+      .sectionLabel {
+        font-weight: 500;
+        font-size: 13px;
+        margin-bottom: var(--space-xs);
+      }
+    }
+  }
+}
+
+.codeBlock {
+  margin: 0;
+  padding: var(--space-md);
+  background-color: var(--background);
+  border-radius: var(--br-md);
+  overflow-x: auto;
+  font-size: 11px;
+  font-family:
+    'SF Mono', Monaco, Inconsolata, 'Fira Mono', 'Droid Sans Mono',
+    'Source Code Pro', monospace;
+  line-height: 1.5;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}

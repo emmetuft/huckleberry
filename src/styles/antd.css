@@ -1,0 +1,100 @@
+/* Collapse */
+.ant-collapse-header {
+  min-width: 0;
+  overflow: hidden;
+  padding: var(--space-sm) var(--space-lg) !important;
+}
+
+.ant-collapse-header-text {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
+.ant-collapse-content-box {
+  padding-block: var(--space-sm) !important;
+}
+
+/* Drawer */
+.ant-drawer-right > .ant-drawer-content-wrapper {
+  box-shadow: var(--box-shadow);
+}
+
+/* Float Button */
+.ant-float-btn-content .ant-float-btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Form */
+.ant-form-item:last-child {
+  margin-bottom: 0;
+}
+
+/* List */
+.ant-list .ant-list-item {
+  justify-content: unset;
+  gap: var(--space-sm);
+}
+
+/* Segmented */
+.ant-segmented {
+  padding: var(--space-sm);
+}
+
+.ant-segmented,
+.ant-segmented .ant-segmented-item-selected,
+.ant-segmented-thumb,
+.ant-segmented
+  .ant-segmented-item:hover:not(
+    .ant-segmented-item-selected,
+    .ant-segmented-item-disabled
+  )::after {
+  border-radius: 20px !important;
+}
+
+/* Table */
+.ant-table-wrapper .ant-table {
+  border-radius: var(--br-lg) var(--br-lg) 0 0;
+  background: none;
+}
+
+.ant-table-wrapper .ant-table .ant-table-header {
+  border-radius: var(--br-lg) var(--br-lg) 0 0;
+}
+
+.ant-table-pagination {
+  margin: 0 !important;
+  padding: var(--space-lg);
+  border-top: 1px solid var(--card-border);
+  border-radius: 0 0 var(--br-lg) var(--br-lg);
+}
+
+.ant-table-wrapper .ant-table-thead > tr > th {
+  line-height: 14px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.ant-table-wrapper .ant-table-tbody > tr > td {
+  border-bottom: none;
+}
+
+.ant-empty-normal {
+  margin-block: unset;
+}
+
+.ant-table-wrapper
+  .ant-table-ping-right:not(.ant-table-has-fix-right)
+  .ant-table-container::after,
+.ant-table-wrapper
+  .ant-table-ping-left:not(.ant-table-has-fix-left)
+  .ant-table-container::before {
+  box-shadow: none;
+}
+
+@media (width <= 768px) {
+  .ant-table-cell {
+    padding: 12px !important;
+  }
+}

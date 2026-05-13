@@ -1,0 +1,13 @@
+.dataTable {
+  box-shadow: var(--box-shadow);
+  border-radius: var(--br-md);
+}
+
+.tag {
+  width: fit-content;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--br-md);
+  background-color: #d4bfff;
+  color: var(--purple);
+  font-size: 11px;
+}

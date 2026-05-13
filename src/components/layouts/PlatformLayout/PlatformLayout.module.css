@@ -1,0 +1,15 @@
+.platformLayout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  background-color: var(--background);
+}
+
+.home {
+  margin-top: 30vh;
+
+  &.fullScreen {
+    margin-top: 0;
+  }
+}

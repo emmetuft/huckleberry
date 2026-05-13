@@ -1,0 +1,33 @@
+.graphLegend {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+  gap: var(--space-sm);
+
+  .item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .label {
+    font-size: 12px;
+  }
+}
+
+@media (width <= 768px) {
+  .graphLegend {
+    top: unset;
+    right: unset;
+    bottom: var(--space-md);
+    left: var(--space-md);
+  }
+}

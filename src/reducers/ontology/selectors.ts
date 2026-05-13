@@ -93,15 +93,15 @@ export const selectFilteredGraphData = createSelector(
     // Get IDs of filtered nodes
     const filteredNodeIds = new Set(filteredNodes.map((node) => node.id));
 
-    // Filter relationships to only include those between filtered nodes
-    const filteredRelationships = graphData.relationships.filter(
+    // Filter edges to only include those between filtered nodes
+    const filteredEdges = graphData.edges.filter(
       (rel) =>
         filteredNodeIds.has(rel.source) && filteredNodeIds.has(rel.target),
     );
 
     return {
       nodes: filteredNodes,
-      relationships: filteredRelationships,
+      edges: filteredEdges,
     };
   },
 );

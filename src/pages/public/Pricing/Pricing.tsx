@@ -1,9 +1,9 @@
 import { FC } from 'react';
-import styles from './Pricing.module.scss';
+import styles from './Pricing.module.css';
 
 export const Pricing: FC = () => {
   return (
-    <div className={styles.Pricing}>
+    <div className={styles.pricing}>
       <h1>Pricing</h1>
       <p>Choose the plan that works for you.</p>
     </div>

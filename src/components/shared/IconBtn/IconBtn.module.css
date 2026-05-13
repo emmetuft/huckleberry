@@ -1,0 +1,8 @@
+.iconBtn {
+  color: var(--grey-dark);
+
+  &:hover {
+    /* stylelint-disable-next-line declaration-no-important */
+    color: var(--grey-dark) !important;
+  }
+}

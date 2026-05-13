@@ -1,0 +1,28 @@
+.chatContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.fullScreen {
+  .inputArea {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 48rem;
+    z-index: 100;
+  }
+}
+
+.panel {
+  flex: 1;
+  position: relative;
+  min-height: 0;
+
+  .inputArea {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+}

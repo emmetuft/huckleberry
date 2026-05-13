@@ -1,20 +1,19 @@
-import { Identity } from '@domoinc/toolkit';
+import { Identity } from 'models/interfaces/identity';
 import { createAppSlice } from '../createAppSlice';
-import {
-  authenticate,
-  fetchUserPersona,
-  saveUserPersona,
-  swapPersona,
-} from './actions';
+import { authenticate, fetchUserPersona, saveUserPersona } from './actions';
 import { AppPage } from 'models/enums/appPage';
 import { Persona } from 'models/interfaces/persona';
+import { defaultPersona } from 'constants/persona';
 
 interface State {
   identity?: Identity;
-  persona?: Persona;
+  persona: Persona;
   page: AppPage;
+  theme: 'light' | 'dark';
   incognitoMode: boolean;
   personaModalOpen: boolean;
+  isNewUser: boolean;
+  onboardingCompleted: boolean;
   loading: {
     identity: boolean;
     persona: boolean;
@@ -23,9 +22,13 @@ interface State {
 }
 
 const initialState: State = {
+  persona: defaultPersona,
   page: AppPage.HOME,
+  theme: (localStorage.getItem('theme') as 'light' | 'dark') || 'light',
   incognitoMode: false,
   personaModalOpen: false,
+  isNewUser: true, // TODO: derive from user identity / API
+  onboardingCompleted: false,
   loading: {
     identity: false,
     persona: false,
@@ -40,6 +43,12 @@ export const AppReducer = createAppSlice({
     setPage: create.reducer((state, { payload }: { payload: AppPage }) => {
       state.page = payload;
     }),
+    setTheme: create.reducer(
+      (state, { payload }: { payload: 'light' | 'dark' }) => {
+        state.theme = payload;
+        localStorage.setItem('theme', payload);
+      },
+    ),
     setIncognitoMode: create.reducer(
       (state, { payload }: { payload: boolean }) => {
         state.incognitoMode = payload;
@@ -48,6 +57,11 @@ export const AppReducer = createAppSlice({
     setPersonaModal: create.reducer(
       (state, { payload }: { payload: boolean }) => {
         state.personaModalOpen = payload;
+      },
+    ),
+    setOnboardingCompleted: create.reducer(
+      (state, { payload }: { payload: boolean }) => {
+        state.onboardingCompleted = payload;
       },
     ),
   }),
@@ -73,50 +87,50 @@ export const AppReducer = createAppSlice({
       })
       .addCase(fetchUserPersona.fulfilled, (state, { payload }) => {
         state.loading = { ...state.loading, persona: false };
-        state.persona = payload;
+        if (payload) state.persona = payload;
       })
       // Save user persona
       .addCase(saveUserPersona.pending, (state) => {
         state.loading.personaUpdate = true;
       })
-      .addCase(saveUserPersona.rejected, (state) => {
+      .addCase(saveUserPersona.rejected, (state, { meta }) => {
         state.loading.personaUpdate = false;
+        state.persona = meta.arg;
       })
       .addCase(saveUserPersona.fulfilled, (state, { payload }) => {
         state.persona = payload;
         state.loading.personaUpdate = false;
-      })
-      // Swap persona
-      .addCase(swapPersona.fulfilled, (state, { meta, payload }) => {
-        state.persona = payload;
-        const identity = state.identity;
-        if (!identity) {
-          return;
-        }
-        state.identity = {
-          ...identity,
-          userId: meta.arg,
-        };
       });
   },
   selectors: {
     selectIdentity: (state) => state.identity,
     selectPersona: (state) => state.persona,
     selectPage: (state) => state.page,
+    selectTheme: (state) => state.theme,
     selectIncognitoMode: (state) => state.incognitoMode,
     selectPersonaModalOpen: (state) => state.personaModalOpen,
+    selectIsNewUser: (state) => state.isNewUser,
+    selectOnboardingCompleted: (state) => state.onboardingCompleted,
     selectLoading: (state) => state.loading,
   },
 });
 
-export const { setPage, setIncognitoMode, setPersonaModal } =
-  AppReducer.actions;
+export const {
+  setPage,
+  setTheme,
+  setIncognitoMode,
+  setPersonaModal,
+  setOnboardingCompleted,
+} = AppReducer.actions;
 export const {
   selectIdentity,
   selectPersona,
   selectPage,
+  selectTheme,
   selectIncognitoMode,
   selectPersonaModalOpen,
+  selectIsNewUser,
+  selectOnboardingCompleted,
   selectLoading,
 } = AppReducer.selectors;
 

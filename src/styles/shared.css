@@ -1,0 +1,163 @@
+svg:focus {
+  outline: none;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@layer base {
+  .platformPage {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    padding: var(--default-page-padding);
+
+    @media (width <= 768px) {
+      height: auto;
+      overflow: visible;
+    }
+  }
+
+  .loadingOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgb(255 255 255 / 80%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-lg);
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: var(--br-lg);
+    box-shadow: var(--box-shadow);
+    border: 1px solid var(--card-border);
+  }
+
+  .appCard {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    min-width: 0;
+    gap: var(--space-sm);
+    padding: var(--space-md);
+    border-radius: var(--br-md);
+    background-color: var(--card-bg);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
+    transition: transform 0.3s ease;
+    cursor: pointer;
+
+    &:hover {
+      transform: translateY(-2px);
+    }
+
+    img {
+      height: 50px;
+      width: 50px;
+      border-radius: var(--br-md);
+      object-fit: cover;
+    }
+
+    .appInfo {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      min-width: 0;
+
+      h4 {
+        font-weight: 600;
+        line-height: 16px;
+      }
+
+      p {
+        font-size: var(--font-xs);
+        line-height: 14px;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+      }
+    }
+
+    .quickAdd {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+    }
+  }
+
+  .defaultAppIcon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 40px;
+    width: 40px;
+    background-color: var(--purple);
+    border-radius: var(--br-md);
+  }
+
+  @media (width <= 768px) {
+    .appCard {
+      gap: var(--space-md);
+    }
+
+    .defaultAppIcon {
+      height: 30px;
+      width: 30px;
+    }
+  }
+}
+
+.agentNode {
+  padding: var(--space-xl);
+  background-color: var(--background);
+  border-radius: var(--br-lg);
+  width: 200px;
+  box-sizing: border-box;
+
+  .content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .left {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+
+      p {
+        font-weight: 500;
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+.agentNode .react-flow__handle {
+  opacity: 0;
+  transition: opacity 0.15s;
+  pointer-events: all;
+}
+
+.agentNode:hover .react-flow__handle,
+.agentNode .react-flow__handle.connected {
+  opacity: 1;
+}

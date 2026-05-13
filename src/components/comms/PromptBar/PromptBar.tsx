@@ -1,8 +1,9 @@
 import { FC, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Popover, Tooltip } from 'antd';
-import { ArrowsOutSimple, Chat, X } from 'phosphor-react';
-import styles from './PromptBar.module.scss';
+import { Popover } from 'antd';
+import { ArrowsOutSimpleIcon, ChatIcon, XIcon } from '@phosphor-icons/react';
+import styles from './PromptBar.module.css';
 import { useAppDispatch } from 'reducers';
 import {
   clearMessages,
@@ -10,16 +11,18 @@ import {
   setFullScreen,
 } from 'reducers/chat/slice';
 import { AppPage, platformRoutePaths } from 'models/enums/appPage';
+import { ChatMode } from 'models/enums/chatMode';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
-import { IntentInput } from 'components/comms/IntentInput/IntentInput';
-import { MessageThread } from '../MessageThread/MessageThread';
-import { useSelector } from 'react-redux';
+import AppTooltip from 'components/shared/Tooltip';
+import { ChatContainer } from '../ChatContainer/ChatContainer';
+import { useIsMobile } from 'hooks/useIsMobile';
 
 interface PromptBarProps {}
 
 export const PromptBar: FC<PromptBarProps> = ({}) => {
   const dispatch = useAppDispatch();
   const hasMessages = useSelector(selectHasMessages);
+  const isMobile = useIsMobile();
 
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false);
 
@@ -34,53 +37,58 @@ export const PromptBar: FC<PromptBarProps> = ({}) => {
 
   const popoverContent = (
     <div className={styles.popoverContent}>
-      <MessageThread />
-      <IntentInput placeholder="What's up?" />
+      <ChatContainer chatMode={ChatMode.modal} placeholder="What's up?" />
       {hasMessages && (
         <div className={styles.actionBtns}>
-          <Tooltip title={'Clear chat'} placement="top" mouseEnterDelay={0.5}>
+          <AppTooltip
+            title={'Clear chat'}
+            placement="top"
+            mouseEnterDelay={0.5}
+          >
             <div>
               <IconBtn
                 icon={
                   <div className={styles.chatIcons}>
-                    <Chat size={20} />
-                    <X size={10} className={styles.plusIcon} />
+                    <ChatIcon size={20} />
+                    <XIcon size={10} className={styles.plusIcon} />
                   </div>
                 }
                 onClick={onClickNewChat}
               />
             </div>
-          </Tooltip>
-          <Tooltip
+          </AppTooltip>
+          <AppTooltip
             title={'View in full screen'}
             placement="top"
             mouseEnterDelay={0.5}
           >
             <Link to={platformRoutePaths[AppPage.HOME]}>
               <IconBtn
-                icon={<ArrowsOutSimple size={16} />}
+                icon={<ArrowsOutSimpleIcon size={16} />}
                 onClick={onClickFullScreen}
               />
             </Link>
-          </Tooltip>
+          </AppTooltip>
         </div>
       )}
     </div>
   );
 
   return (
-    <div className={styles.PromptBar}>
+    <div className={styles.promptBar}>
       <Popover
         content={popoverContent}
         placement="top"
-        trigger="hover"
+        trigger={isMobile ? 'click' : 'hover'}
         open={popoverOpen}
         onOpenChange={setPopoverOpen}
         styles={{
-          body: {
+          content: {
             padding: 0,
-            width: 600,
+            width: isMobile ? '80vw' : 600,
             borderRadius: 12,
+            boxShadow: 'var(--box-shadow)',
+            backgroundColor: 'var(--background)',
           },
         }}
       >

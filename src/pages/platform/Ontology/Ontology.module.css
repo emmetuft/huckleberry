@@ -1,0 +1,21 @@
+.ontology {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+
+  .tabBtn {
+    position: absolute;
+    top: 20px;
+    left: 102px;
+    z-index: 100;
+  }
+}
+
+@media (width <= 768px) {
+  .ontology {
+    .tabBtn {
+      top: var(--space-sm);
+    }
+  }
+}

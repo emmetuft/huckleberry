@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { UseCase } from '../Landing';
-import styles from './UseCaseCard.module.scss';
+import styles from './UseCaseCard.module.css';
 
 interface UseCaseCardProps {
   useCase: UseCase;

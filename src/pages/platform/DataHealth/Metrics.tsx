@@ -1,24 +1,27 @@
 import {
-  Database,
-  Eye,
-  Gauge,
-  HourglassMedium,
-  ShieldCheck,
-  Timer,
-} from 'phosphor-react';
-import styles from './DataHealth.module.scss';
+  DatabaseIcon,
+  EyeIcon,
+  GaugeIcon,
+  HourglassMediumIcon,
+  ShieldCheckIcon,
+  TimerIcon,
+} from '@phosphor-icons/react';
+import styles from './DataHealth.module.css';
 import { IconType, metricList } from 'constants/health';
-import { sharedIconProps } from 'constants/styles';
 import { Quality, qualityColorMap } from 'models/enums/quality';
+import { useIsMobile } from 'hooks/useIsMobile';
 
 const Metrics = () => {
+  const isMobile = useIsMobile();
+  const iconSize = isMobile ? 18 : 24;
+
   const actionIconMap = {
-    [IconType.SHIELD_CHECK]: <ShieldCheck {...sharedIconProps} />,
-    [IconType.SPEEDOMETER]: <Gauge {...sharedIconProps} />,
-    [IconType.EYE]: <Eye {...sharedIconProps} />,
-    [IconType.HOURGLASS]: <HourglassMedium {...sharedIconProps} />,
-    [IconType.DATABASE]: <Database {...sharedIconProps} />,
-    [IconType.TIMER]: <Timer {...sharedIconProps} />,
+    [IconType.SHIELD_CHECK]: <ShieldCheckIcon size={iconSize} />,
+    [IconType.SPEEDOMETER]: <GaugeIcon size={iconSize} />,
+    [IconType.EYE]: <EyeIcon size={iconSize} />,
+    [IconType.HOURGLASS]: <HourglassMediumIcon size={iconSize} />,
+    [IconType.DATABASE]: <DatabaseIcon size={iconSize} />,
+    [IconType.TIMER]: <TimerIcon size={iconSize} />,
   };
 
   return (
@@ -29,14 +32,14 @@ const Metrics = () => {
             <div className={styles.left}>
               <div
                 className={`${styles.metricIcon} ${
-                  metric.quality === Quality.BAD
+                  metric.quality === Quality.BAD ? styles.warning : ''
                 }`}
               >
                 {actionIconMap[metric.icon]}
               </div>
               <div className={styles.details}>
-                <h3>{metric.title}</h3>
-                <p>{metric.description}</p>
+                <h2>{metric.title}</h2>
+                {!isMobile && <p>{metric.description}</p>}
               </div>
             </div>
             <div className={styles.right}>

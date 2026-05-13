@@ -1,9 +1,10 @@
 import { useMemo, useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import styles from './CommandPopup.module.scss';
+import styles from './CommandPopup.module.css';
 import { selectIdentity } from 'reducers/app/slice';
 import { InputCommand } from 'models/enums/inputCommand';
 import { CommandPopupItem } from 'models/interfaces/commandPopup';
+import { Avatar } from 'components/shared/Avatar/Avatar';
 import { CommandPopupState, CommandPopupActions } from 'hooks/useCommandPopup';
 
 interface CommandPopupProps {
@@ -71,29 +72,17 @@ export const CommandPopup = ({ popupRef, popup }: CommandPopupProps) => {
         </>
       );
     } else if (trigger === InputCommand.MENTION) {
-      const avatar =
-        identity !== undefined
-          ? `https://${identity.host}/api/content/v1/avatar/USER/${item.id}?size=100`
-          : undefined;
-
-      return (
-        <div className={styles.nameWithAvatar}>
-          {avatar && (
-            <img
-              src={avatar}
-              alt={`${item.name}'s avatar`}
-              className={styles.avatar}
-            />
-          )}
-          <span className={styles.itemName}>{item.name}</span>
-        </div>
+      return identity ? (
+        <Avatar userId={identity.id} name={identity?.displayName} showName />
+      ) : (
+        <span className={styles.itemName}>{item.name}</span>
       );
     }
     return null;
   };
 
   return (
-    <div ref={popupRef} className={styles.commandPopup}>
+    <div ref={popupRef} className={`card ${styles.commandPopup}`}>
       <div className={styles.itemList}>
         {Object.entries(groupedItems).map(([groupKey, groupItems]) => {
           const firstItem = groupItems[0];

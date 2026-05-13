@@ -1,5 +1,6 @@
 import { forwardRef, KeyboardEvent } from 'react';
-import styles from './IntentInput.module.scss';
+import { motion, AnimatePresence } from 'framer-motion';
+import styles from './IntentInput.module.css';
 import {
   getCaretCharacterOffsetWithin,
   getTextWithHighlights,
@@ -38,14 +39,28 @@ export const EditableInput = forwardRef<HTMLDivElement, EditableInputProps>(
     };
 
     return (
-      <div>
+      <div className={styles.wrapper}>
+        <AnimatePresence mode="wait">
+          {isEmpty && (
+            <motion.span
+              key={placeholder}
+              className={styles.placeholder}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.35, ease: 'easeOut' }}
+            >
+              {placeholder}
+            </motion.span>
+          )}
+        </AnimatePresence>
+
         <div
-          className={`${styles.editable} ${isEmpty ? styles.empty : ''} ${disabled ? styles.disabled : ''}`}
+          className={`${styles.editable} ${disabled ? styles.disabled : ''}`}
           contentEditable={!disabled}
           ref={ref}
           onInput={onInput}
           onKeyDown={onKeyDown}
-          data-placeholder={placeholder}
         />
       </div>
     );

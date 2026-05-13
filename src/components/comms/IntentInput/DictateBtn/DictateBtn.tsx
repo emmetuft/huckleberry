@@ -1,7 +1,8 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { Button } from 'antd';
-import { Check, Microphone, X } from 'phosphor-react';
-import styles from './DictateBtn.module.scss';
+import { CheckIcon, MicrophoneIcon, XIcon } from '@phosphor-icons/react';
+import styles from './DictateBtn.module.css';
+import { IconBtn } from 'components/shared/IconBtn/IconBtn';
 
 // Web Speech API type definitions
 interface SpeechRecognitionEvent extends Event {
@@ -187,11 +188,10 @@ export const DictateButton: FC<DictateButtonProps> = ({
   return (
     <div className={styles.dictateContainer}>
       {!isListening ? (
-        <Button
-          type="text"
-          icon={<Microphone color="#2c2b2a" size={16} />}
-          onClick={startDictation}
+        <IconBtn
+          icon={<MicrophoneIcon size={16} />}
           disabled={disabled}
+          onClick={startDictation}
         />
       ) : (
         <>
@@ -209,13 +209,13 @@ export const DictateButton: FC<DictateButtonProps> = ({
           <div className={styles.controls}>
             <Button
               type="text"
-              icon={<X color="#e53935" size={18} weight="bold" />}
+              icon={<XIcon color="#e53935" size={18} weight="bold" />}
               onClick={handleCancel}
               className={styles.cancelBtn}
             />
             <Button
               type="text"
-              icon={<Check color="#4caf50" size={18} weight="bold" />}
+              icon={<CheckIcon color="#4caf50" size={18} weight="bold" />}
               onClick={handleConfirm}
               className={styles.confirmBtn}
             />

@@ -1,6 +1,6 @@
 import { FC, FormEvent, useState } from 'react';
 import { AuthService } from 'services/auth';
-import styles from './Login.module.scss';
+import styles from './Login.module.css';
 
 /**
  * Magic-link sign-in form. No password — user enters their email and we
@@ -32,7 +32,7 @@ export const Login: FC = () => {
 
   if (sent) {
     return (
-      <div className={styles.Login}>
+      <div className={styles.login}>
         <div className={styles.card}>
           <h1>Check your email</h1>
           <p>
@@ -56,7 +56,7 @@ export const Login: FC = () => {
   }
 
   return (
-    <div className={styles.Login}>
+    <div className={styles.login}>
       <div className={styles.card}>
         <h1>Sign in</h1>
         <p>Enter your email and we'll send you a sign-in link.</p>

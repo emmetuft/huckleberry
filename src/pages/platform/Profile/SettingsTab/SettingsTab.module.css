@@ -1,0 +1,61 @@
+.tab {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.grid {
+  columns: 2;
+  column-gap: var(--space-md);
+}
+
+.grid :global(.card) {
+  padding: 0;
+  box-shadow: none;
+  border: 1px solid var(--grey);
+  margin-bottom: var(--space-md);
+  break-inside: avoid;
+}
+
+.sectionHeader {
+  padding: var(--space-lg);
+  border-bottom: 1px solid var(--grey-light);
+
+  h3 {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--grey-text);
+  }
+}
+
+.settingRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  padding: var(--space-sm) var(--space-lg);
+}
+
+.settingLabel {
+  display: flex;
+  flex-direction: column;
+
+  span {
+    font-weight: 500;
+  }
+
+  p {
+    color: var(--grey-text);
+  }
+}
+
+.settingControl {
+  flex-shrink: 0;
+}
+
+@media (width <= 768px) {
+  .grid {
+    columns: 1;
+  }
+}

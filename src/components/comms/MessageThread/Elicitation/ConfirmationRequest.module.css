@@ -1,0 +1,22 @@
+.confirmationCard {
+  border-radius: var(--br-md);
+  background: transparent;
+  box-shadow: 0 4px 12px rgb(24 144 255 / 15%);
+}
+
+.collapseContainer {
+  margin-top: var(--space-sm);
+  margin-bottom: var(--space-lg);
+
+  .requestSection {
+    .requestMessage {
+      margin-bottom: var(--space-lg);
+      color: var(--grey-text);
+    }
+  }
+}
+
+.buttonGroup {
+  display: flex;
+  gap: var(--space-md);
+}

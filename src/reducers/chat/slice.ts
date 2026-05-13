@@ -1,27 +1,76 @@
 import { createAppSlice } from '../createAppSlice';
-import { sendStreamingRequest } from './actions';
-import { Message } from 'models/interfaces/message';
-import { ProcessStep, ProcessStepWithUI } from 'models/interfaces/processStep';
+import {
+  deleteSession,
+  executeStream,
+  fetchDataSources,
+  fetchSession,
+  fetchSessions,
+  resumeStream,
+} from './actions';
+import {
+  AssistantTurn,
+  ConversationTurn,
+  TurnType,
+  UserTurn,
+} from 'models/interfaces/message';
+import { sessionEventsToMessages } from 'utils/sessionMessages';
+import { AgentSession } from 'models/interfaces/session';
+import { AISessionEvent } from 'models/interfaces/sessionEvent';
+import {
+  applyEventToTurn,
+  createAssistantTurn,
+  createUserTurn,
+} from 'utils/conversationTurn';
 
 interface State {
-  messages: Message[];
+  sessions: AgentSession[];
+  turns: ConversationTurn[];
+  dataSources: Record<string, any>;
   fullScreen: boolean;
   loading: boolean;
   error: string | null;
-  streamStatus: string | null;
-  streamingMessageId: string | null;
-  processingSteps: ProcessStepWithUI[];
+  streamingTurnId: string | null;
+  sessionId?: string;
 }
 
 const initialState: State = {
-  messages: [],
+  sessions: [],
+  turns: [],
+  dataSources: {},
   fullScreen: false,
   loading: false,
   error: null,
-  streamStatus: null,
-  streamingMessageId: null,
-  processingSteps: [],
+  streamingTurnId: null,
 };
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function getStreamingTurn(state: State): AssistantTurn | undefined {
+  if (!state.streamingTurnId) return undefined;
+  const turn = state.turns.find((t) => t.id === state.streamingTurnId);
+  return turn?.kind === TurnType.ASSISTANT ? turn : undefined;
+}
+
+function handleStreamFulfilled(state: State) {
+  state.loading = false;
+  state.error = null;
+
+  const turn = getStreamingTurn(state);
+  if (turn) {
+    // Collapse all process steps now that streaming is done
+    turn.processingSteps.forEach((step) => {
+      step.isOpen = false;
+    });
+    // Keep streamingTurnId set if the session is paused awaiting user input
+    if (!turn.confirmationRequests?.length) {
+      state.streamingTurnId = null;
+    }
+  } else {
+    state.streamingTurnId = null;
+  }
+}
+
+// ─── Slice ────────────────────────────────────────────────────────────────────
 
 export const ChatSlice = createAppSlice({
   name: 'chat',
@@ -29,202 +78,162 @@ export const ChatSlice = createAppSlice({
   reducers: (create) => ({
     setFullScreen: create.reducer((state, action: { payload: boolean }) => {
       state.fullScreen = action.payload;
-    }),
-    clearMessages: create.reducer((state) => {
-      state.messages = [];
-      state.error = null;
-    }),
-    updateStreamStatus: create.reducer((state, action: { payload: string }) => {
-      state.streamStatus = action.payload;
-    }),
-    appendStreamText: create.reducer((state, action: { payload: string }) => {
-      // Find the streaming message and append text
-      if (state.streamingMessageId) {
-        const message = state.messages.find(
-          (m) => m.id === state.streamingMessageId,
-        );
-        if (message) {
-          message.content += action.payload;
-        }
+      if (!action.payload) {
+        state.turns = [];
+        state.error = null;
+        state.sessionId = undefined;
+        state.streamingTurnId = null;
       }
     }),
-    addProcessStep: create.reducer(
-      (state, action: { payload: ProcessStep }) => {
-        // Add new step to the streaming message
-        if (state.streamingMessageId) {
-          const message = state.messages.find(
-            (m) => m.id === state.streamingMessageId,
-          );
-          if (message) {
-            if (!message.processingSteps) {
-              message.processingSteps = [];
-            }
-            message.processingSteps.push({
-              ...action.payload,
-              isOpen: true,
-            });
-          }
-        }
-      },
-    ),
-    updateProcessStep: create.reducer(
-      (state, action: { payload: ProcessStep }) => {
-        // Update step in the streaming message
-        if (state.streamingMessageId) {
-          const message = state.messages.find(
-            (m) => m.id === state.streamingMessageId,
-          );
-          if (message?.processingSteps) {
-            const index = message.processingSteps.findIndex(
-              (s) => s.id === action.payload.id,
-            );
-            if (index !== -1) {
-              // If this is the "generate-response" step completing, remove it entirely
-              if (
-                action.payload.id === 'generate-response' &&
-                action.payload.status === 'complete'
-              ) {
-                message.processingSteps.splice(index, 1);
-              } else {
-                const existingStep = message.processingSteps[index];
-                // Merge details
-                const mergedDetails = {
-                  ...existingStep.details,
-                  ...action.payload.details,
-                };
-                message.processingSteps[index] = {
-                  ...existingStep,
-                  ...action.payload,
-                  details: mergedDetails,
-                };
-              }
-            }
-          }
-        }
+    clearMessages: create.reducer((state) => {
+      state.turns = [];
+      state.error = null;
+      state.sessionId = undefined;
+    }),
+    applyStreamEvent: create.reducer(
+      (state, action: { payload: AISessionEvent }) => {
+        const index = state.turns.findIndex(
+          (t) => t.id === state.streamingTurnId,
+        );
+        if (index === -1) return;
+        const turn = state.turns[index];
+        if (turn.kind !== TurnType.ASSISTANT) return;
+        state.turns[index] = applyEventToTurn(turn, action.payload);
       },
     ),
     toggleProcessStep: create.reducer(
-      (state, action: { payload: { messageId: string; stepId: string } }) => {
-        const message = state.messages.find(
-          (m) => m.id === action.payload.messageId,
-        );
-        if (message?.processingSteps) {
-          const step = message.processingSteps.find(
+      (state, action: { payload: { turnId: string; stepId: string } }) => {
+        const turn = state.turns.find(
+          (t) =>
+            t.kind === TurnType.ASSISTANT && t.id === action.payload.turnId,
+        ) as AssistantTurn | undefined;
+        if (turn?.processingSteps) {
+          const step = turn.processingSteps.find(
             (s) => s.id === action.payload.stepId,
           );
-          if (step) {
-            step.isOpen = !step.isOpen;
-          }
+          if (step) step.isOpen = !step.isOpen;
         }
       },
     ),
-    collapseAllSteps: create.reducer((state, action: { payload: string }) => {
-      // Collapse all steps in a specific message
-      const message = state.messages.find((m) => m.id === action.payload);
-      if (message?.processingSteps) {
-        message.processingSteps.forEach((step) => {
-          step.isOpen = false;
-        });
-      }
-    }),
-    clearProcessingSteps: create.reducer((state) => {
-      state.processingSteps = [];
+    setSessionId: create.reducer((state, action: { payload: string }) => {
+      state.sessionId = action.payload;
     }),
   }),
   extraReducers: (builder) => {
     builder
-      // Send streaming request
-      .addCase(sendStreamingRequest.pending, (state, action) => {
+      // Fetch agent sessions
+      .addCase(fetchSessions.fulfilled, (state, { payload }) => {
+        state.sessions = payload;
+      })
+      // Load a saved session into the chat thread
+      .addCase(fetchSession.pending, (state) => {
         state.loading = true;
         state.error = null;
-        state.streamStatus = null;
-        state.processingSteps = []; // Clear previous steps
-
-        // Add user message to the thread
-        const userMessage: Message = {
-          id: `user-${Date.now()}`,
-          role: 'user',
-          content: action.meta.arg.userInput,
-          timestamp: Date.now(),
-          files: action.meta.arg.files,
-        };
-        state.messages.push(userMessage);
-
-        // Add empty assistant message that we'll update as stream comes in
-        const assistantMessageId = `assistant-${Date.now()}`;
-        const assistantMessage: Message = {
-          id: assistantMessageId,
-          role: 'assistant',
-          content: '',
-          timestamp: Date.now(),
-        };
-        state.messages.push(assistantMessage);
-        state.streamingMessageId = assistantMessageId;
+        state.turns = [];
+        state.sessionId = undefined;
+        state.streamingTurnId = null;
       })
-      .addCase(sendStreamingRequest.rejected, (state, action) => {
+      .addCase(fetchSession.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to load session';
+      })
+      .addCase(fetchSession.fulfilled, (state, { payload }) => {
+        state.loading = false;
+        state.sessionId = payload.id;
+        state.turns = sessionEventsToMessages(payload.events ?? []);
+        state.error = null;
+        state.streamingTurnId = null;
+        state.fullScreen = true;
+      })
+      // Delete agent session
+      .addCase(deleteSession.fulfilled, (state, { meta }) => {
+        const sessionId = meta.arg;
+        state.sessions = state.sessions.filter((s) => s.id !== sessionId);
+        if (state.sessionId === sessionId) {
+          state.turns = [];
+          state.sessionId = undefined;
+          state.streamingTurnId = null;
+          state.error = null;
+          state.fullScreen = false;
+        }
+      })
+      // Send streaming request
+      .addCase(executeStream.pending, (state, action) => {
+        state.loading = true;
+        state.error = null;
+
+        const userTurn: UserTurn = createUserTurn(
+          action.meta.arg.userInput,
+          action.meta.arg.files,
+          action.meta.arg.dataSources,
+        );
+        state.turns.push(userTurn);
+
+        const assistantTurn: AssistantTurn = createAssistantTurn();
+        state.turns.push(assistantTurn);
+        state.streamingTurnId = assistantTurn.id;
+      })
+      .addCase(executeStream.rejected, (state, action) => {
         state.loading = false;
         state.error =
           action.error.message || 'Failed to send streaming request';
-        state.streamStatus = null;
-        state.streamingMessageId = null;
+        state.streamingTurnId = null;
       })
-      .addCase(sendStreamingRequest.fulfilled, (state, { payload }) => {
-        state.loading = false;
+      .addCase(executeStream.fulfilled, (state) => {
+        handleStreamFulfilled(state);
+      })
+      // Submit elicitation response
+      .addCase(resumeStream.pending, (state) => {
+        state.loading = true;
         state.error = null;
-        state.streamStatus = null;
-
-        // Update the assistant message with final context and collapse steps
-        if (state.streamingMessageId) {
-          const message = state.messages.find(
-            (m) => m.id === state.streamingMessageId,
-          );
-          if (message) {
-            if (payload.context) {
-              message.context = payload.context;
-            }
-            // Collapse all processing steps when complete
-            if (message.processingSteps) {
-              message.processingSteps.forEach((step) => {
-                step.isOpen = false;
-              });
-            }
-          }
+        const turn = getStreamingTurn(state);
+        if (turn) {
+          delete turn.confirmationRequests;
         }
-
-        state.streamingMessageId = null;
+      })
+      .addCase(resumeStream.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.error.message || 'Failed to submit elicitation response';
+        state.streamingTurnId = null;
+      })
+      .addCase(resumeStream.fulfilled, (state) => {
+        handleStreamFulfilled(state);
+      })
+      // Cache fetched data sources
+      .addCase(fetchDataSources.fulfilled, (state, { payload }) => {
+        Object.assign(state.dataSources, payload);
       });
   },
   selectors: {
-    selectMessages: (state: State) => state.messages,
-    selectHasMessages: (state: State) => state.messages.length > 0,
+    selectSessions: (state: State) => state.sessions,
+    selectTurns: (state: State) => state.turns,
+    selectDataSources: (state: State) => state.dataSources,
+    selectHasMessages: (state: State) => state.turns.length > 0,
     selectFullScreen: (state: State) => state.fullScreen,
     selectLoading: (state: State) => state.loading,
     selectError: (state: State) => state.error,
-    selectStreamStatus: (state: State) => state.streamStatus,
-    selectProcessingSteps: (state: State) => state.processingSteps,
+    selectSessionId: (state: State) => state.sessionId,
   },
 });
 
 export const {
   setFullScreen,
   clearMessages,
-  updateStreamStatus,
-  appendStreamText,
-  addProcessStep,
-  updateProcessStep,
+  applyStreamEvent,
   toggleProcessStep,
-  collapseAllSteps,
-  clearProcessingSteps,
+  setSessionId,
 } = ChatSlice.actions;
 
 export const {
-  selectMessages,
+  selectSessions,
+  selectTurns,
+  selectDataSources,
   selectHasMessages,
   selectFullScreen,
   selectLoading,
   selectError,
-  selectStreamStatus,
-  selectProcessingSteps,
+  selectSessionId,
 } = ChatSlice.selectors;
 
 export default ChatSlice.reducer;

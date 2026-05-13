@@ -1,0 +1,71 @@
+.modelEditor {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+
+  .section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+
+    h4 {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--grey-text);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+  }
+
+  .properties {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+
+    .propertyHeader,
+    .propertyItem {
+      display: grid;
+      grid-template-columns: auto 1fr 150px;
+      align-items: center;
+      gap: var(--space-md);
+    }
+
+    .propertyHeader {
+      .nameCol,
+      .typeCol {
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--grey-text);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+    }
+  }
+
+  .relationships {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    margin-top: var(--space-md);
+  }
+}
+
+.connection {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+
+  .nodeLabel {
+    padding: var(--space-xs) var(--space-sm);
+    background-color: color-mix(in srgb, var(--node-color) 10%, white 90%);
+    border-radius: 30px;
+    border: 1px solid var(--node-color);
+    color: var(--node-color);
+    font-weight: 600;
+  }
+
+  .relationshipName {
+    font-family: 'IBM Plex Mono', monospace;
+  }
+}

@@ -37,8 +37,8 @@ export const ContextGraph: FC<ContextGraphProps> = ({ context, minify }) => {
     // Create a Set of valid node IDs for fast lookup
     const nodeIds = new Set(nodes.map((node) => node.id));
 
-    // Filter out relationships that reference non-existent nodes
-    const links: GraphLink[] = context.relationships
+    // Filter out edges that reference non-existent nodes
+    const links: GraphLink[] = context.edges
       .filter((rel) => nodeIds.has(rel.source) && nodeIds.has(rel.target))
       .map((rel) => ({
         source: rel.source,

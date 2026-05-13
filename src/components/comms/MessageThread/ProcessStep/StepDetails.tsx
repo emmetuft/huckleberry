@@ -1,10 +1,6 @@
 import { FC } from 'react';
-import styles from './ProcessStep.module.scss';
-import { ContextStrategyType } from 'models/enums/contextStrategy';
-import { StepType } from 'models/enums/stepType';
+import styles from './ProcessStep.module.css';
 import { ProcessStep } from 'models/interfaces/processStep';
-import { ContextGraph } from '../ContextGraph';
-import { isEmpty } from 'utils/misc';
 import { Tag } from 'antd';
 
 interface StepDetailsProps {
@@ -12,116 +8,109 @@ interface StepDetailsProps {
 }
 
 export const StepDetails: FC<StepDetailsProps> = ({ step }) => {
-  const { id, details } = step;
+  const { stepType, inputs, outputs, mcpData, error, description } = step;
 
-  if (details === undefined) return null;
-
-  // ANALYZE REQUEST
-  if (id === StepType.ANALYZE_REQUEST) {
-    const strategyText = isEmpty(details.strategyName)
-      ? 'using provided context'
-      : details.strategyName;
+  // Error Display (shown for all step types if present)
+  const renderError = () => {
+    if (!error) return null;
     return (
-      <p className={styles.detailsText}>Context strategies: {strategyText}</p>
-    );
-  }
-
-  // USER PERSONA
-  if (
-    details.strategyName === ContextStrategyType.PERSONA &&
-    details.metadata
-  ) {
-    return <p className={styles.detailsText}>Loaded user persona context</p>;
-  }
-
-  // GRAPH RAG
-  if (
-    details.strategyName === ContextStrategyType.GRAPH_RAG &&
-    details.graphContext
-  ) {
-    return (
-      <div className={styles.graphContainer}>
-        <ContextGraph context={details.graphContext} minify={true} />
+      <div className={styles.section}>
+        <p className={styles.sectionLabel}>Error:</p>
+        <div className={styles.errorContent}>
+          <p>{error.localizedMessage || error.message}</p>
+          {error.errorCode && <Tag color="red">{error.errorCode}</Tag>}
+        </div>
       </div>
     );
-  }
+  };
 
-  // METRIC CATALOG
-  if (
-    details.strategyName === ContextStrategyType.METRIC &&
-    details.graphContext
-  ) {
-    const metricNode = details.graphContext.nodes.find((node) =>
-      node.labels.includes('Metric'),
-    );
-
-    if (metricNode) {
-      const { name, description, time_grain, time_type } =
-        metricNode.properties;
-
-      return (
-        <>
-          <p className={styles.metricName}>{name}</p>
-          {description && <p className={styles.detailsText}>{description}</p>}
-          <div className={styles.metricProperties}>
-            {time_grain && (
-              <span className={styles.property}>Time grain: {time_grain}</span>
-            )}
-            {time_type && (
-              <span className={styles.property}>Metric type: {time_type}</span>
-            )}
-          </div>
-        </>
-      );
-    }
-  }
-
-  // DATASOURCE
-  if (
-    details.strategyName === ContextStrategyType.DATASOURCE &&
-    details.metadata
-  ) {
-    return (
-      <>
-        <p className={styles.sectionLabel}>Generated SQL Query:</p>
-        <pre className={styles.codeBlock}>
-          <code>{details.metadata.query}</code>
-        </pre>
-      </>
-    );
-  }
-
-  // MCP TOOLS
-  if (
-    details.strategyName === ContextStrategyType.MCP_TOOL &&
-    details.toolExecution
-  ) {
-    const tool = details.toolExecution;
-    return (
-      <>
-        <div className={styles.toolHeader}>
-          {tool.serverName && (
-            <Tag className={styles.serverTag}>{tool.serverName}</Tag>
-          )}
-          {tool.executionTime && (
-            <span className={styles.executionTime}>
-              Execution time: {tool.executionTime}ms
-            </span>
-          )}
+  // ACTION Step Details
+  const renderActionDetails = () => (
+    <>
+      {description && (
+        <div className={styles.section}>
+          <p className={styles.sectionLabel}>Description:</p>
+          <p>{description}</p>
         </div>
-        {tool.params && Object.keys(tool.params).length > 0 && (
+      )}
+      {inputs && Object.keys(inputs).length > 0 && (
+        <div className={styles.section}>
+          <p className={styles.sectionLabel}>Inputs:</p>
           <pre className={styles.codeBlock}>
-            <code>{JSON.stringify(tool.params, null, 2)}</code>
+            <code>{JSON.stringify(inputs, null, 2)}</code>
           </pre>
+        </div>
+      )}
+      {outputs && outputs.length > 0 && (
+        <div className={styles.section}>
+          <p className={styles.sectionLabel}>Outputs:</p>
+          <pre className={styles.codeBlock}>
+            <code>{JSON.stringify(outputs, null, 2)}</code>
+          </pre>
+        </div>
+      )}
+    </>
+  );
+
+  // TOOL Step Details
+  const renderToolDetails = () => (
+    <>
+      {inputs && Object.keys(inputs).length > 0 && (
+        <div className={styles.section}>
+          <p className={styles.sectionLabel}>Arguments:</p>
+          <pre className={styles.codeBlock}>
+            <code>{JSON.stringify(inputs, null, 2)}</code>
+          </pre>
+        </div>
+      )}
+      {outputs && outputs.length > 0 && (
+        <div className={styles.section}>
+          <p className={styles.sectionLabel}>Response:</p>
+          <pre className={styles.codeBlock}>
+            <code>{JSON.stringify(outputs[0], null, 2)}</code>
+          </pre>
+        </div>
+      )}
+    </>
+  );
+
+  // MCP Step Details
+  const renderMcpDetails = () => {
+    if (!mcpData) return null;
+
+    return (
+      <>
+        <div className={styles.section}>
+          <p className={styles.sectionLabel}>MCP Method:</p>
+          <Tag className={styles.mcpMethodTag}>{mcpData.method}</Tag>
+          <Tag className={styles.directionTag}>{mcpData.direction}</Tag>
+        </div>
+        {mcpData.requestPayload && (
+          <div className={styles.section}>
+            <p className={styles.sectionLabel}>Request Payload:</p>
+            <pre className={styles.codeBlock}>
+              <code>{JSON.stringify(mcpData.requestPayload, null, 2)}</code>
+            </pre>
+          </div>
         )}
-        {tool.error && (
-          <div className={styles.toolError}>
-            <p className={styles.errorText}>{tool.error}</p>
+        {mcpData.responsePayload && (
+          <div className={styles.section}>
+            <p className={styles.sectionLabel}>Response Payload:</p>
+            <pre className={styles.codeBlock}>
+              <code>{JSON.stringify(mcpData.responsePayload, null, 2)}</code>
+            </pre>
           </div>
         )}
       </>
     );
-  }
+  };
 
-  return null;
+  return (
+    <>
+      {stepType === 'action' && renderActionDetails()}
+      {/* {stepType === 'tool' && renderToolDetails()} */}
+      {stepType === 'mcp' && renderMcpDetails()}
+      {renderError()}
+    </>
+  );
 };

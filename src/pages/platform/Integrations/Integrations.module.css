@@ -1,0 +1,99 @@
+:global(.ant-tabs) {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+:global(.ant-tabs-content-holder) {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+:global(.ant-tabs-content),
+:global(.ant-tabs-tabpane-active) {
+  height: 100%;
+  overflow: hidden;
+}
+
+.tabPane {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.layout {
+  display: flex;
+  gap: var(--space-xl);
+  flex: 1;
+  min-height: 0;
+
+  .left {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .right {
+    flex: 4;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    min-height: 0;
+  }
+}
+
+.searchRow {
+  display: flex;
+  gap: var(--space-sm);
+
+  .categorySelect {
+    flex: 1;
+  }
+
+  .searchInput {
+    flex: 2;
+  }
+}
+
+.gridWrapper {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-xs);
+}
+
+.integrationGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: var(--space-xl);
+
+  &.available {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+.loadingMore {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-lg) 0;
+}
+
+@media (width <= 768px) {
+  .layout {
+    flex-direction: column;
+
+    .right {
+      gap: var(--space-md);
+    }
+  }
+
+  .integrationGrid {
+    grid-template-columns: 1fr 1fr;
+
+    &.available {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+}

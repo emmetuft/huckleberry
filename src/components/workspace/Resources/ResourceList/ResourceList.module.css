@@ -1,0 +1,29 @@
+.templateList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: var(--space-sm);
+
+  .template {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    box-shadow: var(--box-shadow);
+    cursor: pointer;
+
+    h4 {
+      font-weight: 500;
+    }
+
+    p {
+      font-size: var(--font-sm);
+      color: var(--grey-text);
+    }
+
+    .preview {
+      height: 60px;
+      margin-bottom: 10px;
+      border-radius: var(--br-md);
+      background-color: white;
+    }
+  }
+}

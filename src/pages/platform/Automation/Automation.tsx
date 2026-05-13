@@ -3,15 +3,15 @@ import { useEffect, useMemo, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Button, Collapse, CollapseProps, Input, Select, Switch } from 'antd';
 import {
-  CheckCircle,
-  Copy,
-  Lightning,
-  PencilSimple,
-  Plus,
-  TrashSimple,
-  Warning,
-} from 'phosphor-react';
-import styles from './Automation.module.scss';
+  CheckCircleIcon,
+  CopyIcon,
+  LightningIcon,
+  PencilSimpleIcon,
+  PlusIcon,
+  TrashSimpleIcon,
+  WarningIcon,
+} from '@phosphor-icons/react';
+import styles from './Automation.module.css';
 // import { getSourceSchema } from 'reducers/data/actions';
 // import {
 //   selectCreatingRule,
@@ -225,7 +225,7 @@ export const Automation = () => {
                       className={styles.addBtn}
                       onClick={onClickAddCondition}
                     >
-                      <Plus />
+                      <PlusIcon />
                       Add condition
                     </button>
                   </div>
@@ -263,7 +263,7 @@ export const Automation = () => {
                       className={styles.addBtn}
                       onClick={onClickAddAction}
                     >
-                      <Plus />
+                      <PlusIcon />
                       Add action
                     </button>
                   </div>
@@ -275,22 +275,31 @@ export const Automation = () => {
 
         {isEditing ? (
           <div className={styles.btnWrapper}>
-            <Button icon={<TrashSimple />} onClick={() => setDraftRule(null)}>
+            <Button
+              icon={<TrashSimpleIcon />}
+              onClick={() => setDraftRule(null)}
+            >
               Cancel
             </Button>
-            <Button icon={<CheckCircle />} onClick={onSaveRule}>
+            <Button icon={<CheckCircleIcon />} onClick={onSaveRule}>
               Save
             </Button>
           </div>
         ) : (
           <div className={styles.btnWrapper}>
-            <Button icon={<TrashSimple />} onClick={() => onClickDelete(rule)}>
+            <Button
+              icon={<TrashSimpleIcon />}
+              onClick={() => onClickDelete(rule)}
+            >
               Delete
             </Button>
-            <Button icon={<Copy />} onClick={() => onClickDuplicate(rule)}>
+            <Button icon={<CopyIcon />} onClick={() => onClickDuplicate(rule)}>
               Duplicate
             </Button>
-            <Button icon={<PencilSimple />} onClick={() => setDraftRule(rule)}>
+            <Button
+              icon={<PencilSimpleIcon />}
+              onClick={() => setDraftRule(rule)}
+            >
               Edit
             </Button>
           </div>
@@ -316,14 +325,14 @@ export const Automation = () => {
                   className={styles.saveIcon}
                   onClick={onClickSaveRuleName}
                 >
-                  <CheckCircle size={20} />
+                  <CheckCircleIcon size={20} />
                 </button>
               </>
             ) : (
               <>
                 <h4>{rule.name}</h4>
                 <button onClick={(e) => onClickEditRuleName(e, rule)}>
-                  <PencilSimple size={20} />
+                  <PencilSimpleIcon size={20} />
                 </button>
               </>
             )}
@@ -345,33 +354,33 @@ export const Automation = () => {
   ).length;
 
   return (
-    <div className={styles.automation}>
+    <div className={`platformPage ${styles.automation}`}>
       <div className={styles.heading}>
         <div className={styles.tags}>
           {numActive > 0 && (
             <div className={`${styles.pill} ${styles.active}`}>
-              <CheckCircle />
+              <CheckCircleIcon />
               <p>{numActive} active</p>
             </div>
           )}
           {numDisabled > 0 && (
             <div className={`${styles.pill} ${styles.disabled}`}>
-              <Warning />
+              <WarningIcon />
               <p>{numDisabled} disabled</p>
             </div>
           )}
           {numAIGenerated > 0 && (
             <div className={`${styles.pill} ${styles.aiGenerated}`}>
-              <Lightning />
+              <LightningIcon />
               <p>{numAIGenerated} AI generated</p>
             </div>
           )}
         </div>
         <div className={styles.buttons}>
-          <Button type="primary" icon={<Plus />} onClick={onClickNewRule}>
+          <Button type="primary" icon={<PlusIcon />} onClick={onClickNewRule}>
             New rule
           </Button>
-          <Button icon={<Lightning />}>AI suggest</Button>
+          <Button icon={<LightningIcon />}>AI suggest</Button>
         </div>
       </div>
       <Collapse size="large" items={items} defaultActiveKey={['1']} />

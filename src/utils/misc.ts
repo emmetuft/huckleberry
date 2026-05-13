@@ -1,13 +1,18 @@
-import { Identity } from '@domoinc/toolkit';
-
 export const isEmpty = (variable: any): boolean =>
   variable === undefined || variable === null || variable === '';
 
-export const getFirstName = (identity: Identity | undefined) => {
-  if (!identity) return '';
-  if (identity.userId === 1250228141) return 'Mark'; // TODO: Remove later
-  const firstName = identity.userName?.split(' ')[0];
+export const getFirstName = (name?: string) => {
+  if (!name) return '';
+  const firstName = name.split(' ')[0];
   return firstName || '';
+};
+
+export const getAvatarUrl = (
+  userId: number | string,
+  host: string = 'domo-labs-dev.dev.domo.com',
+  size: number = 100,
+): string => {
+  return `https://${host}/api/content/v1/avatar/USER/${userId}?size=${size}`;
 };
 
 export const getTimeOfDay = (): string => {

@@ -1,0 +1,38 @@
+.dictateContainer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.soundwave {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  height: 20px;
+
+  .bar {
+    width: 3px;
+    background-color: var(--purple);
+    border-radius: var(--br-sm);
+    transition: height 0.1s ease;
+    min-height: 20%;
+  }
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.cancelBtn {
+  &:hover {
+    background-color: rgb(229 57 53 / 10%);
+  }
+}
+
+.confirmBtn {
+  &:hover {
+    background-color: rgb(76 175 80 / 10%);
+  }
+}

@@ -1,0 +1,66 @@
+.toolBrowserModal {
+  display: flex;
+  flex-direction: column;
+
+  .searchContainer {
+    margin-bottom: var(--space-lg);
+  }
+
+  .serverCollapse {
+    max-height: 600px;
+    overflow-y: auto;
+    background: transparent;
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  margin-top: 1px;
+  min-width: 0;
+  overflow: hidden;
+
+  .serverLabel {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .toolCount {
+    flex-shrink: 0;
+    margin-left: 6px;
+    font-size: 12px;
+  }
+}
+
+.toolList {
+  display: flex;
+  flex-direction: column;
+
+  .toolItem {
+    padding-left: 0;
+    padding-right: 0;
+    box-shadow: none;
+    background-color: transparent;
+
+    .toolIcon {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 40px;
+      width: 40px;
+      min-width: 40px;
+      border: 1px solid var(--grey-border);
+      border-radius: var(--br-md);
+    }
+
+    .connectAction {
+      display: flex;
+      align-items: center;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+  }
+}

@@ -1,20 +1,27 @@
-export interface UserRequest {
+export interface StreamRequest {
   userInput: string;
-  userId: any;
   tools?: any[];
   files?: any[];
   dataSources?: any[];
 }
 
-export interface SystemResponse {
-  output: string;
-  context?: GraphContext;
+export interface ResumeRequest {
+  batchId: string;
+  sourceRequestId: string;
+  aiAssistantContext: any;
+  responseItems: Array<ElicitationResponse>;
 }
 
-export interface SystemStreamResponse {
-  textStream: ReadableStream<string>;
-  context?: GraphContext;
-  cypherQuery?: string;
+export interface ElicitationResponse {
+  confirmationId: string;
+  action: ElicitationAction;
+  content: Record<string, unknown>;
+}
+
+export enum ElicitationAction {
+  ACCEPT = 'ACCEPT',
+  DECLINE = 'DECLINE',
+  CANCEL = 'CANCEL',
 }
 
 export interface GraphContext {
@@ -23,7 +30,7 @@ export interface GraphContext {
     labels: string[];
     properties: Record<string, any>;
   }>;
-  relationships: Array<{
+  edges: Array<{
     id: string;
     type: string;
     source: string;

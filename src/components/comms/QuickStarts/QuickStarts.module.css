@@ -1,0 +1,11 @@
+.quickStarts {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+
+  .option {
+    font-size: var(--font-xs);
+    cursor: pointer;
+  }
+}

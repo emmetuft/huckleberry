@@ -1,82 +1,115 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from '../index';
-import { StreamStatus, StreamType } from 'models/enums/stream';
+import { AISessionEvent } from 'models/interfaces/sessionEvent';
 import { ProcessedFile } from 'models/interfaces/files';
-import { MCPToolCall } from 'models/interfaces/mcpServer';
-import { SystemResponse, UserRequest } from 'models/interfaces/userRequest';
+import { Tool } from 'models/interfaces/toolkit';
+import {
+  ElicitationResponse,
+  ResumeRequest,
+} from 'models/interfaces/userRequest';
 import { AgentService } from 'services/agent';
+import { DataService } from 'services/data';
+import { applyStreamEvent, setSessionId } from './slice';
+
+export const fetchDataSources = createAsyncThunk<
+  Record<string, any>,
+  string[],
+  { state: RootState }
+>('chat/fetchDataSources', async (ids, { getState }) => {
+  const cached = getState().chat.dataSources;
+  const uncachedIds = ids.filter((id) => !(id in cached));
+  if (!uncachedIds.length) return {};
+
+  const entries = await Promise.all(
+    uncachedIds.map(async (id) => {
+      const datasource = await DataService.fetchDataSource(id);
+      return [id, datasource] as const;
+    }),
+  );
+  return Object.fromEntries(entries);
+});
+
+export const fetchSessions = createAsyncThunk(
+  'chat/fetchSessions',
+  AgentService.getSessions,
+);
+
+export const fetchSession = createAsyncThunk(
+  'chat/fetchSession',
+  async (sessionId: string) => {
+    const session = await AgentService.getSession(sessionId);
+    const events = await AgentService.getSessionEvents(sessionId);
+    return { ...session, events };
+  },
+);
+
+export const deleteSession = createAsyncThunk(
+  'chat/deleteSession',
+  AgentService.deleteSession,
+);
+
+const handleStreamEvent = (
+  event: AISessionEvent,
+  dispatch: any,
+  sessionId: string | undefined,
+): void => {
+  // Capture sessionId from the first event
+  if (!sessionId && event.sessionId) {
+    dispatch(setSessionId(event.sessionId));
+  }
+
+  dispatch(applyStreamEvent(event));
+};
 
 /**
- * Send a streaming request using context builder
- * This action dispatches intermediate updates as the stream progresses
+ * Send a streaming request to the huckleberry agent
  */
-export const sendStreamingRequest = createAsyncThunk<
-  SystemResponse,
+export const executeStream = createAsyncThunk<
+  void,
   {
     userInput: string;
     files?: ProcessedFile[];
-    tools?: MCPToolCall[];
+    tools?: Tool[];
     dataSources?: any;
   },
   { state: RootState }
+>('chat/executeStream', async (params, { getState, dispatch }) => {
+  const { sessionId } = getState().chat;
+
+  for await (const event of AgentService.executeStream(params, sessionId)) {
+    handleStreamEvent(event, dispatch, sessionId);
+  }
+});
+
+/**
+ * Submit an elicitation response
+ */
+export const resumeStream = createAsyncThunk<
+  void,
+  {
+    batchId?: string;
+    requestId: string;
+    responses: Array<ElicitationResponse>;
+  },
+  { state: RootState }
 >(
-  'chat/sendStreamingRequest',
-  async ({ userInput, files, tools, dataSources }, { getState, dispatch }) => {
-    const state = getState();
-    const identity = state.app.identity;
+  'chat/resumeStream',
+  async ({ batchId, requestId, responses }, { getState, dispatch }) => {
+    const { sessionId } = getState().chat;
 
-    // Add userId, files, and tools to the query if they exist
-    const queryWithUserId: UserRequest = {
-      userInput,
-      userId: identity?.userId,
-      files,
-      tools,
-      dataSources,
-    };
-
-    let context: any = undefined;
-    let fullText = '';
-
-    // Stream the response
-    for await (const message of AgentService.queryStream(queryWithUserId)) {
-      if (message.type === StreamType.STATUS) {
-        dispatch({
-          type: 'chat/updateStreamStatus',
-          payload: message.message,
-        });
-      } else if (message.type === StreamType.STEP_START && message.step) {
-        dispatch({
-          type: 'chat/addProcessStep',
-          payload: message.step,
-        });
-      } else if (message.type === StreamType.STEP_COMPLETE && message.step) {
-        dispatch({
-          type: 'chat/updateProcessStep',
-          payload: message.step,
-        });
-      } else if (message.type === StreamType.METADATA && message.context) {
-        context = message.context;
-      } else if (message.type === StreamType.TEXT && message.content) {
-        fullText += message.content;
-        dispatch({
-          type: 'chat/appendStreamText',
-          payload: message.content,
-        });
-      } else if (message.type === StreamType.DONE) {
-        dispatch({
-          type: 'chat/updateProcessStep',
-          payload: {
-            id: 'generate-response',
-            title: 'Generating response',
-            status: StreamStatus.COMPLETE,
-          },
-        });
-      }
+    if (!sessionId || !batchId) {
+      throw new Error('Session ID or batch ID missing');
     }
 
-    return {
-      output: fullText,
-      context,
+    const params: ResumeRequest = {
+      batchId,
+      sourceRequestId: requestId,
+      aiAssistantContext: {},
+      responseItems: responses,
     };
+
+    for await (const event of AgentService.resumeStream(params, sessionId)) {
+      handleStreamEvent(event, dispatch, sessionId);
+    }
   },
 );

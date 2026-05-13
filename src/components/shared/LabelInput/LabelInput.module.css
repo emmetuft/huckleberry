@@ -1,0 +1,52 @@
+.freeformTags {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.tagList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.radioCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: var(--space-sm);
+}
+
+.radioCard {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-md);
+  border: 1.5px solid var(--grey-light);
+  border-radius: var(--br-md);
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+
+  &:hover {
+    border-color: var(--purple);
+  }
+
+  &.selected {
+    border-color: var(--purple);
+    background: var(--purple-light);
+  }
+}
+
+.radioCardLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.radioCardDesc {
+  font-size: 11px;
+  color: var(--grey-text);
+}

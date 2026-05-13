@@ -1,10 +1,9 @@
-import { FC, useEffect, useMemo, useRef, useState } from 'react';
+import { FC, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Table } from 'antd';
-import styles from './MetricCatalog.module.scss';
+import styles from './MetricCatalog.module.css';
 import { selectMetricCatalogSchema } from 'reducers/metrics/slice';
-import { departmentColors, metricCatalogDatasourceId } from 'constants/metrics';
-import { DataService } from 'services/data';
+import { departmentColors } from 'constants/metrics';
 import { renderVal } from 'utils/data';
 
 export const MetricCatalog: FC = () => {
@@ -16,25 +15,6 @@ export const MetricCatalog: FC = () => {
   const [totalRows, setTotalRows] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const loadingRef = useRef<boolean>(false);
-
-  useEffect(() => {
-    if (!loadingRef.current && metricCatalogSchema.length > 0) fetchData();
-  }, [page, size, metricCatalogSchema]);
-
-  const fetchData = async () => {
-    loadingRef.current = true;
-    setLoading(true);
-    const res = await DataService.fetchDataSourceRows({
-      dataSourceId: metricCatalogDatasourceId,
-      schema: metricCatalogSchema,
-      page,
-      pageSize: size,
-    });
-    setData(res);
-    //   setTotalRows(res.total);
-    loadingRef.current = false;
-    setLoading(false);
-  };
 
   const onChangePagination = (newPage: number, newSize: number) => {
     setPage(newPage);
@@ -73,7 +53,7 @@ export const MetricCatalog: FC = () => {
   };
 
   return (
-    <div className={styles.MetricCatalog}>
+    <div className="platformPage">
       <Table
         dataSource={data}
         columns={columns}

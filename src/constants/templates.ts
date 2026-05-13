@@ -1,22 +1,35 @@
 import { NodeType } from 'models/enums/nodeType';
+import { ActionType } from 'pages/platform/Agents/Nodes/ActionNode';
 
 export const TEMPLATE_NODES = [
   {
     id: 'node-1',
     type: NodeType.START,
-    position: { x: 800, y: 200 },
+    position: { x: 700, y: 200 },
     data: { value: 123 },
   },
   {
     id: 'node-2',
     type: NodeType.ACTION,
-    position: { x: 1000, y: 200 },
-    data: { value: 123 },
+    position: { x: 1200, y: 200 },
+    data: { actionType: ActionType.DATA_TRANSFORMATION },
   },
   {
     id: 'node-3',
+    type: NodeType.ACTION,
+    position: { x: 900, y: 400 },
+    data: { actionType: ActionType.DATA_VIS },
+  },
+  {
+    id: 'node-4',
+    type: NodeType.ACTION,
+    position: { x: 1300, y: 400 },
+    data: { actionType: ActionType.HUMAN_IN_LOOP },
+  },
+  {
+    id: 'node-5',
     type: NodeType.END,
-    position: { x: 1200, y: 200 },
+    position: { x: 1200, y: 600 },
     data: { value: 123 },
   },
 ];

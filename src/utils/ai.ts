@@ -46,8 +46,8 @@ export const isValidGraphData = (data: any): data is GraphData => {
 
 export const filterInvalidLinks = (data: GraphData): GraphData => {
   const validNodeIds = new Set(data.nodes.map((node) => node.id));
-  const filteredLinks = data.relationships.filter(
+  const filteredLinks = data.edges.filter(
     (link) => validNodeIds.has(link.source) && validNodeIds.has(link.target),
   );
-  return { ...data, relationships: filteredLinks };
+  return { ...data, edges: filteredLinks };
 };

@@ -1,0 +1,29 @@
+.resources {
+  .subHeader {
+    display: flex;
+    flex-direction: column;
+    margin: var(--space-xl) 0;
+
+    .currentDate {
+      margin-bottom: var(--space-lg);
+      font-size: var(--font-sm);
+      font-weight: 600;
+      color: var(--grey-text);
+    }
+
+    .subTabs {
+      display: flex;
+      gap: var(--space-sm);
+
+      button {
+        background-color: transparent;
+        border: none;
+        font-size: var(--font-sm);
+        font-weight: 600;
+        opacity: 1;
+        cursor: pointer;
+        transition: opacity 0.3s ease;
+      }
+    }
+  }
+}

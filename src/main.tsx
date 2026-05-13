@@ -6,7 +6,15 @@ import { BrowserRouter } from 'react-router-dom';
 import { store } from 'reducers/index.ts';
 import { AppRouter } from './AppRouter.tsx';
 
-import './index.scss';
+import {
+  AllCommunityModule,
+  CustomFilterModule,
+  ModuleRegistry,
+} from 'ag-grid-community';
+
+import './index.css';
+
+ModuleRegistry.registerModules([AllCommunityModule, CustomFilterModule]);
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
