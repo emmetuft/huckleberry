@@ -1,5 +1,5 @@
 import { NodeFilter } from 'models/interfaces/graphFilter';
-import { commonHeaders, handleResponse } from 'utils/service';
+import { handleResponse } from 'utils/service';
 
 const GRAPH_DB_URL = '/api/graph';
 
@@ -7,7 +7,6 @@ const fetchNodeModels = async <T = any>(): Promise<T[]> => {
   // TODO: Not implemented on server yet
   const response = await fetch(`${GRAPH_DB_URL}/nodes`, {
     method: 'GET',
-    headers: commonHeaders(),
   });
   return handleResponse<T[]>(response);
 };
@@ -16,7 +15,6 @@ const fetchRelationshipModels = async <T = any>(): Promise<T[]> => {
   // TODO: Not implemented on server yet
   const response = await fetch(`${GRAPH_DB_URL}/nodes`, {
     method: 'GET',
-    headers: commonHeaders(),
   });
   return handleResponse<T[]>(response);
 };
@@ -32,7 +30,6 @@ const fetchNodes = async <T = any>({
 }: FetchNodesInput): Promise<T[]> => {
   const response = await fetch(`${GRAPH_DB_URL}/nodes`, {
     method: 'POST',
-    headers: commonHeaders(),
     body: JSON.stringify({ filter, limit }),
   });
   return handleResponse<T[]>(response);
@@ -42,7 +39,6 @@ const fetchNodeLabels = async <T = unknown>(): Promise<T[]> => {
   // TODO: Not implemented on server yet
   const response = await fetch(`${GRAPH_DB_URL}/nodes`, {
     method: 'GET',
-    headers: commonHeaders(),
   });
   return handleResponse<T[]>(response);
 };
@@ -55,7 +51,6 @@ const fetchPropertyValues = async <T = unknown>(
   // TODO: Not implemented on server yet
   const response = await fetch(`${GRAPH_DB_URL}/nodes`, {
     method: 'GET',
-    headers: commonHeaders(),
   });
   return handleResponse<T[]>(response);
 };

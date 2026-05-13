@@ -126,6 +126,7 @@ export const DataHub: FC<DataHubProps> = ({}) => {
         dataSource={dataSourceList}
         columns={columns}
         loading={loading}
+        rowKey="id"
         pagination={{
           current: page,
           pageSize: size,

@@ -4,7 +4,6 @@ import { Landing } from './Landing/Landing';
 import { About } from './About/About';
 import { Features } from './Features/Features';
 import { Pricing } from './Pricing/Pricing';
-import { Docs } from './Docs/Docs';
 import { Login } from './auth/Login/Login';
 import { Signin } from './auth/Signin';
 import { Terms } from './legal/Terms/Terms';
@@ -30,10 +29,6 @@ export const publicRoutes: RouteObject[] = [
       {
         path: publicRoutePaths[PublicPage.PRICING],
         element: <Pricing />,
-      },
-      {
-        path: publicRoutePaths[PublicPage.DOCS],
-        element: <Docs />,
       },
       {
         path: publicRoutePaths[PublicPage.LOGIN],
