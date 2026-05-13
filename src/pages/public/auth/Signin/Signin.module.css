@@ -1,0 +1,32 @@
+.Signin {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 500px;
+  padding: 2rem;
+
+  .card {
+    background: #fff;
+    border: 1px solid #e6e9ff;
+    border-radius: 8px;
+    padding: 3rem;
+    max-width: 480px;
+    width: 100%;
+    text-align: center;
+
+    h1 {
+      font-size: 1.75rem;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      color: #555;
+      margin: 0.5rem 0;
+    }
+
+    a {
+      color: #4a4ad6;
+      text-decoration: underline;
+    }
+  }
+}

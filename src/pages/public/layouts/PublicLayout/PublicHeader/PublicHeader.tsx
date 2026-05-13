@@ -26,16 +26,20 @@ export const PublicHeader: FC = () => {
       </nav> */}
 
       <div className={styles.authButtons}>
-        <Button shape="round" size={isMobile ? 'small' : 'large'}>
-          Sign in
-        </Button>
-        <Button
-          type="primary"
-          shape="round"
-          size={isMobile ? 'small' : 'large'}
-        >
-          Try for free
-        </Button>
+        <Link to={publicRoutePaths[PublicPage.LOGIN]}>
+          <Button shape="round" size={isMobile ? 'small' : 'large'}>
+            Sign in
+          </Button>
+        </Link>
+        <Link to={`${publicRoutePaths[PublicPage.LOGIN]}?mode=signup`}>
+          <Button
+            type="primary"
+            shape="round"
+            size={isMobile ? 'small' : 'large'}
+          >
+            Try for free
+          </Button>
+        </Link>
       </div>
     </header>
   );

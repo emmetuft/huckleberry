@@ -45,6 +45,10 @@ export default defineConfig(({ command }) => {
     },
     clearScreen: false,
     server: {
+      // Pin the dev server so cookies stay same-origin through the proxy
+      // and the BFF's MAGIC_LINK_BASE_URL (http://localhost:5173) lines up.
+      port: 5173,
+      strictPort: true,
       proxy: {
         '/api': {
           target: 'http://localhost:3000',

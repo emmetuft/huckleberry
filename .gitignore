@@ -34,3 +34,7 @@ dist-ssr
 # production
 /build
 /src/manifest.tmp.json
+
+# pnpm is the package manager. Don't track competing lockfiles.
+package-lock.json
+yarn.lock

@@ -29,8 +29,8 @@ Huckleberry AI is a sophisticated data management and automation platform that p
 
 ### Prerequisites
 
-- Node.js (v16 or higher recommended)
-- Yarn package manager
+- Node.js 20+
+- pnpm 8+ (`npm install -g pnpm` if you don't have it)
 - Domo Developer Account (for deployment)
 
 ### Installation
@@ -45,18 +45,69 @@ Huckleberry AI is a sophisticated data management and automation platform that p
 2. Install dependencies:
 
    ```bash
-   yarn install
+   pnpm install
    ```
+
+> This project uses **pnpm** exclusively. `pnpm-lock.yaml` is the source of truth; `package-lock.json` and `yarn.lock` are gitignored.
 
 ### Running the Application
 
-Start the development server:
-
 ```bash
-yarn start
+# Dev server (Vite) — http://localhost:5173, /api + /domo proxied to huckleberry-server on :3000
+pnpm dev
 ```
 
-The application will run at `http://localhost:3000` (or the next available port).
+The Vite dev server is pinned to port 5173 and proxies:
+- `/api/*` → `http://localhost:3000` (huckleberry-server BFF)
+- `/domo/*` → `http://localhost:3000` (Domo passthrough used by the proxy module)
+
+Keeping all browser requests on `localhost:5173` means the `hb_session` and `csrf_token` cookies stay same-origin — no CORS pre-flights, no SameSite quirks.
+
+### Authentication — magic-link sign-in (freemium auto-provisioning)
+
+There is no password. Sign-in / signup flow:
+
+1. `/login` — enter your email, hit "Send me a sign-in link."
+2. **If the email is new, the BFF auto-provisions a Domo instance** (stubbed in local dev — returns the dev instance) and creates the huckleberry user. If the email already has an account, just sends a magic-link.
+3. Email contains `http://localhost:5173/auth/signin?token=...`.
+4. `/auth/signin` consumes the token. BFF sets `hb_session` + `csrf_token` cookies. SPA navigates to `/workspace` (or `?next=` target).
+5. `AuthGuard` (`src/components/layouts/AuthGuard/AuthGuard.tsx`) calls `GET /api/auth/me` on every mount; 401 redirects to `/login?next=<path>`.
+
+The user's Domo instance is linked at signup time via a server-to-server `client_credentials` grant — no browser visit to Domo, no consent screen, no `pending_link` intermediate state. Every Domo API call the BFF makes uses that link's service token. See the **huckleberry-server** README for the full setup instructions (registering the confidential OAuth client on the dev Domo instance, env vars, etc.).
+
+Where the wiring lives:
+
+| Path | Purpose |
+|---|---|
+| `src/services/auth.ts` | API client — `requestMagicLink`, `consumeMagicLink`, `me`, `logout`. Handles the `{ data: ... }` envelope and double-submit CSRF tokens. |
+| `src/pages/public/auth/Login/Login.tsx` | Magic-link request form. |
+| `src/pages/public/auth/Signin/Signin.tsx` | Magic-link callback. Honors `?next=` for post-signin redirect. |
+| `src/components/layouts/AuthGuard/AuthGuard.tsx` | Session gate on platform routes. |
+
+### Quick smoke test
+
+With both servers running (see huckleberry-server README for env setup):
+
+1. Open `http://localhost:5173/login`, type any email (no pre-seeding needed — freemium auto-signup).
+2. Watch the BFF terminal for `[SignupService] provisioned instance ...` and `[magic-link] url=http://localhost:5173/auth/signin?token=...`.
+3. Click that URL. You should land at `/workspace` with cookies set.
+4. DevTools console:
+   ```js
+   await fetch('/api/auth/me').then((r) => r.json());
+   // → { ..., data: { id, email, status: 'active', displayName } }
+   await fetch('/api/identity').then((r) => r.json());
+   // → Domo user (the service-account identity for that customer)
+   ```
+5. Clear cookies + refresh → `AuthGuard` bounces you to `/login?next=/workspace`.
+
+To log out from the console:
+```js
+fetch('/api/auth/logout', {
+  method: 'POST',
+  credentials: 'same-origin',
+  headers: { 'x-csrf-token': document.cookie.match(/csrf_token=([^;]+)/)[1] },
+}).then(() => location.href = '/login');
+```
 
 ## Project Structure
 
@@ -119,7 +170,7 @@ This project uses automated code quality checks:
 2. Make your changes and ensure they pass checks:
 
    ```bash
-   yarn run-checks
+   pnpm run-checks
    ```
 
 3. Commit your changes:
@@ -177,6 +228,11 @@ Configure AI personas with:
 - **D3.js** - Advanced visualizations
 - **Phosphor Icons** - Icon library
 
+### Domo Platform
+
+- **@domoinc/toolkit** - Domo platform integration
+- **ryuu.js** - Domo data API client
+
 ### Development Tools
 
 - **ESLint** - Code linting
@@ -220,8 +276,8 @@ Write tests for:
 Run tests:
 
 ```bash
-yarn test          # Watch mode
-yarn test:ci       # Single run
+pnpm test          # Watch mode
+pnpm test:ci       # Single run
 ```
 
 ## Support

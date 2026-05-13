@@ -2,13 +2,14 @@
   "name": "huckleberry-ai",
   "version": "0.0.2",
   "type": "module",
+  "packageManager": "pnpm@8.15.0",
   "scripts": {
     "prepare": "husky",
     "dev": "vite",
     "start": "vite",
-    "build": "yarn run-checks && vite build",
-    "preview": "yarn build && vite preview",
-    "run-checks": "yarn format && yarn lint && yarn lint:css && yarn test:ci",
+    "build": "pnpm run-checks && vite build",
+    "preview": "pnpm build && vite preview",
+    "run-checks": "pnpm format && pnpm lint && pnpm lint:css && pnpm test:ci",
     "format": "prettier --ignore-unknown --write \"src/**/*.{ts,tsx,js,jsx,json,css,scss}\"",
     "lint": "eslint",
     "lint:css": "stylelint \"src/**/*.css\"",
@@ -17,13 +18,17 @@
     "storybook": "storybook dev -p 6006",
     "generate": "da generate"
   },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=8.0.0"
+  },
   "moduleDirectories": [
     "node_modules",
     "src"
   ],
   "lint-staged": {
     "*": [
-      "yarn run-checks",
+      "pnpm run-checks",
       "git update-index --again"
     ]
   },
@@ -48,6 +53,7 @@
     "@types/three": "^0.181.0",
     "@uiw/react-codemirror": "^4.25.2",
     "@xyflow/react": "^12.8.1",
+    "ag-grid-community": "^35.2.1",
     "ag-grid-react": "^35.2.1",
     "ai": "^6.0.33",
     "antd": "6",
@@ -75,8 +81,8 @@
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^1.9.0",
-    "@domoinc/da": "2.0.0",
-    "@domoinc/ryuu-proxy": "^4.4.0",
+    "@domoinc/da": "2.3.0",
+    "@domoinc/ryuu-proxy": "^5.1.0-beta.1",
     "@eslint/js": "^9.10.0",
     "@storybook/addon-essentials": "^8.3.2",
     "@storybook/addon-interactions": "^8.3.2",

@@ -7,7 +7,8 @@ export enum PublicPage {
   FEATURES = 'features',
   PRICING = 'pricing',
   LOGIN = 'login',
-  SIGNUP = 'signup',
+  // Magic-link callback — lands here from the email with ?token=...
+  SIGNIN = 'signin',
   TERMS = 'terms',
   PRIVACY = 'privacy',
 }
@@ -51,7 +52,7 @@ export const publicRoutePaths: Record<PublicPage, string> = {
   [PublicPage.FEATURES]: '/features',
   [PublicPage.PRICING]: '/pricing',
   [PublicPage.LOGIN]: '/login',
-  [PublicPage.SIGNUP]: '/signup',
+  [PublicPage.SIGNIN]: '/auth/signin',
   [PublicPage.TERMS]: '/terms',
   [PublicPage.PRIVACY]: '/privacy',
 };
