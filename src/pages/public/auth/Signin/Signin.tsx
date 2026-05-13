@@ -1,7 +1,7 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AuthService } from 'services/auth';
-import styles from './Signin.module.scss';
+import styles from './Signin.module.css';
 
 /**
  * Magic-link callback. Lands at `/auth/signin?token=...` from the email,
@@ -29,14 +29,20 @@ export const Signin: FC = () => {
     }
 
     AuthService.consumeMagicLink(token)
-      .then(({ needsLinkage }) => {
-        // TODO(layer-b): when /onboarding/link-domo exists, route there
-        //                on needsLinkage. For MVP we let users land in the
-        //                app without a Domo link; Category A calls will
-        //                surface the "no link" state once Layer B is wired.
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const _todo = needsLinkage;
-        navigate('/workspace', { replace: true });
+      .then(async ({ needsLinkage }) => {
+        if (needsLinkage) {
+          // First sign-in for this user — bounce straight into the Domo
+          // OAuth linkage flow so they don't have to click anything else.
+          // The BFF callback redirects to /workspace?linked=1 on success.
+          const { authorizeUrl } = await AuthService.startDomoLink();
+          window.location.href = authorizeUrl;
+          return;
+        }
+        const next = params.get('next');
+        // Only honor in-app paths — never redirect to off-site URLs even if
+        // an attacker controls the magic-link query string.
+        const target = next && next.startsWith('/') ? next : '/workspace';
+        navigate(target, { replace: true });
       })
       .catch((err: Error) => {
         setError(

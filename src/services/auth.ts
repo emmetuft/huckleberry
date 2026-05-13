@@ -54,8 +54,9 @@ function withCsrf(init: RequestInit = {}): RequestInit {
 }
 
 /**
- * Send a magic-link email. Always succeeds with 202 — even for unknown
- * emails — so we can't be used as an account-existence oracle.
+ * Send a sign-in magic-link. Server only sends if a user with this email
+ * already exists; otherwise it silently no-ops. Returns 202 either way
+ * (existence-oracle protection).
  */
 async function requestMagicLink(email: string): Promise<void> {
   const res = await fetch(
@@ -67,6 +68,26 @@ async function requestMagicLink(email: string): Promise<void> {
   );
   if (!res.ok && res.status !== 202) {
     throw new Error(`signin request failed: HTTP ${res.status}`);
+  }
+}
+
+/**
+ * Sign up: provisions a Domo instance + user, creates the huckleberry
+ * account in `pending_link` status, and sends a magic-link email. After
+ * the user clicks the link, the first sign-in kicks them into the PKCE
+ * auth-code flow to mint a refresh token. Returns 202 even if the email
+ * already exists (idempotent, existence-oracle protection).
+ */
+async function signup(email: string): Promise<void> {
+  const res = await fetch(
+    `${BASE}/signup`,
+    withCsrf({
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    }),
+  );
+  if (!res.ok && res.status !== 202) {
+    throw new Error(`signup failed: HTTP ${res.status}`);
   }
 }
 
@@ -93,9 +114,26 @@ async function logout(): Promise<void> {
   await fetch(`${BASE}/logout`, withCsrf({ method: 'POST' }));
 }
 
+/**
+ * Start the Domo OAuth linkage flow. POSTs to the BFF, which generates
+ * PKCE + state and returns the Gatekeeper authorize URL. Caller should
+ * `window.location.href = result.authorizeUrl` to send the browser into
+ * the OAuth flow. After consent, the BFF's callback redirects back to
+ * `/workspace?linked=1`.
+ */
+async function startDomoLink(): Promise<{ authorizeUrl: string }> {
+  const res = await fetch(
+    `${BASE}/domo/link/start`,
+    withCsrf({ method: 'POST', body: '{}' }),
+  );
+  return parseJson<{ authorizeUrl: string }>(res);
+}
+
 export const AuthService = {
   requestMagicLink,
+  signup,
   consumeMagicLink,
+  startDomoLink,
   me,
   logout,
 };
