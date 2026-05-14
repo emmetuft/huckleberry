@@ -61,7 +61,11 @@ The Vite dev server is pinned to port 5173 and proxies:
 - `/api/*` → `http://localhost:3000` (huckleberry-server BFF)
 - `/domo/*` → `http://localhost:3000` (Domo passthrough used by the proxy module)
 
-Keeping all browser requests on `localhost:5173` means the `hb_session` and `csrf_token` cookies stay same-origin — no CORS pre-flights, no SameSite quirks.
+Keeping all browser requests on `localhost:5173` means the `hb_session` and `csrf_token` cookies stay same-origin — no CORS pre-flights, no SameSite quirks. (In production, CloudFront takes Vite's place — same `/api/*` proxy pattern, same same-origin cookie behavior.)
+
+### AWS deployment
+
+S3 + CloudFront + Route 53 + GitHub Actions CD pipeline runbook: **[`docs/deployment-fe.md`](docs/deployment-fe.md)**.
 
 ### Authentication — magic-link sign-in (freemium auto-provisioning)
 
