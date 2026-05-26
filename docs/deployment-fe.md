@@ -1,6 +1,10 @@
 # Frontend deployment — AWS production
 
-End-to-end runbook for getting the Huckleberry SPA hosted on S3 + CloudFront, fronted by Route 53, with a CD pipeline triggered by `git push`. Sibling doc for the BFF: `~/dev/huckleberry-server/docs/deployment-bff.md`.
+End-to-end runbook for getting the Huckleberry SPA hosted on S3 + CloudFront, fronted by Route 53, with a CD pipeline triggered by `git push`.
+
+**Prereq:** laptop-side AWS access set up per **[`~/dev/huckleberry-server/docs/aws-local-setup.md`](../../huckleberry-server/docs/aws-local-setup.md)** (AWS CLI, SSO profile). The S3-upload smoke step below assumes you can already run `aws s3 ls`.
+
+**Sibling doc:** `~/dev/huckleberry-server/docs/deployment-bff.md` — same shape, for the BFF.
 
 ## What you're standing up
 
