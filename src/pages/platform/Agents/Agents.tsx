@@ -1,71 +1,68 @@
-import { FC, useCallback } from 'react';
-import { useSelector } from 'react-redux';
-import {
-  ReactFlow,
-  Background,
-  useNodesState,
-  useEdgesState,
-  addEdge,
-  BackgroundVariant,
-  Edge,
-  ConnectionLineType,
-} from '@xyflow/react';
-import '@xyflow/react/dist/style.css';
-// import styles from './Agents.module.css';
-import { selectTheme } from 'reducers/app/slice';
-import { TEMPLATE_NODES } from 'constants/templates';
-import { NodeType } from 'models/enums/nodeType';
-import { Chat } from './Chat/Chat';
-import { StartNode } from './Nodes/StartNode';
-import { EndNode } from './Nodes/EndNode';
-import { ActionNode } from './Nodes/ActionNode';
+import { FC, useState } from 'react';
+import styles from './Agents.module.css';
+import { agentCategories, AgentCategory, AgentList } from 'constants/agent';
+import { PageControls } from 'components/shared/PageControls/PageControls';
+import { AnimatePresence, motion } from 'framer-motion';
+import { defaultMotionProps } from 'constants/styles';
+import { AgentCard } from './AgentCard';
 
-const nodeTypes = {
-  [NodeType.START]: StartNode,
-  [NodeType.END]: EndNode,
-  [NodeType.ACTION]: ActionNode,
-};
-
-interface AgentsProps {}
-
-export const Agents: FC<AgentsProps> = ({}) => {
-  const theme = useSelector(selectTheme);
-  const isDark = theme === 'dark';
-
-  const [nodes, setNodes, onNodesChange] = useNodesState(TEMPLATE_NODES);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([] as Edge[]);
-
-  const onConnect = useCallback(
-    (params: Parameters<typeof addEdge>[0]) => {
-      setEdges((eds) =>
-        addEdge({ ...params, type: ConnectionLineType.SmoothStep }, eds),
-      );
-    },
-    [setEdges],
-  );
+export const Agents: FC = () => {
+  const [activeTab, setActiveTab] = useState<string>('yours');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] =
+    useState<AgentCategory | null>(null);
 
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
-      <Chat />
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        nodeTypes={nodeTypes}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        connectionLineType={ConnectionLineType.SmoothStep}
-        fitView
-        fitViewOptions={{ padding: 2 }}
-      >
-        <Background
-          variant={BackgroundVariant.Dots}
-          gap={25}
-          size={2}
-          color={isDark ? '#727272ff' : '#b7b6b6'}
-          bgColor={isDark ? '#1a1a1a' : '#f6f6f6'}
-        />
-      </ReactFlow>
-    </div>
+    <>
+      <PageControls
+        tabs={[
+          { label: 'Yours', value: 'yours' },
+          { label: 'Available', value: 'available' },
+        ]}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        searchValue={searchQuery}
+        onSearchChange={setSearchQuery}
+        searchPlaceholder={
+          activeTab === 'yours' ? 'Search your agents' : 'Search agents'
+        }
+        filters={[
+          {
+            value: selectedCategory,
+            onChange: (val) => setSelectedCategory(val ?? null),
+            options: [
+              { label: 'Any category', value: null },
+              ...agentCategories.map((c) => ({
+                label: c.label,
+                value: c.value,
+              })),
+            ],
+          },
+        ]}
+      />
+      {activeTab === 'yours' ? (
+        <AnimatePresence>
+          <motion.div key="yours" {...defaultMotionProps}>
+            temp
+          </motion.div>
+        </AnimatePresence>
+      ) : (
+        <AnimatePresence>
+          <motion.div key="available" {...defaultMotionProps}>
+            <div className={styles.agentGrid}>
+              {AgentList.map((agent) => (
+                <AgentCard key={agent.id} agent={agent} />
+              ))}
+            </div>
+            {/* {loading && (
+              <div className={styles.loadingMore}>
+                <Spin size="small" />
+              </div>
+            )}
+            <div ref={sentinelRef} /> */}
+          </motion.div>
+        </AnimatePresence>
+      )}
+    </>
   );
 };

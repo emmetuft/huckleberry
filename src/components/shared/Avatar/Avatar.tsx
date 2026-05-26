@@ -15,7 +15,7 @@ export const Avatar: FC<AvatarProps> = ({
   userId,
   name,
   showName = false,
-  height = 30,
+  height = 26,
 }) => {
   const src = userId ? getAvatarUrl(userId) : '';
 

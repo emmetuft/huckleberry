@@ -1,8 +1,6 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Button, Input, Select, Spin } from 'antd';
-import { MagnifyingGlassIcon } from '@phosphor-icons/react';
-import { useIsMobile } from 'hooks/useIsMobile';
+import { Spin } from 'antd';
 import styles from './Integrations.module.css';
 import {
   ConnectorCategory,
@@ -12,17 +10,18 @@ import {
 } from 'constants/integrations';
 import { defaultMotionProps } from 'constants/styles';
 import { Connector, ConnectorFilter } from 'models/interfaces/connector';
+import { PageControls } from 'components/shared/PageControls/PageControls';
 import { ConnectorCard } from './ConnectorCard';
+import { ConnectorTable } from './ConnectorTable';
 import { ConnectorsService } from 'services/connectors';
 import { buildFilters } from 'utils/data';
-import { ConnectorTable } from './ConnectorTable';
 
 const PAGE_SIZE = 48;
 
 interface IntegrationsProps {}
 
 export const Integrations: FC<IntegrationsProps> = () => {
-  const isMobile = useIsMobile();
+  const [activeTab, setActiveTab] = useState<string>('connected');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] =
     useState<ConnectorCategory | null>(null);
@@ -83,66 +82,47 @@ export const Integrations: FC<IntegrationsProps> = () => {
     return () => observer.disconnect();
   }, [hasMore, loading]);
 
-  const [activeTab, setActiveTab] = useState<string>('connected');
-
   return (
-    <div className="platformPage">
-      <div className={styles.controlsWrapper}>
-        <div className={styles.controls}>
-          <Button
-            shape="round"
-            type={activeTab === 'connected' ? 'primary' : 'default'}
-            onClick={() => setActiveTab('connected')}
-          >
-            Connected
-          </Button>
-          <Button
-            shape="round"
-            type={activeTab === 'available' ? 'primary' : 'default'}
-            onClick={() => setActiveTab('available')}
-          >
-            Available
-          </Button>
-        </div>
-        <div className={styles.controls}>
-          <Input
-            placeholder={
-              activeTab === 'connected'
-                ? 'Search your connectors'
-                : 'Search connectors'
-            }
-            prefix={<MagnifyingGlassIcon />}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <Select
-            variant="filled"
-            popupMatchSelectWidth={false}
-            value={selectedCategory}
-            onChange={(val) => setSelectedCategory(val ?? null)}
-            options={[
+    <>
+      <PageControls
+        tabs={[
+          { label: 'Connected', value: 'connected' },
+          { label: 'Available', value: 'available' },
+        ]}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        searchValue={searchQuery}
+        onSearchChange={setSearchQuery}
+        searchPlaceholder={
+          activeTab === 'connected'
+            ? 'Search your connectors'
+            : 'Search connectors'
+        }
+        filters={[
+          {
+            value: selectedCategory,
+            onChange: (val) => setSelectedCategory(val ?? null),
+            options: [
               { label: 'Any category', value: null },
               ...connectorCategories.map((c) => ({
                 label: c.label,
                 value: c.value,
               })),
-            ]}
-          />
-          <Select
-            variant="filled"
-            popupMatchSelectWidth={false}
-            value={selectedType}
-            onChange={(val) => setSelectedType(val ?? null)}
-            options={[
+            ],
+          },
+          {
+            value: selectedType,
+            onChange: (val) => setSelectedType(val ?? null),
+            options: [
               { label: 'Any type', value: null },
               ...connectorTypes.map((t) => ({
                 label: t.label,
                 value: t.value,
               })),
-            ]}
-          />
-        </div>
-      </div>
+            ],
+          },
+        ]}
+      />
       {activeTab === 'connected' ? (
         <AnimatePresence>
           <motion.div key="connected" {...defaultMotionProps}>
@@ -169,6 +149,6 @@ export const Integrations: FC<IntegrationsProps> = () => {
           </motion.div>
         </AnimatePresence>
       )}
-    </div>
+    </>
   );
 };

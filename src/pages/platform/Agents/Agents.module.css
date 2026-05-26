@@ -1,2 +1,15 @@
-.agents {
+.agentGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-xl);
+}
+
+.agentIcon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 45px;
+  width: 45px;
+  background-color: var(--grey-dark);
+  border-radius: var(--br-lg);
 }

@@ -1,6 +1,6 @@
 import { FC, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import { useLocation, Outlet } from 'react-router-dom';
+import { useLocation, matchPath, Outlet } from 'react-router-dom';
 import { ConfigProvider } from 'antd';
 import { Toaster } from 'sonner';
 import styles from './PlatformLayout.module.css';
@@ -10,7 +10,11 @@ import { selectIdentity, selectTheme, setPage } from 'reducers/app/slice';
 import { fetchSessions } from 'reducers/chat/actions';
 import { fetchGroups, fetchUsers } from 'reducers/people/actions';
 import { fetchToolkits } from 'reducers/toolkits/actions';
-import { getAppPageFromPath } from 'models/enums/appPage';
+import {
+  AppPage,
+  getAppPageFromPath,
+  platformRoutePaths,
+} from 'models/enums/appPage';
 import { PromptBar } from 'components/comms/PromptBar/PromptBar';
 import { DuckDBProvider } from 'components/duckdb/DuckDBProvider';
 import Database from 'components/duckdb/Database';
@@ -45,7 +49,12 @@ export const PlatformLayout: FC = () => {
     dispatch(setPage(appPage));
   }, [location.pathname, dispatch]);
 
-  const hidePromptBar = ['/workspace', '/agents'].includes(location.pathname);
+  const isAgentDetail = !!matchPath(
+    platformRoutePaths[AppPage.AGENT_DETAIL],
+    location.pathname,
+  );
+  const hidePromptBar = location.pathname === '/workspace' || isAgentDetail;
+  const hidePadding = isAgentDetail;
 
   return (
     <ConfigProvider
@@ -66,10 +75,14 @@ export const PlatformLayout: FC = () => {
     >
       <DuckDBProvider>
         <div className={styles.platformLayout}>
-          <Heading />
           <Nav />
-          {!hidePromptBar && <PromptBar />}
-          <Outlet />
+          <div
+            className={`${styles.pageLayout} ${hidePadding ? styles.noPadding : ''}`}
+          >
+            <Heading />
+            {!hidePromptBar && <PromptBar />}
+            <Outlet />
+          </div>
         </div>
         <Database />
       </DuckDBProvider>

@@ -16,6 +16,7 @@ export enum PublicPage {
 // Platform pages (authenticated)
 export enum AppPage {
   AGENTS = 'agents',
+  AGENT_DETAIL = 'agent_detail',
   APPS = 'apps',
   AUTOMATION = 'automation',
   DATA_HEALTH = 'data_health',
@@ -32,6 +33,7 @@ export enum AppPage {
 
 export const AppPageTitle: Record<string, string> = {
   [AppPage.AGENTS]: 'Agents',
+  [AppPage.AGENT_DETAIL]: 'Agent',
   [AppPage.APPS]: 'Applications',
   [AppPage.AUTOMATION]: 'Automation Rules',
   [AppPage.DATA_HEALTH]: 'Data Health',
@@ -46,6 +48,8 @@ export const AppPageTitle: Record<string, string> = {
 };
 
 export const AppPageSubtitle: Record<string, string> = {
+  [AppPage.AGENTS]:
+    'Discover and create custom agents that combine instructions, extra knowledge, and any combination of tasks.',
   [AppPage.INTEGRATIONS]: 'Manage your connected data sources',
 };
 
@@ -65,6 +69,7 @@ export const publicRoutePaths: Record<PublicPage, string> = {
 export const platformRoutePaths: Record<AppPage, string> = {
   [AppPage.APPS]: '/apps',
   [AppPage.AGENTS]: '/agents',
+  [AppPage.AGENT_DETAIL]: '/agents/:agentId',
   [AppPage.AUTOMATION]: '/automation',
   [AppPage.DATA_HEALTH]: '/data-health',
   [AppPage.DATA_HUB]: '/data-hub',

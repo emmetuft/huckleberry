@@ -1,0 +1,13 @@
+.chat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  width: 50vw;
+  padding: var(--space-xl);
+  box-sizing: border-box;
+
+  .chatHeader {
+    display: flex;
+    justify-content: space-between;
+  }
+}

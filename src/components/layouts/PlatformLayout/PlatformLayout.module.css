@@ -1,9 +1,22 @@
 .platformLayout {
   display: flex;
-  flex-direction: column;
   height: 100vh;
   width: 100vw;
   background-color: var(--background);
+  overflow: hidden;
+
+  .pageLayout {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: var(--default-page-padding);
+    overflow-y: auto;
+    min-height: 0;
+
+    &.noPadding {
+      padding: 0;
+    }
+  }
 }
 
 .home {

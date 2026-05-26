@@ -5,7 +5,7 @@ import styles from './Heading.module.css';
 import { useAppDispatch } from 'reducers';
 import { selectPage } from 'reducers/app/slice';
 import { selectTab, setTab } from 'reducers/applications/slice';
-import { AppPage, AppPageLabel } from 'models/enums/appPage';
+import { AppPage, AppPageTitle, AppPageSubtitle } from 'models/enums/appPage';
 
 interface HeadingProps {}
 
@@ -14,7 +14,7 @@ export const Heading: FC<HeadingProps> = ({}) => {
   const appPage = useSelector(selectPage);
   const applicationTab = useSelector(selectTab);
 
-  const pageTitle = useMemo(() => {
+  const headingContent = useMemo(() => {
     switch (appPage) {
       case AppPage.APPS:
         return (
@@ -28,16 +28,23 @@ export const Heading: FC<HeadingProps> = ({}) => {
             />
           </div>
         );
-      case AppPage.AGENTS:
+      case AppPage.AGENT_DETAIL:
       case AppPage.DATASOURCE:
       case AppPage.HOME:
       case AppPage.ONTOLOGY:
       case AppPage.PROJECT_DETAIL:
         return null;
       default:
-        return AppPageLabel[appPage];
+        return (
+          <>
+            <h1>{AppPageTitle[appPage]}</h1>
+            <p>{AppPageSubtitle[appPage]}</p>
+          </>
+        );
     }
   }, [appPage, applicationTab]);
 
-  return pageTitle ? <div className={styles.heading}>{pageTitle}</div> : null;
+  return headingContent ? (
+    <div className={styles.heading}>{headingContent}</div>
+  ) : null;
 };

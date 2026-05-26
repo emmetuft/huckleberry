@@ -31,7 +31,7 @@ import {
 } from 'reducers/app/slice';
 import { setFullScreen } from 'reducers/chat/slice';
 import { appList } from 'constants/applications';
-import { AppPage, AppPageLabel } from 'models/enums/appPage';
+import { AppPage, AppPageTitle } from 'models/enums/appPage';
 import { Avatar } from 'components/shared/Avatar/Avatar';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
 import AppTooltip from 'components/shared/Tooltip';
@@ -68,7 +68,7 @@ export const Nav: FC<NavProps> = ({}) => {
   };
 
   const isMobile = useIsMobile();
-  const iconSize = isMobile ? 18 : 22;
+  const iconSize = isMobile ? 18 : 16;
 
   const navIconMap: Record<string, any> = {
     [AppPage.APPS]: <SquaresFourIcon size={iconSize} />,
@@ -90,12 +90,7 @@ export const Nav: FC<NavProps> = ({}) => {
     AppPage.METRICS,
     AppPage.PROJECTS,
   ];
-  const lowerPages = [
-    AppPage.AGENTS,
-    AppPage.INTEGRATIONS,
-    // AppPage.AUTOMATION,
-    AppPage.APPS,
-  ];
+  const lowerPages = [AppPage.AGENTS, AppPage.INTEGRATIONS, AppPage.APPS];
 
   React.useEffect(() => {
     setMobileOpen(false);
@@ -104,7 +99,7 @@ export const Nav: FC<NavProps> = ({}) => {
   const renderIconBtn = (page: AppPage) => (
     <AppTooltip
       key={page}
-      title={AppPageLabel[page]}
+      title={AppPageTitle[page]}
       placement="right"
       mouseEnterDelay={0.5}
     >
@@ -126,13 +121,12 @@ export const Nav: FC<NavProps> = ({}) => {
       {mobileOpen && (
         <div className={styles.overlay} onClick={() => setMobileOpen(false)} />
       )}
-      <div className={`${styles.nav} ${mobileOpen ? styles.navOpen : ''} card`}>
-        <Link
-          to={platformRoutePaths[AppPage.HOME]}
-          className={styles.logo}
-          onClick={onClickLogo}
-        >
-          <img src={`/static/logo${isDark ? '-light' : ''}.svg`} width="100%" />
+      <div className={`${styles.nav} ${mobileOpen ? styles.navOpen : ''}`}>
+        <Link to={platformRoutePaths[AppPage.HOME]} onClick={onClickLogo}>
+          <img
+            className={styles.logo}
+            src={`/static/logo${isDark ? '-light' : ''}.svg`}
+          />
         </Link>
         <div className={styles.buttons}>
           <AppTooltip
@@ -183,7 +177,7 @@ export const Nav: FC<NavProps> = ({}) => {
           ))}
         </div>
         <div className={`${styles.buttons} ${styles.bottom}`}>
-          <AppTooltip title={incognitoMode ? 'Memory off' : 'Memory on'}>
+          {/* <AppTooltip title={incognitoMode ? 'Memory off' : 'Memory on'}>
             <Button
               icon={
                 <div
@@ -197,7 +191,7 @@ export const Nav: FC<NavProps> = ({}) => {
               }
               onClick={() => dispatch(setIncognitoMode(!incognitoMode))}
             />
-          </AppTooltip>
+          </AppTooltip> */}
           <AppTooltip title={isDark ? 'Dark mode' : 'Light mode'}>
             <div>
               <IconBtn

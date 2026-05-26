@@ -16,7 +16,6 @@ export const appList: Application[] = [
     id: 'march-madness',
     name: 'March Madness',
     description: 'Track game scores and predict outcomes',
-    inDock: true,
     favorite: true,
   },
   {
