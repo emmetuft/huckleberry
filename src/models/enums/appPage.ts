@@ -30,19 +30,23 @@ export enum AppPage {
   PROJECT_DETAIL = 'project_detail',
 }
 
-export const AppPageLabel: Record<string, string> = {
+export const AppPageTitle: Record<string, string> = {
   [AppPage.AGENTS]: 'Agents',
   [AppPage.APPS]: 'Applications',
   [AppPage.AUTOMATION]: 'Automation Rules',
   [AppPage.DATA_HEALTH]: 'Data Health',
   [AppPage.DATA_HUB]: 'Data Hub',
   [AppPage.HOME]: 'Home',
-  [AppPage.INTEGRATIONS]: 'Integrations',
+  [AppPage.INTEGRATIONS]: 'Connectors',
   [AppPage.METRICS]: 'Metric Catalog',
   [AppPage.ONTOLOGY]: 'Business Ontology',
   [AppPage.PROFILE]: 'Profile',
   [AppPage.PROJECTS]: 'Projects',
   [AppPage.PROJECT_DETAIL]: 'Project Detail',
+};
+
+export const AppPageSubtitle: Record<string, string> = {
+  [AppPage.INTEGRATIONS]: 'Manage your connected data sources',
 };
 
 // Public route paths

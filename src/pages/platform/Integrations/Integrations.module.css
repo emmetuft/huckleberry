@@ -1,77 +1,18 @@
-:global(.ant-tabs) {
-  flex: 1;
-  min-height: 0;
+.controlsWrapper {
   display: flex;
-  flex-direction: column;
-}
+  gap: 50px;
+  margin-bottom: var(--space-xl);
 
-:global(.ant-tabs-content-holder) {
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-}
-
-:global(.ant-tabs-content),
-:global(.ant-tabs-tabpane-active) {
-  height: 100%;
-  overflow: hidden;
-}
-
-.tabPane {
-  height: 100%;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.layout {
-  display: flex;
-  gap: var(--space-xl);
-  flex: 1;
-  min-height: 0;
-
-  .left {
-    flex: 1;
-    overflow-y: auto;
-  }
-
-  .right {
-    flex: 4;
+  .controls {
     display: flex;
-    flex-direction: column;
-    gap: var(--space-sm);
-    min-height: 0;
+    gap: var(--space-md);
   }
-}
-
-.searchRow {
-  display: flex;
-  gap: var(--space-sm);
-
-  .categorySelect {
-    flex: 1;
-  }
-
-  .searchInput {
-    flex: 2;
-  }
-}
-
-.gridWrapper {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  padding: var(--space-xs);
 }
 
 .integrationGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--space-xl);
-
-  &.available {
-    grid-template-columns: 1fr 1fr 1fr;
-  }
 }
 
 .loadingMore {
@@ -80,20 +21,62 @@
   padding: var(--space-lg) 0;
 }
 
-@media (width <= 768px) {
-  .layout {
-    flex-direction: column;
+.connector {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  min-height: 300px;
+  padding: var(--space-2xl);
+  background-color: var(--grey-bg);
+  border-radius: 30px;
 
-    .right {
-      gap: var(--space-md);
+  .heading {
+    display: flex;
+    justify-content: space-between;
+
+    .logo {
+      width: 20px;
+      height: 20px;
+      border-radius: var(--br-sm);
+    }
+  }
+
+  h4 {
+    font-size: var(--font-md);
+    font-weight: 600;
+  }
+
+  p {
+    font-size: var(--font-xs);
+    color: var(--grey-text);
+  }
+
+  .viewBtn {
+    margin-top: auto;
+    font-size: var(--font-xs);
+    color: var(--grey-text);
+    cursor: pointer;
+  }
+}
+
+@media (width <= 768px) {
+  .controlsWrapper {
+    flex-wrap: wrap;
+    gap: var(--space-md);
+
+    .controls {
+      flex-wrap: wrap;
     }
   }
 
   .integrationGrid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-lg);
+  }
 
-    &.available {
-      grid-template-columns: 1fr 1fr;
-    }
+  .connector {
+    min-height: unset;
+    padding: var(--space-lg);
+    border-radius: var(--br-lg);
   }
 }

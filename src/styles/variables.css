@@ -30,12 +30,13 @@
   --node-yellow: #e6bf3e;
 
   /* Spacing + Sizing */
-  --default-page-padding: 60px 20px 20px 102px;
+  --default-page-padding: 83px 76px;
   --space-xs: 4px;
   --space-sm: 8px;
   --space-md: 12px;
   --space-lg: 16px;
   --space-xl: 20px;
+  --space-2xl: 28px;
   --br-sm: 4px;
   --br-md: 8px;
   --br-lg: 12px;

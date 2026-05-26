@@ -1,26 +1,32 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Input, Menu, MenuProps, Segmented, Select, Spin, Tabs } from 'antd';
+import { Button, Input, Select, Spin } from 'antd';
+import { MagnifyingGlassIcon } from '@phosphor-icons/react';
 import { useIsMobile } from 'hooks/useIsMobile';
 import styles from './Integrations.module.css';
-import { connectorTypes, integrationCategories } from 'constants/integrations';
+import {
+  ConnectorCategory,
+  ConnectorType,
+  connectorCategories,
+  connectorTypes,
+} from 'constants/integrations';
 import { defaultMotionProps } from 'constants/styles';
 import { Connector, ConnectorFilter } from 'models/interfaces/connector';
 import { ConnectorCard } from './ConnectorCard';
 import { ConnectorsService } from 'services/connectors';
 import { buildFilters } from 'utils/data';
+import { ConnectorTable } from './ConnectorTable';
 
-type MenuItem = Required<MenuProps>['items'][number];
-
-const PAGE_SIZE = 51;
+const PAGE_SIZE = 48;
 
 interface IntegrationsProps {}
 
 export const Integrations: FC<IntegrationsProps> = () => {
   const isMobile = useIsMobile();
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedType, setSelectedType] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] =
+    useState<ConnectorCategory | null>(null);
+  const [selectedType, setSelectedType] = useState<ConnectorType | null>(null);
   const [connectors, setConnectors] = useState<Connector[]>([]);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
@@ -77,129 +83,92 @@ export const Integrations: FC<IntegrationsProps> = () => {
     return () => observer.disconnect();
   }, [hasMore, loading]);
 
-  const onClickCategory: MenuProps['onClick'] = (e) => {
-    const category = e.key === selectedCategory ? null : e.key;
-    setSelectedCategory(category);
-  };
-
-  const items: MenuItem[] = [
-    {
-      key: 'categories',
-      label: 'Categories',
-      type: 'group',
-      children: integrationCategories.map((category) => ({
-        key: category,
-        label: category,
-      })),
-    },
-  ];
-
-  const [activeTab, setActiveTab] = useState('connected');
-
-  const tabItems = [
-    {
-      key: 'connected',
-      label: 'Connected',
-      children: (
-        <AnimatePresence mode="wait">
-          {activeTab === 'connected' && (
-            <motion.div key="connected" {...defaultMotionProps}>
-              <div className={styles.integrationGrid} />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      ),
-    },
-    {
-      key: 'available',
-      label: 'Available',
-      children: (
-        <AnimatePresence mode="wait">
-          {activeTab === 'available' && (
-            <motion.div
-              key="available"
-              className={styles.tabPane}
-              {...defaultMotionProps}
-            >
-              <div className={styles.layout}>
-                {!isMobile && (
-                  <div className={styles.left}>
-                    <Menu
-                      selectedKeys={selectedCategory ? [selectedCategory] : []}
-                      onClick={onClickCategory}
-                      mode="inline"
-                      items={items}
-                    />
-                  </div>
-                )}
-                <div className={styles.right}>
-                  <div className={styles.searchRow}>
-                    {isMobile && (
-                      <Select
-                        placeholder="All categories"
-                        allowClear
-                        value={selectedCategory}
-                        onChange={(val) => setSelectedCategory(val ?? null)}
-                        options={integrationCategories.map((c) => ({
-                          label: c,
-                          value: c,
-                        }))}
-                        className={styles.categorySelect}
-                      />
-                    )}
-                    <Input.Search
-                      placeholder="Search connectors..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      allowClear
-                      className={styles.searchInput}
-                    />
-                  </div>
-                  <Segmented
-                    options={connectorTypes}
-                    value={selectedType ?? 'All'}
-                    onChange={(val) =>
-                      setSelectedType(val === 'All' ? null : (val as string))
-                    }
-                    size="small"
-                    style={{ width: 'fit-content' }}
-                  />
-                  <div className={styles.gridWrapper}>
-                    <div
-                      className={`${styles.integrationGrid} ${styles.available}`}
-                    >
-                      {connectors.map((connector) => (
-                        <ConnectorCard
-                          key={connector.databaseId}
-                          connector={connector}
-                          showAddBtn
-                        />
-                      ))}
-                    </div>
-                    {loading && (
-                      <div className={styles.loadingMore}>
-                        <Spin size="small" />
-                      </div>
-                    )}
-                    <div ref={sentinelRef} />
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      ),
-    },
-  ];
+  const [activeTab, setActiveTab] = useState<string>('connected');
 
   return (
     <div className="platformPage">
-      <Tabs
-        items={tabItems}
-        defaultActiveKey="connected"
-        animated={false}
-        onChange={setActiveTab}
-      />
+      <div className={styles.controlsWrapper}>
+        <div className={styles.controls}>
+          <Button
+            shape="round"
+            type={activeTab === 'connected' ? 'primary' : 'default'}
+            onClick={() => setActiveTab('connected')}
+          >
+            Connected
+          </Button>
+          <Button
+            shape="round"
+            type={activeTab === 'available' ? 'primary' : 'default'}
+            onClick={() => setActiveTab('available')}
+          >
+            Available
+          </Button>
+        </div>
+        <div className={styles.controls}>
+          <Input
+            placeholder={
+              activeTab === 'connected'
+                ? 'Search your connectors'
+                : 'Search connectors'
+            }
+            prefix={<MagnifyingGlassIcon />}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <Select
+            variant="filled"
+            popupMatchSelectWidth={false}
+            value={selectedCategory}
+            onChange={(val) => setSelectedCategory(val ?? null)}
+            options={[
+              { label: 'Any category', value: null },
+              ...connectorCategories.map((c) => ({
+                label: c.label,
+                value: c.value,
+              })),
+            ]}
+          />
+          <Select
+            variant="filled"
+            popupMatchSelectWidth={false}
+            value={selectedType}
+            onChange={(val) => setSelectedType(val ?? null)}
+            options={[
+              { label: 'Any type', value: null },
+              ...connectorTypes.map((t) => ({
+                label: t.label,
+                value: t.value,
+              })),
+            ]}
+          />
+        </div>
+      </div>
+      {activeTab === 'connected' ? (
+        <AnimatePresence>
+          <motion.div key="connected" {...defaultMotionProps}>
+            <ConnectorTable />
+          </motion.div>
+        </AnimatePresence>
+      ) : (
+        <AnimatePresence>
+          <motion.div key="available" {...defaultMotionProps}>
+            <div className={styles.integrationGrid}>
+              {connectors.map((connector) => (
+                <ConnectorCard
+                  key={connector.databaseId}
+                  connector={connector}
+                />
+              ))}
+            </div>
+            {loading && (
+              <div className={styles.loadingMore}>
+                <Spin size="small" />
+              </div>
+            )}
+            <div ref={sentinelRef} />
+          </motion.div>
+        </AnimatePresence>
+      )}
     </div>
   );
 };

@@ -32,10 +32,23 @@
   margin-bottom: 0;
 }
 
+/* Input */
+.ant-input,
+.ant-input-affix-wrapper,
+.ant-input-number,
+.ant-input-number-affix-wrapper {
+  border-radius: 32px;
+}
+
 /* List */
 .ant-list .ant-list-item {
   justify-content: unset;
   gap: var(--space-sm);
+}
+
+/* Select */
+.ant-select {
+  border-radius: 32px;
 }
 
 /* Segmented */
