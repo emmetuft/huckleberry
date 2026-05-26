@@ -21,7 +21,6 @@ export const PublicFooter: FC = () => {
           <h4>Product</h4>
           <Link to={publicRoutePaths[PublicPage.FEATURES]}>Features</Link>
           <Link to={publicRoutePaths[PublicPage.PRICING]}>Pricing</Link>
-          <Link to={publicRoutePaths[PublicPage.DOCS]}>Documentation</Link>
         </div>
 
         <div className={styles.section}>

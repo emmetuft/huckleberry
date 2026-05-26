@@ -1,7 +1,9 @@
-import { FC, FormEvent, useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { FC, useEffect, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { AuthService } from 'services/auth';
 import styles from './Login.module.css';
+import { Button, Input } from 'antd';
+import { PublicPage, publicRoutePaths } from 'models/enums/appPage';
 
 /**
  * Magic-link sign-in / sign-up form. No password.
@@ -37,8 +39,7 @@ export const Login: FC = () => {
     setSent(false);
   }, [urlMode]);
 
-  const onSubmit = async (e: FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async () => {
     setError(null);
     setSubmitting(true);
     try {
@@ -55,85 +56,57 @@ export const Login: FC = () => {
     }
   };
 
-  if (sent) {
-    return (
-      <div className={styles.login}>
-        <div className={styles.card}>
-          <h1>Check your email</h1>
-          <p>
+  return (
+    <div className={styles.login}>
+      <div className={styles.left}>
+        <div className={styles.attribution}>
+          <div className={styles.sphere} />
+          From Domo
+        </div>
+        <h1>Welcome to Huckleberry</h1>
+        <p className={styles.subtitle}>
+          Your intent engine for AI - built to get more from your data and the
+          work you already do.
+        </p>
+        <Input
+          className={styles.roundedInput}
+          variant="filled"
+          size="large"
+          placeholder="you@company.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <Button
+          type="primary"
+          shape="round"
+          size="large"
+          loading={submitting}
+          onClick={onSubmit}
+        >
+          Continue with email
+        </Button>
+        {sent && (
+          <p className={styles.sentMessage}>
             {mode === 'signup' ? (
               <>
-                We're setting up your huckleberry workspace and just sent{' '}
-                <strong>{email}</strong> a link to finish setup. It expires in
-                15 minutes.
+                We're setting up your workspace. Please use the link sent to
+                your email to finish setup. It expires in 15 minutes.
               </>
             ) : (
               <>
-                If <strong>{email}</strong> has a huckleberry account, we just
-                sent a one-time sign-in link. It expires in 15 minutes.
+                If an account exists, we’ve sent a secure sign-in link. The link
+                expires in 15 minutes.
               </>
             )}
           </p>
-          <p className={styles.link}>
-            <button
-              type="button"
-              onClick={() => {
-                setSent(false);
-                setEmail('');
-              }}
-            >
-              Use a different email
-            </button>
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className={styles.login}>
-      <div className={styles.card}>
-        <h1>{mode === 'signup' ? 'Get started' : 'Welcome back'}</h1>
-        <p>
-          {mode === 'signup'
-            ? "Enter your work email and we'll spin up your workspace and email you a link to finish setup."
-            : 'Enter your email and we’ll send you a one-time sign-in link — no password needed.'}
-        </p>
-        <form className={styles.form} onSubmit={onSubmit}>
-          <input
-            type="email"
-            placeholder="you@company.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            autoFocus
-            disabled={submitting}
-          />
-          <button type="submit" disabled={submitting || !email}>
-            {submitting
-              ? 'Sending…'
-              : mode === 'signup'
-                ? 'Create my account'
-                : 'Email me a sign-in link'}
-          </button>
-        </form>
-        {error && <p className={styles.error}>{error}</p>}
-        <p className={styles.link}>
-          {mode === 'signup'
-            ? 'Already have an account? '
-            : 'New to huckleberry? '}
-          <button
-            type="button"
-            onClick={() => {
-              const next: Mode = mode === 'signup' ? 'signin' : 'signup';
-              if (next === 'signup') setSearchParams({ mode: 'signup' });
-              else setSearchParams({});
-            }}
-          >
-            {mode === 'signup' ? 'Sign in instead' : 'Create one'}
-          </button>
+        )}
+        <p className={styles.disclaimer}>
+          By continuing, you agree to the{' '}
+          <Link to={publicRoutePaths[PublicPage.TERMS]}>Terms of Use</Link> and{' '}
+          <Link to={publicRoutePaths[PublicPage.PRIVACY]}>Privacy Notice</Link>.
         </p>
       </div>
+      <div className={styles.right}></div>
     </div>
   );
 };
