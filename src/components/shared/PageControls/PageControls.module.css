@@ -1,7 +1,7 @@
 .controlsWrapper {
   display: flex;
   gap: 50px;
-  margin-bottom: var(--space-xl);
+  margin-bottom: var(--space-2xl);
 
   .controls {
     display: flex;

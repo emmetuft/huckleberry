@@ -16,7 +16,7 @@
   gap: var(--space-md);
   min-height: 300px;
   padding: var(--space-2xl);
-  background-color: var(--grey-bg);
+  background-color: var(--grey-bg-contrast);
   border-radius: 30px;
 
   .heading {

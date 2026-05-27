@@ -8,8 +8,10 @@ import { handleResponse } from 'utils/service';
 
 const PEOPLE_API_BASE = '/api';
 
-const getUsers = async (): Promise<User[]> => {
-  const response = await fetch(`${PEOPLE_API_BASE}/users`);
+const getUsers = async (ids?: string[]): Promise<User[]> => {
+  const response = await fetch(
+    `${PEOPLE_API_BASE}/users${ids ? `?ids=${ids.join(',')}` : ''}`,
+  );
   const data = await handleResponse<{ users: DomoUser[] }>(response);
   return data.users.map((domoUser) => ({
     id: domoUser.id.toString(),

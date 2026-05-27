@@ -52,10 +52,7 @@ svg:focus {
     display: flex;
     align-items: stretch;
     min-width: 0;
-    gap: var(--space-sm);
-    padding: var(--space-md);
-    border-radius: var(--br-md);
-    background-color: var(--card-bg);
+    gap: var(--space-lg);
     transition: transform 0.3s ease;
     cursor: pointer;
 
@@ -73,7 +70,7 @@ svg:focus {
     .appInfo {
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      gap: var(--space-sm);
       overflow: hidden;
       min-width: 0;
 
@@ -83,6 +80,7 @@ svg:focus {
       }
 
       p {
+        color: var(--grey-text);
         font-size: var(--font-xs);
         line-height: 14px;
         overflow: hidden;

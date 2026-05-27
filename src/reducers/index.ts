@@ -11,6 +11,7 @@ import PeopleReducer from './people/slice';
 import ToolkitsReducer from './toolkits/slice';
 import WorkspaceReducer from './workspace/slice';
 import DatasourceReducer from './datasource/slice';
+import AgentsReducer from './agents/slice';
 //-- importRef
 import { useDispatch } from 'react-redux';
 
@@ -25,6 +26,7 @@ export const store = configureStore({
     toolkits: ToolkitsReducer,
     workspace: WorkspaceReducer,
     datasource: DatasourceReducer,
+    agents: AgentsReducer,
     //-- reducerRef
   },
 });

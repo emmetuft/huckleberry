@@ -60,15 +60,22 @@ export const PlatformLayout: FC = () => {
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary: isDark ? '#8673ffff' : '#5a0cff',
+          // colorPrimary: isDark ? '#8673ffff' : '#5a0cff',
+          colorPrimary: isDark ? '#4a4a4a' : '#000',
         },
         components: {
           Menu: {
             itemSelectedColor: isDark ? '#fff' : '#000',
           },
+          Select: {
+            optionSelectedBg: isDark ? '#4a4a4a' : '#e9e9e9',
+          },
           Table: {
             headerBg: 'none',
             footerBg: 'none',
+          },
+          Tag: {
+            borderRadiusSM: 999,
           },
         },
       }}

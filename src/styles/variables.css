@@ -12,6 +12,7 @@
   --grey-border: #bfbfbf;
   --grey-text: #6c6c6c;
   --grey-bg: #f8f8f8;
+  --grey-bg-contrast: #f8f8f8;
   --error-bg: rgb(253 222 223 / 50%);
   --error-icon: #e45621;
   --success-bg: rgb(221 253 221 / 50%);
@@ -30,13 +31,14 @@
   --node-yellow: #e6bf3e;
 
   /* Spacing + Sizing */
-  --default-page-padding: 83px 76px;
+  --default-page-padding: 84px 280px 84px 76px;
   --space-xs: 4px;
   --space-sm: 8px;
   --space-md: 12px;
   --space-lg: 16px;
   --space-xl: 20px;
   --space-2xl: 28px;
+  --space-3xl: 36px;
   --br-sm: 4px;
   --br-md: 8px;
   --br-lg: 12px;
@@ -58,6 +60,7 @@
   --grey-border: #4a4a4a;
   --grey-text: #9a9a9a;
   --grey-bg: #1a1a1a;
+  --grey-bg-contrast: #2b2b2b;
   --error-bg: rgb(120 30 30 / 50%);
   --error-icon: #ff6b4a;
   --success-bg: rgb(30 80 50 / 50%);
