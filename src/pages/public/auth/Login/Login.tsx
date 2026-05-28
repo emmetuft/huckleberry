@@ -4,6 +4,7 @@ import { AuthService } from 'services/auth';
 import styles from './Login.module.css';
 import { Button, Input } from 'antd';
 import { PublicPage, publicRoutePaths } from 'models/enums/appPage';
+import { Preview } from './Preview';
 
 /**
  * Magic-link sign-in / sign-up form. No password.
@@ -69,7 +70,6 @@ export const Login: FC = () => {
           work you already do.
         </p>
         <Input
-          className={styles.roundedInput}
           variant="filled"
           size="large"
           placeholder="you@company.com"
@@ -106,7 +106,9 @@ export const Login: FC = () => {
           <Link to={publicRoutePaths[PublicPage.PRIVACY]}>Privacy Notice</Link>.
         </p>
       </div>
-      <div className={styles.right}></div>
+      <div className={styles.right}>
+        <Preview />
+      </div>
     </div>
   );
 };

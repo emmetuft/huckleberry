@@ -65,6 +65,7 @@ export const PlatformLayout: FC = () => {
         },
         components: {
           Menu: {
+            itemSelectedBg: isDark ? '#4a4a4a' : '#e9e9e9',
             itemSelectedColor: isDark ? '#fff' : '#000',
           },
           Select: {

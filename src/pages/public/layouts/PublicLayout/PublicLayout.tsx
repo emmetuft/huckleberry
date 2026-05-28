@@ -10,7 +10,7 @@ export const PublicLayout: FC = () => {
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary: '#2a2a2a',
+          colorPrimary: '#000',
         },
         components: {
           Button: {

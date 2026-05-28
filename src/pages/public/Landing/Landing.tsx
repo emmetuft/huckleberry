@@ -6,8 +6,8 @@ import { Background } from 'components/layouts/PlatformLayout/Background/Backgro
 import { useIsMobile } from 'hooks/useIsMobile';
 
 export enum UseCase {
-  Finance = 'Finance',
   HR = 'HR',
+  Finance = 'Finance',
   IT = 'IT',
   Legal = 'Legal',
   Marketing = 'Marketing',
