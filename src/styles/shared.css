@@ -90,20 +90,15 @@ svg:focus {
         line-clamp: 2;
       }
     }
-
-    .quickAdd {
-      position: absolute;
-      top: 5px;
-      right: 5px;
-    }
   }
 
   .defaultAppIcon {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 26px;
-    width: 26px;
+    height: 45px;
+    width: 45px;
+    min-width: 45px;
     background-color: var(--purple);
     border-radius: var(--br-md);
   }

@@ -44,6 +44,7 @@ code {
   p {
     margin: 0;
     font-weight: 400;
+    font-family: Inter, sans-serif;
   }
 
   h1 {
@@ -69,6 +70,7 @@ code {
   span,
   li {
     font-size: 14px;
+    font-family: Inter, sans-serif;
   }
 
   input,

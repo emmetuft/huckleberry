@@ -1,11 +1,9 @@
-import React, { FC, useMemo, useState } from 'react';
+import React, { FC, ReactNode, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { platformRoutePaths } from 'models/enums/appPage';
 import {
-  AtomIcon,
   ChatsIcon,
-  CubeIcon,
   DatabaseIcon,
   FolderIcon,
   GraphIcon,
@@ -15,7 +13,9 @@ import {
   ListIcon,
   MoonIcon,
   NotebookIcon,
+  PlusIcon,
   PuzzlePieceIcon,
+  SidebarSimpleIcon,
   SquaresFourIcon,
   SunIcon,
 } from '@phosphor-icons/react';
@@ -29,9 +29,9 @@ import {
   setIncognitoMode,
   setTheme,
 } from 'reducers/app/slice';
-import { setFullScreen } from 'reducers/chat/slice';
-import { appList } from 'constants/applications';
+import { clearMessages, setFullScreen } from 'reducers/chat/slice';
 import { AppPage, AppPageTitle } from 'models/enums/appPage';
+import { spaceList } from 'models/interfaces/workspace';
 import { Avatar } from 'components/shared/Avatar/Avatar';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
 import AppTooltip from 'components/shared/Tooltip';
@@ -45,6 +45,7 @@ export const Nav: FC<NavProps> = ({}) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+  const identity = useSelector(selectIdentity);
   const incognitoMode = useSelector(selectIncognitoMode);
   const theme = useSelector(selectTheme);
   const isDark = theme === 'dark';
@@ -52,62 +53,95 @@ export const Nav: FC<NavProps> = ({}) => {
   const [showHistory, setShowHistory] = useState<boolean>(false);
   const [showRecs, setShowRecs] = useState<boolean>(false);
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
+  const [expanded, setExpanded] = useState<boolean>(true);
 
-  const identity = useSelector(selectIdentity);
+  const isMobile = useIsMobile();
 
-  const apps = useMemo(() => {
-    return appList.filter((app) => app.inDock);
-  }, [appList]);
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [location.pathname]);
 
   const onClickLogo = () => {
+    dispatch(clearMessages());
     dispatch(setFullScreen(false));
+  };
+
+  const onClickNewChat = () => {
+    dispatch(clearMessages());
+    dispatch(setFullScreen(true));
   };
 
   const onClickAvatar = () => {
     navigate(platformRoutePaths[AppPage.PROFILE]);
   };
 
-  const isMobile = useIsMobile();
-  const iconSize = isMobile ? 18 : 16;
+  const iconSize = 16;
 
   const navIconMap: Record<string, any> = {
     [AppPage.APPS]: <SquaresFourIcon size={iconSize} />,
-    [AppPage.AGENTS]: <AtomIcon size={iconSize} />,
-    [AppPage.AUTOMATION]: <LightningIcon size={iconSize} />,
+    [AppPage.AGENTS]: <LightningIcon size={iconSize} />,
     [AppPage.DATA_HUB]: <DatabaseIcon size={iconSize} />,
     [AppPage.DATA_HEALTH]: <HeartbeatIcon size={iconSize} />,
-    [AppPage.HOME]: undefined,
+    [AppPage.HOME]: (
+      <img
+        className={styles.logo}
+        src={`/static/logo${isDark ? '-light' : ''}.svg`}
+      />
+    ),
     [AppPage.INTEGRATIONS]: <PuzzlePieceIcon size={iconSize} />,
     [AppPage.METRICS]: <NotebookIcon size={iconSize} />,
     [AppPage.ONTOLOGY]: <GraphIcon size={iconSize} />,
     [AppPage.PROJECTS]: <FolderIcon size={iconSize} />,
   };
 
-  const upperPages = [
+  const pages = [
+    AppPage.AGENTS,
     AppPage.ONTOLOGY,
     AppPage.DATA_HUB,
-    AppPage.DATA_HEALTH,
-    AppPage.METRICS,
-    AppPage.PROJECTS,
+    AppPage.INTEGRATIONS,
+    AppPage.APPS,
   ];
-  const lowerPages = [AppPage.AGENTS, AppPage.INTEGRATIONS, AppPage.APPS];
 
-  React.useEffect(() => {
-    setMobileOpen(false);
-  }, [location.pathname]);
-
-  const renderIconBtn = (page: AppPage) => (
-    <AppTooltip
-      key={page}
-      title={AppPageTitle[page]}
-      placement="right"
-      mouseEnterDelay={0.5}
-    >
-      <Link to={platformRoutePaths[page]}>
-        <IconBtn icon={navIconMap[page]} />
+  const renderIconBtn = ({
+    key,
+    icon,
+    label,
+    page,
+    onClick,
+  }: {
+    key: string;
+    icon: ReactNode;
+    label: string;
+    page?: AppPage;
+    onClick?: () => void;
+  }) => {
+    const btn = (
+      <IconBtn
+        icon={icon}
+        label={label}
+        labelHidden={!expanded}
+        onClick={page ? undefined : onClick}
+      />
+    );
+    const content = page ? (
+      <Link to={platformRoutePaths[page]} onClick={onClick}>
+        {btn}
       </Link>
-    </AppTooltip>
-  );
+    ) : (
+      <div>{btn}</div>
+    );
+    if (expanded) return <React.Fragment key={key}>{content}</React.Fragment>;
+    return (
+      <AppTooltip
+        key={key}
+        title={label}
+        placement="right"
+        mouseEnterDelay={0.5}
+      >
+        {content}
+      </AppTooltip>
+    );
+  };
 
   return (
     <React.Fragment>
@@ -121,65 +155,70 @@ export const Nav: FC<NavProps> = ({}) => {
       {mobileOpen && (
         <div className={styles.overlay} onClick={() => setMobileOpen(false)} />
       )}
-      <div className={`${styles.nav} ${mobileOpen ? styles.navOpen : ''}`}>
-        <Link to={platformRoutePaths[AppPage.HOME]} onClick={onClickLogo}>
-          <img
-            className={styles.logo}
-            src={`/static/logo${isDark ? '-light' : ''}.svg`}
-          />
-        </Link>
+      <div
+        className={`${styles.nav} ${expanded ? styles.navExpanded : ''} ${mobileOpen ? styles.navOpen : ''}`}
+      >
         <div className={styles.buttons}>
-          <AppTooltip
-            title="Recommendations"
-            placement="right"
-            mouseEnterDelay={0.5}
-          >
-            <div>
-              <IconBtn
-                icon={<LightbulbIcon size={iconSize} />}
-                onClick={() => setShowRecs(true)}
-              />
-            </div>
-          </AppTooltip>
-          <AppTooltip title="History" placement="right" mouseEnterDelay={0.5}>
-            <div>
-              <IconBtn
-                icon={<ChatsIcon size={iconSize} />}
-                onClick={() => setShowHistory(true)}
-              />
-            </div>
-          </AppTooltip>
+          {renderIconBtn({
+            key: AppPage.HOME,
+            icon: navIconMap[AppPage.HOME],
+            label: AppPageTitle[AppPage.HOME],
+            page: AppPage.HOME,
+            onClick: onClickLogo,
+          })}
+          {!isMobile &&
+            renderIconBtn({
+              key: 'collapse',
+              icon: <SidebarSimpleIcon size={iconSize} />,
+              label: 'Collapse',
+              onClick: () => setExpanded((v) => !v),
+            })}
         </div>
-        <div className={styles.divider} />
         <div className={styles.buttons}>
-          {upperPages.map((page) => renderIconBtn(page))}
+          {/* {renderIconBtn({
+            key: 'recs',
+            icon: <LightbulbIcon size={iconSize} />,
+            label: 'Recommendations',
+            onClick: () => setShowRecs(true),
+          })} */}
+          {renderIconBtn({
+            key: 'new',
+            icon: <PlusIcon size={iconSize} />,
+            label: 'New chat',
+            onClick: () => onClickNewChat(),
+          })}
+          {renderIconBtn({
+            key: 'history',
+            icon: <ChatsIcon size={iconSize} />,
+            label: 'History',
+            onClick: () => setShowHistory(true),
+          })}
         </div>
-        <div className={styles.divider} />
         <div className={styles.buttons}>
-          {lowerPages.map((page) => renderIconBtn(page))}
-          {apps.map((app) => (
-            <AppTooltip
-              key={app.id}
-              title={app.name}
-              placement="right"
-              mouseEnterDelay={0.5}
-            >
-              <button className={styles.appBtn}>
-                {app.iconUrl ? (
-                  <img src={app.iconUrl} height="100%" width="100%" />
-                ) : (
-                  <div className={`defaultAppIcon ${styles.appIcon}`}>
-                    <CubeIcon color="white" size={18} />
-                  </div>
-                )}
-              </button>
-            </AppTooltip>
-          ))}
+          {pages.map((page) =>
+            renderIconBtn({
+              key: page,
+              icon: navIconMap[page],
+              label: AppPageTitle[page],
+              page,
+            }),
+          )}
+        </div>
+        <div className={styles.buttons}>
+          {expanded && <p>Spaces</p>}
+          {spaceList.map((space) =>
+            renderIconBtn({
+              key: space.id,
+              icon: <FolderIcon size={iconSize} />,
+              label: space.name,
+            }),
+          )}
         </div>
         <div className={`${styles.buttons} ${styles.bottom}`}>
-          {/* <AppTooltip title={incognitoMode ? 'Memory off' : 'Memory on'}>
-            <Button
-              icon={
+          {renderIconBtn({
+            key: 'memory',
+            icon: (
+              <div className={styles.memoryIcon}>
                 <div
                   className={styles.recordIcon}
                   style={
@@ -188,30 +227,31 @@ export const Nav: FC<NavProps> = ({}) => {
                       : {}
                   }
                 />
-              }
-              onClick={() => dispatch(setIncognitoMode(!incognitoMode))}
-            />
-          </AppTooltip> */}
-          <AppTooltip title={isDark ? 'Dark mode' : 'Light mode'}>
-            <div>
-              <IconBtn
-                icon={
-                  isDark ? (
-                    <MoonIcon size={iconSize} />
-                  ) : (
-                    <SunIcon size={iconSize} />
-                  )
-                }
-                onClick={() => dispatch(setTheme(isDark ? 'light' : 'dark'))}
-              />
-            </div>
-          </AppTooltip>
+              </div>
+            ),
+            label: incognitoMode ? 'Memory off' : 'Memory on',
+            onClick: () => dispatch(setIncognitoMode(!incognitoMode)),
+          })}
+          {renderIconBtn({
+            key: 'theme',
+            icon: isDark ? (
+              <MoonIcon size={iconSize} />
+            ) : (
+              <SunIcon size={iconSize} />
+            ),
+            label: isDark ? 'Dark mode' : 'Light mode',
+            onClick: () => dispatch(setTheme(isDark ? 'light' : 'dark')),
+          })}
           <Button
             type="text"
-            shape="round"
+            className={styles.avatarBtn}
             icon={<Avatar userId={identity?.id} name={identity?.displayName} />}
             onClick={onClickAvatar}
-          />
+          >
+            <span className={!expanded ? styles.labelHidden : ''}>
+              {identity?.displayName}
+            </span>
+          </Button>
         </div>
       </div>
       {showRecs && <RecCard setShowCard={setShowRecs} />}

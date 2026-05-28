@@ -1,3 +1,10 @@
+/* Button */
+.ant-btn-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 /* Collapse */
 .ant-collapse-header {
   min-width: 0;
@@ -44,6 +51,11 @@
 .ant-list .ant-list-item {
   justify-content: unset;
   gap: var(--space-sm);
+}
+
+/* Menu */
+.ant-menu-light.ant-menu-root:focus-visible {
+  outline: none;
 }
 
 /* Select */
@@ -104,6 +116,14 @@
   .ant-table-ping-left:not(.ant-table-has-fix-left)
   .ant-table-container::before {
   box-shadow: none;
+}
+
+/* Tag */
+.ant-tag {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-weight: 600;
 }
 
 @media (width <= 768px) {

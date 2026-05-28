@@ -16,6 +16,7 @@ import { BentoGrid } from 'components/workspace/BentoGrid/BentoGrid';
 import { Resources } from 'components/workspace/Resources/Resources';
 import { getBentoLayout } from 'config/bentoConfig';
 import { getFirstName, getTimeOfDay } from 'utils/misc';
+import { formatCurrentDate } from 'utils/datetime';
 
 interface WorkspaceProps {}
 
@@ -40,7 +41,8 @@ export const Workspace: FC<WorkspaceProps> = ({}) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <h2>{`Good ${getTimeOfDay()}${identity ? `, ${getFirstName(identity.displayName)}` : ''}!`}</h2>
+      <h2>{`Good ${getTimeOfDay()}${identity ? `, ${getFirstName(identity.displayName)}` : ''}`}</h2>
+      <div className={styles.currentDate}>{formatCurrentDate()}</div>
     </motion.div>
   );
 
@@ -53,7 +55,7 @@ export const Workspace: FC<WorkspaceProps> = ({}) => {
             {greetingComponent}
             <IntentInput animate />
             <QuickStarts />
-            <Resources />
+            {/* <Resources /> */}
           </div>
           <BentoGrid
             layout={bentoLayout!}
@@ -87,7 +89,7 @@ export const Workspace: FC<WorkspaceProps> = ({}) => {
               transition={{ duration: 0.4, ease: 'easeInOut' }}
             >
               <QuickStarts />
-              <Resources />
+              {/* <Resources /> */}
             </motion.div>
           )}
         </AnimatePresence>

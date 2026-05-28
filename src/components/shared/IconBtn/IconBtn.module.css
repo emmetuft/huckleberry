@@ -6,3 +6,20 @@
     color: var(--grey-dark) !important;
   }
 }
+
+.withLabel {
+  width: 100%;
+  justify-content: flex-start;
+  padding-inline: var(--space-sm);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.label {
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+.labelHidden {
+  opacity: 0;
+}

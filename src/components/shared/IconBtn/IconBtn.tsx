@@ -4,13 +4,19 @@ import styles from './IconBtn.module.css';
 
 interface IconBtnProps {
   icon: ReactNode;
+  label?: ReactNode;
+  labelHidden?: boolean;
   disabled?: boolean;
+  className?: string;
   onClick?: (e: React.MouseEvent<HTMLElement>) => void;
 }
 
 export const IconBtn: FC<IconBtnProps> = ({
   icon,
+  label,
+  labelHidden = false,
   disabled = false,
+  className,
   onClick,
 }) => (
   <Button
@@ -18,6 +24,14 @@ export const IconBtn: FC<IconBtnProps> = ({
     icon={icon}
     disabled={disabled}
     onClick={onClick}
-    className={styles.iconBtn}
-  />
+    className={`${styles.iconBtn} ${label ? styles.withLabel : ''} ${className ?? ''}`}
+  >
+    {label && (
+      <span
+        className={`${styles.label} ${labelHidden ? styles.labelHidden : ''}`}
+      >
+        {label}
+      </span>
+    )}
+  </Button>
 );

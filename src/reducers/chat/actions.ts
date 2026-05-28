@@ -7,10 +7,9 @@ import {
   ElicitationResponse,
   ResumeRequest,
 } from 'models/interfaces/userRequest';
-import { AgentService } from 'services/agent';
-import { DataService } from 'services/data';
 import { applyStreamEvent, setSessionId } from './slice';
 import { AgentSessionService } from 'services/agentSession';
+import { DataService } from 'services/data';
 import { HuckleberryService } from 'services/huckleberry';
 
 export const fetchDataSources = createAsyncThunk<

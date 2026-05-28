@@ -29,7 +29,12 @@ export const AgentCard: FC<AgentCardProps> = ({ agent }) => {
         <div className={styles.agentDetails}>
           <h4>{agent.name}</h4>
           {isNew ? (
-            <Tag color="var(--purple-light)" style={{ color: 'var(--purple)' }}>
+            <Tag
+              style={{
+                color: 'var(--purple)',
+                backgroundColor: 'var(--purple-light)',
+              }}
+            >
               New
             </Tag>
           ) : isUpdated ? (

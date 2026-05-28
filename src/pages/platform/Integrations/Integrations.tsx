@@ -22,9 +22,12 @@ interface IntegrationsProps {}
 export const Integrations: FC<IntegrationsProps> = () => {
   const [activeTab, setActiveTab] = useState<string>('connected');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] =
-    useState<ConnectorCategory | null>(null);
-  const [selectedType, setSelectedType] = useState<ConnectorType | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<
+    ConnectorCategory | 'all'
+  >('all');
+  const [selectedType, setSelectedType] = useState<ConnectorType | 'all'>(
+    'all',
+  );
 
   const fetchConnectors = useCallback(
     (limit: number, offset: number) => {
@@ -65,7 +68,7 @@ export const Integrations: FC<IntegrationsProps> = () => {
             value: selectedCategory,
             onChange: (val) => setSelectedCategory(val ?? null),
             options: [
-              { label: 'Any category', value: null },
+              { label: 'Any category', value: 'all' },
               ...connectorCategories.map((c) => ({
                 label: c.label,
                 value: c.value,
@@ -76,7 +79,7 @@ export const Integrations: FC<IntegrationsProps> = () => {
             value: selectedType,
             onChange: (val) => setSelectedType(val ?? null),
             options: [
-              { label: 'Any type', value: null },
+              { label: 'Any type', value: 'all' },
               ...connectorTypes.map((t) => ({
                 label: t.label,
                 value: t.value,
