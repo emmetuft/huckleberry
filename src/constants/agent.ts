@@ -1,3 +1,65 @@
+import { InputType } from 'models/enums/inputType';
+import { InputField } from 'components/shared/LabelInput/LabelInput';
+
+export type AgentFieldKey = 'name' | 'description' | 'instructions' | 'model';
+
+export type AgentStep = 'Persona' | 'Knowledge' | 'Workflows' | 'Visibility';
+
+export const AGENT_STEPS: AgentStep[] = [
+  'Persona',
+  'Knowledge',
+  'Workflows',
+  'Visibility',
+];
+
+export const AGENT_FORM_FIELDS: Record<AgentStep, InputField<AgentFieldKey>[]> =
+  {
+    Persona: [
+      {
+        key: 'name',
+        label: 'Name',
+        inputType: InputType.Text,
+        description: 'Set a recognizable name for your agent',
+      },
+      {
+        key: 'description',
+        label: 'Description',
+        inputType: InputType.TextArea,
+        description: 'Describe what this agent will help your team with',
+        inputProps: { autoSize: { minRows: 4 } },
+      },
+      {
+        key: 'instructions',
+        label: 'Instructions',
+        inputType: InputType.TextArea,
+        description:
+          "Control your agent's behavior by adding custom instructions",
+        inputProps: { autoSize: { minRows: 10 } },
+      },
+      {
+        key: 'model',
+        label: 'Model',
+        inputType: InputType.RadioCards,
+        description: 'Choose the model that will power your agent',
+        options: [
+          {
+            label: 'Default',
+            value: 'default',
+            description: 'Automatically pick the best model for the job',
+          },
+          {
+            label: 'Claude Opus 4.7',
+            value: 'opus4.7',
+            description: 'Maximum intelligence for complex tasks',
+          },
+        ],
+      },
+    ],
+    Knowledge: [],
+    Workflows: [],
+    Visibility: [],
+  };
+
 export enum DOMO_TOOLKIT_SCHEMA_ENTITY {
   DATA_SOURCE = 'dataSourceIds',
   CARD = 'cardIds',

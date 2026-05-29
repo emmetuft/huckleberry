@@ -16,8 +16,6 @@
   }
 
   .content {
-    padding: var(--space-md) var(--space-lg);
-    border-radius: var(--br-lg);
     font-size: 14px;
     line-height: 1.5;
     overflow-wrap: break-word;
@@ -27,6 +25,8 @@
     align-items: flex-end;
 
     .content {
+      padding: var(--space-md) var(--space-lg);
+      border-radius: var(--br-lg);
       background-color: var(--grey-light);
       max-width: 80%;
     }

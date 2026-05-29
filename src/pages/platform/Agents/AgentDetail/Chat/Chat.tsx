@@ -11,9 +11,10 @@ import { useIsMobile } from 'hooks/useIsMobile';
 
 interface ChatProps {
   agent: Agent | null;
+  showHeader?: boolean;
 }
 
-export const Chat: FC<ChatProps> = ({ agent }) => {
+export const Chat: FC<ChatProps> = ({ agent, showHeader }) => {
   const agents = useSelector(selectAgents);
   const isMobile = useIsMobile();
 
@@ -21,17 +22,19 @@ export const Chat: FC<ChatProps> = ({ agent }) => {
     <PromptBar />
   ) : (
     <div className={styles.chat}>
-      <div className={styles.chatHeader}>
-        <Select
-          variant="borderless"
-          value={agent?.id}
-          options={agents.map((agent) => ({
-            label: agent.name,
-            value: agent.id,
-          }))}
-        />
-        <Button shape="round">Share chat</Button>
-      </div>
+      {showHeader && (
+        <div className={styles.chatHeader}>
+          <Select
+            variant="borderless"
+            value={agent?.id}
+            options={agents.map((agent) => ({
+              label: agent.name,
+              value: agent.id,
+            }))}
+          />
+          <Button shape="round">Share chat</Button>
+        </div>
+      )}
       <ChatContainer
         chatMode={isMobile ? ChatMode.modal : ChatMode.panel}
         placeholder={"What's the first domino?"}

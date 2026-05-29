@@ -47,6 +47,10 @@
   border-radius: 32px;
 }
 
+textarea.ant-input {
+  border-radius: var(--br-lg);
+}
+
 /* List */
 .ant-list .ant-list-item {
   justify-content: unset;

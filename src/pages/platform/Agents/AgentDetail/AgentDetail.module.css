@@ -1,4 +1,61 @@
 .agentWrapper {
   flex: 1;
   display: flex;
+
+  .left {
+    flex: 3;
+    min-width: 0;
+    padding: var(--space-2xl) 64px;
+    overflow-y: auto;
+  }
+
+  .right {
+    flex: 2;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-2xl) 46px;
+    background-color: var(--grey-bg);
+  }
+
+  .agentHeader {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--space-2xl);
+
+    .preview {
+      font-weight: 600;
+    }
+  }
+
+  .agentContent {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xl);
+    padding: 0 140px;
+
+    .stepBtns {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-bottom: 60px;
+
+      .stepNumber {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        height: 13px;
+        width: 13px;
+        background-color: var(--grey-text);
+        color: var(--background);
+        font-size: 10px;
+        font-weight: 600;
+
+        &.currentStep {
+          background-color: var(--purple);
+        }
+      }
+    }
+  }
 }

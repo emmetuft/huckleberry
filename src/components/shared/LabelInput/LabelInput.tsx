@@ -19,6 +19,8 @@ export interface InputField<K extends string = string> {
   placeholder?: string;
   halfWidth?: boolean;
   options?: FieldOption[];
+  description?: string;
+  inputProps?: Record<string, any>;
 }
 
 const toSelectOptions = (options: FieldOption[]) => {
@@ -81,9 +83,10 @@ interface LabelInputProps {
   value: any;
   width?: number | string;
   options?: FieldOption[];
-  placeholder?: string;
   readOnly?: boolean;
+  description?: string;
   onChange?: (value: any) => void;
+  inputProps?: Record<string, any>;
 }
 
 export const LabelInput: FC<LabelInputProps> = ({
@@ -92,9 +95,10 @@ export const LabelInput: FC<LabelInputProps> = ({
   value,
   width,
   options,
-  placeholder,
   readOnly,
+  description,
   onChange,
+  inputProps,
 }) => {
   const showLabel = inputType !== InputType.Checkbox;
 
@@ -106,16 +110,16 @@ export const LabelInput: FC<LabelInputProps> = ({
     switch (inputType) {
       case InputType.Checkbox:
         return (
-          <Checkbox checked={value} onChange={onChange}>
+          <Checkbox {...inputProps} checked={value} onChange={onChange}>
             {label}
           </Checkbox>
         );
       case InputType.Select:
         return (
           <Select
+            {...inputProps}
             value={value || undefined}
             options={options ? (toSelectOptions(options) as any) : undefined}
-            placeholder={placeholder}
             onChange={onChange}
             showSearch
             filterOption={(input, option) =>
@@ -132,16 +136,16 @@ export const LabelInput: FC<LabelInputProps> = ({
             <FreeformTagInput
               value={value}
               onChange={onChange}
-              placeholder={placeholder}
+              placeholder={inputProps?.placeholder}
             />
           );
         }
         return (
           <Select
+            {...inputProps}
             mode="tags"
             value={value}
             options={options}
-            placeholder={placeholder}
             onChange={onChange}
             style={{ width: '100%' }}
           />
@@ -170,16 +174,16 @@ export const LabelInput: FC<LabelInputProps> = ({
       case InputType.Text:
         return (
           <Input
+            {...inputProps}
             value={value}
-            placeholder={placeholder}
             onChange={(e) => onChange?.(e.target.value)}
           />
         );
       case InputType.TextArea:
         return (
           <Input.TextArea
+            {...inputProps}
             value={value}
-            placeholder={placeholder}
             onChange={(e) => onChange?.(e.target.value)}
           />
         );
@@ -189,9 +193,10 @@ export const LabelInput: FC<LabelInputProps> = ({
   };
 
   return (
-    <div style={{ maxWidth: width }}>
-      {showLabel && <p>{label}</p>}
-      {renderInput()}
+    <div className={styles.labelInput} style={{ maxWidth: width }}>
+      {showLabel && <p className={styles.label}>{label}</p>}
+      {description && <p className={styles.description}>{description}</p>}
+      <div className={styles.inputWrapper}>{renderInput()}</div>
     </div>
   );
 };

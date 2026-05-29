@@ -196,12 +196,12 @@ const SectionEditor: FC<SectionEditorProps> = ({
                 key={field.key}
                 inputType={field.inputType}
                 label={field.label}
-                placeholder={field.placeholder}
                 value={getFieldValue(field.key, draft)}
                 options={field.options}
                 onChange={(val) =>
                   setDraft((d) => applyFieldValue(field.key, val, d))
                 }
+                inputProps={{ placeholder: field.placeholder }}
               />
             ))}
           </div>

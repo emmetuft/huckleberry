@@ -211,10 +211,10 @@ export const QuickStart: FC = () => {
                   key={field.key}
                   inputType={field.inputType}
                   label={field.label}
-                  placeholder={field.placeholder}
                   value={data[field.key]}
                   options={field.options}
                   onChange={(val) => onChange(field.key, val)}
+                  inputProps={{ placeholder: field.placeholder }}
                 />
               ))}
             </div>
