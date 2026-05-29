@@ -2,6 +2,7 @@ import { FC } from 'react';
 import { LightningAIcon } from '@phosphor-icons/react';
 import { Tag } from 'antd';
 import styles from './Agents.module.css';
+import { defaultTagStyle } from 'constants/styles';
 import { Agent } from 'models/interfaces/agent';
 import { Avatar } from 'components/shared/Avatar/Avatar';
 
@@ -29,14 +30,7 @@ export const AgentCard: FC<AgentCardProps> = ({ agent }) => {
         <div className={styles.agentDetails}>
           <h4>{agent.name}</h4>
           {isNew ? (
-            <Tag
-              style={{
-                color: 'var(--purple)',
-                backgroundColor: 'var(--purple-light)',
-              }}
-            >
-              New
-            </Tag>
+            <Tag style={defaultTagStyle}>New</Tag>
           ) : isUpdated ? (
             <Tag>Updated</Tag>
           ) : null}

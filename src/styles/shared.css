@@ -45,6 +45,7 @@ svg:focus {
     background: var(--card-bg);
     border-radius: var(--br-lg);
     border: 1px solid var(--card-border);
+    box-shadow: var(--box-shadow);
   }
 
   .appCard {

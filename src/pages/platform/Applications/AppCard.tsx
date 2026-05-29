@@ -1,7 +1,8 @@
 import { FC } from 'react';
-import { Button, Tag } from 'antd';
+import { Tag } from 'antd';
 import { CubeIcon, PlusIcon, StarIcon } from '@phosphor-icons/react';
 import styles from './Applications.module.css';
+import { defaultTagStyle } from 'constants/styles';
 import { Application } from 'models/interfaces/application';
 
 interface AppCardProps {
@@ -27,12 +28,7 @@ export const AppCard: FC<AppCardProps> = ({ app, showAddBtn }) => {
         <p>{app.description}</p>
         <div className={styles.appDetails}>
           {showAddBtn && (
-            <Tag
-              style={{
-                color: 'var(--purple)',
-                backgroundColor: 'var(--purple-light)',
-              }}
-            >
+            <Tag style={defaultTagStyle}>
               <PlusIcon />
               Install
             </Tag>

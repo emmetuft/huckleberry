@@ -16,3 +16,8 @@ export const defaultMotionProps = {
   animate: { opacity: 1, y: 0 },
   transition: { duration: 0.3 },
 };
+
+export const defaultTagStyle = {
+  color: 'var(--purple)',
+  backgroundColor: 'var(--purple-light)',
+};

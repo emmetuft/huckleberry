@@ -173,6 +173,7 @@ export const GraphControls: FC<GraphControlsProps> = ({ onPlaybackChange }) => {
         >
           <Badge count={activeFilters.length} offset={[-5, 5]}>
             <Button
+              shape="round"
               icon={<FunnelIcon />}
               className={styles.filterButton}
               type={activeFilters.length > 0 ? 'primary' : 'default'}
@@ -182,6 +183,7 @@ export const GraphControls: FC<GraphControlsProps> = ({ onPlaybackChange }) => {
           </Badge>
         </Popover>
         <Button
+          shape="round"
           type={playbackOpen ? 'primary' : 'default'}
           icon={<ClockCountdownIcon />}
           onClick={() => {

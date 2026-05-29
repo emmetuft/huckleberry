@@ -21,7 +21,7 @@
   --medium-icon: #ba9f19;
   --info-bg: rgb(221 242 253 / 50%);
   --info-icon: #21a0e4;
-  --box-shadow: 0 4px 30px rgb(0 0 0 / 10%);
+  --box-shadow: 0px 0px 16px 0px #0000001a;
   --card-bg: white;
   --card-border: rgb(244 244 244);
   --node-green: #1c9c6f;
@@ -31,7 +31,7 @@
   --node-yellow: #e6bf3e;
 
   /* Spacing + Sizing */
-  --default-page-padding: 84px 280px 84px 76px;
+  --default-page-padding: 84px 280px 45px 76px;
   --space-xs: 4px;
   --space-sm: 8px;
   --space-md: 12px;

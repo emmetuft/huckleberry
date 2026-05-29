@@ -75,12 +75,12 @@ export const ToolBrowser: FC<ToolBrowserProps> = ({
         {toolkit.tools.map((tool) => {
           const selected = isToolSelected(tool);
           return (
-            <div key={tool.toolId} className={`appCard ${styles.toolItem}`}>
+            <div key={tool.toolId} className="appCard">
               <div className={styles.toolIcon}>
                 <WrenchIcon />
               </div>
               <div className="appInfo">
-                <h4>{tool.overrideToolName}</h4>
+                <h4>{tool.overrideToolName || 'No title'}</h4>
                 <p title={tool.overrideToolDescription}>
                   {tool.overrideToolDescription || 'No description'}
                 </p>

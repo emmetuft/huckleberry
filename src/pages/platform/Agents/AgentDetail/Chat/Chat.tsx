@@ -1,7 +1,8 @@
 import { FC } from 'react';
+import { useSelector } from 'react-redux';
 import { Button, Select } from 'antd';
 import styles from './Chat.module.css';
-import { AgentList } from 'constants/agent';
+import { selectAgents } from 'reducers/agents/slice';
 import { ChatMode } from 'models/enums/chatMode';
 import { Agent } from 'models/interfaces/agent';
 import { ChatContainer } from 'components/comms/ChatContainer/ChatContainer';
@@ -13,6 +14,7 @@ interface ChatProps {
 }
 
 export const Chat: FC<ChatProps> = ({ agent }) => {
+  const agents = useSelector(selectAgents);
   const isMobile = useIsMobile();
 
   return isMobile ? (
@@ -23,7 +25,7 @@ export const Chat: FC<ChatProps> = ({ agent }) => {
         <Select
           variant="borderless"
           value={agent?.id}
-          options={AgentList.map((agent) => ({
+          options={agents.map((agent) => ({
             label: agent.name,
             value: agent.id,
           }))}

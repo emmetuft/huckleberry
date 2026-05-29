@@ -35,7 +35,7 @@ export const AppPageTitle: Record<string, string> = {
   [AppPage.AGENTS]: 'Agents',
   [AppPage.AGENT_DETAIL]: 'Agent',
   [AppPage.APPS]: 'Apps',
-  [AppPage.AUTOMATION]: 'Automation Rules',
+  [AppPage.AUTOMATION]: 'Automations',
   [AppPage.DATA_HEALTH]: 'Data Health',
   [AppPage.DATA_HUB]: 'Data',
   [AppPage.HOME]: 'Huckleberry',
@@ -52,7 +52,10 @@ export const AppPageSubtitle: Record<string, string> = {
     'Discover and create custom agents that combine instructions, extra knowledge, and any combination of tasks.',
   [AppPage.APPS]:
     'Launch the apps you use every day, or explore the marketplace to add new ones to your workspace.',
-  [AppPage.INTEGRATIONS]: 'Manage your connected data sources',
+  [AppPage.DATA_HUB]: 'Browse the data sources powering your workspace.',
+  [AppPage.INTEGRATIONS]: 'Manage your connected data sources.',
+  [AppPage.PROFILE]:
+    'Manage your account, connect services, and personalize how Huckleberry works for you.',
 };
 
 // Public route paths

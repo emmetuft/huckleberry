@@ -1,6 +1,8 @@
 import { FC } from 'react';
 import { useSelector } from 'react-redux';
 import { AnimatePresence, motion } from 'framer-motion';
+import { Tag } from 'antd';
+import { HammerIcon } from '@phosphor-icons/react';
 import styles from './Workspace.module.css';
 import { useAppDispatch } from 'reducers';
 import { selectIdentity } from 'reducers/app/slice';
@@ -41,6 +43,16 @@ export const Workspace: FC<WorkspaceProps> = ({}) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
+      <Tag
+        style={{
+          color: 'var(--purple)',
+          backgroundColor: 'var(--purple-light)',
+          width: 'fit-content',
+        }}
+      >
+        <HammerIcon />
+        Under construction
+      </Tag>
       <h2>{`Good ${getTimeOfDay()}${identity ? `, ${getFirstName(identity.displayName)}` : ''}`}</h2>
       <div className={styles.currentDate}>{formatCurrentDate()}</div>
     </motion.div>

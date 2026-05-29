@@ -347,8 +347,10 @@ export const FilterPopup: FC<FilterPopupProps> = ({
         <Space
           style={{ marginTop: 12, width: '100%', justifyContent: 'flex-end' }}
         >
-          <Button onClick={handleClear}>Clear All</Button>
-          <Button type="primary" onClick={handleApply}>
+          <Button shape="round" onClick={handleClear}>
+            Clear All
+          </Button>
+          <Button shape="round" type="primary" onClick={handleApply}>
             Apply Filters
           </Button>
         </Space>

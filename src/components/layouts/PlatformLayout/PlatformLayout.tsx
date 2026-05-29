@@ -49,12 +49,21 @@ export const PlatformLayout: FC = () => {
     dispatch(setPage(appPage));
   }, [location.pathname, dispatch]);
 
-  const isAgentDetail = !!matchPath(
+  const hidePromptBarRoutes = [
+    platformRoutePaths[AppPage.HOME],
     platformRoutePaths[AppPage.AGENT_DETAIL],
-    location.pathname,
+  ];
+  const hidePromptBar = hidePromptBarRoutes.some((path) =>
+    matchPath(path, location.pathname),
   );
-  const hidePromptBar = location.pathname === '/workspace' || isAgentDetail;
-  const hidePadding = isAgentDetail;
+
+  const noPaddingRoutes = [
+    platformRoutePaths[AppPage.AGENT_DETAIL],
+    platformRoutePaths[AppPage.ONTOLOGY],
+  ];
+  const hidePadding = noPaddingRoutes.some((path) =>
+    matchPath(path, location.pathname),
+  );
 
   return (
     <ConfigProvider
@@ -64,9 +73,15 @@ export const PlatformLayout: FC = () => {
           colorPrimary: isDark ? '#4a4a4a' : '#000',
         },
         components: {
+          Input: {
+            activeShadow: 'none',
+          },
           Menu: {
             itemSelectedBg: isDark ? '#4a4a4a' : '#e9e9e9',
             itemSelectedColor: isDark ? '#fff' : '#000',
+          },
+          Popover: {
+            colorBgElevated: isDark ? '#000' : '#fff',
           },
           Select: {
             optionSelectedBg: isDark ? '#4a4a4a' : '#e9e9e9',
@@ -74,6 +89,12 @@ export const PlatformLayout: FC = () => {
           Table: {
             headerBg: 'none',
             footerBg: 'none',
+          },
+          Tabs: {
+            itemActiveColor: isDark ? '#fff' : '#000',
+            itemSelectedColor: isDark ? '#fff' : '#000',
+            itemHoverColor: isDark ? '#fff' : '#000',
+            inkBarColor: isDark ? '#fff' : '#000',
           },
           Tag: {
             borderRadiusSM: 999,

@@ -30,6 +30,7 @@
 
   .bottom {
     margin-top: auto;
+    margin-bottom: 0;
 
     .avatarBtn {
       width: 100%;

@@ -191,7 +191,7 @@ export const Nav: FC<NavProps> = ({}) => {
             key: 'history',
             icon: <ChatsIcon size={iconSize} />,
             label: 'History',
-            onClick: () => setShowHistory(true),
+            // onClick: () => setShowHistory(true),
           })}
         </div>
         <div className={styles.buttons}>

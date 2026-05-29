@@ -11,7 +11,7 @@
 .appGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-xl);
+  gap: var(--space-3xl);
 }
 
 .appDetails {
