@@ -1,64 +1,51 @@
 import { InputType } from 'models/enums/inputType';
 import { InputField } from 'components/shared/LabelInput/LabelInput';
+import { Agent } from 'models/interfaces/agent';
 
-export type AgentFieldKey = 'name' | 'description' | 'instructions' | 'model';
+export enum AgentStep {
+  Persona = 'Persona',
+  Knowledge = 'Knowledge',
+  Tools = 'Tools',
+  Visibility = 'Visibility',
+}
 
-export type AgentStep = 'Persona' | 'Knowledge' | 'Workflows' | 'Visibility';
-
-export const AGENT_STEPS: AgentStep[] = [
-  'Persona',
-  'Knowledge',
-  'Workflows',
-  'Visibility',
-];
-
-export const AGENT_FORM_FIELDS: Record<AgentStep, InputField<AgentFieldKey>[]> =
+export const AGENT_FORM_FIELDS: InputField<keyof Agent>[] = [
   {
-    Persona: [
-      {
-        key: 'name',
-        label: 'Name',
-        inputType: InputType.Text,
-        description: 'Set a recognizable name for your agent',
-      },
-      {
-        key: 'description',
-        label: 'Description',
-        inputType: InputType.TextArea,
-        description: 'Describe what this agent will help your team with',
-        inputProps: { autoSize: { minRows: 4 } },
-      },
-      {
-        key: 'instructions',
-        label: 'Instructions',
-        inputType: InputType.TextArea,
-        description:
-          "Control your agent's behavior by adding custom instructions",
-        inputProps: { autoSize: { minRows: 10 } },
-      },
-      {
-        key: 'model',
-        label: 'Model',
-        inputType: InputType.RadioCards,
-        description: 'Choose the model that will power your agent',
-        options: [
-          {
-            label: 'Default',
-            value: 'default',
-            description: 'Automatically pick the best model for the job',
-          },
-          {
-            label: 'Claude Opus 4.7',
-            value: 'opus4.7',
-            description: 'Maximum intelligence for complex tasks',
-          },
-        ],
-      },
-    ],
-    Knowledge: [],
-    Workflows: [],
-    Visibility: [],
-  };
+    key: 'name',
+    label: 'Name',
+    inputType: InputType.Text,
+    description: 'Set a recognizable name for your agent',
+  },
+  {
+    key: 'description',
+    label: 'Description',
+    inputType: InputType.TextArea,
+    description:
+      'Create a description that will help your team know when to use this agent',
+    inputProps: { autoSize: { minRows: 4 } },
+  },
+  {
+    key: 'model',
+    label: 'Model',
+    inputType: InputType.Select,
+    description: 'Choose the model that will power your agent',
+  },
+  {
+    key: 'prompt',
+    label: 'Role',
+    inputType: InputType.TextArea,
+    description:
+      'Describe the purpose and behavior of the agent to guide its responses',
+    inputProps: { autoSize: { minRows: 4 } },
+  },
+  {
+    key: 'systemMessage',
+    label: 'Instructions',
+    inputType: InputType.TextArea,
+    description: "Control your agent's behavior by adding custom instructions",
+    inputProps: { autoSize: { minRows: 10 } },
+  },
+];
 
 export enum DOMO_TOOLKIT_SCHEMA_ENTITY {
   DATA_SOURCE = 'dataSourceIds',

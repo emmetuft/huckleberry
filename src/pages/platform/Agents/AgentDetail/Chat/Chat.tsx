@@ -37,7 +37,7 @@ export const Chat: FC<ChatProps> = ({ agent, showHeader }) => {
       )}
       <ChatContainer
         chatMode={isMobile ? ChatMode.modal : ChatMode.panel}
-        placeholder={"What's the first domino?"}
+        placeholder={'Ask anything'}
       />
     </div>
   );

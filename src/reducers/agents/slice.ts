@@ -1,15 +1,18 @@
 import { createAppSlice } from '../createAppSlice';
-import { fetchAgents } from './actions';
+import { createCustomAgent, fetchAgents, fetchAIModels } from './actions';
 import { Agent } from 'models/interfaces/agent';
+import { AIModel } from 'models/interfaces/aiModel';
 
 interface AgentsState {
   agents: Agent[];
+  aiModels: AIModel[];
   loading: boolean;
   error: string | null;
 }
 
 const initialState: AgentsState = {
   agents: [],
+  aiModels: [],
   loading: false,
   error: null,
 };
@@ -35,10 +38,17 @@ export const AgentsSlice = createAppSlice({
       .addCase(fetchAgents.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch agents';
+      })
+      .addCase(fetchAIModels.fulfilled, (state, action) => {
+        state.aiModels = action.payload;
+      })
+      .addCase(createCustomAgent.fulfilled, (state, action) => {
+        state.agents.push(action.payload);
       });
   },
   selectors: {
     selectAgents: (state: AgentsState) => state.agents,
+    selectAIModels: (state: AgentsState) => state.aiModels,
     selectLoading: (state: AgentsState) => state.loading,
     selectError: (state: AgentsState) => state.error,
   },
@@ -46,7 +56,7 @@ export const AgentsSlice = createAppSlice({
 
 export const { clearError } = AgentsSlice.actions;
 
-export const { selectAgents, selectLoading, selectError } =
+export const { selectAgents, selectAIModels, selectLoading, selectError } =
   AgentsSlice.selectors;
 
 export default AgentsSlice.reducer;

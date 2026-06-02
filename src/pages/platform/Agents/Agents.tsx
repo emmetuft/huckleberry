@@ -1,31 +1,45 @@
-import { FC, useState } from 'react';
+import { FC, useMemo, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { LightningIcon, PlusIcon } from '@phosphor-icons/react';
 import { Button, Spin } from 'antd';
+import { LightningIcon, PlusIcon } from '@phosphor-icons/react';
 import styles from './Agents.module.css';
+import { selectIdentity } from 'reducers/app/slice';
 import { agentCategories, AgentCategory } from 'constants/agent';
 import { defaultMotionProps } from 'constants/styles';
 import { Agent } from 'models/interfaces/agent';
 import { PageControls } from 'components/shared/PageControls/PageControls';
+import { AgentCard } from './AgentCard';
 import { AgentService } from 'services/agent';
 import { useInfiniteScroll } from 'hooks/useInfiniteScroll';
-import { AgentCard } from './AgentCard';
 
 export const Agents: FC = () => {
+  const identity = useSelector(selectIdentity);
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<string>('yours');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<
     AgentCategory | 'all'
   >('all');
 
+  type AgentFilter = { type: string; values: any[] };
+
+  const filters = useMemo<AgentFilter[] | undefined>(() => {
+    if (activeTab === 'yours' && identity) {
+      return [{ type: 'OWNER', values: [identity.id.toString()] }];
+    }
+    return undefined;
+  }, [activeTab, identity]);
+
   const {
     items: agents,
     loading,
     sentinelRef,
-  } = useInfiniteScroll<Agent>({
+  } = useInfiniteScroll<Agent, [filters?: AgentFilter[]]>({
     fetcher: AgentService.getAgents,
-    resetDeps: [selectedCategory, searchQuery],
-    enabled: activeTab === 'all',
+    fetcherArgs: [filters],
+    resetDeps: [selectedCategory, searchQuery, filters],
   });
 
   return (
@@ -55,10 +69,20 @@ export const Agents: FC = () => {
             ],
           },
         ]}
+        cornerComponent={
+          <Button
+            icon={<PlusIcon />}
+            shape="round"
+            type="primary"
+            onClick={() => navigate('/agents/new')}
+          >
+            Create agent
+          </Button>
+        }
       />
-      {activeTab === 'yours' ? (
-        <AnimatePresence>
-          <motion.div key="yours" {...defaultMotionProps}>
+      <AnimatePresence mode="wait">
+        {activeTab === 'yours' && !loading && agents.length === 0 ? (
+          <motion.div key="yours-empty" {...defaultMotionProps}>
             <div className={styles.emptyWrapper}>
               <LightningIcon size={36} />
               <p>
@@ -66,15 +90,18 @@ export const Agents: FC = () => {
                 knowledge, goals and access to tools.
               </p>
               <p>You haven't created any agents yet.</p>
-              <Button icon={<PlusIcon />} shape="round" type="primary">
+              <Button
+                icon={<PlusIcon />}
+                shape="round"
+                type="primary"
+                onClick={() => navigate('/agents/new')}
+              >
                 Create
               </Button>
             </div>
           </motion.div>
-        </AnimatePresence>
-      ) : (
-        <AnimatePresence>
-          <motion.div key="all" {...defaultMotionProps}>
+        ) : (
+          <motion.div key={activeTab} {...defaultMotionProps}>
             <div className={styles.agentGrid}>
               {agents.map((agent) => (
                 <AgentCard key={agent.id} agent={agent} />
@@ -87,8 +114,8 @@ export const Agents: FC = () => {
             )}
             <div ref={sentinelRef} />
           </motion.div>
-        </AnimatePresence>
-      )}
+        )}
+      </AnimatePresence>
     </>
   );
 };

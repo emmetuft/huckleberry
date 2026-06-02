@@ -1,6 +1,6 @@
 import { FC, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Modal, Input, Collapse, Button, Empty } from 'antd';
+import { Input, Collapse, Button, Empty } from 'antd';
 import {
   CheckIcon,
   MagnifyingGlassIcon,
@@ -12,17 +12,15 @@ import { selectToolkits } from 'reducers/toolkits/slice';
 import { Tool, Toolkit } from 'models/interfaces/toolkit';
 
 interface ToolBrowserProps {
-  open: boolean;
-  onClose: () => void;
   selectedTools: Tool[];
   onToolsChange: (tools: Tool[]) => void;
+  height?: number;
 }
 
 export const ToolBrowser: FC<ToolBrowserProps> = ({
-  open,
-  onClose,
   selectedTools,
   onToolsChange,
+  height,
 }) => {
   const toolkits = useSelector(selectToolkits);
   const [searchQuery, setSearchQuery] = useState('');
@@ -104,29 +102,24 @@ export const ToolBrowser: FC<ToolBrowserProps> = ({
   }));
 
   return (
-    <Modal
-      className={styles.toolBrowserModal}
-      title="Browse Tools"
-      width={600}
-      open={open}
-      onCancel={onClose}
-      footer={null}
-    >
-      <div className={styles.searchContainer}>
-        <Input
-          placeholder="Search tools..."
-          prefix={<MagnifyingGlassIcon />}
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          allowClear
-        />
-      </div>
+    <div className={styles.toolBrowser}>
+      <Input
+        placeholder="Search tools..."
+        prefix={<MagnifyingGlassIcon />}
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        allowClear
+      />
 
       {filteredToolkits.length === 0 ? (
         <Empty description={'No tools match your search'} />
       ) : (
-        <Collapse items={collapseItems} className={styles.serverCollapse} />
+        <Collapse
+          items={collapseItems}
+          className={styles.serverCollapse}
+          style={{ maxHeight: height ?? 600 }}
+        />
       )}
-    </Modal>
+    </div>
   );
 };

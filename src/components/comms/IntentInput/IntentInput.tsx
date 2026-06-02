@@ -22,13 +22,13 @@ import { Tool } from 'models/interfaces/toolkit';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
 import { DataSourceModal } from 'components/modals/DataSourceModal/DataSourceModal';
 import { SendModal, SendData } from 'components/modals/SendModal/SendModal';
+import { ToolModal } from 'components/modals/ToolModal/ToolModal';
 import { AddContextButton } from './context/AddContextButton';
 import { CommandPopup } from './CommandPopup/CommandPopup';
 import { ContextItems } from './context/ContextItems';
 import { EditableInput } from './EditableInput';
 import { SendButton } from './SendBtn';
 import { DictateButton } from './DictateBtn/DictateBtn';
-import { ToolBrowser } from '../ToolBrowser/ToolBrowser';
 import { ActionType, getSuggestedActions } from 'utils/temp';
 import { processFiles } from 'utils/file';
 import { useCommandPopup } from 'hooks/useCommandPopup';
@@ -280,7 +280,7 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
           popup={toolPopup.showPopup ? toolPopup : mentionPopup}
         />
       )}
-      <ToolBrowser
+      <ToolModal
         open={showToolBrowser}
         onClose={() => setShowToolBrowser(false)}
         selectedTools={selectedTools}

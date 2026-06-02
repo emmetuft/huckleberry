@@ -1,54 +1,63 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { Badge, Button, Select } from 'antd';
-import {
-  ReactFlow,
-  Background,
-  useNodesState,
-  useEdgesState,
-  addEdge,
-  BackgroundVariant,
-  Edge,
-  ConnectionLineType,
-} from '@xyflow/react';
-import '@xyflow/react/dist/style.css';
+import { Button, Select } from 'antd';
+// import {
+//   ReactFlow,
+//   Background,
+//   useNodesState,
+//   useEdgesState,
+//   addEdge,
+//   BackgroundVariant,
+//   Edge,
+//   ConnectionLineType,
+// } from '@xyflow/react';
+// import '@xyflow/react/dist/style.css';
 import styles from './AgentDetail.module.css';
+import { useAppDispatch } from 'reducers';
 import { selectTheme } from 'reducers/app/slice';
 import { selectAgents } from 'reducers/agents/slice';
-import { TEMPLATE_NODES } from 'constants/templates';
-import { NodeType } from 'models/enums/nodeType';
-import { StartNode } from './Nodes/StartNode';
-import { EndNode } from './Nodes/EndNode';
-import { ActionNode } from './Nodes/ActionNode';
-import { LabelInput } from 'components/shared/LabelInput/LabelInput';
+import { createCustomAgent, fetchAIModels } from 'reducers/agents/actions';
+import { AGENT_FORM_FIELDS, AgentStep } from 'constants/agent';
+// import { TEMPLATE_NODES } from 'constants/templates';
+// import { NodeType } from 'models/enums/nodeType';
+// import { StartNode } from './Nodes/StartNode';
+// import { EndNode } from './Nodes/EndNode';
+// import { ActionNode } from './Nodes/ActionNode';
+import { AccessEntry } from 'models/enums/permission';
 import { Agent } from 'models/interfaces/agent';
-import {
-  AGENT_FORM_FIELDS,
-  AGENT_STEPS,
-  AgentFieldKey,
-  AgentStep,
-} from 'constants/agent';
+import { Tool } from 'models/interfaces/toolkit';
 import { Chat } from './Chat/Chat';
+import { AgentStepContent } from './AgentStepContent';
 
-const nodeTypes = {
-  [NodeType.START]: StartNode,
-  [NodeType.END]: EndNode,
-  [NodeType.ACTION]: ActionNode,
-};
+// const nodeTypes = {
+//   [NodeType.START]: StartNode,
+//   [NodeType.END]: EndNode,
+//   [NodeType.ACTION]: ActionNode,
+// };
 
-type AgentFormState = Partial<Agent> & { instructions?: string };
+type AgentFormState = Partial<Agent>;
 
 export const AgentDetail: FC = () => {
+  const dispatch = useAppDispatch();
   const agents = useSelector(selectAgents);
   const theme = useSelector(selectTheme);
   const isDark = theme === 'dark';
 
-  const [currentStep, setCurrentStep] = useState<AgentStep>(AGENT_STEPS[0]);
+  const [currentStep, setCurrentStep] = useState<AgentStep>(AgentStep.Persona);
   const [agentForm, setAgentForm] = useState<AgentFormState>({});
+  const [selectedTools, setSelectedTools] = useState<Tool[]>([]);
+  const [usersAndGroups, setUsersAndGroups] = useState<AccessEntry[]>([]);
 
   const { agentId } = useParams<{ agentId: string }>();
-  const agent = agents.find((a) => a.id === agentId) ?? null;
+  const isNewAgent = agentId === 'new';
+  const agent = isNewAgent
+    ? null
+    : (agents.find((a) => a.id === agentId) ?? null);
+
+  useEffect(() => {
+    dispatch(fetchAIModels());
+  }, []);
 
   useEffect(() => {
     if (agent) {
@@ -60,21 +69,58 @@ export const AgentDetail: FC = () => {
     }
   }, [agent]);
 
-  const updateField = (key: AgentFieldKey, value: any) => {
+  const updateField = (key: keyof Agent, value: any) => {
     setAgentForm((prev) => ({ ...prev, [key]: value }));
   };
 
-  const [nodes, , onNodesChange] = useNodesState(TEMPLATE_NODES);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([] as Edge[]);
+  const steps = Object.values(AgentStep);
+  const isLastStep = currentStep === steps[steps.length - 1];
 
-  const onConnect = useCallback(
-    (params: Parameters<typeof addEdge>[0]) => {
-      setEdges((eds) =>
-        addEdge({ ...params, type: ConnectionLineType.SmoothStep }, eds),
-      );
-    },
-    [setEdges],
+  const isPersonaComplete = AGENT_FORM_FIELDS.every((field) =>
+    Boolean(agentForm[field.key]),
   );
+  const isContinueDisabled =
+    currentStep === AgentStep.Persona && !isPersonaComplete;
+
+  const goToNextStep = () => {
+    const currentIndex = steps.indexOf(currentStep);
+    if (currentIndex < steps.length - 1) {
+      setCurrentStep(steps[currentIndex + 1]);
+    }
+  };
+
+  const handleSubmit = () => {
+    const { name, description, prompt, systemMessage, model } = agentForm;
+
+    if (!name || !description || !prompt || !systemMessage || !model) {
+      // TODO: surface validation errors to the user
+      return;
+    }
+
+    dispatch(
+      createCustomAgent({
+        id: 'new',
+        name,
+        description,
+        prompt,
+        systemMessage,
+        model,
+        toolkitIds: [],
+      }),
+    );
+  };
+
+  // const [nodes, , onNodesChange] = useNodesState(TEMPLATE_NODES);
+  // const [edges, setEdges, onEdgesChange] = useEdgesState([] as Edge[]);
+
+  // const onConnect = useCallback(
+  //   (params: Parameters<typeof addEdge>[0]) => {
+  //     setEdges((eds) =>
+  //       addEdge({ ...params, type: ConnectionLineType.SmoothStep }, eds),
+  //     );
+  //   },
+  //   [setEdges],
+  // );
 
   return (
     <div className={styles.agentWrapper}>
@@ -97,7 +143,7 @@ export const AgentDetail: FC = () => {
         </div>
         <div className={styles.agentContent}>
           <div className={styles.stepBtns}>
-            {AGENT_STEPS.map((step, index) => (
+            {Object.values(AgentStep).map((step, index) => (
               <Button
                 key={step}
                 shape="round"
@@ -122,18 +168,25 @@ export const AgentDetail: FC = () => {
               </Button>
             ))}
           </div>
-          {AGENT_FORM_FIELDS[currentStep].map((field) => (
-            <LabelInput
-              key={field.key}
-              inputType={field.inputType}
-              label={field.label}
-              description={field.description}
-              options={field.options}
-              inputProps={field.inputProps}
-              value={agentForm[field.key] ?? ''}
-              onChange={(val) => updateField(field.key, val)}
-            />
-          ))}
+          <AgentStepContent
+            currentStep={currentStep}
+            agentForm={agentForm}
+            onFieldChange={updateField}
+            selectedTools={selectedTools}
+            onToolsChange={setSelectedTools}
+            usersAndGroups={usersAndGroups}
+            onUsersAndGroupsChange={setUsersAndGroups}
+          />
+          <div className={styles.btnWrapper}>
+            <Button
+              type="primary"
+              shape="round"
+              disabled={isContinueDisabled}
+              onClick={isLastStep ? handleSubmit : goToNextStep}
+            >
+              {isLastStep ? 'Done' : 'Continue'}
+            </Button>
+          </div>
         </div>
       </div>
       <div className={styles.right}>

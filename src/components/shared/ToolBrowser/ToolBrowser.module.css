@@ -1,15 +1,12 @@
-.toolBrowserModal {
+.toolBrowser {
   display: flex;
   flex-direction: column;
-
-  .searchContainer {
-    margin-bottom: var(--space-lg);
-  }
+  gap: var(--space-md);
 
   .serverCollapse {
-    max-height: 600px;
     overflow-y: auto;
     background: transparent;
+    border-radius: var(--br-lg);
   }
 }
 

@@ -14,8 +14,10 @@ const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
 export const AgentCard: FC<AgentCardProps> = ({ agent }) => {
   const now = Date.now();
-  const isNew = now - new Date(agent.created).getTime() < ONE_WEEK_MS;
-  const isUpdated = now - new Date(agent.updated).getTime() < ONE_WEEK_MS;
+  const isNew =
+    agent.created && now - new Date(agent.created).getTime() < ONE_WEEK_MS;
+  const isUpdated =
+    agent.updated && now - new Date(agent.updated).getTime() < ONE_WEEK_MS;
 
   return (
     <div className="appCard">

@@ -5,6 +5,10 @@
   align-items: center;
 }
 
+.ant-btn.ant-btn-variant-solid {
+  box-shadow: none;
+}
+
 /* Collapse */
 .ant-collapse-header {
   min-width: 0;

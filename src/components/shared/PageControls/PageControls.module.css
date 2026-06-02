@@ -1,3 +1,8 @@
+.pageControls {
+  display: flex;
+  justify-content: space-between;
+}
+
 .controlsWrapper {
   display: flex;
   gap: 50px;

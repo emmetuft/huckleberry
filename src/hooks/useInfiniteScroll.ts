@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 
-interface UseInfiniteScrollOptions<T> {
-  fetcher: (limit: number, offset: number) => Promise<T[]>;
+interface UseInfiniteScrollOptions<T, A extends unknown[] = []> {
+  fetcher: (limit: number, offset: number, ...args: A) => Promise<T[]>;
+  fetcherArgs?: A;
   resetDeps: unknown[];
   pageSize?: number;
   debounceMs?: number;
@@ -15,13 +16,14 @@ interface UseInfiniteScrollResult<T> {
   sentinelRef: React.RefObject<HTMLDivElement>;
 }
 
-export const useInfiniteScroll = <T>({
+export const useInfiniteScroll = <T, A extends unknown[] = []>({
   fetcher,
+  fetcherArgs,
   resetDeps,
   pageSize = 48,
   debounceMs = 300,
   enabled = true,
-}: UseInfiniteScrollOptions<T>): UseInfiniteScrollResult<T> => {
+}: UseInfiniteScrollOptions<T, A>): UseInfiniteScrollResult<T> => {
   const [items, setItems] = useState<T[]>([]);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
@@ -29,10 +31,15 @@ export const useInfiniteScroll = <T>({
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const fetcherRef = useRef(fetcher);
+  const fetcherArgsRef = useRef(fetcherArgs);
 
   useEffect(() => {
     fetcherRef.current = fetcher;
   }, [fetcher]);
+
+  useEffect(() => {
+    fetcherArgsRef.current = fetcherArgs;
+  }, [fetcherArgs]);
 
   // Reset and fetch first page when resetDeps change
   useEffect(() => {
@@ -42,7 +49,8 @@ export const useInfiniteScroll = <T>({
       setOffset(0);
       setHasMore(true);
       setLoading(true);
-      fetcherRef.current(pageSize, 0).then((results) => {
+      const args = (fetcherArgsRef.current ?? []) as A;
+      fetcherRef.current(pageSize, 0, ...args).then((results) => {
         setItems(results);
         setHasMore(results.length === pageSize);
         setLoading(false);
@@ -58,7 +66,8 @@ export const useInfiniteScroll = <T>({
   useEffect(() => {
     if (offset === 0) return;
     setLoading(true);
-    fetcherRef.current(pageSize, offset).then((results) => {
+    const args = (fetcherArgsRef.current ?? []) as A;
+    fetcherRef.current(pageSize, offset, ...args).then((results) => {
       setItems((prev) => [...prev, ...results]);
       setHasMore(results.length === pageSize);
       setLoading(false);
