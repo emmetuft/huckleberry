@@ -1,71 +1,121 @@
-import { FC, useCallback } from 'react';
+import { FC, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import {
-  ReactFlow,
-  Background,
-  useNodesState,
-  useEdgesState,
-  addEdge,
-  BackgroundVariant,
-  Edge,
-  ConnectionLineType,
-} from '@xyflow/react';
-import '@xyflow/react/dist/style.css';
-// import styles from './Agents.module.css';
-import { selectTheme } from 'reducers/app/slice';
-import { TEMPLATE_NODES } from 'constants/templates';
-import { NodeType } from 'models/enums/nodeType';
-import { Chat } from './Chat/Chat';
-import { StartNode } from './Nodes/StartNode';
-import { EndNode } from './Nodes/EndNode';
-import { ActionNode } from './Nodes/ActionNode';
+import { useNavigate } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Button, Spin } from 'antd';
+import { LightningIcon, PlusIcon } from '@phosphor-icons/react';
+import styles from './Agents.module.css';
+import { selectIdentity } from 'reducers/app/slice';
+import { agentCategories, AgentCategory } from 'constants/agent';
+import { defaultMotionProps } from 'constants/styles';
+import { Agent } from 'models/interfaces/agent';
+import { PageControls } from 'components/shared/PageControls/PageControls';
+import { AgentCard } from './AgentCard';
+import { AgentService } from 'services/agent';
+import { useInfiniteScroll } from 'hooks/useInfiniteScroll';
 
-const nodeTypes = {
-  [NodeType.START]: StartNode,
-  [NodeType.END]: EndNode,
-  [NodeType.ACTION]: ActionNode,
-};
+export const Agents: FC = () => {
+  const identity = useSelector(selectIdentity);
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<string>('yours');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<
+    AgentCategory | 'all'
+  >('all');
 
-interface AgentsProps {}
+  type AgentFilter = { type: string; values: any[] };
 
-export const Agents: FC<AgentsProps> = ({}) => {
-  const theme = useSelector(selectTheme);
-  const isDark = theme === 'dark';
+  const filters = useMemo<AgentFilter[] | undefined>(() => {
+    if (activeTab === 'yours' && identity) {
+      return [{ type: 'OWNER', values: [identity.id.toString()] }];
+    }
+    return undefined;
+  }, [activeTab, identity]);
 
-  const [nodes, setNodes, onNodesChange] = useNodesState(TEMPLATE_NODES);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([] as Edge[]);
-
-  const onConnect = useCallback(
-    (params: Parameters<typeof addEdge>[0]) => {
-      setEdges((eds) =>
-        addEdge({ ...params, type: ConnectionLineType.SmoothStep }, eds),
-      );
-    },
-    [setEdges],
-  );
+  const {
+    items: agents,
+    loading,
+    sentinelRef,
+  } = useInfiniteScroll<Agent, [filters?: AgentFilter[]]>({
+    fetcher: AgentService.getAgents,
+    fetcherArgs: [filters],
+    resetDeps: [selectedCategory, searchQuery, filters],
+  });
 
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
-      <Chat />
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        nodeTypes={nodeTypes}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        connectionLineType={ConnectionLineType.SmoothStep}
-        fitView
-        fitViewOptions={{ padding: 2 }}
-      >
-        <Background
-          variant={BackgroundVariant.Dots}
-          gap={25}
-          size={2}
-          color={isDark ? '#727272ff' : '#b7b6b6'}
-          bgColor={isDark ? '#1a1a1a' : '#f6f6f6'}
-        />
-      </ReactFlow>
-    </div>
+    <>
+      <PageControls
+        tabs={[
+          { label: 'Yours', value: 'yours' },
+          { label: 'All', value: 'all' },
+        ]}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        searchValue={searchQuery}
+        onSearchChange={setSearchQuery}
+        searchPlaceholder={
+          activeTab === 'yours' ? 'Search your agents' : 'Search agents'
+        }
+        filters={[
+          {
+            value: selectedCategory,
+            onChange: (val) => setSelectedCategory(val ?? null),
+            options: [
+              { label: 'Any category', value: 'all' },
+              ...agentCategories.map((c) => ({
+                label: c.label,
+                value: c.value,
+              })),
+            ],
+          },
+        ]}
+        cornerComponent={
+          <Button
+            icon={<PlusIcon />}
+            shape="round"
+            type="primary"
+            onClick={() => navigate('/agents/new')}
+          >
+            Create agent
+          </Button>
+        }
+      />
+      <AnimatePresence mode="wait">
+        {activeTab === 'yours' && !loading && agents.length === 0 ? (
+          <motion.div key="yours-empty" {...defaultMotionProps}>
+            <div className={styles.emptyWrapper}>
+              <LightningIcon size={36} />
+              <p>
+                Agents are like smart, flexible assistants or specialists with
+                knowledge, goals and access to tools.
+              </p>
+              <p>You haven't created any agents yet.</p>
+              <Button
+                icon={<PlusIcon />}
+                shape="round"
+                type="primary"
+                onClick={() => navigate('/agents/new')}
+              >
+                Create
+              </Button>
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div key={activeTab} {...defaultMotionProps}>
+            <div className={styles.agentGrid}>
+              {agents.map((agent) => (
+                <AgentCard key={agent.id} agent={agent} />
+              ))}
+            </div>
+            {loading && (
+              <div className={styles.loadingMore}>
+                <Spin size="small" />
+              </div>
+            )}
+            <div ref={sentinelRef} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 };

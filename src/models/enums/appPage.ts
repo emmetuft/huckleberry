@@ -16,6 +16,7 @@ export enum PublicPage {
 // Platform pages (authenticated)
 export enum AppPage {
   AGENTS = 'agents',
+  AGENT_DETAIL = 'agent_detail',
   APPS = 'apps',
   AUTOMATION = 'automation',
   DATA_HEALTH = 'data_health',
@@ -30,19 +31,31 @@ export enum AppPage {
   PROJECT_DETAIL = 'project_detail',
 }
 
-export const AppPageLabel: Record<string, string> = {
+export const AppPageTitle: Record<string, string> = {
   [AppPage.AGENTS]: 'Agents',
-  [AppPage.APPS]: 'Applications',
-  [AppPage.AUTOMATION]: 'Automation Rules',
+  [AppPage.AGENT_DETAIL]: 'Agent',
+  [AppPage.APPS]: 'Apps',
+  [AppPage.AUTOMATION]: 'Automations',
   [AppPage.DATA_HEALTH]: 'Data Health',
-  [AppPage.DATA_HUB]: 'Data Hub',
-  [AppPage.HOME]: 'Home',
-  [AppPage.INTEGRATIONS]: 'Integrations',
+  [AppPage.DATA_HUB]: 'Data',
+  [AppPage.HOME]: 'Huckleberry',
+  [AppPage.INTEGRATIONS]: 'Connectors',
   [AppPage.METRICS]: 'Metric Catalog',
   [AppPage.ONTOLOGY]: 'Business Ontology',
   [AppPage.PROFILE]: 'Profile',
   [AppPage.PROJECTS]: 'Projects',
   [AppPage.PROJECT_DETAIL]: 'Project Detail',
+};
+
+export const AppPageSubtitle: Record<string, string> = {
+  [AppPage.AGENTS]:
+    'Discover and create custom agents that combine instructions, extra knowledge, and any combination of tasks.',
+  [AppPage.APPS]:
+    'Launch the apps you use every day, or explore the marketplace to add new ones to your workspace.',
+  [AppPage.DATA_HUB]: 'Browse the data sources powering your workspace.',
+  [AppPage.INTEGRATIONS]: 'Manage your connected data sources.',
+  [AppPage.PROFILE]:
+    'Manage your account, connect services, and personalize how Huckleberry works for you.',
 };
 
 // Public route paths
@@ -61,6 +74,7 @@ export const publicRoutePaths: Record<PublicPage, string> = {
 export const platformRoutePaths: Record<AppPage, string> = {
   [AppPage.APPS]: '/apps',
   [AppPage.AGENTS]: '/agents',
+  [AppPage.AGENT_DETAIL]: '/agents/:agentId',
   [AppPage.AUTOMATION]: '/automation',
   [AppPage.DATA_HEALTH]: '/data-health',
   [AppPage.DATA_HUB]: '/data-hub',

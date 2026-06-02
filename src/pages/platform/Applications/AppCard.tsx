@@ -1,8 +1,9 @@
 import { FC } from 'react';
-import { CubeIcon, PlusIcon } from '@phosphor-icons/react';
-// import styles from './Applications.module.css';
+import { Tag } from 'antd';
+import { CubeIcon, PlusIcon, StarIcon } from '@phosphor-icons/react';
+import styles from './Applications.module.css';
+import { defaultTagStyle } from 'constants/styles';
 import { Application } from 'models/interfaces/application';
-import { IconBtn } from 'components/shared/IconBtn/IconBtn';
 
 interface AppCardProps {
   app: Application;
@@ -20,14 +21,21 @@ export const AppCard: FC<AppCardProps> = ({ app, showAddBtn }) => {
         </div>
       )}
       <div className="appInfo">
-        <h4>{app.name}</h4>
-        <p>{app.description}</p>
-      </div>
-      {showAddBtn && (
-        <div className="quickAdd">
-          <IconBtn icon={<PlusIcon />} />
+        <div className={styles.appDetails}>
+          <h4>{app.name}</h4>
+          {app.favorite && <StarIcon weight="fill" color="var(--purple)" />}
         </div>
-      )}
+        <p>{app.description}</p>
+        <div className={styles.appDetails}>
+          {showAddBtn && (
+            <Tag style={defaultTagStyle}>
+              <PlusIcon />
+              Install
+            </Tag>
+          )}
+          <Tag>{app.category}</Tag>
+        </div>
+      </div>
     </div>
   );
 };

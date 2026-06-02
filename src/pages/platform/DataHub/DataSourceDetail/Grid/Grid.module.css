@@ -2,10 +2,16 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  flex-shrink: 0;
+  flex: 1;
+  min-height: 0;
   border: 1px solid var(--grey-light);
   border-radius: var(--br-md);
   overflow: hidden;
+
+  @media (width <= 768px) {
+    flex: none;
+    height: 600px;
+  }
 
   &.fullscreen {
     position: fixed;

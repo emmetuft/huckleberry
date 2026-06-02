@@ -7,9 +7,10 @@ import {
   ElicitationResponse,
   ResumeRequest,
 } from 'models/interfaces/userRequest';
-import { AgentService } from 'services/agent';
-import { DataService } from 'services/data';
 import { applyStreamEvent, setSessionId } from './slice';
+import { AgentSessionService } from 'services/agentSession';
+import { DataService } from 'services/data';
+import { HuckleberryService } from 'services/huckleberry';
 
 export const fetchDataSources = createAsyncThunk<
   Record<string, any>,
@@ -31,21 +32,21 @@ export const fetchDataSources = createAsyncThunk<
 
 export const fetchSessions = createAsyncThunk(
   'chat/fetchSessions',
-  AgentService.getSessions,
+  AgentSessionService.getSessions,
 );
 
 export const fetchSession = createAsyncThunk(
   'chat/fetchSession',
   async (sessionId: string) => {
-    const session = await AgentService.getSession(sessionId);
-    const events = await AgentService.getSessionEvents(sessionId);
+    const session = await AgentSessionService.getSession(sessionId);
+    const events = await AgentSessionService.getSessionEvents(sessionId);
     return { ...session, events };
   },
 );
 
 export const deleteSession = createAsyncThunk(
   'chat/deleteSession',
-  AgentService.deleteSession,
+  AgentSessionService.deleteSession,
 );
 
 const handleStreamEvent = (
@@ -76,7 +77,10 @@ export const executeStream = createAsyncThunk<
 >('chat/executeStream', async (params, { getState, dispatch }) => {
   const { sessionId } = getState().chat;
 
-  for await (const event of AgentService.executeStream(params, sessionId)) {
+  for await (const event of HuckleberryService.executeStream(
+    params,
+    sessionId,
+  )) {
     handleStreamEvent(event, dispatch, sessionId);
   }
 });
@@ -108,7 +112,10 @@ export const resumeStream = createAsyncThunk<
       responseItems: responses,
     };
 
-    for await (const event of AgentService.resumeStream(params, sessionId)) {
+    for await (const event of HuckleberryService.resumeStream(
+      params,
+      sessionId,
+    )) {
       handleStreamEvent(event, dispatch, sessionId);
     }
   },

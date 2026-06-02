@@ -1,3 +1,21 @@
+.labelInput {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+
+  .label {
+    font-weight: 500;
+  }
+
+  .description {
+    color: var(--grey-text);
+  }
+
+  .inputWrapper {
+    margin-top: var(--space-xs);
+  }
+}
+
 .freeformTags {
   display: flex;
   flex-direction: column;
@@ -22,7 +40,7 @@
   gap: 2px;
   padding: var(--space-md);
   border: 1.5px solid var(--grey-light);
-  border-radius: var(--br-md);
+  border-radius: var(--br-lg);
   background: transparent;
   cursor: pointer;
   text-align: left;

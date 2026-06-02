@@ -1,6 +1,8 @@
 import { FC } from 'react';
 import { useSelector } from 'react-redux';
 import { AnimatePresence, motion } from 'framer-motion';
+import { Tag } from 'antd';
+import { HammerIcon } from '@phosphor-icons/react';
 import styles from './Workspace.module.css';
 import { useAppDispatch } from 'reducers';
 import { selectIdentity } from 'reducers/app/slice';
@@ -16,6 +18,7 @@ import { BentoGrid } from 'components/workspace/BentoGrid/BentoGrid';
 import { Resources } from 'components/workspace/Resources/Resources';
 import { getBentoLayout } from 'config/bentoConfig';
 import { getFirstName, getTimeOfDay } from 'utils/misc';
+import { formatCurrentDate } from 'utils/datetime';
 
 interface WorkspaceProps {}
 
@@ -40,7 +43,18 @@ export const Workspace: FC<WorkspaceProps> = ({}) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <h2>{`Good ${getTimeOfDay()}${identity ? `, ${getFirstName(identity.displayName)}` : ''}!`}</h2>
+      <Tag
+        style={{
+          color: 'var(--purple)',
+          backgroundColor: 'var(--purple-light)',
+          width: 'fit-content',
+        }}
+      >
+        <HammerIcon />
+        Under construction
+      </Tag>
+      <h2>{`Good ${getTimeOfDay()}${identity ? `, ${getFirstName(identity.displayName)}` : ''}`}</h2>
+      <div className={styles.currentDate}>{formatCurrentDate()}</div>
     </motion.div>
   );
 
@@ -53,7 +67,7 @@ export const Workspace: FC<WorkspaceProps> = ({}) => {
             {greetingComponent}
             <IntentInput animate />
             <QuickStarts />
-            <Resources />
+            {/* <Resources /> */}
           </div>
           <BentoGrid
             layout={bentoLayout!}
@@ -87,7 +101,7 @@ export const Workspace: FC<WorkspaceProps> = ({}) => {
               transition={{ duration: 0.4, ease: 'easeInOut' }}
             >
               <QuickStarts />
-              <Resources />
+              {/* <Resources /> */}
             </motion.div>
           )}
         </AnimatePresence>

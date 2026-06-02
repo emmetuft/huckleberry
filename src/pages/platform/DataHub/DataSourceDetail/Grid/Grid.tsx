@@ -42,11 +42,7 @@ const myTheme = themeQuartz.withParams({
   rowVerticalPaddingScale: 0.5,
 });
 
-interface Props {
-  height: number;
-}
-
-const Grid: FC<Props> = ({ height }) => {
+const Grid: FC = () => {
   const dataSource = useSelector(selectDataSource);
   const schema = useSelector(selectDataSourceSchema);
   const data = useSelector(selectPageData);
@@ -112,7 +108,6 @@ const Grid: FC<Props> = ({ height }) => {
   return (
     <div
       className={`${styles.gridWrapper} ${isFullscreen ? styles.fullscreen : ''}`}
-      style={isFullscreen ? undefined : { height }}
     >
       <Button
         className={styles.expandBtn}

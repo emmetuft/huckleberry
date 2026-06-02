@@ -30,7 +30,7 @@ export const buildFilters = (
 ): ConnectorFilter[] => {
   const filters: ConnectorFilter[] = [];
 
-  if (category && category !== 'All') {
+  if (category && category !== 'all') {
     filters.push({
       filterType: 'term',
       field: 'tag_facet',
@@ -38,7 +38,7 @@ export const buildFilters = (
     });
   }
 
-  if (type && type !== ConnectorType.ALL) {
+  if (type && type !== 'all') {
     switch (type) {
       case ConnectorType.CLOUD:
       case ConnectorType.DATABASE:

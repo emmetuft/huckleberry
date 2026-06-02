@@ -44,10 +44,12 @@ code {
   p {
     margin: 0;
     font-weight: 400;
+    font-family: Inter, sans-serif;
   }
 
   h1 {
     font-size: 28px;
+    font-weight: 600;
   }
 
   h2 {
@@ -68,6 +70,7 @@ code {
   span,
   li {
     font-size: 14px;
+    font-family: Inter, sans-serif;
   }
 
   input,

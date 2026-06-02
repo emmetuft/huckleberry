@@ -1,4 +1,4 @@
-import { FC, useContext, useEffect, useRef, useState } from 'react';
+import { FC, useContext, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Tag } from 'antd';
@@ -25,22 +25,17 @@ import { DataFilters } from './DataFilters/DataFilters';
 import { DetailItems } from './DetailItems/DetailItems';
 import Grid from './Grid/Grid';
 import { getWhereClause } from 'utils/duckdb';
-import { useIsMobile } from 'hooks/useIsMobile';
 
 export const DataSourceDetail: FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const isMobile = useIsMobile();
 
   const schema = useSelector(selectDataSourceSchema);
   const dataSource = useSelector(selectDataSource);
   const filters = useSelector(selectFilters);
   const page = useSelector(selectPage);
   const dataLoadedList = useSelector(selectDataLoadedList);
-
-  const [tableHeight, setTableHeight] = useState<number>(800);
-  const topSectionRef = useRef<HTMLDivElement>(null);
 
   const { dbConn } = useContext(DuckDBContext);
   const fetchedIdRef = useRef<string | null>(null);
@@ -80,19 +75,6 @@ export const DataSourceDetail: FC = () => {
       fetchData();
     }
   }, [page]);
-
-  useEffect(() => {
-    if (isMobile) return;
-    const resize = () => {
-      const topHeight = topSectionRef.current?.offsetHeight || 0;
-      const padding = 40 + 16 + 2; // page, top section, border
-      setTableHeight(window.innerHeight - topHeight - padding);
-    };
-
-    resize();
-    window.addEventListener('resize', resize);
-    return () => window.removeEventListener('resize', resize);
-  }, [topSectionRef.current?.offsetHeight]);
 
   async function fetchNumRows() {
     if (dbConn === null || dataSource === null) return;
@@ -200,7 +182,7 @@ export const DataSourceDetail: FC = () => {
 
   return (
     <div className={`platformPage ${styles.datasourceDetail}`}>
-      <div ref={topSectionRef} className={styles.topSection}>
+      <div className={styles.topSection}>
         <div className={styles.header}>
           <IconBtn
             icon={<ArrowLeftIcon size={24} />}
@@ -214,7 +196,7 @@ export const DataSourceDetail: FC = () => {
         <DetailItems />
         <DataFilters />
       </div>
-      <Grid height={tableHeight} />
+      <Grid />
     </div>
   );
 };

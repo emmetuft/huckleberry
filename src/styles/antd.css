@@ -1,3 +1,14 @@
+/* Button */
+.ant-btn-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ant-btn.ant-btn-variant-solid {
+  box-shadow: none;
+}
+
 /* Collapse */
 .ant-collapse-header {
   min-width: 0;
@@ -32,10 +43,36 @@
   margin-bottom: 0;
 }
 
+/* Input */
+.ant-input,
+.ant-input-affix-wrapper,
+.ant-input-number,
+.ant-input-number-affix-wrapper {
+  border-radius: 32px;
+}
+
+textarea.ant-input {
+  border-radius: var(--br-lg);
+}
+
 /* List */
 .ant-list .ant-list-item {
   justify-content: unset;
   gap: var(--space-sm);
+}
+
+/* Menu */
+.ant-menu-light.ant-menu-root:focus-visible {
+  outline: none;
+}
+
+/* Select */
+.ant-select {
+  border-radius: 32px;
+}
+
+.ant-select.ant-select-outlined:not(.ant-select-disabled).ant-select-focused {
+  box-shadow: none;
 }
 
 /* Segmented */
@@ -91,6 +128,14 @@
   .ant-table-ping-left:not(.ant-table-has-fix-left)
   .ant-table-container::before {
   box-shadow: none;
+}
+
+/* Tag */
+.ant-tag {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-weight: 600;
 }
 
 @media (width <= 768px) {

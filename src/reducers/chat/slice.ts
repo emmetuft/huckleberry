@@ -78,17 +78,12 @@ export const ChatSlice = createAppSlice({
   reducers: (create) => ({
     setFullScreen: create.reducer((state, action: { payload: boolean }) => {
       state.fullScreen = action.payload;
-      if (!action.payload) {
-        state.turns = [];
-        state.error = null;
-        state.sessionId = undefined;
-        state.streamingTurnId = null;
-      }
     }),
     clearMessages: create.reducer((state) => {
       state.turns = [];
       state.error = null;
       state.sessionId = undefined;
+      state.streamingTurnId = null;
     }),
     applyStreamEvent: create.reducer(
       (state, action: { payload: AISessionEvent }) => {

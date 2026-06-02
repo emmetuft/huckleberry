@@ -1,14 +1,32 @@
 import { toast } from 'sonner';
+import { AIModel } from 'models/interfaces/aiModel';
 import { GraphData, OntologySource } from 'models/interfaces/ontology';
+import { StepData } from 'components/modals/QuickStartModal/quickStartConfig';
 import { filterInvalidLinks, isValidGraphData } from 'utils/ai';
 import {
   ontologySystemPrompt,
   ontologyTemplate,
   RESUME_SYSTEM_PROMPT,
 } from 'utils/prompt';
-import { StepData } from 'components/modals/QuickStartModal/quickStartConfig';
+import { handleResponse } from 'utils/service';
 
 const TEXT_GEN_ENDPOINT = '/api/ai/generate';
+const MODELS_ENDPOINT = '/api/ai/models';
+
+async function fetchModels(): Promise<AIModel[]> {
+  const response = await fetch(MODELS_ENDPOINT, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+  const data = await handleResponse<{
+    domoProvidedServiceModels: { model: AIModel }[];
+    pageContext: any;
+  }>(response);
+  return data.domoProvidedServiceModels
+    .map((content) => content.model)
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
 
 interface DomoGPTResponse {
   prompt: string;
@@ -90,6 +108,8 @@ export async function parseResumeWithAI(
 }
 
 export const DomoAIService = {
+  fetchModels,
+  generateText,
   generateOntology,
   parseResumeWithAI,
 };

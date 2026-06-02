@@ -47,8 +47,7 @@ export const PersonaTab: FC = () => {
         <div>
           <h1 className={styles.pageTitle}>Your Persona</h1>
           <p className={styles.pageSubtitle}>
-            {completedCount} of {sections.length} sections complete — agents use
-            this to work smarter for you.
+            {completedCount} of {sections.length} sections complete
           </p>
         </div>
         <div className={styles.completionBadge}>
@@ -197,12 +196,12 @@ const SectionEditor: FC<SectionEditorProps> = ({
                 key={field.key}
                 inputType={field.inputType}
                 label={field.label}
-                placeholder={field.placeholder}
                 value={getFieldValue(field.key, draft)}
                 options={field.options}
                 onChange={(val) =>
                   setDraft((d) => applyFieldValue(field.key, val, d))
                 }
+                inputProps={{ placeholder: field.placeholder }}
               />
             ))}
           </div>
@@ -220,7 +219,7 @@ const EditorActions: FC<{ onSave: () => void; saving: boolean }> = ({
   saving,
 }) => (
   <div className={styles.editorActions}>
-    <Button type="primary" loading={saving} onClick={onSave}>
+    <Button type="primary" shape="round" loading={saving} onClick={onSave}>
       Save
     </Button>
   </div>

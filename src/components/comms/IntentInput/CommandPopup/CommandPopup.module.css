@@ -55,10 +55,12 @@
   .hint {
     display: flex;
     gap: var(--space-md);
-    padding: var(--space-sm) var(--space-md) var(--space-xs);
+    padding: var(--space-sm) var(--space-md) 0;
     border-top: 1px solid var(--grey-light);
-    margin-top: var(--space-xs);
-    font-size: 10px;
-    color: var(--grey-text);
+
+    span {
+      font-size: 10px;
+      color: var(--grey-text);
+    }
   }
 }

@@ -1,5 +1,5 @@
 export interface User {
-  id: string;
+  id: number;
   username: string;
   displayName?: string;
   email?: string;
@@ -7,7 +7,7 @@ export interface User {
 }
 
 export interface Group {
-  id: string;
+  id: number;
   name: string;
   description?: string;
   memberCount?: number;

@@ -91,6 +91,7 @@ export const DataControls: FC = () => {
       >
         <Badge count={filters.length} offset={[-5, 5]}>
           <Button
+            shape="round"
             icon={<FunnelIcon />}
             className={styles.filterButton}
             type={filters.length > 0 ? 'primary' : 'default'}

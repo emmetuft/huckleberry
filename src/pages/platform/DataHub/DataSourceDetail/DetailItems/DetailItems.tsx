@@ -25,8 +25,16 @@ export const DetailItems: FC = () => {
         />
       ),
     },
-    { label: 'Rows', value: dataSource.rowCount?.toLocaleString() },
-    { label: 'Columns', value: dataSource.columnCount },
+    {
+      label: 'Shape',
+      value: (
+        <div>
+          <span>{dataSource.rowCount?.toLocaleString()} rows</span>
+          {', '}
+          <span>{dataSource.columnCount} columns</span>
+        </div>
+      ),
+    },
     {
       label: 'Last Updated',
       value: formatDateTime(new Date(dataSource.lastUpdated)),

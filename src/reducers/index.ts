@@ -4,27 +4,27 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import AppReducer from './app/slice';
 import OntologyReducer from './ontology/slice';
-import ApplicationsReducer from './applications/slice';
 import ChatReducer from './chat/slice';
 import MetricsReducer from './metrics/slice';
 import PeopleReducer from './people/slice';
 import ToolkitsReducer from './toolkits/slice';
 import WorkspaceReducer from './workspace/slice';
 import DatasourceReducer from './datasource/slice';
+import AgentsReducer from './agents/slice';
 //-- importRef
 import { useDispatch } from 'react-redux';
 
 export const store = configureStore({
   reducer: {
     app: AppReducer,
-    ontology: OntologyReducer,
-    applications: ApplicationsReducer,
+    agents: AgentsReducer,
     chat: ChatReducer,
+    datasource: DatasourceReducer,
     metrics: MetricsReducer,
+    ontology: OntologyReducer,
     people: PeopleReducer,
     toolkits: ToolkitsReducer,
     workspace: WorkspaceReducer,
-    datasource: DatasourceReducer,
     //-- reducerRef
   },
 });

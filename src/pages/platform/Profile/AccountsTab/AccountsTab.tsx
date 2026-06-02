@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Button } from 'antd';
+import { Button, Tag } from 'antd';
 import {
   CalendarBlankIcon,
   GithubLogoIcon,
@@ -7,6 +7,7 @@ import {
   KanbanIcon,
   MicrosoftTeamsLogoIcon,
   NotionLogoIcon,
+  PlusIcon,
 } from '@phosphor-icons/react';
 import styles from './AccountsTab.module.css';
 
@@ -85,11 +86,17 @@ export const AccountsTab: FC = () => {
             <div className="appInfo" style={{ flex: 1 }}>
               <h4>{account.name}</h4>
               <p>{account.description}</p>
-            </div>
-            <div className={styles.connectAction}>
-              <Button size="small">
-                {account.connected ? 'Disconnect' : 'Connect'}
-              </Button>
+              <div className={styles.accountDetails}>
+                <Tag
+                  style={{
+                    color: 'var(--purple)',
+                    backgroundColor: 'var(--purple-light)',
+                  }}
+                >
+                  <PlusIcon />
+                  Connect
+                </Tag>
+              </div>
             </div>
           </div>
         ))}

@@ -2,6 +2,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-md);
+  margin-bottom: var(--space-md);
 
   .searchInput {
     width: 300px;

@@ -8,7 +8,18 @@
 
   .greeting {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+
+    h2 {
+      font-size: 26px;
+      font-weight: 600;
+    }
+
+    .currentDate {
+      color: var(--grey-text);
+    }
   }
 }
 

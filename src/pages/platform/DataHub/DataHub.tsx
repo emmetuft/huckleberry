@@ -1,7 +1,14 @@
-import { FC, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  FC,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { Table } from 'antd';
+import { Table, Tag } from 'antd';
 import styles from './DataHub.module.css';
 import { useAppDispatch } from 'reducers';
 import { selectIdentity } from 'reducers/app/slice';
@@ -18,7 +25,7 @@ import { dataSourceColumns } from 'constants/data';
 import { Avatar } from 'components/shared/Avatar/Avatar';
 import { DataControls } from './DataControls/DataControls';
 import { renderVal } from 'utils/data';
-import { useIsMobile } from 'hooks/useIsMobile';
+import { defaultTagStyle } from 'constants/styles';
 
 interface DataHubProps {}
 
@@ -34,24 +41,35 @@ export const DataHub: FC<DataHubProps> = ({}) => {
   const [page, setPage] = useState<number>(1);
   const [size, setSize] = useState<number>(20);
 
-  const topSectionRef = useRef<HTMLDivElement>(null);
-  const [tableHeight, setTableHeight] = useState<number>(500);
-  const isMobile = useIsMobile();
+  const tableWrapperRef = useRef<HTMLDivElement>(null);
+  const [tableHeight, setTableHeight] = useState<number>(0);
 
-  useEffect(() => {
-    const resize = () => {
-      const topHeight = topSectionRef.current?.offsetHeight || 0;
-      const topMargin = isMobile ? 10 : 12;
-      const padding = isMobile ? 50 * 2 : 80;
-      const extraTableHeight = isMobile ? 39 + 57 : 61 + 65 + 2; // header + pagination + borders
+  useLayoutEffect(() => {
+    const wrapper = tableWrapperRef.current;
+    if (!wrapper) return;
+
+    const measure = () => {
+      const header = wrapper.querySelector(
+        '.ant-table-thead',
+      ) as HTMLElement | null;
+      const pagination = wrapper.querySelector(
+        '.ant-pagination',
+      ) as HTMLElement | null;
+      const headerHeight = header?.offsetHeight ?? 0;
+      const paginationHeight = pagination?.offsetHeight ?? 0;
+      const paginationMargin = pagination ? 16 : 0; // ant-table pagination margin-block
       setTableHeight(
-        window.innerHeight - topHeight - topMargin - padding - extraTableHeight,
+        wrapper.clientHeight -
+          headerHeight -
+          paginationHeight -
+          paginationMargin,
       );
     };
 
-    resize();
-    window.addEventListener('resize', resize);
-    return () => window.removeEventListener('resize', resize);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(wrapper);
+    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
@@ -88,10 +106,8 @@ export const DataHub: FC<DataHubProps> = ({}) => {
       const tagList = JSON.parse(val);
       return (
         <div className={styles.tags}>
-          {tagList.map((tag: string, index: number) => (
-            <span key={index} className={styles.tag}>
-              {tag}
-            </span>
+          {tagList.map((tag: string) => (
+            <Tag style={defaultTagStyle}>{tag}</Tag>
           ))}
         </div>
       );
@@ -107,46 +123,34 @@ export const DataHub: FC<DataHubProps> = ({}) => {
 
   return (
     <div className="platformPage">
-      <div ref={topSectionRef} className={styles.topSection}>
-        {/* <div className={styles.chartContainer}>
-          <p className={styles.chartTitle}>Top 5 Data Providers</p>
-          <DataProvidersChart height={260} />
-          </div>
-          <div className={styles.chartContainer}>
-          <p className={styles.chartTitle}>Current Week DataSource Runs</p>
-          <RecentRunsChart height={260} />
-          </div>
-          <div className={styles.chartContainer}>
-          <p className={styles.chartTitle}>Current Week Avg Run Time</p>
-          <DataSourceUsageTrendChart height={260} />
-          </div> */}
-        <DataControls />
+      <DataControls />
+      <div ref={tableWrapperRef} className={styles.tableWrapper}>
+        <Table
+          dataSource={dataSourceList}
+          columns={columns}
+          loading={loading}
+          rowKey="id"
+          pagination={{
+            current: page,
+            pageSize: size,
+            pageSizeOptions: ['20', '50', '100'],
+            showSizeChanger: true,
+            total: totalRows,
+            onChange: onChangePagination,
+          }}
+          scroll={{
+            scrollToFirstRowOnChange: true,
+            x: 'max-content',
+            y: tableHeight,
+          }}
+          tableLayout="auto"
+          className={styles.dataTable}
+          onRow={(record) => ({
+            onClick: () => navigate(`/data-hub/${record.id}`),
+            style: { cursor: 'pointer' },
+          })}
+        />
       </div>
-      <Table
-        dataSource={dataSourceList}
-        columns={columns}
-        loading={loading}
-        rowKey="id"
-        pagination={{
-          current: page,
-          pageSize: size,
-          pageSizeOptions: ['20', '50', '100'],
-          showSizeChanger: true,
-          total: totalRows,
-          onChange: onChangePagination,
-        }}
-        scroll={{
-          scrollToFirstRowOnChange: true,
-          x: 'max-content',
-          y: tableHeight,
-        }}
-        tableLayout="auto"
-        className={`card ${styles.dataTable}`}
-        onRow={(record) => ({
-          onClick: () => navigate(`/data-hub/${record.id}`),
-          style: { cursor: 'pointer' },
-        })}
-      />
     </div>
   );
 };
