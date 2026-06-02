@@ -29,6 +29,8 @@ export enum AppPage {
   PROFILE = 'profile',
   PROJECTS = 'projects',
   PROJECT_DETAIL = 'project_detail',
+  WORKFLOWS = 'workflows',
+  WORKFLOW_DETAIL = 'workflow_detail',
 }
 
 export const AppPageTitle: Record<string, string> = {
@@ -45,11 +47,15 @@ export const AppPageTitle: Record<string, string> = {
   [AppPage.PROFILE]: 'Profile',
   [AppPage.PROJECTS]: 'Projects',
   [AppPage.PROJECT_DETAIL]: 'Project Detail',
+  [AppPage.WORKFLOWS]: 'Workflows',
+  [AppPage.WORKFLOW_DETAIL]: 'Workflow',
 };
 
 export const AppPageSubtitle: Record<string, string> = {
   [AppPage.AGENTS]:
     'Discover and create custom agents that combine instructions, extra knowledge, and any combination of tasks.',
+  [AppPage.WORKFLOWS]:
+    'Repeatable processes with defined inputs and steps when you need consistent output or actions.',
   [AppPage.APPS]:
     'Launch the apps you use every day, or explore the marketplace to add new ones to your workspace.',
   [AppPage.DATA_HUB]: 'Browse the data sources powering your workspace.',
@@ -86,6 +92,8 @@ export const platformRoutePaths: Record<AppPage, string> = {
   [AppPage.PROFILE]: '/profile',
   [AppPage.PROJECTS]: '/projects',
   [AppPage.PROJECT_DETAIL]: '/projects/:id',
+  [AppPage.WORKFLOWS]: '/workflows',
+  [AppPage.WORKFLOW_DETAIL]: '/workflows/:workflowId',
 };
 
 // Helper to get AppPage from platform path

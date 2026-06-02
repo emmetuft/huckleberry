@@ -1,3 +1,30 @@
+import { Workflow } from 'models/interfaces/workflow';
+
+export const FEATURED_WORKFLOWS: Workflow[] = [
+  {
+    id: '1',
+    name: 'Prepare competitive analysis',
+    description:
+      'Automatically looks at latest news stories, LinkedIn and Reddit posts, and popular podcast transcripts to compile and summarize the competitive landscape.',
+  },
+  {
+    id: '2',
+    name: 'Prepare my weekly report',
+    description:
+      'Review notes, calendar, action items, and recent accomplishments for leadership meetings.',
+  },
+  {
+    id: '3',
+    name: 'Summarize customer wants',
+    description: '',
+  },
+  {
+    id: '4',
+    name: 'JIRA insights for leaders',
+    description: '',
+  },
+];
+
 export const DEFAULT_WORKFLOW_STARTS = [
   {
     id: '1',

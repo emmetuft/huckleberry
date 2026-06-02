@@ -60,6 +60,7 @@ export const PlatformLayout: FC = () => {
   const noPaddingRoutes = [
     platformRoutePaths[AppPage.AGENT_DETAIL],
     platformRoutePaths[AppPage.ONTOLOGY],
+    platformRoutePaths[AppPage.WORKFLOW_DETAIL],
   ];
   const hidePadding = noPaddingRoutes.some((path) =>
     matchPath(path, location.pathname),

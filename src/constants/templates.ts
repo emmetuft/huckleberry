@@ -1,5 +1,5 @@
 import { NodeType } from 'models/enums/nodeType';
-import { ActionType } from 'pages/platform/Agents/AgentDetail/Nodes/ActionNode';
+import { ActionType } from 'pages/platform/Workflows/Nodes/ActionNode';
 
 export const TEMPLATE_NODES = [
   {

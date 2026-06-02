@@ -1,48 +1,23 @@
-import { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { Button, Select } from 'antd';
-// import {
-//   ReactFlow,
-//   Background,
-//   useNodesState,
-//   useEdgesState,
-//   addEdge,
-//   BackgroundVariant,
-//   Edge,
-//   ConnectionLineType,
-// } from '@xyflow/react';
-// import '@xyflow/react/dist/style.css';
 import styles from './AgentDetail.module.css';
 import { useAppDispatch } from 'reducers';
-import { selectTheme } from 'reducers/app/slice';
 import { selectAgents } from 'reducers/agents/slice';
 import { createCustomAgent, fetchAIModels } from 'reducers/agents/actions';
 import { AGENT_FORM_FIELDS, AgentStep } from 'constants/agent';
-// import { TEMPLATE_NODES } from 'constants/templates';
-// import { NodeType } from 'models/enums/nodeType';
-// import { StartNode } from './Nodes/StartNode';
-// import { EndNode } from './Nodes/EndNode';
-// import { ActionNode } from './Nodes/ActionNode';
 import { AccessEntry } from 'models/enums/permission';
 import { Agent } from 'models/interfaces/agent';
 import { Tool } from 'models/interfaces/toolkit';
 import { Chat } from './Chat/Chat';
 import { AgentStepContent } from './AgentStepContent';
 
-// const nodeTypes = {
-//   [NodeType.START]: StartNode,
-//   [NodeType.END]: EndNode,
-//   [NodeType.ACTION]: ActionNode,
-// };
-
 type AgentFormState = Partial<Agent>;
 
 export const AgentDetail: FC = () => {
   const dispatch = useAppDispatch();
   const agents = useSelector(selectAgents);
-  const theme = useSelector(selectTheme);
-  const isDark = theme === 'dark';
 
   const [currentStep, setCurrentStep] = useState<AgentStep>(AgentStep.Persona);
   const [agentForm, setAgentForm] = useState<AgentFormState>({});
@@ -109,18 +84,6 @@ export const AgentDetail: FC = () => {
       }),
     );
   };
-
-  // const [nodes, , onNodesChange] = useNodesState(TEMPLATE_NODES);
-  // const [edges, setEdges, onEdgesChange] = useEdgesState([] as Edge[]);
-
-  // const onConnect = useCallback(
-  //   (params: Parameters<typeof addEdge>[0]) => {
-  //     setEdges((eds) =>
-  //       addEdge({ ...params, type: ConnectionLineType.SmoothStep }, eds),
-  //     );
-  //   },
-  //   [setEdges],
-  // );
 
   return (
     <div className={styles.agentWrapper}>
@@ -195,25 +158,6 @@ export const AgentDetail: FC = () => {
         </div>
         <Chat agent={agent} showHeader={false} />
       </div>
-      {/* <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        nodeTypes={nodeTypes}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        connectionLineType={ConnectionLineType.SmoothStep}
-        fitView
-        fitViewOptions={{ padding: 2 }}
-      >
-        <Background
-          variant={BackgroundVariant.Dots}
-          gap={25}
-          size={2}
-          color={isDark ? '#727272ff' : '#b7b6b6'}
-          bgColor={isDark ? '#1a1a1a' : '#f6f6f6'}
-        />
-      </ReactFlow> */}
     </div>
   );
 };

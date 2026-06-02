@@ -20,6 +20,8 @@ import { Ontology } from './Ontology/Ontology';
 import { ProfilePage } from './Profile/ProfilePage';
 import { Projects } from './Projects/Projects';
 import { ProjectDetail } from './Projects/ProjectDetail/ProjectDetail';
+import { Workflows } from './Workflows/Workflows';
+import { WorkflowDetail } from './Workflows/WorkflowDetail/WorkflowDetail';
 import { Workspace } from './Workspace/Workspace';
 import { getBentoLayout } from 'config/bentoConfig';
 
@@ -107,6 +109,14 @@ export const platformRoutes: RouteObject[] = [
           {
             path: platformRoutePaths[AppPage.PROJECT_DETAIL],
             element: <ProjectDetail />,
+          },
+          {
+            path: platformRoutePaths[AppPage.WORKFLOWS],
+            element: <Workflows />,
+          },
+          {
+            path: platformRoutePaths[AppPage.WORKFLOW_DETAIL],
+            element: <WorkflowDetail />,
           },
         ],
       },

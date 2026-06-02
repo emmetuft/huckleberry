@@ -1,4 +1,4 @@
-import { FC, useMemo, useState } from 'react';
+import { FC, useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -32,13 +32,19 @@ export const Agents: FC = () => {
     return undefined;
   }, [activeTab, identity]);
 
+  const fetchAgents = useCallback(
+    (limit: number, offset: number) => {
+      return AgentService.getAgents(limit, offset, filters);
+    },
+    [filters],
+  );
+
   const {
     items: agents,
     loading,
     sentinelRef,
-  } = useInfiniteScroll<Agent, [filters?: AgentFilter[]]>({
-    fetcher: AgentService.getAgents,
-    fetcherArgs: [filters],
+  } = useInfiniteScroll<Agent>({
+    fetcher: fetchAgents,
     resetDeps: [selectedCategory, searchQuery, filters],
   });
 
