@@ -20,8 +20,7 @@ export const AGENT_FORM_FIELDS: InputField<keyof Agent>[] = [
     key: 'description',
     label: 'Description',
     inputType: InputType.TextArea,
-    description:
-      'Create a description that will help your team know when to use this agent',
+    description: 'Describe how and when to use this agent',
     inputProps: { autoSize: { minRows: 4 } },
   },
   {
@@ -35,7 +34,7 @@ export const AGENT_FORM_FIELDS: InputField<keyof Agent>[] = [
     label: 'Role',
     inputType: InputType.TextArea,
     description:
-      'Describe the purpose and behavior of the agent to guide its responses',
+      'Define the purpose and behavior of the agent to guide its responses',
     inputProps: { autoSize: { minRows: 4 } },
   },
   {

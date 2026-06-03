@@ -1,0 +1,15 @@
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+
+  .selectedCount {
+    color: var(--grey-text);
+  }
+
+  div {
+    display: flex;
+    gap: var(--space-sm);
+  }
+}

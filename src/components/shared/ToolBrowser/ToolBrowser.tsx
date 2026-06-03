@@ -1,6 +1,6 @@
 import { FC, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Input, Collapse, Button, Empty } from 'antd';
+import { Input, Collapse, Button, Empty, Tag } from 'antd';
 import {
   CheckIcon,
   MagnifyingGlassIcon,
@@ -65,7 +65,9 @@ export const ToolBrowser: FC<ToolBrowserProps> = ({
     label: (
       <div className={styles.header}>
         <span className={styles.serverLabel}>{toolkit.name} </span>
-        <span className={styles.toolCount}>{toolkit.tools.length} tools</span>
+        <span className={styles.toolCount}>
+          {toolkit.tools.length} tool{toolkit.tools.length !== 1 ? 's' : ''}
+        </span>
       </div>
     ),
     children: (
@@ -74,7 +76,7 @@ export const ToolBrowser: FC<ToolBrowserProps> = ({
           const selected = isToolSelected(tool);
           return (
             <div key={tool.toolId} className="appCard">
-              <div className={styles.toolIcon}>
+              <div className={`defaultAppIcon ${styles.toolIcon}`}>
                 <WrenchIcon />
               </div>
               <div className="appInfo">
@@ -110,6 +112,20 @@ export const ToolBrowser: FC<ToolBrowserProps> = ({
         onChange={(e) => setSearchQuery(e.target.value)}
         allowClear
       />
+
+      {selectedTools.length > 0 && (
+        <div className={styles.selectedList}>
+          {selectedTools.map((tool) => (
+            <Tag
+              key={tool.toolId}
+              closable
+              onClose={() => handleToggleTool(tool)}
+            >
+              {tool.overrideToolName || 'No title'}
+            </Tag>
+          ))}
+        </div>
+      )}
 
       {filteredToolkits.length === 0 ? (
         <Empty description={'No tools match your search'} />

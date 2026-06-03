@@ -1,10 +1,13 @@
-import { Dispatch, FC, SetStateAction } from 'react';
+import { Dispatch, FC, SetStateAction, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Input, Select, Switch } from 'antd';
+import { Button, Select, Switch } from 'antd';
+import { AnimatePresence, motion } from 'framer-motion';
+import { toast } from 'sonner';
 import {
   GlobeIcon,
   LockSimpleIcon,
-  MagnifyingGlassIcon,
+  MagicWandIcon,
+  TrashIcon,
   UserCircleIcon,
   UsersThreeIcon,
 } from '@phosphor-icons/react';
@@ -13,14 +16,24 @@ import labelInputStyles from 'components/shared/LabelInput/LabelInput.module.css
 import { selectAIModels } from 'reducers/agents/slice';
 import { selectAllPeople } from 'reducers/people/slice';
 import { AGENT_FORM_FIELDS, AgentStep } from 'constants/agent';
+import { AccessEntry, Permission } from 'models/enums/permission';
 import { Agent } from 'models/interfaces/agent';
 import { Group, isUser, User } from 'models/interfaces/mention';
-import { AccessEntry, Permission } from 'models/enums/permission';
+import { DataSource } from 'models/interfaces/dataSource';
 import { Tool } from 'models/interfaces/toolkit';
-import { LabelInput } from 'components/shared/LabelInput/LabelInput';
-import { ToolBrowser } from 'components/shared/ToolBrowser/ToolBrowser';
 import { Avatar } from 'components/shared/Avatar/Avatar';
+import { DataSourceBrowser } from 'components/shared/DataSourceBrowser/DataSourceBrowser';
+import { IconBtn } from 'components/shared/IconBtn/IconBtn';
+import {
+  FieldOption,
+  InputField,
+  LabelInput,
+} from 'components/shared/LabelInput/LabelInput';
 import PermissionSelect from 'components/shared/PermissionSelect';
+import { ToolBrowser } from 'components/shared/ToolBrowser/ToolBrowser';
+import AppTooltip from 'components/shared/Tooltip';
+import { DomoAIService } from 'services/ai';
+import { buildFieldGenerationPrompt } from 'utils/ai';
 
 interface AgentStepContentProps {
   currentStep: AgentStep;
@@ -28,6 +41,8 @@ interface AgentStepContentProps {
   onFieldChange: (key: keyof Agent, value: any) => void;
   selectedTools: Tool[];
   onToolsChange: (tools: Tool[]) => void;
+  selectedDataSources: DataSource[];
+  onDataSourcesChange: (dataSources: DataSource[]) => void;
   usersAndGroups: AccessEntry[];
   onUsersAndGroupsChange: Dispatch<SetStateAction<AccessEntry[]>>;
 }
@@ -57,17 +72,63 @@ export const AgentStepContent: FC<AgentStepContentProps> = ({
   onFieldChange,
   selectedTools,
   onToolsChange,
+  selectedDataSources,
+  onDataSourcesChange,
   usersAndGroups,
   onUsersAndGroupsChange,
 }) => {
   const aiModels = useSelector(selectAIModels);
   const allPeople = useSelector(selectAllPeople);
+  const [generatingFields, setGeneratingFields] = useState<Set<keyof Agent>>(
+    new Set(),
+  );
+  const [addAllWorkspaceContent, setAddAllWorkspaceContent] = useState(false);
 
   const modelOptions = aiModels.map((model) => ({
     label: model.name,
     value: model.id,
     description: model.description,
   }));
+
+  const handleGenerateField = async (
+    field: InputField<keyof Agent>,
+    options?: FieldOption[],
+  ) => {
+    setGeneratingFields((prev) => new Set(prev).add(field.key));
+    try {
+      const context = AGENT_FORM_FIELDS.filter(
+        (f) => f.key !== field.key && agentForm[f.key],
+      )
+        .map((f) => `${f.label}: ${agentForm[f.key]}`)
+        .join('\n');
+
+      const prompt = buildFieldGenerationPrompt(
+        field.label,
+        field.description ?? '',
+        context,
+        options,
+      );
+
+      const result = await DomoAIService.generateText<{ value: string }>(
+        prompt,
+      );
+
+      if (typeof result?.value === 'string') {
+        onFieldChange(field.key, result.value);
+      } else {
+        throw new Error('AI response missing "value" field');
+      }
+    } catch (error) {
+      console.error('Failed to generate field with AI:', error);
+      toast.error('Could not generate content. Please try again.');
+    } finally {
+      setGeneratingFields((prev) => {
+        const next = new Set(prev);
+        next.delete(field.key);
+        return next;
+      });
+    }
+  };
 
   const peopleOptions = allPeople
     .filter(
@@ -107,20 +168,43 @@ export const AgentStepContent: FC<AgentStepContentProps> = ({
     );
   };
 
+  const handleRemovePerson = (member: User | Group) => {
+    onUsersAndGroupsChange((prev) =>
+      prev.filter((entry) => personKey(entry.member) !== personKey(member)),
+    );
+  };
+
   switch (currentStep) {
     case AgentStep.Persona:
-      return AGENT_FORM_FIELDS.map((field) => (
-        <LabelInput
-          key={field.key}
-          inputType={field.inputType}
-          label={field.label}
-          description={field.description}
-          options={field.key === 'model' ? modelOptions : field.options}
-          inputProps={field.inputProps}
-          value={agentForm[field.key] ?? ''}
-          onChange={(val) => onFieldChange(field.key, val)}
-        />
-      ));
+      return AGENT_FORM_FIELDS.map((field) => {
+        const options = field.key === 'model' ? modelOptions : field.options;
+        const isGenerating = generatingFields.has(field.key);
+        return (
+          <div key={field.key} className={styles.fieldWrapper}>
+            <LabelInput
+              inputType={field.inputType}
+              label={field.label}
+              description={field.description}
+              options={options}
+              inputProps={field.inputProps}
+              value={agentForm[field.key] ?? ''}
+              onChange={(val) => onFieldChange(field.key, val)}
+            />
+            {field.key !== 'name' && (
+              <AppTooltip title="Generate with AI" mouseEnterDelay={1}>
+                <Button
+                  type="text"
+                  shape="round"
+                  icon={<MagicWandIcon />}
+                  className={styles.magicIcon}
+                  loading={isGenerating}
+                  onClick={() => handleGenerateField(field, options)}
+                />
+              </AppTooltip>
+            )}
+          </div>
+        );
+      });
     case AgentStep.Knowledge:
       return (
         <div className={styles.pageContent}>
@@ -129,20 +213,39 @@ export const AgentStepContent: FC<AgentStepContentProps> = ({
             <p className={labelInputStyles.description}>
               Give your agent general knowledge around its topic
             </p>
-            <div className={labelInputStyles.inputWrapper}>
-              <Input
-                prefix={<MagnifyingGlassIcon />}
-                placeholder="Browse connected integrations, files, meetings, or other assets"
-              />
-            </div>
+            {!addAllWorkspaceContent && (
+              <div className={labelInputStyles.inputWrapper}>
+                <DataSourceBrowser
+                  selectedDataSources={selectedDataSources}
+                  onDataSourcesChange={onDataSourcesChange}
+                />
+              </div>
+            )}
           </div>
           <div className={styles.knowledgeWrapper}>
-            <div className={styles.notice}>
-              <GlobeIcon size={18} />
-              <p style={{ fontWeight: '600' }}>Access everything</p>
-              <p>This agent has access to all knowledge in this workspace</p>
-            </div>
-            <div className={styles.settingWithSwitch}>
+            <AnimatePresence initial={false}>
+              {addAllWorkspaceContent && (
+                <motion.div
+                  key="access-everything-notice"
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.25, ease: 'easeInOut' }}
+                  style={{ overflow: 'hidden' }}
+                >
+                  <div className={styles.notice}>
+                    <GlobeIcon size={18} />
+                    <p style={{ fontWeight: '600' }}>Access everything</p>
+                    <p>
+                      This agent has access to all knowledge in this workspace
+                    </p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+            <div
+              className={`${styles.settingWithSwitch} ${!addAllWorkspaceContent ? styles.noBorder : ''}`}
+            >
               <div
                 className={`${labelInputStyles.labelInput} ${styles.settingContent}`}
               >
@@ -154,7 +257,10 @@ export const AgentStepContent: FC<AgentStepContentProps> = ({
                   assets in this workspace.
                 </p>
               </div>
-              <Switch />
+              <Switch
+                checked={addAllWorkspaceContent}
+                onChange={setAddAllWorkspaceContent}
+              />
             </div>
             <div className={styles.settingWithSwitch}>
               <div
@@ -218,34 +324,42 @@ export const AgentStepContent: FC<AgentStepContentProps> = ({
               />
             </div>
           </div>
-          <div className={styles.accessWrapper}>
-            <p className={styles.title}>People with access</p>
-            {usersAndGroups.map(({ member, permission }) => (
-              <div className={styles.accessItem} key={personKey(member)}>
-                {isUser(member) ? (
-                  <Avatar
-                    userId={member.id}
-                    name={member.displayName}
-                    showName
-                    // height={30}
-                  />
-                ) : (
-                  <div className={styles.group}>
-                    <div className={styles.groupIcon}>
-                      <UsersThreeIcon size={20} />
+          {usersAndGroups.length > 0 && (
+            <div className={styles.accessWrapper}>
+              <p className={styles.title}>People with access</p>
+              {usersAndGroups.map(({ member, permission }) => (
+                <div className={styles.accessItem} key={personKey(member)}>
+                  {isUser(member) ? (
+                    <Avatar
+                      userId={member.id}
+                      name={member.displayName}
+                      showName
+                      // height={30}
+                    />
+                  ) : (
+                    <div className={styles.group}>
+                      <div className={styles.groupIcon}>
+                        <UsersThreeIcon size={20} />
+                      </div>
+                      <p>{member.name}</p>
                     </div>
-                    <p>{member.name}</p>
+                  )}
+                  <div className={styles.group}>
+                    <PermissionSelect
+                      value={permission}
+                      onChange={(value) =>
+                        handlePermissionChange(member, value as Permission)
+                      }
+                    />
+                    <IconBtn
+                      icon={<TrashIcon />}
+                      onClick={() => handleRemovePerson(member)}
+                    />
                   </div>
-                )}
-                <PermissionSelect
-                  value={permission}
-                  onChange={(value) =>
-                    handlePermissionChange(member, value as Permission)
-                  }
-                />
-              </div>
-            ))}
-          </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       );
     default:

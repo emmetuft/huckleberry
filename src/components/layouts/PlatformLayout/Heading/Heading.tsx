@@ -16,6 +16,7 @@ export const Heading: FC<HeadingProps> = ({}) => {
       case AppPage.HOME:
       case AppPage.ONTOLOGY:
       case AppPage.PROJECT_DETAIL:
+      case AppPage.WORKFLOW_DETAIL:
         return null;
       default:
         return (

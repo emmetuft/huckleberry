@@ -5,6 +5,7 @@ import { platformRoutePaths } from 'models/enums/appPage';
 import {
   ChatsIcon,
   DatabaseIcon,
+  FlowArrowIcon,
   FolderIcon,
   GraphIcon,
   HeartbeatIcon,
@@ -92,10 +93,12 @@ export const Nav: FC<NavProps> = ({}) => {
     [AppPage.METRICS]: <NotebookIcon size={iconSize} />,
     [AppPage.ONTOLOGY]: <GraphIcon size={iconSize} />,
     [AppPage.PROJECTS]: <FolderIcon size={iconSize} />,
+    [AppPage.WORKFLOWS]: <FlowArrowIcon size={iconSize} />,
   };
 
   const pages = [
     AppPage.AGENTS,
+    AppPage.WORKFLOWS,
     AppPage.ONTOLOGY,
     AppPage.DATA_HUB,
     AppPage.INTEGRATIONS,

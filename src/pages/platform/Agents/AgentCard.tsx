@@ -5,6 +5,7 @@ import styles from './Agents.module.css';
 import { defaultTagStyle } from 'constants/styles';
 import { Agent } from 'models/interfaces/agent';
 import { Avatar } from 'components/shared/Avatar/Avatar';
+import { isEmpty } from 'utils/misc';
 
 interface AgentCardProps {
   agent: Agent;
@@ -37,7 +38,9 @@ export const AgentCard: FC<AgentCardProps> = ({ agent }) => {
             <Tag>Updated</Tag>
           ) : null}
         </div>
-        <p>{agent.description ?? 'No description'}</p>
+        <p>
+          {isEmpty(agent.description) ? 'No description' : agent.description}
+        </p>
         <div className={styles.agentDetails}>
           <Avatar
             userId={agent.owner}
