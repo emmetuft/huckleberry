@@ -12,6 +12,7 @@ import { Agent } from 'models/interfaces/agent';
 import { Tool } from 'models/interfaces/toolkit';
 import { Chat } from './Chat/Chat';
 import { AgentStepContent } from './AgentStepContent';
+import { DataSource } from 'models/interfaces/dataSource';
 
 type AgentFormState = Partial<Agent>;
 
@@ -22,6 +23,9 @@ export const AgentDetail: FC = () => {
   const [currentStep, setCurrentStep] = useState<AgentStep>(AgentStep.Persona);
   const [agentForm, setAgentForm] = useState<AgentFormState>({});
   const [selectedTools, setSelectedTools] = useState<Tool[]>([]);
+  const [selectedDataSources, setSelectedDataSources] = useState<DataSource[]>(
+    [],
+  );
   const [usersAndGroups, setUsersAndGroups] = useState<AccessEntry[]>([]);
 
   const { agentId } = useParams<{ agentId: string }>();
@@ -137,6 +141,8 @@ export const AgentDetail: FC = () => {
             onFieldChange={updateField}
             selectedTools={selectedTools}
             onToolsChange={setSelectedTools}
+            selectedDataSources={selectedDataSources}
+            onDataSourcesChange={setSelectedDataSources}
             usersAndGroups={usersAndGroups}
             onUsersAndGroupsChange={setUsersAndGroups}
           />

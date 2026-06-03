@@ -20,9 +20,10 @@ import { DataSource } from 'models/interfaces/dataSource';
 import { MentionItem } from 'models/interfaces/mention';
 import { Tool } from 'models/interfaces/toolkit';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
-import { DataSourceModal } from 'components/modals/DataSourceModal/DataSourceModal';
+import { BrowserModal } from 'components/modals/BrowserModal/BrowserModal';
+import { DataSourceBrowser } from 'components/shared/DataSourceBrowser/DataSourceBrowser';
+import { ToolBrowser } from 'components/shared/ToolBrowser/ToolBrowser';
 import { SendModal, SendData } from 'components/modals/SendModal/SendModal';
-import { ToolModal } from 'components/modals/ToolModal/ToolModal';
 import { AddContextButton } from './context/AddContextButton';
 import { CommandPopup } from './CommandPopup/CommandPopup';
 import { ContextItems } from './context/ContextItems';
@@ -60,7 +61,7 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   const [selectedDataSources, setSelectedDataSources] = useState<DataSource[]>(
     [],
   );
-  const [showDataSourceModal, setShowDataSourceModal] =
+  const [showDataSourceBrowser, setShowDataSourceBrowser] =
     useState<boolean>(false);
   const [showSendModal, setShowSendModal] = useState<boolean>(false);
   const [mentionedItems, setMentionedItems] = useState<MentionItem[]>([]);
@@ -134,6 +135,14 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     setSelectedTools(selectedTools.filter((t) => !(t.toolId === tool.toolId)));
   };
 
+  const handleToolModalConfirm = (tools: Tool[]) => {
+    const newTools = tools.filter(
+      (tool) => !selectedTools.some((t) => t.toolId === tool.toolId),
+    );
+    setSelectedTools([...selectedTools, ...newTools]);
+    setShowToolBrowser(false);
+  };
+
   const handleFileUpload = (file: File) => {
     // TODO: Process the uploaded file and add to context
     setUploadedFiles([...uploadedFiles, file]);
@@ -144,16 +153,16 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   };
 
   const handleDataSourceClick = () => {
-    setShowDataSourceModal(true);
+    setShowDataSourceBrowser(true);
   };
 
   const handleDataSourceModalConfirm = (dataSources: DataSource[]) => {
     setSelectedDataSources([...selectedDataSources, ...dataSources]);
-    setShowDataSourceModal(false);
+    setShowDataSourceBrowser(false);
   };
 
   const handleDataSourceModalCancel = () => {
-    setShowDataSourceModal(false);
+    setShowDataSourceBrowser(false);
   };
 
   const onRemoveDataSource = (dataSourceId: string) => {
@@ -264,11 +273,20 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
 
   return (
     <div className={styles.intentInput}>
-      <DataSourceModal
-        open={showDataSourceModal}
+      <BrowserModal<DataSource>
+        open={showDataSourceBrowser}
+        title="Select Datasources"
+        itemLabel="datasource"
         onCancel={handleDataSourceModalCancel}
         onConfirm={handleDataSourceModalConfirm}
-      />
+      >
+        {(selected, onChange) => (
+          <DataSourceBrowser
+            selectedDataSources={selected}
+            onDataSourcesChange={onChange}
+          />
+        )}
+      </BrowserModal>
       <SendModal
         open={showSendModal}
         onCancel={handleSendModalCancel}
@@ -280,12 +298,17 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
           popup={toolPopup.showPopup ? toolPopup : mentionPopup}
         />
       )}
-      <ToolModal
+      <BrowserModal<Tool>
         open={showToolBrowser}
-        onClose={() => setShowToolBrowser(false)}
-        selectedTools={selectedTools}
-        onToolsChange={setSelectedTools}
-      />
+        title="Browse Tools"
+        itemLabel="tool"
+        onCancel={() => setShowToolBrowser(false)}
+        onConfirm={handleToolModalConfirm}
+      >
+        {(selected, onChange) => (
+          <ToolBrowser selectedTools={selected} onToolsChange={onChange} />
+        )}
+      </BrowserModal>
       <div
         className={`${styles.inputWrapper} ${animate ? styles.animate : ''} card`}
       >
