@@ -5,6 +5,7 @@ import { ConfigProvider, theme as antdTheme } from 'antd';
 import { publicRoutes } from 'pages/public/routes';
 import { platformRoutes } from 'pages/platform/routes';
 import { selectTheme } from 'reducers/app/slice';
+import { AICursor } from 'components/ai-cursor/AICursor';
 
 export const AppRouter: FC = () => {
   const routing = useRoutes([...publicRoutes, ...platformRoutes]);
@@ -24,6 +25,7 @@ export const AppRouter: FC = () => {
       }}
     >
       {routing}
+      <AICursor />
     </ConfigProvider>
   );
 };

@@ -26,8 +26,8 @@ export const Agents: FC = () => {
   type AgentFilter = { type: string; values: any[] };
 
   const filters = useMemo<AgentFilter[] | undefined>(() => {
-    if (activeTab === 'yours' && identity) {
-      return [{ type: 'OWNER', values: [identity.id.toString()] }];
+    if (activeTab === 'yours') {
+      return [{ type: 'OWNER', values: [identity?.id?.toString() ?? ''] }];
     }
     return undefined;
   }, [activeTab, identity]);

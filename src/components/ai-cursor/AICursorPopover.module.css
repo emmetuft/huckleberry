@@ -1,0 +1,73 @@
+.popover {
+  position: fixed;
+  z-index: 1000;
+  width: 360px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--br-lg);
+  box-shadow: var(--box-shadow);
+  overflow: hidden;
+}
+
+.contextLabel {
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--font-xs);
+  color: var(--grey-text);
+  border-bottom: 1px solid var(--card-border);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  padding: var(--space-sm) var(--space-md);
+  gap: var(--space-sm);
+}
+
+.input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: var(--font-sm);
+  color: var(--text);
+}
+
+.input::placeholder {
+  color: var(--grey-text);
+}
+
+.answerSection {
+  padding: var(--space-md);
+  border-top: 1px solid var(--card-border);
+  font-size: var(--font-sm);
+  line-height: 1.6;
+  color: var(--text);
+  max-height: 300px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+}
+
+.spinner {
+  color: var(--purple);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.error {
+  color: var(--error-icon);
+  font-size: var(--font-xs);
+  padding: var(--space-sm) var(--space-md);
+  border-top: 1px solid var(--card-border);
+}
