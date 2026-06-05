@@ -1,24 +1,30 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
-import { Button, Select } from 'antd';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Button, Select, Spin } from 'antd';
 import styles from './AgentDetail.module.css';
 import { useAppDispatch } from 'reducers';
-import { selectAgents } from 'reducers/agents/slice';
-import { createCustomAgent, fetchAIModels } from 'reducers/agents/actions';
+import { selectAgents, selectLoadingAgentId } from 'reducers/agents/slice';
+import {
+  createCustomAgent,
+  fetchAgentById,
+  fetchAIModels,
+} from 'reducers/agents/actions';
 import { AGENT_FORM_FIELDS, AgentStep } from 'constants/agent';
 import { AccessEntry } from 'models/enums/permission';
 import { Agent } from 'models/interfaces/agent';
-import { Tool } from 'models/interfaces/toolkit';
-import { Chat } from './Chat/Chat';
-import { AgentStepContent } from './AgentStepContent';
 import { DataSource } from 'models/interfaces/dataSource';
+import { Tool } from 'models/interfaces/toolkit';
+import { Chat } from '../Chat/Chat';
+import { AgentStepContent } from './AgentStepContent';
 
 type AgentFormState = Partial<Agent>;
 
 export const AgentDetail: FC = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const agents = useSelector(selectAgents);
+  const loadingAgentId = useSelector(selectLoadingAgentId);
 
   const [currentStep, setCurrentStep] = useState<AgentStep>(AgentStep.Persona);
   const [agentForm, setAgentForm] = useState<AgentFormState>({});
@@ -29,10 +35,20 @@ export const AgentDetail: FC = () => {
   const [usersAndGroups, setUsersAndGroups] = useState<AccessEntry[]>([]);
 
   const { agentId } = useParams<{ agentId: string }>();
-  const isNewAgent = agentId === 'new';
-  const agent = isNewAgent
-    ? null
-    : (agents.find((a) => a.id === agentId) ?? null);
+
+  const agent = useMemo(() => {
+    const isNewAgent = agentId === 'new';
+    const currAgent = isNewAgent
+      ? null
+      : (agents.find((a) => a.id === agentId) ?? null);
+    return currAgent;
+  }, [agentId]);
+
+  useEffect(() => {
+    if (!agent && agentId && agentId !== 'new') {
+      dispatch(fetchAgentById(agentId));
+    }
+  }, [agentId]);
 
   useEffect(() => {
     dispatch(fetchAIModels());
@@ -40,11 +56,9 @@ export const AgentDetail: FC = () => {
 
   useEffect(() => {
     if (agent) {
-      setAgentForm({
-        name: agent.name,
-        description: agent.description,
-        model: agent.model,
-      });
+      setAgentForm(agent);
+    } else {
+      setAgentForm({});
     }
   }, [agent]);
 
@@ -89,6 +103,15 @@ export const AgentDetail: FC = () => {
     );
   };
 
+  if (loadingAgentId === agentId) {
+    return (
+      <div className={styles.loadingWrapper}>
+        <Spin />
+        <h4>Loading agent...</h4>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.agentWrapper}>
       <div className={styles.left}>
@@ -103,6 +126,9 @@ export const AgentDetail: FC = () => {
                 value: agent.id,
               })),
             ]}
+            onChange={(value) => {
+              navigate(`/agents/${value}/edit`);
+            }}
           />
           <Button shape="round" type="primary">
             Save

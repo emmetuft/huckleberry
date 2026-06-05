@@ -17,6 +17,7 @@ export enum PublicPage {
 export enum AppPage {
   AGENTS = 'agents',
   AGENT_DETAIL = 'agent_detail',
+  AGENT_CHAT = 'agent_chat',
   APPS = 'apps',
   AUTOMATION = 'automation',
   DATA_HEALTH = 'data_health',
@@ -36,6 +37,7 @@ export enum AppPage {
 export const AppPageTitle: Record<string, string> = {
   [AppPage.AGENTS]: 'Agents',
   [AppPage.AGENT_DETAIL]: 'Agent',
+  [AppPage.AGENT_CHAT]: 'Agent Chat',
   [AppPage.APPS]: 'Apps',
   [AppPage.AUTOMATION]: 'Automations',
   [AppPage.DATA_HEALTH]: 'Data Health',
@@ -80,7 +82,8 @@ export const publicRoutePaths: Record<PublicPage, string> = {
 export const platformRoutePaths: Record<AppPage, string> = {
   [AppPage.APPS]: '/apps',
   [AppPage.AGENTS]: '/agents',
-  [AppPage.AGENT_DETAIL]: '/agents/:agentId',
+  [AppPage.AGENT_DETAIL]: '/agents/:agentId/edit',
+  [AppPage.AGENT_CHAT]: '/agents/:agentId/chat',
   [AppPage.AUTOMATION]: '/automation',
   [AppPage.DATA_HEALTH]: '/data-health',
   [AppPage.DATA_HUB]: '/data-hub',

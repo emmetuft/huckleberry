@@ -16,7 +16,7 @@ export const AppCard: FC<AppCardProps> = ({ app, showAddBtn }) => {
       {app.iconUrl ? (
         <img src={app.iconUrl} height="100%" width="100%" />
       ) : (
-        <div className="defaultAppIcon">
+        <div className={`defaultAppIcon ${styles.appIcon}`}>
           <CubeIcon color="white" size={18} />
         </div>
       )}

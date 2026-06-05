@@ -29,6 +29,14 @@ export const fetchAIModels = createAsyncThunk<
   return DomoAIService.fetchModels();
 });
 
+export const fetchAgentById = createAsyncThunk<
+  Agent,
+  string,
+  { state: RootState }
+>('agents/fetchAgentById', async (agentId) => {
+  return AgentService.getAgent(agentId);
+});
+
 export const createCustomAgent = createAsyncThunk<
   Agent,
   Agent,

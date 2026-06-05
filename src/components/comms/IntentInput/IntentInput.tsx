@@ -1,6 +1,6 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Button } from 'antd';
+import { Button, Select } from 'antd';
 import {
   CalendarBlankIcon,
   ChartLineIcon,
@@ -12,6 +12,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import styles from './IntentInput.module.css';
 import { useAppDispatch } from 'reducers';
 import { selectPage } from 'reducers/app/slice';
+import { selectAIModels } from 'reducers/agents/slice';
 import { executeStream } from 'reducers/chat/actions';
 import { selectLoading, setFullScreen } from 'reducers/chat/slice';
 import { AppPage } from 'models/enums/appPage';
@@ -48,6 +49,7 @@ const DEFAULT_PLACEHOLDERS = [
 export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   const dispatch = useAppDispatch();
   const appPage = useSelector(selectPage);
+  const models = useSelector(selectAIModels);
   const requestLoading = useSelector(selectLoading);
 
   const [isEmpty, setIsEmpty] = useState<boolean>(true);
@@ -65,6 +67,9 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     useState<boolean>(false);
   const [showSendModal, setShowSendModal] = useState<boolean>(false);
   const [mentionedItems, setMentionedItems] = useState<MentionItem[]>([]);
+  const [model, setModel] = useState<string>(
+    models.length > 0 ? models[0].id : '',
+  );
 
   const editableRef = useRef<HTMLDivElement>(null);
   const popupRef = useRef<HTMLDivElement>(null);
@@ -362,7 +367,19 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
               ))}
             </AnimatePresence>
           </div>
-          <SendButton isEmpty={isEmpty} onClickSend={onClickSend} />
+          <div className={styles.buttons}>
+            <Select
+              className={styles.modelSelect}
+              popupMatchSelectWidth={false}
+              variant="borderless"
+              value={model}
+              options={models.map((model) => ({
+                label: model.name,
+                value: model.id,
+              }))}
+            />
+            <SendButton isEmpty={isEmpty} onClickSend={onClickSend} />
+          </div>
         </div>
       </div>
     </div>

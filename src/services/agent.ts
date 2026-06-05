@@ -73,7 +73,16 @@ const createAgent = async (agent: Agent): Promise<Agent> => {
   return handleResponse<Agent>(response);
 };
 
+/**
+ * Retrieve a single agent by ID
+ */
+const getAgent = async (agentId: string): Promise<Agent> => {
+  const response = await fetch(`${AGENT_API_BASE}/${agentId}`);
+  return handleResponse<Agent>(response);
+};
+
 export const AgentService = {
   getAgents,
+  getAgent,
   createAgent,
 };
