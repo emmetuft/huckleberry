@@ -1,20 +1,21 @@
-import { toast } from 'sonner';
 import { AIModel } from 'models/interfaces/aiModel';
-import { GraphData, OntologySource } from 'models/interfaces/ontology';
-import { StepData } from 'components/modals/QuickStartModal/quickStartConfig';
-import { filterInvalidLinks, isValidGraphData } from 'utils/ai';
 import {
-  ontologySystemPrompt,
-  ontologyTemplate,
+  DomoAIResponse,
+  ImageToTextRequest,
+  TextGenRequest,
+} from 'models/interfaces/aiService';
+import { StepData } from 'components/modals/QuickStartModal/quickStartConfig';
+import {
+  CURSOR_SYSTEM_PROMPT,
   RESUME_SYSTEM_PROMPT,
+  SCREENSHOT_SYSTEM_PROMPT,
 } from 'utils/prompt';
 import { handleResponse } from 'utils/service';
 
-const TEXT_GEN_ENDPOINT = '/api/ai/generate';
-const MODELS_ENDPOINT = '/api/ai/models';
+const AI_SERVICE_ENDPOINT = '/api/ai/';
 
 async function fetchModels(): Promise<AIModel[]> {
-  const response = await fetch(MODELS_ENDPOINT, {
+  const response = await fetch(`${AI_SERVICE_ENDPOINT}/models`, {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
   });
@@ -28,23 +29,11 @@ async function fetchModels(): Promise<AIModel[]> {
     .sort((a, b) => a.name.localeCompare(b.name));
 }
 
-interface DomoGPTResponse {
-  prompt: string;
-  choices: Array<{
-    output: string;
-  }>;
-  modelId: string;
-  isCustomerModel: boolean;
-}
-
-interface TextGenRequest {
-  input: string;
-  system?: string;
-  promptTemplate?: { template: string };
-}
-
-async function generateText<T>(request: TextGenRequest): Promise<T> {
-  const response = await fetch(TEXT_GEN_ENDPOINT, {
+async function generateText<T>(
+  request: TextGenRequest,
+  parseJSON: boolean = false,
+): Promise<T> {
+  const response = await fetch(`${AI_SERVICE_ENDPOINT}/text/generation`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(request),
@@ -55,8 +44,12 @@ async function generateText<T>(request: TextGenRequest): Promise<T> {
   }
 
   const result = await response.json();
-  const payload: DomoGPTResponse = result.data ?? result;
+  const payload: DomoAIResponse = result.data ?? result;
   const rawOutput = payload.choices[0].output;
+
+  if (!parseJSON) {
+    return rawOutput as unknown as T;
+  }
 
   try {
     return JSON.parse(rawOutput);
@@ -67,35 +60,26 @@ async function generateText<T>(request: TextGenRequest): Promise<T> {
   }
 }
 
-const generateOntology = async (
-  dataSources: OntologySource[],
-): Promise<GraphData> => {
-  try {
-    const sourceContext = dataSources
-      .map(
-        (ds) => `Data source name: ${ds.name}
-Schema: ${JSON.stringify(ds.schema)}
-Sample Rows: ${JSON.stringify(ds.sampleRows)}\n`,
-      )
-      .join('\n');
+async function imageToText(request: ImageToTextRequest): Promise<string> {
+  const response = await fetch(`${AI_SERVICE_ENDPOINT}/image/text`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(request),
+  });
 
-    const parsedData = await generateText<unknown>({
-      input: sourceContext,
-      promptTemplate: { template: ontologyTemplate },
-      system: ontologySystemPrompt,
-    });
-
-    if (!isValidGraphData(parsedData)) {
-      throw new Error('AI response does not match expected GraphData format');
-    }
-
-    toast.success('Successfully generated ontology.');
-    return filterInvalidLinks(parsedData);
-  } catch (error) {
-    toast.error('Could not generate ontology, please try again.');
-    console.error('Error generating view metadata:', error);
-    throw error;
+  if (!response.ok) {
+    throw new Error(`AI image-to-text failed: ${response.status}`);
   }
+
+  const result = await response.json();
+  const payload: DomoAIResponse = result.data ?? result;
+  return payload.output;
+}
+
+export const DomoAIService = {
+  fetchModels,
+  generateText,
+  imageToText,
 };
 
 export async function parseResumeWithAI(
@@ -107,9 +91,60 @@ export async function parseResumeWithAI(
   });
 }
 
-export const DomoAIService = {
-  fetchModels,
-  generateText,
-  generateOntology,
-  parseResumeWithAI,
-};
+export async function analyzeCursorContext(
+  elementContext: string,
+  input: string,
+): Promise<string> {
+  const fullInput = `Element context:\n${elementContext}\n\nUser question: ${input}`;
+  return generateText({
+    input: fullInput,
+    system: CURSOR_SYSTEM_PROMPT,
+  });
+}
+
+export async function analyzeScreenshot(
+  image: string,
+  input: string,
+): Promise<string> {
+  const base64 = image.split(',')[1];
+  return imageToText({
+    image: {
+      data: base64,
+      mediaType: 'image/png',
+      type: 'base64',
+    },
+    input,
+    system: SCREENSHOT_SYSTEM_PROMPT,
+  });
+}
+
+// const generateOntology = async (
+//   dataSources: OntologySource[],
+// ): Promise<GraphData> => {
+//   try {
+//     const sourceContext = dataSources
+//       .map(
+//         (ds) => `Data source name: ${ds.name}
+// Schema: ${JSON.stringify(ds.schema)}
+// Sample Rows: ${JSON.stringify(ds.sampleRows)}\n`,
+//       )
+//       .join('\n');
+
+//     const parsedData = await generateText<unknown>({
+//       input: sourceContext,
+//       promptTemplate: { template: ontologyTemplate },
+//       system: ontologySystemPrompt,
+//     });
+
+//     if (!isValidGraphData(parsedData)) {
+//       throw new Error('AI response does not match expected GraphData format');
+//     }
+
+//     toast.success('Successfully generated ontology.');
+//     return filterInvalidLinks(parsedData);
+//   } catch (error) {
+//     toast.error('Could not generate ontology, please try again.');
+//     console.error('Error generating view metadata:', error);
+//     throw error;
+//   }
+// };

@@ -1,10 +1,10 @@
-export const ontologyTemplate = `
+export const ONTOLOGY_TEMPLATE = `
 Please generate the ontology (entities and relationships) based on the following data sources:
  
 \${input}
 `;
 
-export const ontologySystemPrompt = `
+export const ONTOLOGY_SYSTEM_PROMPT = `
 You are an ontology builder AI.
 You are given a list of data sources. Each data source has:
 - a name
@@ -56,3 +56,16 @@ export const RESUME_SYSTEM_PROMPT = `You are a resume parser. Extract profession
   "decisionStyle": "one of: intuition, data-driven, consensus"
 }
 Infer preferredFormat, tone, and decisionStyle from the style and content of the resume. Return ONLY the JSON object, no markdown, no explanation.`;
+
+export const CURSOR_SYSTEM_PROMPT = `You are a helpful assistant embedded in a web application. The user has clicked on a UI element and is asking a question about it. Answer concisely and helpfully. Keep responses under 3 sentences unless more detail is clearly needed. You are given context about the element the user clicked on.`;
+
+export const SCREENSHOT_SYSTEM_PROMPT = `You are an expert at analyzing website and application screenshots.
+
+When given a screenshot and a user question:
+
+1. Carefully inspect the visible contents of the image.
+2. Identify the relevant UI elements, text, data, layouts, controls, and visual structure present in the screenshot.
+3. Answer the user's question using only information visible in the image.
+4. Do not invent content, functionality, or context that is not visible or readable.
+
+Return your response as plain text, directly answering the user's question based on the screenshot content. Do not include any explanations of your reasoning process, just provide the final answer.`;

@@ -1,11 +1,12 @@
-import { FC, useCallback, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Button, Spin } from 'antd';
 import { LightningIcon, PlusIcon } from '@phosphor-icons/react';
 import styles from './Agents.module.css';
 import { selectIdentity } from 'reducers/app/slice';
+import { setAgents } from 'reducers/agents/slice';
 import { agentCategories, AgentCategory } from 'constants/agent';
 import { defaultMotionProps } from 'constants/styles';
 import { Agent } from 'models/interfaces/agent';
@@ -15,6 +16,7 @@ import { AgentService } from 'services/agent';
 import { useInfiniteScroll } from 'hooks/useInfiniteScroll';
 
 export const Agents: FC = () => {
+  const dispatch = useDispatch();
   const identity = useSelector(selectIdentity);
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<string>('yours');
@@ -26,8 +28,8 @@ export const Agents: FC = () => {
   type AgentFilter = { type: string; values: any[] };
 
   const filters = useMemo<AgentFilter[] | undefined>(() => {
-    if (activeTab === 'yours' && identity) {
-      return [{ type: 'OWNER', values: [identity.id.toString()] }];
+    if (activeTab === 'yours') {
+      return [{ type: 'OWNER', values: [identity?.id?.toString() ?? ''] }];
     }
     return undefined;
   }, [activeTab, identity]);
@@ -47,6 +49,12 @@ export const Agents: FC = () => {
     fetcher: fetchAgents,
     resetDeps: [selectedCategory, searchQuery, filters],
   });
+
+  useEffect(() => {
+    if (agents.length > 0) {
+      dispatch(setAgents(agents));
+    }
+  }, [agents, dispatch]);
 
   return (
     <>
@@ -80,7 +88,7 @@ export const Agents: FC = () => {
             icon={<PlusIcon />}
             shape="round"
             type="primary"
-            onClick={() => navigate('/agents/new')}
+            onClick={() => navigate('/agents/new/edit')}
           >
             Create agent
           </Button>
@@ -100,7 +108,7 @@ export const Agents: FC = () => {
                 icon={<PlusIcon />}
                 shape="round"
                 type="primary"
-                onClick={() => navigate('/agents/new')}
+                onClick={() => navigate('/agents/new/edit')}
               >
                 Create
               </Button>

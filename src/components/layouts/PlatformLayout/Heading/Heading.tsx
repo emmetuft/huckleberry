@@ -11,6 +11,7 @@ export const Heading: FC<HeadingProps> = ({}) => {
 
   const headingContent = useMemo(() => {
     switch (appPage) {
+      case AppPage.AGENT_CHAT:
       case AppPage.AGENT_DETAIL:
       case AppPage.DATASOURCE:
       case AppPage.HOME:

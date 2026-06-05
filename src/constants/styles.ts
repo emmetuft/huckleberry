@@ -21,3 +21,8 @@ export const defaultTagStyle = {
   color: 'var(--purple)',
   backgroundColor: 'var(--purple-light)',
 };
+
+export const greenTagStyle = {
+  color: 'var(--success-icon)',
+  backgroundColor: 'var(--success-bg)',
+};
