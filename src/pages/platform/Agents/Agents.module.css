@@ -39,3 +39,9 @@
   align-items: center;
   gap: var(--space-md);
 }
+
+@media (width <= 768px) {
+  .agentGrid {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+}

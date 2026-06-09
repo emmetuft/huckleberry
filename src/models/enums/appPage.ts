@@ -30,6 +30,7 @@ export enum AppPage {
   PROFILE = 'profile',
   PROJECTS = 'projects',
   PROJECT_DETAIL = 'project_detail',
+  SESSION = 'session',
   WORKFLOWS = 'workflows',
   WORKFLOW_DETAIL = 'workflow_detail',
 }
@@ -49,6 +50,7 @@ export const AppPageTitle: Record<string, string> = {
   [AppPage.PROFILE]: 'Profile',
   [AppPage.PROJECTS]: 'Projects',
   [AppPage.PROJECT_DETAIL]: 'Project Detail',
+  [AppPage.SESSION]: 'Session',
   [AppPage.WORKFLOWS]: 'Workflows',
   [AppPage.WORKFLOW_DETAIL]: 'Workflow',
 };
@@ -95,6 +97,7 @@ export const platformRoutePaths: Record<AppPage, string> = {
   [AppPage.PROFILE]: '/profile',
   [AppPage.PROJECTS]: '/projects',
   [AppPage.PROJECT_DETAIL]: '/projects/:id',
+  [AppPage.SESSION]: '/sessions/:sessionId',
   [AppPage.WORKFLOWS]: '/workflows',
   [AppPage.WORKFLOW_DETAIL]: '/workflows/:workflowId',
 };

@@ -4,15 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { TrashIcon } from '@phosphor-icons/react';
 import styles from './HistoryCard.module.css';
 import { useAppDispatch } from 'reducers';
+import { deleteSession } from 'reducers/chat/actions';
 import { selectSessions } from 'reducers/chat/slice';
-import { PopupCard } from 'components/shared/PopupCard/PopupCard';
-import { deleteSession, fetchSession } from 'reducers/chat/actions';
-import { IconBtn } from 'components/shared/IconBtn/IconBtn';
 import { AgentSession } from 'models/interfaces/session';
-
-interface HistoryCardProps {
-  setShowCard: React.Dispatch<React.SetStateAction<boolean>>;
-}
+import { IconBtn } from 'components/shared/IconBtn/IconBtn';
 
 type SessionGroup = {
   label: string;
@@ -59,15 +54,13 @@ function groupSessions(sessions: AgentSession[]): SessionGroup[] {
   return groups.filter((g) => g.sessions.length > 0);
 }
 
-export const HistoryCard: FC<HistoryCardProps> = ({ setShowCard }) => {
+export const HistoryCard: FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const sessions = useSelector(selectSessions);
 
   const onClickSession = (sessionId: string) => {
-    dispatch(fetchSession(sessionId));
-    navigate('/workspace');
-    setShowCard(false);
+    navigate(`/sessions/${sessionId}`);
   };
 
   const onClickDeleteSession = (sessionId: string) => {
@@ -77,34 +70,26 @@ export const HistoryCard: FC<HistoryCardProps> = ({ setShowCard }) => {
   const groups = groupSessions(sessions);
 
   return (
-    <PopupCard
-      title="Session history"
-      children={
-        <div>
-          <div className={styles.sectionItems}>
-            {groups.map((group) => (
-              <div key={group.label}>
-                <p className={styles.groupLabel}>{group.label}</p>
-                {group.sessions.map((session) => (
-                  <div key={session.id} className={styles.item}>
-                    <p onClick={() => onClickSession(session.id)}>
-                      {session.name}
-                    </p>
-                    <IconBtn
-                      icon={<TrashIcon />}
-                      onClick={() => onClickDeleteSession(session.id)}
-                    />
-                  </div>
-                ))}
+    <div>
+      <div className={styles.sectionItems}>
+        {groups.map((group) => (
+          <div key={group.label}>
+            <p className={styles.groupLabel}>{group.label}</p>
+            {group.sessions.map((session) => (
+              <div key={session.id} className={styles.item}>
+                <p onClick={() => onClickSession(session.id)}>{session.name}</p>
+                <IconBtn
+                  icon={<TrashIcon />}
+                  onClick={() => onClickDeleteSession(session.id)}
+                />
               </div>
             ))}
           </div>
-          {sessions.length === 0 && (
-            <div className={styles.noHistory}>No past conversations found.</div>
-          )}
-        </div>
-      }
-      setShowCard={setShowCard}
-    />
+        ))}
+      </div>
+      {sessions.length === 0 && (
+        <div className={styles.noHistory}>No past conversations found.</div>
+      )}
+    </div>
   );
 };

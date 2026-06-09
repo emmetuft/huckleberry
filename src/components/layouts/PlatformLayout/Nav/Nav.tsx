@@ -1,16 +1,18 @@
 import React, { FC, ReactNode, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { platformRoutePaths } from 'models/enums/appPage';
+import { toast } from 'sonner';
 import {
   ChatsIcon,
   DatabaseIcon,
+  DotsThreeIcon,
+  DotsThreeVerticalIcon,
   FlowArrowIcon,
   FolderIcon,
   GraphIcon,
   HeartbeatIcon,
-  LightbulbIcon,
   LightningIcon,
+  LinkSimpleIcon,
   ListIcon,
   MoonIcon,
   NotebookIcon,
@@ -19,8 +21,9 @@ import {
   SidebarSimpleIcon,
   SquaresFourIcon,
   SunIcon,
+  TrashIcon,
 } from '@phosphor-icons/react';
-import { Button } from 'antd';
+import { Button, Dropdown, Popover } from 'antd';
 import styles from './Nav.module.css';
 import { useAppDispatch } from 'reducers';
 import {
@@ -30,14 +33,22 @@ import {
   setIncognitoMode,
   setTheme,
 } from 'reducers/app/slice';
-import { clearMessages, setFullScreen } from 'reducers/chat/slice';
-import { AppPage, AppPageTitle } from 'models/enums/appPage';
+import {
+  clearMessages,
+  selectSessions,
+  setFullScreen,
+} from 'reducers/chat/slice';
+import { deleteSession } from 'reducers/chat/actions';
+import {
+  AppPage,
+  AppPageTitle,
+  platformRoutePaths,
+} from 'models/enums/appPage';
 import { spaceList } from 'models/interfaces/workspace';
 import { Avatar } from 'components/shared/Avatar/Avatar';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
 import AppTooltip from 'components/shared/Tooltip';
 import { HistoryCard } from './HistoryCard/HistoryCard';
-import { RecCard } from './RecCard/RecCard';
 import { useIsMobile } from 'hooks/useIsMobile';
 
 interface NavProps {}
@@ -49,10 +60,9 @@ export const Nav: FC<NavProps> = ({}) => {
   const identity = useSelector(selectIdentity);
   const incognitoMode = useSelector(selectIncognitoMode);
   const theme = useSelector(selectTheme);
+  const sessions = useSelector(selectSessions);
   const isDark = theme === 'dark';
 
-  const [showHistory, setShowHistory] = useState<boolean>(false);
-  const [showRecs, setShowRecs] = useState<boolean>(false);
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
   const [expanded, setExpanded] = useState<boolean>(true);
 
@@ -178,24 +188,90 @@ export const Nav: FC<NavProps> = ({}) => {
             })}
         </div>
         <div className={styles.buttons}>
-          {/* {renderIconBtn({
-            key: 'recs',
-            icon: <LightbulbIcon size={iconSize} />,
-            label: 'Recommendations',
-            onClick: () => setShowRecs(true),
-          })} */}
           {renderIconBtn({
             key: 'new',
             icon: <PlusIcon size={iconSize} />,
             label: 'New chat',
             onClick: () => onClickNewChat(),
           })}
-          {renderIconBtn({
-            key: 'history',
-            icon: <ChatsIcon size={iconSize} />,
-            label: 'History',
-            // onClick: () => setShowHistory(true),
-          })}
+          {expanded ? (
+            <>
+              {sessions.slice(0, 5).map((session) => (
+                <div key={session.id} className={styles.sessionItem}>
+                  <IconBtn
+                    icon={null}
+                    label={session.name}
+                    labelHidden={!expanded}
+                    onClick={() => navigate(`/sessions/${session.id}`)}
+                  />
+                  <Dropdown
+                    menu={{
+                      items: [
+                        {
+                          key: 'copy-link',
+                          icon: <LinkSimpleIcon size={iconSize} />,
+                          label: 'Copy link',
+                          onClick: (e) => {
+                            e.domEvent.stopPropagation();
+                            navigator.clipboard.writeText(
+                              `${window.location.origin}/sessions/${session.id}`,
+                            );
+                            toast.success('Session link copied to clipboard');
+                          },
+                        },
+                        {
+                          key: 'delete',
+                          icon: <TrashIcon size={iconSize} />,
+                          label: 'Delete',
+                          danger: true,
+                          onClick: (e) => {
+                            e.domEvent.stopPropagation();
+                            dispatch(deleteSession(session.id));
+                          },
+                        },
+                      ],
+                    }}
+                    trigger={['click']}
+                  >
+                    <Button
+                      type="text"
+                      size="small"
+                      className={styles.sessionMenu}
+                      icon={<DotsThreeVerticalIcon />}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </Dropdown>
+                </div>
+              ))}
+              <Popover
+                content={<HistoryCard />}
+                trigger="click"
+                placement="rightTop"
+                arrow={false}
+                styles={{ container: { padding: 0 } }}
+              >
+                {renderIconBtn({
+                  key: 'history-more',
+                  icon: <DotsThreeIcon size={iconSize} />,
+                  label: 'More',
+                })}
+              </Popover>
+            </>
+          ) : (
+            <Popover
+              content={<HistoryCard />}
+              trigger="click"
+              placement="rightTop"
+              arrow={false}
+              styles={{ container: { padding: 0 } }}
+            >
+              {renderIconBtn({
+                key: 'history',
+                icon: <ChatsIcon size={iconSize} />,
+                label: 'History',
+              })}
+            </Popover>
+          )}
         </div>
         <div className={styles.buttons}>
           {pages.map((page) =>
@@ -257,8 +333,6 @@ export const Nav: FC<NavProps> = ({}) => {
           </Button>
         </div>
       </div>
-      {showRecs && <RecCard setShowCard={setShowRecs} />}
-      {showHistory && <HistoryCard setShowCard={setShowHistory} />}
     </React.Fragment>
   );
 };

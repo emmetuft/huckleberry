@@ -1,0 +1,9 @@
+.session {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-width: 48rem;
+  margin-left: auto;
+  margin-right: auto;
+}

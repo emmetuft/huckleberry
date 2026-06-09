@@ -30,7 +30,7 @@
 
   &.fullScreen {
     max-height: unset;
-    margin-bottom: 150px;
+    margin-bottom: var(--space-xl);
 
     .contextGraph {
       background-color: white;

@@ -21,6 +21,7 @@ import { Ontology } from './Ontology/Ontology';
 import { ProfilePage } from './Profile/ProfilePage';
 import { Projects } from './Projects/Projects';
 import { ProjectDetail } from './Projects/ProjectDetail/ProjectDetail';
+import { Session } from './Session/Session';
 import { Workflows } from './Workflows/Workflows';
 import { WorkflowDetail } from './Workflows/WorkflowDetail/WorkflowDetail';
 import { Workspace } from './Workspace/Workspace';
@@ -114,6 +115,10 @@ export const platformRoutes: RouteObject[] = [
           {
             path: platformRoutePaths[AppPage.PROJECT_DETAIL],
             element: <ProjectDetail />,
+          },
+          {
+            path: platformRoutePaths[AppPage.SESSION],
+            element: <Session />,
           },
           {
             path: platformRoutePaths[AppPage.WORKFLOWS],

@@ -18,6 +18,11 @@
 .label {
   opacity: 1;
   transition: opacity 0.2s ease;
+  color: var(--text);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .labelHidden {

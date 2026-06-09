@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef } from 'react';
+import { FC, useCallback, useState } from 'react';
 import { Input, Empty, Spin, Button, Tag } from 'antd';
 import {
   CheckIcon,
@@ -6,10 +6,11 @@ import {
   MagnifyingGlassIcon,
   PlusIcon,
 } from '@phosphor-icons/react';
-import { DataSource } from 'models/interfaces/dataSource';
-import { useDataSources } from 'hooks/useDataSources';
 import styles from './DataSourceBrowser.module.css';
+import { DataSource } from 'models/interfaces/dataSource';
 import { Avatar } from '../Avatar/Avatar';
+import { useInfiniteScroll } from 'hooks/useInfiniteScroll';
+import { DataService } from 'services/data';
 
 interface DataSourceBrowserProps {
   selectedDataSources: DataSource[];
@@ -22,39 +23,31 @@ export const DataSourceBrowser: FC<DataSourceBrowserProps> = ({
   onDataSourcesChange,
   height,
 }) => {
-  const observerTarget = useRef<HTMLDivElement>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const fetcher = useCallback(
+    async (limit: number, offset: number) => {
+      const result = await DataService.fetchDataSources({
+        page: Math.floor(offset / limit) + 1,
+        size: limit,
+        searchTerm: searchTerm || undefined,
+      });
+      return result.sources;
+    },
+    [searchTerm],
+  );
 
   const {
-    dataSources,
+    items: dataSources,
     loading,
     hasMore,
-    searchTerm,
-    setSearchTerm,
-    loadNextPage,
-  } = useDataSources();
-
-  // Infinite scroll observer
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          loadNextPage();
-        }
-      },
-      { threshold: 1.0 },
-    );
-
-    const currentTarget = observerTarget.current;
-    if (currentTarget) {
-      observer.observe(currentTarget);
-    }
-
-    return () => {
-      if (currentTarget) {
-        observer.unobserve(currentTarget);
-      }
-    };
-  }, [hasMore, loadNextPage]);
+    sentinelRef,
+  } = useInfiniteScroll<DataSource>({
+    fetcher,
+    resetDeps: [searchTerm],
+    pageSize: 20,
+    debounceMs: 500,
+  });
 
   const isDataSourceSelected = (dataSource: DataSource) =>
     selectedDataSources.some((ds) => ds.id === dataSource.id);
@@ -138,7 +131,7 @@ export const DataSourceBrowser: FC<DataSourceBrowserProps> = ({
               );
             })}
             {hasMore && (
-              <div ref={observerTarget} className={styles.loadingTrigger}>
+              <div ref={sentinelRef} className={styles.loadingTrigger}>
                 {loading && <Spin />}
               </div>
             )}

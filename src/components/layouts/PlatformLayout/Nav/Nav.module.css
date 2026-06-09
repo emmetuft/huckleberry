@@ -28,6 +28,34 @@
     margin-bottom: var(--space-xl);
   }
 
+  .sessionItem {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    > button:first-child {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .sessionMenu {
+      position: absolute;
+      right: 0;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
+
+    &:hover {
+      > button:first-child {
+        padding-right: 28px;
+      }
+
+      .sessionMenu {
+        opacity: 1;
+      }
+    }
+  }
+
   .bottom {
     margin-top: auto;
     margin-bottom: 0;

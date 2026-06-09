@@ -5,11 +5,10 @@
 
 .fullScreen {
   .inputArea {
-    position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
+    position: sticky;
+    bottom: 0;
     width: 48rem;
+    margin-inline: auto;
     z-index: 100;
   }
 }

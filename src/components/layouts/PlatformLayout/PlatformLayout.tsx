@@ -5,6 +5,7 @@ import { ConfigProvider } from 'antd';
 import { Toaster } from 'sonner';
 import styles from './PlatformLayout.module.css';
 import { useAppDispatch } from 'reducers';
+import { fetchAIModels } from 'reducers/agents/actions';
 import { fetchUserPersona } from 'reducers/app/actions';
 import { selectIdentity, selectTheme, setPage } from 'reducers/app/slice';
 import { fetchSessions } from 'reducers/chat/actions';
@@ -40,6 +41,7 @@ export const PlatformLayout: FC = () => {
       dispatch(fetchGroups());
       dispatch(fetchToolkits());
       dispatch(fetchSessions());
+      dispatch(fetchAIModels());
     }
   }, [identity]);
 
@@ -53,6 +55,7 @@ export const PlatformLayout: FC = () => {
     platformRoutePaths[AppPage.HOME],
     platformRoutePaths[AppPage.AGENT_CHAT],
     platformRoutePaths[AppPage.AGENT_DETAIL],
+    platformRoutePaths[AppPage.SESSION],
   ];
   const hidePromptBar = hidePromptBarRoutes.some((path) =>
     matchPath(path, location.pathname),

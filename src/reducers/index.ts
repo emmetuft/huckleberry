@@ -13,6 +13,7 @@ import DatasourceReducer from './datasource/slice';
 import AgentsReducer from './agents/slice';
 //-- importRef
 import { useDispatch } from 'react-redux';
+import { errorToastMiddleware } from 'middleware/errorToast';
 
 export const store = configureStore({
   reducer: {
@@ -27,6 +28,8 @@ export const store = configureStore({
     workspace: WorkspaceReducer,
     //-- reducerRef
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(errorToastMiddleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

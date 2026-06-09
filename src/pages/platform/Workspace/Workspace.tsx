@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { useSelector } from 'react-redux';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Tag } from 'antd';
 import { HammerIcon } from '@phosphor-icons/react';
 import styles from './Workspace.module.css';
@@ -9,6 +9,10 @@ import { selectIdentity } from 'reducers/app/slice';
 import { selectPersona } from 'reducers/app/slice';
 import { selectFullScreen } from 'reducers/chat/slice';
 import { dismissCard, selectDismissedCards } from 'reducers/workspace/slice';
+import {
+  staggerChildrenMotionProps,
+  staggeredChildMotionProps,
+} from 'constants/styles';
 import { ChatMode } from 'models/enums/chatMode';
 import { IntentInput } from 'components/comms/IntentInput/IntentInput';
 import { ChatContainer } from 'components/comms/ChatContainer/ChatContainer';
@@ -37,36 +41,36 @@ export const Workspace: FC<WorkspaceProps> = ({}) => {
   const handleDismiss = (id: string) => dispatch(dismissCard(id));
 
   const greetingComponent = (
-    <motion.div
-      className={styles.greeting}
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-    >
-      <Tag
-        style={{
-          color: 'var(--purple)',
-          backgroundColor: 'var(--purple-light)',
-          width: 'fit-content',
-        }}
-      >
-        <HammerIcon />
-        Under construction
-      </Tag>
-      <h2>{`Good ${getTimeOfDay()}${identity ? `, ${getFirstName(identity.displayName)}` : ''}`}</h2>
-      <div className={styles.currentDate}>{formatCurrentDate()}</div>
+    <motion.div className={styles.greeting} {...staggerChildrenMotionProps}>
+      <motion.div {...staggeredChildMotionProps}>
+        <Tag
+          style={{
+            color: 'var(--purple)',
+            backgroundColor: 'var(--purple-light)',
+            width: 'fit-content',
+          }}
+        >
+          <HammerIcon />
+          Under construction
+        </Tag>
+      </motion.div>
+      <motion.h2
+        {...staggeredChildMotionProps}
+      >{`Good ${getTimeOfDay()}${identity ? `, ${getFirstName(identity.displayName)}` : ''}`}</motion.h2>
+      <motion.div className={styles.currentDate} {...staggeredChildMotionProps}>
+        {formatCurrentDate()}
+      </motion.div>
     </motion.div>
   );
 
   if (isBentoMode) {
     return (
       <>
-        <QuickStart />
         <div className={styles.bentoWorkspace}>
           <div className={`card ${styles.leftPanel}`}>
             {greetingComponent}
             <IntentInput animate />
-            <QuickStarts />
+            {/* <QuickStarts /> */}
             {/* <Resources /> */}
           </div>
           <BentoGrid
@@ -81,9 +85,9 @@ export const Workspace: FC<WorkspaceProps> = ({}) => {
 
   return (
     <>
-      <QuickStart />
+      {/* <QuickStart /> */}
       <div className={styles.workspace}>
-        <AnimatePresence>{!fullScreen && greetingComponent}</AnimatePresence>
+        {!fullScreen && greetingComponent}
         {fullScreen ? (
           <ChatContainer
             chatMode={ChatMode.fullScreen}
@@ -93,18 +97,12 @@ export const Workspace: FC<WorkspaceProps> = ({}) => {
         ) : (
           <IntentInput animate />
         )}
-        <AnimatePresence>
-          {!fullScreen && (
-            <motion.div
-              initial={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 100 }}
-              transition={{ duration: 0.4, ease: 'easeInOut' }}
-            >
-              <QuickStarts />
-              {/* <Resources /> */}
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* {!fullScreen && (
+          <div>
+            <QuickStarts />
+            <Resources />
+          </div>
+        )} */}
       </div>
     </>
   );
