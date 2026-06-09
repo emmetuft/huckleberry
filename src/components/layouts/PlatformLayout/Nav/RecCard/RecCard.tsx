@@ -10,13 +10,8 @@ import {
   recommendations,
   RecommendationType,
 } from 'constants/recommendations';
-import { PopupCard } from 'components/shared/PopupCard/PopupCard';
 
-interface RecCardProps {
-  setShowCard: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-export const RecCard: FC<RecCardProps> = ({ setShowCard }) => {
+export const RecCard: FC = () => {
   const onClickRec = (rec: Recommendation) => {
     if (rec.url) {
       window.open(rec.url, '_blank');
@@ -30,32 +25,29 @@ export const RecCard: FC<RecCardProps> = ({ setShowCard }) => {
   };
 
   return (
-    <PopupCard
-      title="Recommended for you"
-      description="Fresh ideas relevant to your work."
-      children={
-        <div className={styles.sectionItems}>
-          {recommendations.map((rec) => (
-            <div
-              key={rec.id}
-              className={styles.item}
-              onClick={() => onClickRec(rec)}
-            >
-              <div className={styles.top}>
-                <div className={styles.title}>
-                  <div className={styles.icon}>{iconMap[rec.type]}</div>
-                  <p>{rec.title}</p>
-                </div>
-                <div className={styles.actionPill}>{rec.actionLabel}</div>
+    <div>
+      <h2>Recommended for you</h2>
+      <p>Fresh ideas relevant to your work.</p>
+      <div className={styles.sectionItems}>
+        {recommendations.map((rec) => (
+          <div
+            key={rec.id}
+            className={styles.item}
+            onClick={() => onClickRec(rec)}
+          >
+            <div className={styles.top}>
+              <div className={styles.title}>
+                <div className={styles.icon}>{iconMap[rec.type]}</div>
+                <p>{rec.title}</p>
               </div>
-              <div className={styles.description}>
-                <p>{rec.description}</p>
-              </div>
+              <div className={styles.actionPill}>{rec.actionLabel}</div>
             </div>
-          ))}
-        </div>
-      }
-      setShowCard={setShowCard}
-    />
+            <div className={styles.description}>
+              <p>{rec.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };

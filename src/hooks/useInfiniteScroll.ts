@@ -37,11 +37,11 @@ export const useInfiniteScroll = <T>({
   // Reset and fetch first page when resetDeps change
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
+    setItems([]);
+    setOffset(0);
+    setHasMore(true);
+    setLoading(true);
     debounceRef.current = setTimeout(() => {
-      setItems([]);
-      setOffset(0);
-      setHasMore(true);
-      setLoading(true);
       fetcherRef.current(pageSize, 0).then((results) => {
         setItems(results);
         setHasMore(results.length === pageSize);

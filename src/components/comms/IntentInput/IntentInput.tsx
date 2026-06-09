@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { Button, Select } from 'antd';
 import {
   CalendarBlankIcon,
+  CaretDownIcon,
   ChartLineIcon,
   DatabaseIcon,
   PaperPlaneTiltIcon,
@@ -107,6 +108,12 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
       setMentionedItems([...mentionedItems, item]);
     },
   });
+
+  useEffect(() => {
+    if (models.length > 0 && !model) {
+      setModel(models[0].id);
+    }
+  }, [models]);
 
   useEffect(() => {
     if (placeholder) return;
@@ -377,6 +384,7 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
                 label: model.name,
                 value: model.id,
               }))}
+              suffixIcon={<CaretDownIcon color="#000" />}
             />
             <SendButton isEmpty={isEmpty} onClickSend={onClickSend} />
           </div>

@@ -5,11 +5,7 @@ import { Button, Select, Spin } from 'antd';
 import styles from './AgentDetail.module.css';
 import { useAppDispatch } from 'reducers';
 import { selectAgents, selectLoadingAgentId } from 'reducers/agents/slice';
-import {
-  createCustomAgent,
-  fetchAgentById,
-  fetchAIModels,
-} from 'reducers/agents/actions';
+import { createCustomAgent, fetchAgentById } from 'reducers/agents/actions';
 import { AGENT_FORM_FIELDS, AgentStep } from 'constants/agent';
 import { AccessEntry } from 'models/enums/permission';
 import { Agent } from 'models/interfaces/agent';
@@ -49,10 +45,6 @@ export const AgentDetail: FC = () => {
       dispatch(fetchAgentById(agentId));
     }
   }, [agentId]);
-
-  useEffect(() => {
-    dispatch(fetchAIModels());
-  }, []);
 
   useEffect(() => {
     if (agent) {

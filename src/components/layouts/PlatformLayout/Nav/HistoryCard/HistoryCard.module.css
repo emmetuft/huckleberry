@@ -1,3 +1,7 @@
+.historyPopup {
+  left: calc(200px + var(--space-md));
+}
+
 .sectionItems {
   display: flex;
   flex-direction: column;
