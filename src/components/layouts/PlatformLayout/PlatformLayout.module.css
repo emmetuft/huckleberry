@@ -21,8 +21,4 @@
 
 .home {
   margin-top: 20vh;
-
-  &.fullScreen {
-    margin-top: 0;
-  }
 }

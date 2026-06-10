@@ -4,8 +4,8 @@ import styles from './MessageThread.module.css';
 import { selectTurns } from 'reducers/chat/slice';
 import { ChatMode } from 'models/enums/chatMode';
 import { ConversationTurn } from 'models/interfaces/message';
-import { shouldShowTimestamp } from 'utils/datetime';
 import { MessageItem } from './MessageItem/MessageItem';
+import { shouldShowTimestamp } from 'utils/datetime';
 
 interface MessageThreadProps {
   chatMode: ChatMode;

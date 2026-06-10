@@ -34,8 +34,8 @@ export const SendButton: FC<SendButtonProps> = ({ isEmpty, onClickSend }) => {
           isEmpty && !requestLoading ? 'transparent' : 'var(--grey-dark)',
         transition: 'background-color 0.3s ease',
       }}
-      onClick={onClickSend}
       disabled={requestLoading}
+      onClick={onClickSend}
     />
   );
 };

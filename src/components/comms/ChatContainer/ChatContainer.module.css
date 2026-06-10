@@ -4,6 +4,9 @@
 }
 
 .fullScreen {
+  flex: 1;
+  justify-content: space-between;
+
   .inputArea {
     position: sticky;
     bottom: 0;
