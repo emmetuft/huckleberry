@@ -1,6 +1,6 @@
 import { FC, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Popover } from 'antd';
 import { ArrowsOutSimpleIcon, ChatIcon, XIcon } from '@phosphor-icons/react';
 import styles from './PromptBar.module.css';
@@ -8,7 +8,7 @@ import { useAppDispatch } from 'reducers';
 import {
   clearMessages,
   selectHasMessages,
-  setFullScreen,
+  selectSessionId,
 } from 'reducers/chat/slice';
 import { AppPage, platformRoutePaths } from 'models/enums/appPage';
 import { ChatMode } from 'models/enums/chatMode';
@@ -20,7 +20,9 @@ import { useIsMobile } from 'hooks/useIsMobile';
 interface PromptBarProps {}
 
 export const PromptBar: FC<PromptBarProps> = ({}) => {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const sessionId = useSelector(selectSessionId);
   const hasMessages = useSelector(selectHasMessages);
   const isMobile = useIsMobile();
 
@@ -31,7 +33,7 @@ export const PromptBar: FC<PromptBarProps> = ({}) => {
   };
 
   const onClickFullScreen = () => {
-    dispatch(setFullScreen(true));
+    navigate(`/sessions/${sessionId}`);
     setPopoverOpen(false);
   };
 
@@ -84,11 +86,7 @@ export const PromptBar: FC<PromptBarProps> = ({}) => {
         onOpenChange={setPopoverOpen}
         styles={{
           content: {
-            padding: 0,
             width: isMobile ? '80vw' : 600,
-            borderRadius: 12,
-            boxShadow: 'var(--box-shadow)',
-            backgroundColor: 'var(--background)',
           },
         }}
       >

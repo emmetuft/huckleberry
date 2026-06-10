@@ -69,9 +69,9 @@ export const executeStream = createAsyncThunk<
   void,
   {
     userInput: string;
-    files?: ProcessedFile[];
     tools?: Tool[];
     dataSources?: any;
+    files?: ProcessedFile[];
   },
   { state: RootState }
 >('chat/executeStream', async (params, { getState, dispatch }) => {

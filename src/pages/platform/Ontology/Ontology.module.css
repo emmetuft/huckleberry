@@ -17,6 +17,8 @@
   .ontology {
     .tabBtn {
       top: var(--space-sm);
+      left: 50%;
+      transform: translateX(-50%);
     }
   }
 }

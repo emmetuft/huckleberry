@@ -1,90 +1,18 @@
 import { FC } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { TrashIcon } from '@phosphor-icons/react';
 import styles from './HistoryCard.module.css';
-import { useAppDispatch } from 'reducers';
-import { deleteSession } from 'reducers/chat/actions';
 import { selectSessions } from 'reducers/chat/slice';
-import { AgentSession } from 'models/interfaces/session';
-import { IconBtn } from 'components/shared/IconBtn/IconBtn';
-
-type SessionGroup = {
-  label: string;
-  sessions: AgentSession[];
-};
-
-function groupSessions(sessions: AgentSession[]): SessionGroup[] {
-  const now = new Date();
-  const startOfToday = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate(),
-  );
-  const startOfYesterday = new Date(startOfToday);
-  startOfYesterday.setDate(startOfYesterday.getDate() - 1);
-  const sevenDaysAgo = new Date(startOfToday);
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-  const thirtyDaysAgo = new Date(startOfToday);
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-  const groups: SessionGroup[] = [
-    { label: 'Today', sessions: [] },
-    { label: 'Yesterday', sessions: [] },
-    { label: 'Last 7 days', sessions: [] },
-    { label: 'Last 30 days', sessions: [] },
-    { label: 'Older', sessions: [] },
-  ];
-
-  for (const session of sessions) {
-    const date = new Date(session.lastActivity);
-    if (date >= startOfToday) {
-      groups[0].sessions.push(session);
-    } else if (date >= startOfYesterday) {
-      groups[1].sessions.push(session);
-    } else if (date >= sevenDaysAgo) {
-      groups[2].sessions.push(session);
-    } else if (date >= thirtyDaysAgo) {
-      groups[3].sessions.push(session);
-    } else {
-      groups[4].sessions.push(session);
-    }
-  }
-
-  return groups.filter((g) => g.sessions.length > 0);
-}
+import { SessionItem } from 'components/shared/SessionItem/SessionItem';
 
 export const HistoryCard: FC = () => {
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
   const sessions = useSelector(selectSessions);
 
-  const onClickSession = (sessionId: string) => {
-    navigate(`/sessions/${sessionId}`);
-  };
-
-  const onClickDeleteSession = (sessionId: string) => {
-    dispatch(deleteSession(sessionId));
-  };
-
-  const groups = groupSessions(sessions);
-
   return (
-    <div>
+    <div className={styles.historyCard}>
       <div className={styles.sectionItems}>
-        {groups.map((group) => (
-          <div key={group.label}>
-            <p className={styles.groupLabel}>{group.label}</p>
-            {group.sessions.map((session) => (
-              <div key={session.id} className={styles.item}>
-                <p onClick={() => onClickSession(session.id)}>{session.name}</p>
-                <IconBtn
-                  icon={<TrashIcon />}
-                  onClick={() => onClickDeleteSession(session.id)}
-                />
-              </div>
-            ))}
-          </div>
+        <p className={styles.label}>Recents</p>
+        {sessions.map((session) => (
+          <SessionItem key={session.id} session={session} />
         ))}
       </div>
       {sessions.length === 0 && (

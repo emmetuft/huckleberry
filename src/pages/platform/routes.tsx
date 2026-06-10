@@ -2,7 +2,6 @@ import { useSelector } from 'react-redux';
 import { RouteObject } from 'react-router-dom';
 import styles from 'components/layouts/PlatformLayout/PlatformLayout.module.css';
 import { selectPersona } from 'reducers/app/slice';
-import { selectFullScreen } from 'reducers/chat/slice';
 import { selectDismissedCards } from 'reducers/workspace/slice';
 import { platformRoutePaths, AppPage } from 'models/enums/appPage';
 import { AuthGuard } from 'components/layouts/AuthGuard/AuthGuard';
@@ -29,7 +28,6 @@ import { getBentoLayout } from 'config/bentoConfig';
 
 // Home page component wrapper
 const HomePage = () => {
-  const fullScreen = useSelector(selectFullScreen);
   const persona = useSelector(selectPersona);
   const dismissedCards = useSelector(selectDismissedCards);
 
@@ -38,12 +36,8 @@ const HomePage = () => {
     !!bentoLayout &&
     bentoLayout.cards.some((c) => !dismissedCards.includes(c.id));
 
-  if (isBentoMode) {
-    return <Workspace />;
-  }
-
   return (
-    <div className={`${styles.home} ${fullScreen ? styles.fullScreen : ''}`}>
+    <div className={isBentoMode ? '' : styles.home}>
       <Workspace />
     </div>
   );

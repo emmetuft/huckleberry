@@ -1,8 +1,8 @@
 export interface StreamRequest {
   userInput: string;
   tools?: any[];
-  files?: any[];
   dataSources?: any[];
+  files?: any[];
 }
 
 export interface ResumeRequest {

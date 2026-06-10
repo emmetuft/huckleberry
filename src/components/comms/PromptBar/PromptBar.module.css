@@ -20,19 +20,20 @@
 }
 
 .popoverContent {
+  position: relative;
   display: flex;
   flex-direction: column;
-  position: relative;
   color: var(--text);
 
   .actionBtns {
     position: absolute;
-    top: 8px;
-    right: 8px;
+    top: 0;
+    right: 0;
     display: flex;
     gap: 2px;
     border-radius: var(--br-md);
     background-color: var(--background);
+    box-shadow: var(--box-shadow);
 
     .chatIcons {
       position: relative;
@@ -42,6 +43,16 @@
         top: 5px;
         right: 5px;
       }
+    }
+  }
+}
+
+@media (width <= 768px) {
+  .promptBar {
+    bottom: 10px;
+
+    .bar {
+      width: 100px;
     }
   }
 }

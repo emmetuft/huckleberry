@@ -26,7 +26,6 @@ interface State {
   sessions: AgentSession[];
   turns: ConversationTurn[];
   dataSources: Record<string, any>;
-  fullScreen: boolean;
   loading: boolean;
   error: string | null;
   streamingTurnId: string | null;
@@ -37,7 +36,6 @@ const initialState: State = {
   sessions: [],
   turns: [],
   dataSources: {},
-  fullScreen: false,
   loading: false,
   error: null,
   streamingTurnId: null,
@@ -76,9 +74,6 @@ export const ChatSlice = createAppSlice({
   name: 'chat',
   initialState,
   reducers: (create) => ({
-    setFullScreen: create.reducer((state, action: { payload: boolean }) => {
-      state.fullScreen = action.payload;
-    }),
     clearMessages: create.reducer((state) => {
       state.turns = [];
       state.error = null;
@@ -138,7 +133,6 @@ export const ChatSlice = createAppSlice({
         state.turns = sessionEventsToMessages(payload.events ?? []);
         state.error = null;
         state.streamingTurnId = null;
-        state.fullScreen = true;
       })
       // Delete agent session
       .addCase(deleteSession.fulfilled, (state, { meta }) => {
@@ -149,7 +143,6 @@ export const ChatSlice = createAppSlice({
           state.sessionId = undefined;
           state.streamingTurnId = null;
           state.error = null;
-          state.fullScreen = false;
         }
       })
       // Send streaming request
@@ -205,7 +198,6 @@ export const ChatSlice = createAppSlice({
     selectTurns: (state: State) => state.turns,
     selectDataSources: (state: State) => state.dataSources,
     selectHasMessages: (state: State) => state.turns.length > 0,
-    selectFullScreen: (state: State) => state.fullScreen,
     selectLoading: (state: State) => state.loading,
     selectError: (state: State) => state.error,
     selectSessionId: (state: State) => state.sessionId,
@@ -213,7 +205,6 @@ export const ChatSlice = createAppSlice({
 });
 
 export const {
-  setFullScreen,
   clearMessages,
   applyStreamEvent,
   toggleProcessStep,
@@ -225,7 +216,6 @@ export const {
   selectTurns,
   selectDataSources,
   selectHasMessages,
-  selectFullScreen,
   selectLoading,
   selectError,
   selectSessionId,

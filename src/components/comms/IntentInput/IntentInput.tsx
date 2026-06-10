@@ -1,45 +1,24 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Button, Select } from 'antd';
-import {
-  CalendarBlankIcon,
-  CaretDownIcon,
-  ChartLineIcon,
-  DatabaseIcon,
-  PaperPlaneTiltIcon,
-  WrenchIcon,
-} from '@phosphor-icons/react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import styles from './IntentInput.module.css';
 import { useAppDispatch } from 'reducers';
 import { selectPage } from 'reducers/app/slice';
-import { selectAIModels } from 'reducers/agents/slice';
 import { executeStream } from 'reducers/chat/actions';
-import { selectLoading, setFullScreen } from 'reducers/chat/slice';
+import { selectLoading, selectSessionId } from 'reducers/chat/slice';
 import { AppPage } from 'models/enums/appPage';
 import { InputCommand } from 'models/enums/inputCommand';
 import { DataSource } from 'models/interfaces/dataSource';
 import { MentionItem } from 'models/interfaces/mention';
 import { Tool } from 'models/interfaces/toolkit';
-import { IconBtn } from 'components/shared/IconBtn/IconBtn';
-import { BrowserModal } from 'components/modals/BrowserModal/BrowserModal';
-import { DataSourceBrowser } from 'components/shared/DataSourceBrowser/DataSourceBrowser';
-import { ToolBrowser } from 'components/shared/ToolBrowser/ToolBrowser';
-import { SendModal, SendData } from 'components/modals/SendModal/SendModal';
-import { AddContextButton } from './context/AddContextButton';
 import { CommandPopup } from './CommandPopup/CommandPopup';
 import { ContextItems } from './context/ContextItems';
+import { IntentInputControls } from './Controls/Controls';
+import { ModelSelect } from './Controls/ModelSelect';
+import { SendButton } from './Controls/SendBtn';
 import { EditableInput } from './EditableInput';
-import { SendButton } from './SendBtn';
-import { DictateButton } from './DictateBtn/DictateBtn';
-import { ActionType, getSuggestedActions } from 'utils/temp';
 import { processFiles } from 'utils/file';
 import { useCommandPopup } from 'hooks/useCommandPopup';
-
-interface IntentInputProps {
-  placeholder?: string;
-  animate?: boolean;
-}
 
 const DEFAULT_PLACEHOLDERS = [
   'Start something new',
@@ -47,33 +26,33 @@ const DEFAULT_PLACEHOLDERS = [
   'Type @ to mention a person or group',
 ];
 
+interface IntentInputProps {
+  placeholder?: string;
+  animate?: boolean;
+}
+
 export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const appPage = useSelector(selectPage);
-  const models = useSelector(selectAIModels);
+  const sessionId = useSelector(selectSessionId);
   const requestLoading = useSelector(selectLoading);
 
   const [isEmpty, setIsEmpty] = useState<boolean>(true);
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
-  const [suggestedActions, setSuggestedActions] = useState<
-    { type: ActionType; text: string }[]
-  >([]);
+  const [mentionedItems, setMentionedItems] = useState<MentionItem[]>([]);
+
   const [selectedTools, setSelectedTools] = useState<Tool[]>([]);
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const [showToolBrowser, setShowToolBrowser] = useState<boolean>(false);
   const [selectedDataSources, setSelectedDataSources] = useState<DataSource[]>(
     [],
   );
-  const [showDataSourceBrowser, setShowDataSourceBrowser] =
-    useState<boolean>(false);
-  const [showSendModal, setShowSendModal] = useState<boolean>(false);
-  const [mentionedItems, setMentionedItems] = useState<MentionItem[]>([]);
-  const [model, setModel] = useState<string>(
-    models.length > 0 ? models[0].id : '',
-  );
+  const [selectedModelId, setSelectedModelId] = useState<string>('');
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
 
   const editableRef = useRef<HTMLDivElement>(null);
   const popupRef = useRef<HTMLDivElement>(null);
+  const pendingNavigate = useRef(false);
+  const [textContent, setTextContent] = useState('');
 
   const toolPopup = useCommandPopup<Tool>(editableRef, {
     trigger: InputCommand.TOOL,
@@ -109,12 +88,15 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     },
   });
 
+  // Navigate to session page after sending a message from the home page
   useEffect(() => {
-    if (models.length > 0 && !model) {
-      setModel(models[0].id);
+    if (sessionId && pendingNavigate.current) {
+      pendingNavigate.current = false;
+      navigate(`/sessions/${sessionId}`);
     }
-  }, [models]);
+  }, [sessionId, navigate]);
 
+  // Rotate placeholders if not provided with a custom one
   useEffect(() => {
     if (placeholder) return;
     const interval = setInterval(() => {
@@ -123,21 +105,14 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     return () => clearInterval(interval);
   }, [placeholder]);
 
-  useEffect(() => {
-    const el = editableRef.current;
-    if (!el) return;
-    const text = el.innerText;
-    setSuggestedActions(getSuggestedActions(text, selectedDataSources));
-  }, [selectedDataSources]);
-
   const handleTextChange = (text: string, isNowEmpty: boolean) => {
     setIsEmpty(isNowEmpty);
+    setTextContent(text.trim());
 
     if (isNowEmpty) {
       toolPopup.resetPopup();
       mentionPopup.resetPopup();
     } else {
-      setSuggestedActions(getSuggestedActions(text, selectedDataSources));
       toolPopup.controlPopup(text);
       mentionPopup.controlPopup(text);
     }
@@ -147,111 +122,14 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     setSelectedTools(selectedTools.filter((t) => !(t.toolId === tool.toolId)));
   };
 
-  const handleToolModalConfirm = (tools: Tool[]) => {
-    const newTools = tools.filter(
-      (tool) => !selectedTools.some((t) => t.toolId === tool.toolId),
-    );
-    setSelectedTools([...selectedTools, ...newTools]);
-    setShowToolBrowser(false);
-  };
-
-  const handleFileUpload = (file: File) => {
-    // TODO: Process the uploaded file and add to context
-    setUploadedFiles([...uploadedFiles, file]);
-  };
-
-  const onRemoveFile = (fileName: string) => {
-    setUploadedFiles(uploadedFiles.filter((f) => f.name !== fileName));
-  };
-
-  const handleDataSourceClick = () => {
-    setShowDataSourceBrowser(true);
-  };
-
-  const handleDataSourceModalConfirm = (dataSources: DataSource[]) => {
-    setSelectedDataSources([...selectedDataSources, ...dataSources]);
-    setShowDataSourceBrowser(false);
-  };
-
-  const handleDataSourceModalCancel = () => {
-    setShowDataSourceBrowser(false);
-  };
-
   const onRemoveDataSource = (dataSourceId: string) => {
     setSelectedDataSources(
       selectedDataSources.filter((ds) => ds.id !== dataSourceId),
     );
   };
 
-  const onClickAction = (action: { type: ActionType; text: string }) => {
-    switch (action.type) {
-      case ActionType.DATASET:
-        handleDataSourceClick();
-        break;
-      case ActionType.SEND:
-        setShowSendModal(true);
-        break;
-      default:
-        break;
-    }
-  };
-
-  const handleSendModalConfirm = (data: SendData) => {
-    // TODO: Handle sending the message
-    console.log('Send data:', data);
-    setShowSendModal(false);
-  };
-
-  const handleSendModalCancel = () => {
-    setShowSendModal(false);
-  };
-
-  const onClickSend = async () => {
-    const el = editableRef.current;
-    if (!el || isEmpty) return;
-
-    const userInput = el.innerText.trim();
-    if (!userInput) return;
-
-    // Process files before dispatching to avoid non-serializable values in Redux
-    const processedFiles =
-      uploadedFiles.length > 0 ? await processFiles(uploadedFiles) : undefined;
-
-    // Process datasources to send only id and name
-    const processedDataSources =
-      selectedDataSources.length > 0
-        ? selectedDataSources.map((ds) => ds.id)
-        : undefined;
-
-    dispatch(
-      executeStream({
-        userInput,
-        files: processedFiles,
-        tools: selectedTools,
-        dataSources: processedDataSources,
-      }),
-    );
-
-    if (appPage === AppPage.HOME) {
-      dispatch(setFullScreen(true));
-    }
-
-    // Clear the input
-    el.innerText = '';
-    setIsEmpty(true);
-    setSelectedTools([]);
-    setUploadedFiles([]);
-    setSelectedDataSources([]);
-  };
-
-  const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (toolPopup.handleKeyDown(event)) return;
-    if (mentionPopup.handleKeyDown(event)) return;
-
-    if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault();
-      onClickSend();
-    }
+  const onRemoveFile = (fileName: string) => {
+    setUploadedFiles(uploadedFiles.filter((f) => f.name !== fileName));
   };
 
   const handleTranscript = (transcript: string) => {
@@ -276,51 +154,61 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     selection?.addRange(range);
   };
 
-  const actionIconMap = {
-    [ActionType.SCHEDULE]: <CalendarBlankIcon size={16} />,
-    [ActionType.CHART]: <ChartLineIcon size={16} />,
-    [ActionType.DATASET]: <DatabaseIcon size={16} />,
-    [ActionType.SEND]: <PaperPlaneTiltIcon size={16} />,
+  const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (toolPopup.handleKeyDown(event)) return;
+    if (mentionPopup.handleKeyDown(event)) return;
+
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      onClickSend();
+    }
+  };
+
+  const onClickSend = async () => {
+    const el = editableRef.current;
+    if (!el || isEmpty || !textContent) return;
+
+    // Process datasources to send only id and name
+    const processedDataSources =
+      selectedDataSources.length > 0
+        ? selectedDataSources.map((ds) => ds.id)
+        : undefined;
+
+    // Process files before dispatching to avoid non-serializable values in Redux
+    const processedFiles =
+      uploadedFiles.length > 0 ? await processFiles(uploadedFiles) : undefined;
+
+    dispatch(
+      executeStream({
+        userInput: textContent,
+        tools: selectedTools,
+        dataSources: processedDataSources,
+        files: processedFiles,
+      }),
+    );
+
+    if (appPage === AppPage.HOME) {
+      pendingNavigate.current = true;
+      return;
+    }
+
+    // Clear the input
+    el.innerText = '';
+    setIsEmpty(true);
+    setTextContent('');
+    setSelectedTools([]);
+    setUploadedFiles([]);
+    setSelectedDataSources([]);
   };
 
   return (
     <div className={styles.intentInput}>
-      <BrowserModal<DataSource>
-        open={showDataSourceBrowser}
-        title="Select Datasources"
-        itemLabel="datasource"
-        onCancel={handleDataSourceModalCancel}
-        onConfirm={handleDataSourceModalConfirm}
-      >
-        {(selected, onChange) => (
-          <DataSourceBrowser
-            selectedDataSources={selected}
-            onDataSourcesChange={onChange}
-          />
-        )}
-      </BrowserModal>
-      <SendModal
-        open={showSendModal}
-        onCancel={handleSendModalCancel}
-        onConfirm={handleSendModalConfirm}
-      />
       {(toolPopup.showPopup || mentionPopup.showPopup) && (
         <CommandPopup
           popupRef={popupRef}
           popup={toolPopup.showPopup ? toolPopup : mentionPopup}
         />
       )}
-      <BrowserModal<Tool>
-        open={showToolBrowser}
-        title="Browse Tools"
-        itemLabel="tool"
-        onCancel={() => setShowToolBrowser(false)}
-        onConfirm={handleToolModalConfirm}
-      >
-        {(selected, onChange) => (
-          <ToolBrowser selectedTools={selected} onToolsChange={onChange} />
-        )}
-      </BrowserModal>
       <div
         className={`${styles.inputWrapper} ${animate ? styles.animate : ''} card`}
       >
@@ -342,49 +230,21 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
         />
         <div className={styles.actions}>
           <div className={styles.buttons}>
-            <AddContextButton
-              onFileUpload={handleFileUpload}
-              onDataSourceClick={handleDataSourceClick}
+            <IntentInputControls
+              textContent={textContent}
+              selectedTools={selectedTools}
+              setSelectedTools={setSelectedTools}
+              uploadedFiles={uploadedFiles}
+              setUploadedFiles={setUploadedFiles}
+              selectedDataSources={selectedDataSources}
+              setSelectedDataSources={setSelectedDataSources}
+              handleTranscript={handleTranscript}
             />
-            <IconBtn
-              icon={<WrenchIcon size={16} />}
-              onClick={() => setShowToolBrowser(true)}
-            />
-            <DictateButton
-              onTranscript={handleTranscript}
-              disabled={requestLoading}
-            />
-            <AnimatePresence>
-              {suggestedActions.map((action) => (
-                <motion.div
-                  key={action.type}
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -6 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <Button
-                    type="text"
-                    icon={actionIconMap[action.type]}
-                    onClick={() => onClickAction(action)}
-                  >
-                    {action.text}
-                  </Button>
-                </motion.div>
-              ))}
-            </AnimatePresence>
           </div>
           <div className={styles.buttons}>
-            <Select
-              className={styles.modelSelect}
-              popupMatchSelectWidth={false}
-              variant="borderless"
-              value={model}
-              options={models.map((model) => ({
-                label: model.name,
-                value: model.id,
-              }))}
-              suffixIcon={<CaretDownIcon color="#000" />}
+            <ModelSelect
+              selectedModelId={selectedModelId}
+              setSelectedModelId={setSelectedModelId}
             />
             <SendButton isEmpty={isEmpty} onClickSend={onClickSend} />
           </div>

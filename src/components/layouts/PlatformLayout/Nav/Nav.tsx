@@ -1,18 +1,15 @@
 import React, { FC, ReactNode, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { toast } from 'sonner';
 import {
   ChatsIcon,
   DatabaseIcon,
   DotsThreeIcon,
-  DotsThreeVerticalIcon,
   FlowArrowIcon,
   FolderIcon,
   GraphIcon,
   HeartbeatIcon,
   LightningIcon,
-  LinkSimpleIcon,
   ListIcon,
   MoonIcon,
   NotebookIcon,
@@ -21,9 +18,8 @@ import {
   SidebarSimpleIcon,
   SquaresFourIcon,
   SunIcon,
-  TrashIcon,
 } from '@phosphor-icons/react';
-import { Button, Dropdown, Popover } from 'antd';
+import { Button, Popover } from 'antd';
 import styles from './Nav.module.css';
 import { useAppDispatch } from 'reducers';
 import {
@@ -33,12 +29,7 @@ import {
   setIncognitoMode,
   setTheme,
 } from 'reducers/app/slice';
-import {
-  clearMessages,
-  selectSessions,
-  setFullScreen,
-} from 'reducers/chat/slice';
-import { deleteSession } from 'reducers/chat/actions';
+import { clearMessages, selectSessions } from 'reducers/chat/slice';
 import {
   AppPage,
   AppPageTitle,
@@ -47,6 +38,7 @@ import {
 import { spaceList } from 'models/interfaces/workspace';
 import { Avatar } from 'components/shared/Avatar/Avatar';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
+import { SessionItem } from 'components/shared/SessionItem/SessionItem';
 import AppTooltip from 'components/shared/Tooltip';
 import { HistoryCard } from './HistoryCard/HistoryCard';
 import { useIsMobile } from 'hooks/useIsMobile';
@@ -74,12 +66,11 @@ export const Nav: FC<NavProps> = ({}) => {
 
   const onClickLogo = () => {
     dispatch(clearMessages());
-    dispatch(setFullScreen(false));
+    navigate(platformRoutePaths[AppPage.HOME]);
   };
 
   const onClickNewChat = () => {
     dispatch(clearMessages());
-    dispatch(setFullScreen(true));
   };
 
   const onClickAvatar = () => {
@@ -196,52 +187,12 @@ export const Nav: FC<NavProps> = ({}) => {
           })}
           {expanded ? (
             <>
-              {sessions.slice(0, 5).map((session) => (
-                <div key={session.id} className={styles.sessionItem}>
-                  <IconBtn
-                    icon={null}
-                    label={session.name}
-                    labelHidden={!expanded}
-                    onClick={() => navigate(`/sessions/${session.id}`)}
-                  />
-                  <Dropdown
-                    menu={{
-                      items: [
-                        {
-                          key: 'copy-link',
-                          icon: <LinkSimpleIcon size={iconSize} />,
-                          label: 'Copy link',
-                          onClick: (e) => {
-                            e.domEvent.stopPropagation();
-                            navigator.clipboard.writeText(
-                              `${window.location.origin}/sessions/${session.id}`,
-                            );
-                            toast.success('Session link copied to clipboard');
-                          },
-                        },
-                        {
-                          key: 'delete',
-                          icon: <TrashIcon size={iconSize} />,
-                          label: 'Delete',
-                          danger: true,
-                          onClick: (e) => {
-                            e.domEvent.stopPropagation();
-                            dispatch(deleteSession(session.id));
-                          },
-                        },
-                      ],
-                    }}
-                    trigger={['click']}
-                  >
-                    <Button
-                      type="text"
-                      size="small"
-                      className={styles.sessionMenu}
-                      icon={<DotsThreeVerticalIcon />}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                  </Dropdown>
-                </div>
+              {sessions.slice(0, 3).map((session) => (
+                <SessionItem
+                  key={session.id}
+                  session={session}
+                  expanded={expanded}
+                />
               ))}
               <Popover
                 content={<HistoryCard />}
@@ -265,11 +216,13 @@ export const Nav: FC<NavProps> = ({}) => {
               arrow={false}
               styles={{ container: { padding: 0 } }}
             >
-              {renderIconBtn({
-                key: 'history',
-                icon: <ChatsIcon size={iconSize} />,
-                label: 'History',
-              })}
+              <div>
+                {renderIconBtn({
+                  key: 'history',
+                  icon: <ChatsIcon size={iconSize} />,
+                  label: 'History',
+                })}
+              </div>
             </Popover>
           )}
         </div>
