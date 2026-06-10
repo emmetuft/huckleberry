@@ -1,6 +1,5 @@
-# syntax=docker/dockerfile:1.7
 # ── Stage 1: build ────────────────────────────────────────────────────────────
-FROM node:22-alpine AS builder
+FROM node:24-alpine AS builder
 
 ENV PNPM_HOME=/pnpm
 ENV PATH=$PNPM_HOME:$PATH
@@ -9,8 +8,7 @@ RUN corepack enable && corepack prepare pnpm@8.15.0 --activate
 WORKDIR /app
 
 COPY package.json pnpm-lock.yaml ./
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
-    pnpm install --frozen-lockfile
+RUN pnpm install --no-frozen-lockfile
 
 COPY . .
 RUN pnpm build
