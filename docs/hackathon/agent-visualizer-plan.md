@@ -1,138 +1,123 @@
-# Agent Visualizer — Plan
+# Agent Visualizer — Hackathon Plan
 
-"Datadog for AI agents" / "Chrome DevTools for AI agents"
-
----
-
-## Core Pitch
-
-Every AI agent is producing prompts, tool calls, retrievals, model invocations, token usage, and errors — but they're buried in logs. This project turns those logs into an interactive **look-back and comparison tool**: explore any past session, compare efficiency across runs, and understand where tokens and time are going.
+"Datadog for AI agents" — turn buried session logs into an interactive look-back and comparison tool.
 
 ---
 
-## Decisions Locked
+## Architecture
 
-### 1. Event Source
-Events come from the Mako AI session event system (`AISessionEventPage`). Full schema in `~/dev/postman/mako.yaml`.
+### Event Source
+Mako AI session event system. Every event carries: `sessionId`, `requestId`, `parentEventId`, `eventId`, `timestamp`.
 
-Key event types:
-- `AIServiceRequestEvent` — LLM call starts (service: TOOL_CALLING, PLANNING, TEXT_GENERATION, etc.)
-- `AIServiceResponseEvent` — LLM call ends
-- `AgentThinkingStartedEvent` / `AgentThinkingCompletedEvent` — agent reasoning (has `durationMs`)
-- `ActionStartedEvent` / `ActionCompletedEvent` — tool action lifecycle (has `durationMs`, `toolCallId`, `actionType`)
-- `ToolStartedEvent` / `ToolCompletedEvent` — tool execution lifecycle
-- `AssistantResponseStartEvent` / `AssistantResponseEndEvent` / `AssistantResponseEvent` — final answer
-- `McpRequestEvent` / `McpResponseEvent` — MCP tool calls
-- `RequestConfirmationEvent` — user confirmation required
-- `CancelEvent`, `AIWarningEvent`, `AIDurationEvent` — operational events
+Key types: `AIServiceRequest/Response`, `ActionStarted/Completed`, `ToolStarted/Completed`, `AssistantRequest/Response`, `McpRequest/Response`, `AgentThinkingCompleted`.
 
-Every event shares: `sessionId`, `requestId`, `parentEventId`, `eventId`, `timestamp`
+Full schema: `~/dev/postman/mako.yaml` | Types: `src/models/interfaces/sessionEvent.ts`
 
-### 2. Causality Model
-`parentEventId` (on every event) forms the primary causality tree. Additional edge types enrich the DAG:
+### Causality Model
+`parentEventId` forms the primary tree. Enriched edges:
 - `CHILD_OF` — parentEventId
 - `TRIGGERED` — ToolStarted → ActionStarted via `toolCallId`
-- `PRODUCED_BY` — AssistantResponse → ActionCompleted outputs that fed it
+- `PRODUCED_BY` — AssistantResponse → ActionCompleted outputs
 
-### 3. Graph Storage
-**Neo4j** — local instance for dev, Aura (cloud) for demo/production.
+### Graph Storage
+**Neo4j** (local Docker for dev, Aura for demo). One node per event, labeled by type. Edges: `CHILD_OF`, `TRIGGERED`, `PRODUCED_BY`.
 
-Written directly from the Node/Express server as events arrive.
-No intermediate SQLite layer.
+Required for cross-session pattern queries and aggregation. Client-side graph build is insufficient for comparison view at scale.
 
-Node model: one node per event, labeled by event type.
-Edge model: `CHILD_OF`, `TRIGGERED`, `PRODUCED_BY`.
+### Ingest
+Pull-based: fetch session events on demand, batch-write to Neo4j. Retrospective only — no streaming.
 
-### 4. Ingest Strategy
-Pull-based: fetch `AISessionEventPage` for a session on demand, write to Neo4j, render. No streaming/webhooks needed. Tool is purely retrospective — not a live monitor.
-
-### 5. Timeline Collapse Strategy
-Show only `Completed` events (carries `durationMs` and output). Drop `Started` noise for historical view.
+### Timeline Collapse
+Show only `Completed` events (carries `durationMs` + output). Drop `Started` noise.
 
 ---
 
-## Tech Stack
+## Endpoints
 
-### Backend
-- Node.js + Express
-- Neo4j driver (direct write on event ingest)
-- Neo4j local (dev) / Aura (demo)
+### Already Working (proxied to Mako)
+| Route | Client |
+|-------|--------|
+| `POST /api/sessions` | `AgentSessionService.getSessions()` |
+| `GET /api/sessions/:id` | `AgentSessionService.getSession()` |
+| `GET /api/sessions/:id/events` | `AgentSessionService.getSessionEvents()` |
 
-### Frontend
-- React
-- React Flow — DAG / timeline visualization
-- Node types: Prompt, Plan, Tool, Memory, Model, Answer
-- Edge types: caused_by, generated, retrieved, used
-
-### API
-- `POST /event` — ingest single event, write to Neo4j
-- `GET /session/:id` — flat event list for timeline view
-- `GET /session/:id/graph` — graph structure for DAG view
-
-### Mako Source Endpoints
-- `GET /api/ai/v1/sessions/{sessionId}/events` — full session event list, paginated via `next` cursor → **primary ingest source**
-- `GET /api/ai/v1/sessions/{sessionId}/requests/{requestId}/events` — events scoped to one request
-- `GET /api/ai/v1/sessions` — session list for browse/comparison view
-- `GET /api/ai/v1/admin/sessions/{sessionId}/events` — admin variant (same shape)
+### Need to Build (in `server.js`)
+| Route | Purpose | Day |
+|-------|---------|-----|
+| `POST /api/ingest/:sessionId` | Fetch events from Mako, batch-write to Neo4j | 1 |
+| `GET /api/graph/:sessionId` | Return node/edge structure from Neo4j for DAG view | 2 |
+| `POST /api/compare` | Accept session IDs, return aggregate stats from Neo4j | 3 |
 
 ---
 
 ## Views
 
-### 1. Session Timeline
-Chronological list of collapsed logical operations.
-Click any row → see full event payload.
+1. **Session Browse** — list sessions, sort by recency
+2. **Session Timeline** — chronological collapsed operations, click to expand payload
+3. **DAG Explorer** — React Flow causality graph, click Answer → trace backwards
+4. **Session Comparison** — multi-session aggregate: tokens by service, duration breakdown, action frequency, error rates
+5. **Heatmap** — time/token breakdown by category
 
-### 2. DAG Explorer (React Flow)
-Nodes connected by causality edges.
-Click Final Answer → trace backwards through the graph.
+### Token Data
+Source: `AIServiceResponseEvent.serviceResponse` → `inputTokens`, `outputTokens`, `totalTokens`, `reasoningTokens`, `modelId`. Display raw counts only (no dollar estimates).
 
-### 4. Session Comparison View
-Aggregate cost/efficiency dashboard across runs — different models, different prompts, general spend assessment:
-- Token usage by service type across sessions
-- Duration breakdown (tool calls vs model calls vs thinking)
-- Cost per session (tokens × model rate)
-- Action type frequency and cost contribution
-- Error rates
-- No fixed grouping required — ad-hoc session selection with aggregate roll-up
-
-### 5. Agent Heatmap
-Time breakdown: Tool Calls / Model Calls / Retrieval / Thinking
-Token breakdown by service type.
-
-### 6. Token / Cost Data
-- Source: `AIServiceResponseEvent.serviceResponse` → `ModelProviderUsage`
-  - `inputTokens`, `outputTokens`, `totalTokens`, `reasoningTokens`
-  - `modelId` — needed to apply per-model cost rates
-- `service` field on the event tells us the AI service type (TOOL_CALLING, PLANNING, etc.)
-- Cost display: **raw token counts only** — inputTokens, outputTokens, totalTokens, reasoningTokens. No dollar estimates (pricing tiers too complex). Token counts are the primary efficiency metric.
-- **Open**: confirm `serviceResponse` shape matches `TextAIResponse` + `ModelProviderUsage` against a real event payload
+---
 
 ## DAG Node Taxonomy
 
-Six visual categories, consistent across DAG and heatmap:
+| Category | Color | Maps To |
+|----------|-------|---------|
+| User Prompt | Blue | `AssistantRequestEvent` |
+| Plan/Think | Purple | `AgentThinkingCompleted`, `PLANNING` service |
+| Get Context | Green | `dataset_query_action`, `dataset_lookup_action`, `dataset_schema_by_id_action`, `dataset_text_to_sql_action`, `vector_db_query_action`, `kb_query_action`, `fileset_query_action`, `search_action`, `google_query_action`, `firecrawl_action` |
+| Use Context | Orange | `chart_builder_action`, `page_builder_action`, `html_generation_action`, `javascript_generation_action`, `code_engine_*`, `card_action`, `create_data_app_action`, `design_app_spec_action` |
+| Model Call | Teal | `AIServiceResponseEvent` (TEXT_GENERATION, TOOL_CALLING, TEXT_TO_SQL) |
+| Answer | Gold | `AssistantResponseEvent` |
+| Other | Grey | Catch-all |
 
-| Node Type | Color | Event/Action Types |
-|---|---|---|
-| **User Prompt** | Blue | `AssistantRequestEvent` |
-| **Plan / Think** | Purple | `AgentThinkingCompletedEvent`, `PLANNING` service |
-| **Get Context** | Green | `dataset_query_action`, `dataset_lookup_action`, `dataset_schema_by_id_action`, `dataset_text_to_sql_action`, `vector_db_query_action`, `kb_query_action`, `fileset_query_action`, `search_action`, `google_query_action`, `firecrawl_action` |
-| **Use Context** | Orange | `chart_builder_action`, `page_builder_action`, `html_generation_action`, `javascript_generation_action`, `code_engine_*`, `card_action`, `create_data_app_action`, `design_app_spec_action` |
-| **Model Call** | Teal | `AIServiceResponseEvent` (TEXT_GENERATION, TOOL_CALLING, TEXT_TO_SQL, etc.) |
-| **Answer** | Gold | `AssistantResponseEvent` |
-| **Other** | Grey | Everything else (catch-all) |
+---
 
-## Build Schedule
+## Team & Schedule
 
-### Day 1
-- Neo4j setup + event ingest pipeline
-- Session Timeline view
+**Team:** 2 devs (A = backend/data, B = frontend/viz) + 1 designer
 
-### Day 2
-- DAG Explorer (React Flow)
+### Dev A — Data & Backend
+| Day | Deliverable |
+|-----|-------------|
+| 1 | Neo4j Docker, connection in `server.js`, `POST /api/ingest/:sessionId`, batch-load real sessions |
+| 2 | Edge enrichment (TRIGGERED, PRODUCED_BY), `GET /api/graph/:sessionId`, Cypher aggregation queries |
+| 3 | `POST /api/compare` endpoint, heatmap data query |
+| 4-5 | Pagination, perf tuning, demo data curation |
 
-### Day 3
-- Session Comparison / token analytics dashboard
+### Dev B — Frontend
+| Day | Deliverable |
+|-----|-------------|
+| 1 | Event→Node mapper (taxonomy + edges from `parentEventId`), Session Timeline component, session browse page |
+| 2 | DAG Explorer (React Flow + dagre, clone `ModelCanvas` patterns), click-to-trace, node detail panel |
+| 3 | Wire comparison dashboard to `/api/compare`, multi-session selector, token charts |
+| 4-5 | Integration, view transitions, edge cases, demo walkthrough |
 
-### Day 4-5
-- Polish, demo script, edge cases
+### Designer
+| Day | Deliverable |
+|-----|-------------|
+| 1 | Node taxonomy visuals (shapes, colors, icons), timeline row layout |
+| 2 | DAG Explorer: node/edge styling, detail panel, empty states |
+| 3 | Comparison dashboard layout, heatmap visual |
+| 4-5 | Polish, animations, presentation deck |
+
+### Dependency Handoffs
+```
+Day 1 EOD → Dev A has Neo4j with data; Dev B swaps mocks for live
+Day 2 EOD → Designer delivers node specs; Dev B applies to DAG Explorer
+Day 3 AM  → Dev A's compare endpoint ready; Dev B wires dashboard
+```
+
+---
+
+## Existing Infrastructure
+
+- `@xyflow/react` + `@dagrejs/dagre` — installed, proven in `Ontology/ModelCanvas`
+- `neo4j-driver@^6` — installed, no active connection
+- `src/utils/processStep.ts`, `conversationTurn.ts`, `sessionMessages.ts` — event processing utilities
+- `src/services/agentSession.ts` — session/event API client
+- `server.js` — bare ViteExpress, no routes yet
