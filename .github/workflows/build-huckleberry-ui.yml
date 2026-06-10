@@ -16,7 +16,7 @@ on:
 
 env:
   ECR_REGISTRY: 972900829293.dkr.ecr.us-east-1.amazonaws.com
-  ECR_REPOSITORY: huckleberry/huckleberry-ui
+  ECR_REPOSITORY: huckleberry/huckleberry-frontend
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
