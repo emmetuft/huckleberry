@@ -12,7 +12,7 @@ import {
 } from 'utils/prompt';
 import { handleResponse } from 'utils/service';
 
-const AI_SERVICE_ENDPOINT = '/api/ai/';
+const AI_SERVICE_ENDPOINT = '/api/ai';
 
 async function fetchModels(): Promise<AIModel[]> {
   const response = await fetch(`${AI_SERVICE_ENDPOINT}/models`, {

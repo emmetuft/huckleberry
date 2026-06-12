@@ -12,6 +12,7 @@ import { AppPage, AppPageTitle, AppPageSubtitle } from 'models/enums/appPage';
 const hiddenPages = [
   AppPage.AGENT_CHAT,
   AppPage.AGENT_DETAIL,
+  AppPage.AGENT_EDIT,
   AppPage.DATASOURCE,
   AppPage.HOME,
   AppPage.ONTOLOGY,

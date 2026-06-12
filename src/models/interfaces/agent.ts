@@ -14,6 +14,9 @@ export interface Agent {
   context?: AgentContext;
   toolkitIds?: string[];
   permission?: Permission;
+  settings?: any;
+  uiSettings?: any;
+  theme: any;
   created?: string;
   createdBy?: number;
   updated?: string;

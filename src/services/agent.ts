@@ -42,7 +42,7 @@ const getAgents = async (
 /**
  * Create a new agent
  */
-interface CreateAgentPayload {
+interface AgentPayload {
   name: string;
   description: string;
   prompt: string;
@@ -54,7 +54,7 @@ interface CreateAgentPayload {
 }
 
 const createAgent = async (agent: Agent): Promise<Agent> => {
-  const payload: CreateAgentPayload = {
+  const payload: AgentPayload = {
     name: agent.name,
     description: agent.description,
     prompt: agent.prompt,
@@ -66,6 +66,26 @@ const createAgent = async (agent: Agent): Promise<Agent> => {
 
   const response = await fetch(AGENT_API_BASE, {
     method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+
+  return handleResponse<Agent>(response);
+};
+
+const updateAgent = async (agent: Agent): Promise<Agent> => {
+  const payload: AgentPayload = {
+    name: agent.name,
+    description: agent.description,
+    prompt: agent.prompt,
+    systemMessage: agent.systemMessage,
+    model: agent.model,
+    context: agent.context,
+    toolkitIds: agent.toolkitIds,
+  };
+
+  const response = await fetch(`${AGENT_API_BASE}/${agent.id}`, {
+    method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   });
@@ -85,4 +105,5 @@ export const AgentService = {
   getAgents,
   getAgent,
   createAgent,
+  updateAgent,
 };

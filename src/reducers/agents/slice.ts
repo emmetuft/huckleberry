@@ -4,6 +4,7 @@ import {
   fetchAgentById,
   fetchAgents,
   fetchAIModels,
+  updateCustomAgent,
 } from './actions';
 import { Agent } from 'models/interfaces/agent';
 import { AIModel } from 'models/interfaces/aiModel';
@@ -13,6 +14,7 @@ interface AgentsState {
   aiModels: AIModel[];
   loading: boolean;
   loadingAgentId: string | null;
+  upserting: boolean;
   error: string | null;
 }
 
@@ -21,6 +23,7 @@ const initialState: AgentsState = {
   aiModels: [],
   loading: false,
   loadingAgentId: null,
+  upserting: false,
   error: null,
 };
 
@@ -52,8 +55,32 @@ export const AgentsSlice = createAppSlice({
       .addCase(fetchAIModels.fulfilled, (state, action) => {
         state.aiModels = action.payload;
       })
+      .addCase(createCustomAgent.pending, (state, action) => {
+        state.upserting = true;
+        state.error = null;
+      })
+      .addCase(createCustomAgent.rejected, (state, action) => {
+        state.upserting = false;
+        state.error = action.error.message || 'Failed to create agent';
+      })
       .addCase(createCustomAgent.fulfilled, (state, action) => {
+        state.upserting = false;
         state.agents.push(action.payload);
+      })
+      .addCase(updateCustomAgent.pending, (state, action) => {
+        state.upserting = true;
+        state.error = null;
+      })
+      .addCase(updateCustomAgent.rejected, (state, action) => {
+        state.upserting = false;
+        state.error = action.error.message || 'Failed to update agent';
+      })
+      .addCase(updateCustomAgent.fulfilled, (state, action) => {
+        state.upserting = false;
+        const index = state.agents.findIndex((a) => a.id === action.payload.id);
+        if (index !== -1) {
+          state.agents[index] = action.payload;
+        }
       })
       .addCase(fetchAgentById.pending, (state, action) => {
         state.loadingAgentId = action.meta.arg;
@@ -74,6 +101,7 @@ export const AgentsSlice = createAppSlice({
     selectAIModels: (state: AgentsState) => state.aiModels,
     selectLoading: (state: AgentsState) => state.loading,
     selectLoadingAgentId: (state: AgentsState) => state.loadingAgentId,
+    selectUpserting: (state: AgentsState) => state.upserting,
     selectError: (state: AgentsState) => state.error,
   },
 });
@@ -85,6 +113,7 @@ export const {
   selectAIModels,
   selectLoading,
   selectLoadingAgentId,
+  selectUpserting,
   selectError,
 } = AgentsSlice.selectors;
 

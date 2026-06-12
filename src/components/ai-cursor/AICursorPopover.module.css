@@ -21,9 +21,13 @@
 
 .inputWrapper {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   padding: var(--space-sm) var(--space-md);
   gap: var(--space-sm);
+}
+
+.inputWrapper > svg {
+  margin-top: 2px;
 }
 
 .input {
@@ -33,6 +37,12 @@
   background: transparent;
   font-size: var(--font-sm);
   color: var(--text);
+  resize: none;
+  overflow: hidden;
+  line-height: 1.5;
+  font-family: inherit;
+  max-height: 150px;
+  overflow-y: auto;
 }
 
 .input::placeholder {
@@ -47,7 +57,35 @@
   color: var(--text);
   max-height: 300px;
   overflow-y: auto;
-  white-space: pre-wrap;
+}
+
+.answerSection p {
+  margin: 0 0 var(--space-sm);
+}
+
+.answerSection p:last-child {
+  margin-bottom: 0;
+}
+
+.answerSection code {
+  background: var(--card-border);
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+.answerSection pre {
+  background: var(--card-border);
+  padding: var(--space-sm);
+  border-radius: var(--br-sm);
+  overflow-x: auto;
+  margin: var(--space-sm) 0;
+}
+
+.answerSection ul,
+.answerSection ol {
+  padding-left: var(--space-lg);
+  margin: var(--space-sm) 0;
 }
 
 .spinner {
