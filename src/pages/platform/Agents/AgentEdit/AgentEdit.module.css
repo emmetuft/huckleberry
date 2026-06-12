@@ -1,0 +1,186 @@
+.loadingWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.agentWrapper {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+
+  .left {
+    flex: 3;
+    min-width: 0;
+    min-height: 0;
+    padding: var(--space-2xl) 64px;
+    overflow-y: auto;
+  }
+
+  .right {
+    flex: 2;
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-2xl) 46px;
+    background-color: var(--grey-bg);
+    overflow-y: auto;
+  }
+
+  .agentHeader {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--space-2xl);
+
+    .preview {
+      font-weight: 600;
+    }
+  }
+
+  .agentContent {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xl);
+    padding: 0 140px;
+
+    .stepBtns {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-2xl);
+
+      .stepNumber {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        height: 13px;
+        width: 13px;
+        background-color: var(--grey-text);
+        color: var(--background);
+        font-size: 10px;
+        font-weight: 600;
+
+        &.currentStep {
+          background-color: var(--purple);
+        }
+      }
+    }
+
+    .btnWrapper {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: var(--space-md);
+    }
+  }
+}
+
+.pageContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.knowledgeWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-xl);
+  border-radius: var(--br-lg);
+  border: 1px solid var(--grey-border);
+
+  .notice {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 50px 0;
+    gap: var(--space-md);
+    color: var(--grey-text);
+
+    p {
+      font-size: var(--font-xs);
+    }
+  }
+
+  .settingWithSwitch {
+    display: flex;
+    justify-content: space-between;
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--grey-light);
+
+    &.noBorder {
+      border-top: none;
+      padding-top: 0;
+    }
+
+    .settingContent {
+      max-width: 66%;
+    }
+  }
+}
+
+.privacyNotice {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding: var(--space-xl);
+  border-radius: var(--br-lg);
+  background-color: var(--grey-bg);
+
+  .title {
+    font-weight: 600;
+  }
+
+  .details {
+    color: var(--grey-text);
+  }
+}
+
+.accessWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  margin-top: var(--space-lg);
+
+  .title {
+    font-weight: 600;
+    color: var(--grey-text);
+  }
+
+  .accessItem {
+    display: flex;
+    justify-content: space-between;
+
+    .group {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+
+      .groupIcon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 35px;
+        width: 35px;
+        background-color: var(--grey-light);
+        border-radius: var(--br-lg);
+      }
+    }
+  }
+}
+
+.fieldWrapper {
+  position: relative;
+
+  .magicIcon {
+    position: absolute;
+    top: 15px;
+    right: 0;
+    color: var(--grey-text);
+  }
+}

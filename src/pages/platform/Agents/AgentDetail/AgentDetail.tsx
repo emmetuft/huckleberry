@@ -1,186 +1,71 @@
-import { FC, useEffect, useMemo, useState } from 'react';
+import { FC, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Button, Select, Spin } from 'antd';
+import { Button } from 'antd';
+import { HeartIcon, LightningIcon, PlayIcon } from '@phosphor-icons/react';
 import styles from './AgentDetail.module.css';
-import { useAppDispatch } from 'reducers';
-import { selectAgents, selectLoadingAgentId } from 'reducers/agents/slice';
-import { createCustomAgent, fetchAgentById } from 'reducers/agents/actions';
-import { AGENT_FORM_FIELDS, AgentStep } from 'constants/agent';
-import { AccessEntry } from 'models/enums/permission';
-import { Agent } from 'models/interfaces/agent';
-import { DataSource } from 'models/interfaces/dataSource';
-import { Tool } from 'models/interfaces/toolkit';
-import { Chat } from '../Chat/Chat';
-import { AgentStepContent } from './AgentStepContent';
-
-type AgentFormState = Partial<Agent>;
+import { selectAgents, selectAIModels } from 'reducers/agents/slice';
 
 export const AgentDetail: FC = () => {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const agents = useSelector(selectAgents);
-  const loadingAgentId = useSelector(selectLoadingAgentId);
-
-  const [currentStep, setCurrentStep] = useState<AgentStep>(AgentStep.Persona);
-  const [agentForm, setAgentForm] = useState<AgentFormState>({});
-  const [selectedTools, setSelectedTools] = useState<Tool[]>([]);
-  const [selectedDataSources, setSelectedDataSources] = useState<DataSource[]>(
-    [],
-  );
-  const [usersAndGroups, setUsersAndGroups] = useState<AccessEntry[]>([]);
+  const models = useSelector(selectAIModels);
 
   const { agentId } = useParams<{ agentId: string }>();
 
   const agent = useMemo(() => {
-    const isNewAgent = agentId === 'new';
-    const currAgent = isNewAgent
-      ? null
-      : (agents.find((a) => a.id === agentId) ?? null);
+    const currAgent = agents.find((a) => a.id === agentId) ?? null;
     return currAgent;
   }, [agentId]);
 
-  useEffect(() => {
-    if (!agent && agentId && agentId !== 'new') {
-      dispatch(fetchAgentById(agentId));
-    }
-  }, [agentId]);
-
-  useEffect(() => {
-    if (agent) {
-      setAgentForm(agent);
-    } else {
-      setAgentForm({});
-    }
-  }, [agent]);
-
-  const updateField = (key: keyof Agent, value: any) => {
-    setAgentForm((prev) => ({ ...prev, [key]: value }));
-  };
-
-  const steps = Object.values(AgentStep);
-  const isLastStep = currentStep === steps[steps.length - 1];
-
-  const isPersonaComplete = AGENT_FORM_FIELDS.every((field) =>
-    Boolean(agentForm[field.key]),
-  );
-  const isContinueDisabled =
-    currentStep === AgentStep.Persona && !isPersonaComplete;
-
-  const goToNextStep = () => {
-    const currentIndex = steps.indexOf(currentStep);
-    if (currentIndex < steps.length - 1) {
-      setCurrentStep(steps[currentIndex + 1]);
-    }
-  };
-
-  const handleSubmit = () => {
-    const { name, description, prompt, systemMessage, model } = agentForm;
-
-    if (!name || !description || !prompt || !systemMessage || !model) {
-      // TODO: surface validation errors to the user
-      return;
-    }
-
-    dispatch(
-      createCustomAgent({
-        id: 'new',
-        name,
-        description,
-        prompt,
-        systemMessage,
-        model,
-        toolkitIds: [],
-      }),
-    );
-  };
-
-  if (loadingAgentId === agentId) {
-    return (
-      <div className={styles.loadingWrapper}>
-        <Spin />
-        <h4>Loading agent...</h4>
-      </div>
-    );
-  }
+  if (!agent) return null;
 
   return (
-    <div className={styles.agentWrapper}>
-      <div className={styles.left}>
-        <div className={styles.agentHeader}>
-          <Select
-            variant="borderless"
-            value={agent?.id ?? 'new'}
-            options={[
-              { label: 'New agent', value: 'new' },
-              ...agents.map((agent) => ({
-                label: agent.name,
-                value: agent.id,
-              })),
-            ]}
-            onChange={(value) => {
-              navigate(`/agents/${value}/edit`);
-            }}
-          />
-          <Button shape="round" type="primary">
-            Save
-          </Button>
+    <div>
+      <div className={styles.agentHeading}>
+        <div className={styles.agentIcon}>
+          <LightningIcon size={50} color="black" />
         </div>
-        <div className={styles.agentContent}>
-          <div className={styles.stepBtns}>
-            {Object.values(AgentStep).map((step, index) => (
-              <Button
-                key={step}
-                shape="round"
-                icon={
-                  <div
-                    className={`${styles.stepNumber} ${step === currentStep ? styles.currentStep : ''}`}
-                  >
-                    {step !== currentStep ? index + 1 : ''}
-                  </div>
-                }
-                style={
-                  step === currentStep
-                    ? {
-                        backgroundColor: 'var(--grey-light)',
-                        borderColor: 'var(--grey-light)',
-                      }
-                    : {}
-                }
-                onClick={() => setCurrentStep(step)}
-              >
-                {step}
-              </Button>
-            ))}
-          </div>
-          <AgentStepContent
-            currentStep={currentStep}
-            agentForm={agentForm}
-            onFieldChange={updateField}
-            selectedTools={selectedTools}
-            onToolsChange={setSelectedTools}
-            selectedDataSources={selectedDataSources}
-            onDataSourcesChange={setSelectedDataSources}
-            usersAndGroups={usersAndGroups}
-            onUsersAndGroupsChange={setUsersAndGroups}
-          />
-          <div className={styles.btnWrapper}>
+        <div className={styles.agentInfo}>
+          <h2>{agent.name}</h2>
+          <p className={styles.description}>
+            {agent.description ?? 'No description'}
+          </p>
+          <div className={styles.actions}>
             <Button
-              type="primary"
               shape="round"
-              disabled={isContinueDisabled}
-              onClick={isLastStep ? handleSubmit : goToNextStep}
+              type="primary"
+              icon={<PlayIcon weight="fill" color="white" />}
+              onClick={() => navigate(`/agents/${agentId}/chat`)}
             >
-              {isLastStep ? 'Done' : 'Continue'}
+              Run agent
             </Button>
+            <div className={styles.sideActions}>
+              <Button shape="round" icon={<HeartIcon />}>
+                Like
+              </Button>
+              <Button
+                shape="round"
+                onClick={() => navigate(`/agents/${agentId}/edit`)}
+              >
+                Edit info
+              </Button>
+            </div>
           </div>
         </div>
       </div>
-      <div className={styles.right}>
-        <div className={styles.agentHeader}>
-          <p className={styles.preview}>Preview</p>
+      <div className={styles.agentMetadata}>
+        <div className={styles.dataItem}>
+          <p className={styles.label}>Created by</p>
+          <p>{agent.createdBy}</p>
         </div>
-        <Chat agent={agent} showHeader={false} />
+        <div className={styles.dataItem}>
+          <p className={styles.label}>Model</p>
+          <p>
+            {models.find((model) => model.id === agent.model)?.name ??
+              'Unknown model'}
+          </p>
+        </div>
       </div>
     </div>
   );

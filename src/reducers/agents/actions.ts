@@ -44,3 +44,11 @@ export const createCustomAgent = createAsyncThunk<
 >('agents/createCustomAgent', async (agent, { getState }) => {
   return AgentService.createAgent(agent);
 });
+
+export const updateCustomAgent = createAsyncThunk<
+  Agent,
+  Agent,
+  { state: RootState }
+>('agents/updateCustomAgent', async (agent, { getState }) => {
+  return AgentService.updateAgent(agent);
+});

@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import {
-  LightningAIcon,
+  LightningIcon,
   PencilSimpleIcon,
   RocketLaunchIcon,
 } from '@phosphor-icons/react';
@@ -27,12 +27,12 @@ export const AgentCard: FC<AgentCardProps> = ({ agent }) => {
     agent.updated && now - new Date(agent.updated).getTime() < ONE_WEEK_MS;
 
   return (
-    <div className="appCard">
+    <div className="appCard" onClick={() => navigate(`/agents/${agent.id}`)}>
       {agent.iconUrl ? (
         <img src={agent.iconUrl} height="100%" width="100%" />
       ) : (
         <div className={styles.agentIcon}>
-          <LightningAIcon color="var(--background)" size={18} />
+          <LightningIcon color="var(--background)" size={18} />
         </div>
       )}
       <div className="appInfo">
@@ -55,13 +55,21 @@ export const AgentCard: FC<AgentCardProps> = ({ agent }) => {
             height={16}
           />
           <Tag
-            onClick={() => navigate(`/agents/${agent.id}/chat`)}
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/agents/${agent.id}/chat`);
+            }}
             style={defaultTagStyle}
           >
             <RocketLaunchIcon />
             Launch
           </Tag>
-          <Tag onClick={() => navigate(`/agents/${agent.id}/edit`)}>
+          <Tag
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/agents/${agent.id}/edit`);
+            }}
+          >
             <PencilSimpleIcon />
             Edit
           </Tag>

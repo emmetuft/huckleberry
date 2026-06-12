@@ -11,7 +11,7 @@ import {
   UserCircleIcon,
   UsersThreeIcon,
 } from '@phosphor-icons/react';
-import styles from './AgentDetail.module.css';
+import styles from './AgentEdit.module.css';
 import labelInputStyles from 'components/shared/LabelInput/LabelInput.module.css';
 import { selectAIModels } from 'reducers/agents/slice';
 import { selectAllPeople } from 'reducers/people/slice';
@@ -109,12 +109,10 @@ export const AgentStepContent: FC<AgentStepContentProps> = ({
         options,
       );
 
-      const result = await DomoAIService.generateText<{ value: string }>(
-        prompt,
-      );
+      const result = await DomoAIService.generateText(prompt);
 
-      if (typeof result?.value === 'string') {
-        onFieldChange(field.key, result.value);
+      if (typeof result === 'string') {
+        onFieldChange(field.key, result);
       } else {
         throw new Error('AI response missing "value" field');
       }

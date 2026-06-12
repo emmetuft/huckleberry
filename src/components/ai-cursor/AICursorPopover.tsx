@@ -1,6 +1,7 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CircleNotchIcon, SparkleIcon } from '@phosphor-icons/react';
+import Markdown from 'react-markdown';
 import styles from './AICursorPopover.module.css';
 import { analyzeCursorContext, analyzeScreenshot } from 'services/ai';
 
@@ -107,13 +108,13 @@ export const AICursorPopover: FC<AICursorPopoverProps> = ({
   const [answer, setAnswer] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
 
   const { top, left } = computePosition(targetRect);
 
-  const showScreenshot = true; // DEBUG
+  const showScreenshot = false; // DEBUG
   const screenshot = targetElement
     ? captureElementScreenshot(targetElement, selectionBounds)
     : null;
@@ -218,16 +219,20 @@ export const AICursorPopover: FC<AICursorPopoverProps> = ({
       )}
 
       <div className={styles.inputWrapper}>
-        <SparkleIcon size={16} weight="fill" />
-        <input
+        <SparkleIcon size={16} weight="fill" color="var(--purple)" />
+        <textarea
           ref={inputRef}
-          type="text"
           className={styles.input}
           placeholder="Ask a question..."
           value={question}
-          onChange={(e) => setQuestion(e.target.value)}
+          onChange={(e) => {
+            setQuestion(e.target.value);
+            e.target.style.height = 'auto';
+            e.target.style.height = `${e.target.scrollHeight}px`;
+          }}
           onKeyDown={handleKeyDown}
           disabled={isLoading}
+          rows={1}
         />
         {isLoading && <CircleNotchIcon size={16} className={styles.spinner} />}
       </div>
@@ -241,7 +246,7 @@ export const AICursorPopover: FC<AICursorPopoverProps> = ({
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2, ease: 'easeOut' }}
           >
-            {answer}
+            <Markdown>{answer}</Markdown>
           </motion.div>
         )}
       </AnimatePresence>

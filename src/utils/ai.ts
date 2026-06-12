@@ -16,7 +16,7 @@ export const buildFieldGenerationPrompt = (
         .join(', ')}.`
     : '';
 
-  const system = `You are an assistant helping configure an AI agent. Generate an appropriate value for the agent's "${label}" field. ${description ?? ''}${optionsHint} Be short and concise. Respond ONLY with JSON in this exact format: {"value": "<generated content>"} with no surrounding prose or markdown.`;
+  const system = `You are an assistant helping configure an AI agent. Generate an appropriate value for the agent's "${label}" field. ${description ?? ''}${optionsHint} Be short and concise. Respond ONLY with the raw value, with no JSON or surrounding text.`;
 
   const input = context
     ? `Current agent configuration:\n${context}`

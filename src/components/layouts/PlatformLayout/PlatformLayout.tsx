@@ -54,7 +54,7 @@ export const PlatformLayout: FC = () => {
   const hidePromptBarRoutes = [
     platformRoutePaths[AppPage.HOME],
     platformRoutePaths[AppPage.AGENT_CHAT],
-    platformRoutePaths[AppPage.AGENT_DETAIL],
+    platformRoutePaths[AppPage.AGENT_EDIT],
     platformRoutePaths[AppPage.SESSION],
   ];
   const hidePromptBar = hidePromptBarRoutes.some((path) =>
@@ -63,7 +63,7 @@ export const PlatformLayout: FC = () => {
 
   const noPaddingRoutes = [
     platformRoutePaths[AppPage.AGENT_CHAT],
-    platformRoutePaths[AppPage.AGENT_DETAIL],
+    platformRoutePaths[AppPage.AGENT_EDIT],
     platformRoutePaths[AppPage.ONTOLOGY],
     platformRoutePaths[AppPage.WORKFLOW_DETAIL],
   ];
