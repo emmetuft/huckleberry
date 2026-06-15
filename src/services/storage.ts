@@ -2,7 +2,7 @@ import { Persona } from 'models/interfaces/persona';
 
 const PERSONA_API_BASE = '/api/persona';
 
-const fetchUserPersona = async (userId: number): Promise<Persona> => {
+const getUserPersona = async (userId: number): Promise<Persona> => {
   try {
     const response = await fetch(`${PERSONA_API_BASE}/${userId}`, {
       method: 'GET',
@@ -61,6 +61,6 @@ const saveUserPersona = async (
 };
 
 export const StorageService = {
-  fetchUserPersona,
+  getUserPersona,
   saveUserPersona,
 };

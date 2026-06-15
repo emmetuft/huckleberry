@@ -40,8 +40,12 @@ const getAgents = async (
 };
 
 /**
- * Create a new agent
+ * Retrieve an agent by ID
  */
+const getAgent = async (agentId: string): Promise<Agent> => {
+  const response = await fetch(`${AGENT_API_BASE}/${agentId}`);
+  return handleResponse<Agent>(response);
+};
 interface AgentPayload {
   name: string;
   description: string;
@@ -53,6 +57,9 @@ interface AgentPayload {
   toolkitIds?: string[];
 }
 
+/**
+ * Create a new agent
+ */
 const createAgent = async (agent: Agent): Promise<Agent> => {
   const payload: AgentPayload = {
     name: agent.name,
@@ -73,6 +80,9 @@ const createAgent = async (agent: Agent): Promise<Agent> => {
   return handleResponse<Agent>(response);
 };
 
+/**
+ * Update an existing agent
+ */
 const updateAgent = async (agent: Agent): Promise<Agent> => {
   const payload: AgentPayload = {
     name: agent.name,
@@ -94,11 +104,12 @@ const updateAgent = async (agent: Agent): Promise<Agent> => {
 };
 
 /**
- * Retrieve a single agent by ID
+ * Delete an agent by ID
  */
-const getAgent = async (agentId: string): Promise<Agent> => {
-  const response = await fetch(`${AGENT_API_BASE}/${agentId}`);
-  return handleResponse<Agent>(response);
+const deleteAgent = async (agentId: string): Promise<void> => {
+  await fetch(`${AGENT_API_BASE}/${agentId}`, {
+    method: 'DELETE',
+  });
 };
 
 export const AgentService = {
@@ -106,4 +117,5 @@ export const AgentService = {
   getAgent,
   createAgent,
   updateAgent,
+  deleteAgent,
 };

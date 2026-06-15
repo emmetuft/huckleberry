@@ -14,7 +14,7 @@ import { handleResponse } from 'utils/service';
 
 const AI_SERVICE_ENDPOINT = '/api/ai';
 
-async function fetchModels(): Promise<AIModel[]> {
+async function getModels(): Promise<AIModel[]> {
   const response = await fetch(`${AI_SERVICE_ENDPOINT}/models`, {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
@@ -77,7 +77,7 @@ async function imageToText(request: ImageToTextRequest): Promise<string> {
 }
 
 export const DomoAIService = {
-  fetchModels,
+  getModels,
   generateText,
   imageToText,
 };

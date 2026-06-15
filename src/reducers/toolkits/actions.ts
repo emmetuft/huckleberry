@@ -12,5 +12,5 @@ export const fetchToolkits = createAsyncThunk<
   if (toolkits.length > 0) {
     return toolkits;
   }
-  return ToolkitsService.fetchToolkits();
+  return ToolkitsService.getToolkits();
 });

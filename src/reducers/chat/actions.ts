@@ -23,7 +23,7 @@ export const fetchDataSources = createAsyncThunk<
 
   const entries = await Promise.all(
     uncachedIds.map(async (id) => {
-      const datasource = await DataService.fetchDataSource(id);
+      const datasource = await DataService.getDataSource(id);
       return [id, datasource] as const;
     }),
   );
@@ -32,7 +32,7 @@ export const fetchDataSources = createAsyncThunk<
 
 export const fetchSessions = createAsyncThunk(
   'chat/fetchSessions',
-  AgentSessionService.getSessions,
+  HuckleberryService.getSessions,
 );
 
 export const fetchSession = createAsyncThunk(

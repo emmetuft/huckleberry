@@ -3,7 +3,7 @@ import { handleResponse } from 'utils/service';
 
 const GRAPH_DB_URL = '/api/graph';
 
-const fetchNodeModels = async <T = any>(): Promise<T[]> => {
+const getNodeModels = async <T = any>(): Promise<T[]> => {
   // TODO: Not implemented on server yet
   const response = await fetch(`${GRAPH_DB_URL}/nodes`, {
     method: 'GET',
@@ -11,7 +11,7 @@ const fetchNodeModels = async <T = any>(): Promise<T[]> => {
   return handleResponse<T[]>(response);
 };
 
-const fetchRelationshipModels = async <T = any>(): Promise<T[]> => {
+const getRelationshipModels = async <T = any>(): Promise<T[]> => {
   // TODO: Not implemented on server yet
   const response = await fetch(`${GRAPH_DB_URL}/nodes`, {
     method: 'GET',
@@ -24,7 +24,7 @@ interface FetchNodesInput {
   limit?: number;
 }
 
-const fetchNodes = async <T = any>({
+const getNodes = async <T = any>({
   filter,
   limit,
 }: FetchNodesInput): Promise<T[]> => {
@@ -35,7 +35,7 @@ const fetchNodes = async <T = any>({
   return handleResponse<T[]>(response);
 };
 
-const fetchNodeLabels = async <T = unknown>(): Promise<T[]> => {
+const getNodeLabels = async <T = unknown>(): Promise<T[]> => {
   // TODO: Not implemented on server yet
   const response = await fetch(`${GRAPH_DB_URL}/nodes`, {
     method: 'GET',
@@ -43,7 +43,7 @@ const fetchNodeLabels = async <T = unknown>(): Promise<T[]> => {
   return handleResponse<T[]>(response);
 };
 
-const fetchPropertyValues = async <T = unknown>(
+const getPropertyValues = async <T = unknown>(
   label: string,
   property: string,
   limit: number,
@@ -56,9 +56,9 @@ const fetchPropertyValues = async <T = unknown>(
 };
 
 export const GraphService = {
-  fetchNodeModels,
-  fetchRelationshipModels,
-  fetchNodes,
-  fetchNodeLabels,
-  fetchPropertyValues,
+  getNodeModels,
+  getRelationshipModels,
+  getNodes,
+  getNodeLabels,
+  getPropertyValues,
 };

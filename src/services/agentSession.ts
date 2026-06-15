@@ -1,3 +1,4 @@
+import { SearchFilter } from 'models/interfaces/search';
 import { AgentSession } from 'models/interfaces/session';
 import { AISessionEvent } from 'models/interfaces/sessionEvent';
 import { handleResponse } from 'utils/service';
@@ -7,11 +8,21 @@ const SESSION_API_BASE = '/api/sessions';
 /**
  * Retrieve all agent sessions
  */
-const getSessions = async (): Promise<AgentSession[]> => {
-  const response = await fetch(`${SESSION_API_BASE}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-  });
+const getSessions = async ({
+  agentId,
+  filters,
+}: {
+  agentId?: string;
+  filters?: SearchFilter[];
+}): Promise<AgentSession[]> => {
+  const response = await fetch(
+    `${SESSION_API_BASE}${agentId ? `?agentId=${agentId}` : ''}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ filters }),
+    },
+  );
 
   const data = await handleResponse<{
     pageContext: any;

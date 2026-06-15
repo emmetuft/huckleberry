@@ -10,7 +10,7 @@ interface FetchDataSourcesInput {
   searchTerm?: string;
 }
 
-const fetchDataSources = async ({
+const getDataSources = async ({
   page,
   size,
   searchTerm,
@@ -35,7 +35,7 @@ const fetchDataSources = async ({
   }
 };
 
-const fetchDataSource = async (
+const getDataSource = async (
   dataSourceId: string,
 ): Promise<{ dataSource: DataSource; columns: Column[] }> => {
   try {
@@ -60,7 +60,7 @@ interface FetchDataParams {
   pageSize: number;
 }
 
-const fetchDataSourceRows = async ({
+const getDataSourceRows = async ({
   dataSourceId,
   schema,
   page,
@@ -98,7 +98,7 @@ const formatRowsWithKeys = (schema: Column[], rows: string[][]) =>
   });
 
 export const DataService = {
-  fetchDataSources,
-  fetchDataSource,
-  fetchDataSourceRows,
+  getDataSources,
+  getDataSource,
+  getDataSourceRows,
 };

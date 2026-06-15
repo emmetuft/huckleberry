@@ -37,7 +37,7 @@ export function useChartData<T>({
     setLoading(true);
     setError(null);
     try {
-      const res = await DataService.fetchDataSourceRows({
+      const res = await DataService.getDataSourceRows({
         dataSourceId,
         schema,
         page: 1,

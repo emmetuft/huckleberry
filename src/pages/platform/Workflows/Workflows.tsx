@@ -30,7 +30,7 @@ export const Workflows: FC = () => {
         selectedTrigger,
         searchQuery,
       );
-      return WorkflowsService.fetchWorkflows(filters, limit, offset);
+      return WorkflowsService.getWorkflows(filters, limit, offset);
     },
     [activeTab, identity, selectedTrigger, searchQuery],
   );

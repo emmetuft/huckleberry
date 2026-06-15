@@ -15,7 +15,7 @@ import { parseFilterConditions } from 'utils/ontology';
 
 export const fetchAllNodeLabels = createAsyncThunk<string[]>(
   'ontology/fetchAllNodeLabels',
-  GraphService.fetchNodeLabels,
+  GraphService.getNodeLabels,
 );
 
 export const fetchNodes = createAsyncThunk<
@@ -42,7 +42,7 @@ export const fetchNodes = createAsyncThunk<
       ),
     };
 
-    const result = await GraphService.fetchNodes({
+    const result = await GraphService.getNodes({
       filter,
       limit,
     });

@@ -113,7 +113,7 @@ export const GraphControls: FC<GraphControlsProps> = ({ onPlaybackChange }) => {
     if (colonIdx === -1) return [];
     const nodeLabel = columnKey.substring(0, colonIdx);
     const property = columnKey.substring(colonIdx + 1);
-    const values = await GraphService.fetchPropertyValues(
+    const values = await GraphService.getPropertyValues(
       nodeLabel,
       property,
       VALUE_QUERY_LIMIT,

@@ -5,10 +5,10 @@ import { Column } from 'models/interfaces/column';
 
 export const fetchDataSourceList = createAsyncThunk(
   'datasource/fetchDataSourceList',
-  DataService.fetchDataSources,
+  DataService.getDataSources,
 );
 
 export const fetchDataSource = createAsyncThunk<
   { dataSource: DataSource; columns: Column[] },
   string
->('datasource/fetchDataSource', DataService.fetchDataSource);
+>('datasource/fetchDataSource', DataService.getDataSource);

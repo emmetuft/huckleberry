@@ -3,7 +3,7 @@ import { handleResponse } from 'utils/service';
 
 const CONNECTORS_API_BASE = '/api/connectors';
 
-const fetchConnectors = async (
+const getConnectors = async (
   filters: ConnectorFilter[],
   count: number = 51,
   offset: number = 0,
@@ -22,5 +22,5 @@ const fetchConnectors = async (
 };
 
 export const ConnectorsService = {
-  fetchConnectors,
+  getConnectors,
 };

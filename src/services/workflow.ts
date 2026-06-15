@@ -3,7 +3,7 @@ import { handleResponse } from 'utils/service';
 
 const WORKFLOWS_API_BASE = '/api/workflows';
 
-const fetchWorkflows = async (
+const getWorkflows = async (
   filters: WorkflowFilter[],
   count: number = 51,
   offset: number = 0,
@@ -22,5 +22,5 @@ const fetchWorkflows = async (
 };
 
 export const WorkflowsService = {
-  fetchWorkflows,
+  getWorkflows,
 };
