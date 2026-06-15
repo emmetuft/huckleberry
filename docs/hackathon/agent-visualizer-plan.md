@@ -20,12 +20,15 @@ Full schema: `~/dev/postman/mako.yaml` | Types: `src/models/interfaces/sessionEv
 - `PRODUCED_BY` — AssistantResponse → ActionCompleted outputs
 
 ### Graph Storage
-**Neo4j** (local Docker for dev, Aura for demo). One node per event, labeled by type. Edges: `CHILD_OF`, `TRIGGERED`, `PRODUCED_BY`.
+**Domo Graph DB** — internal graph database within the Domo platform. Mako writes events as nodes/edges at session time. Huckleberry proxies queries to the graph, consistent with its existing pattern of proxying to Domo services.
 
-Required for cross-session pattern queries and aggregation. Client-side graph build is insufficient for comparison view at scale.
+One node per event, labeled by type. Edges: `CHILD_OF`, `TRIGGERED`, `PRODUCED_BY`.
 
-### Ingest
-Pull-based: fetch session events on demand, batch-write to Neo4j. Retrospective only — no streaming.
+### Write Path (Mako)
+Mako writes events directly to the Domo graph DB during session execution. No separate ingest step — events are graph-native at creation time. Enriched edges (`TRIGGERED`, `PRODUCED_BY`) computed at write time.
+
+### Read Path (Huckleberry)
+Huckleberry server exposes a thin query API — canned Cypher for common views + flexible query support for the frontend.
 
 ### Timeline Collapse
 Show only `Completed` events (carries `durationMs` + output). Drop `Started` noise.
@@ -44,9 +47,9 @@ Show only `Completed` events (carries `durationMs` + output). Drop `Started` noi
 ### Need to Build (in `server.js`)
 | Route | Purpose | Day |
 |-------|---------|-----|
-| `POST /api/ingest/:sessionId` | Fetch events from Mako, batch-write to Neo4j | 1 |
-| `GET /api/graph/:sessionId` | Return node/edge structure from Neo4j for DAG view | 2 |
-| `POST /api/compare` | Accept session IDs, return aggregate stats from Neo4j | 3 |
+| `GET /api/graph/:sessionId` | Cypher query to Domo graph DB, return node/edge structure for DAG view | 1 |
+| `POST /api/graph/query` | Flexible Cypher passthrough (constrained subset) for ad-hoc exploration | 2 |
+| `POST /api/compare` | Canned aggregation across session IDs from graph DB | 3 |
 
 ---
 
@@ -84,18 +87,18 @@ Source: `AIServiceResponseEvent.serviceResponse` → `inputTokens`, `outputToken
 ### Dev A — Data & Backend
 | Day | Deliverable |
 |-----|-------------|
-| 1 | Neo4j Docker, connection in `server.js`, `POST /api/ingest/:sessionId`, batch-load real sessions |
-| 2 | Edge enrichment (TRIGGERED, PRODUCED_BY), `GET /api/graph/:sessionId`, Cypher aggregation queries |
-| 3 | `POST /api/compare` endpoint, heatmap data query |
+| 1 | Define graph schema (node labels, edge types, properties), coordinate Mako write integration, `GET /api/graph/:sessionId` with canned Cypher |
+| 2 | Edge enrichment logic in Mako (TRIGGERED, PRODUCED_BY), `POST /api/graph/query` with constrained Cypher |
+| 3 | `POST /api/compare` endpoint, heatmap aggregation query |
 | 4-5 | Pagination, perf tuning, demo data curation |
 
 ### Dev B — Frontend
 | Day | Deliverable |
 |-----|-------------|
-| 1 | Event→Node mapper (taxonomy + edges from `parentEventId`), Session Timeline component, session browse page |
-| 2 | DAG Explorer (React Flow + dagre, clone `ModelCanvas` patterns), click-to-trace, node detail panel |
-| 3 | Wire comparison dashboard to `/api/compare`, multi-session selector, token charts |
-| 4-5 | Integration, view transitions, edge cases, demo walkthrough |
+| 1 | Session browse page (from existing `/api/sessions`), session detail page scaffold |
+| 2 | Session observability view: event timeline table + token usage graph (from existing `/api/sessions/:id/events`), linked brushing |
+| 3 | Node taxonomy mapper (event→category/color), prepare DAG Explorer shell (React Flow + dagre), wire to graph API once contracts land |
+| 4-5 | Comparison view (once `/api/compare` is ready), integration, polish, demo walkthrough |
 
 ### Designer
 | Day | Deliverable |
@@ -107,7 +110,7 @@ Source: `AIServiceResponseEvent.serviceResponse` → `inputTokens`, `outputToken
 
 ### Dependency Handoffs
 ```
-Day 1 EOD → Dev A has Neo4j with data; Dev B swaps mocks for live
+Day 1 EOD → Dev A has graph schema defined + Mako writing events; Dev B swaps mocks for live queries
 Day 2 EOD → Designer delivers node specs; Dev B applies to DAG Explorer
 Day 3 AM  → Dev A's compare endpoint ready; Dev B wires dashboard
 ```
@@ -117,7 +120,6 @@ Day 3 AM  → Dev A's compare endpoint ready; Dev B wires dashboard
 ## Existing Infrastructure
 
 - `@xyflow/react` + `@dagrejs/dagre` — installed, proven in `Ontology/ModelCanvas`
-- `neo4j-driver@^6` — installed, no active connection
 - `src/utils/processStep.ts`, `conversationTurn.ts`, `sessionMessages.ts` — event processing utilities
 - `src/services/agentSession.ts` — session/event API client
-- `server.js` — bare ViteExpress, no routes yet
+- `server.js` — bare ViteExpress, proxies to Domo services
