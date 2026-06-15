@@ -5,12 +5,12 @@ import { toast } from 'sonner';
 import { Button, Select, Spin } from 'antd';
 import styles from './AgentEdit.module.css';
 import { useAppDispatch } from 'reducers';
+import { selectAgents, selectLoadingAgentId } from 'reducers/agents/slice';
 import {
-  selectAgents,
-  selectLoadingAgentId,
-  selectUpserting,
-} from 'reducers/agents/slice';
-import { fetchAgentById, upsertCustomAgent } from 'reducers/agents/actions';
+  createCustomAgent,
+  fetchAgentById,
+  updateCustomAgent,
+} from 'reducers/agents/actions';
 import { AGENT_FORM_FIELDS, AgentStep } from 'constants/agent';
 import { AccessEntry } from 'models/enums/permission';
 import { Agent } from 'models/interfaces/agent';
@@ -89,19 +89,33 @@ export const AgentEdit: FC = () => {
       return;
     }
 
-    const result = await dispatch(
-      upsertCustomAgent({
-        id: agentId,
-        name,
-        description,
-        prompt,
-        systemMessage,
-        model,
-        toolkitIds: [],
-      }),
-    );
-    if (upsertCustomAgent.fulfilled.match(result)) {
-      toast.success(`Agent ${isNewAgent ? 'created' : 'updated'} successfully`);
+    const isEditing = agent !== null;
+
+    if (isEditing) {
+      dispatch(
+        updateCustomAgent({
+          ...agent,
+          name,
+          description,
+          prompt,
+          systemMessage,
+          model,
+          toolkitIds: agentForm.toolkitIds ?? agent.toolkitIds ?? [],
+          context: agentForm.context ?? agent.context,
+        }),
+      );
+    } else {
+      dispatch(
+        createCustomAgent({
+          id: 'new',
+          name,
+          description,
+          prompt,
+          systemMessage,
+          model,
+          toolkitIds: [],
+        }),
+      );
     }
   };
 
@@ -132,12 +146,7 @@ export const AgentEdit: FC = () => {
               navigate(`/agents/${value}/edit`);
             }}
           />
-          <Button
-            shape="round"
-            type="primary"
-            onClick={handleSubmit}
-            loading={upserting}
-          >
+          <Button shape="round" type="primary" onClick={handleSubmit}>
             Save
           </Button>
         </div>

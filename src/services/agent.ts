@@ -84,12 +84,11 @@ const createAgent = async (agent: Agent): Promise<Agent> => {
  * Update an existing agent
  */
 const updateAgent = async (agent: Agent): Promise<Agent> => {
-  const payload: AgentPayload = {
+  const payload = {
     name: agent.name,
     description: agent.description,
     prompt: agent.prompt,
     systemMessage: agent.systemMessage,
-    model: agent.model,
     context: agent.context,
     toolkitIds: agent.toolkitIds,
   };

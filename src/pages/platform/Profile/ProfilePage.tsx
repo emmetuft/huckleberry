@@ -1,10 +1,25 @@
-import { FC } from 'react';
-import { Tabs, TabsProps } from 'antd';
+import { FC, useState } from 'react';
+import { Button, Modal, Tabs, TabsProps } from 'antd';
+import { useNavigate } from 'react-router-dom';
+import { AuthService } from 'services/auth';
 import { AccountsTab } from 'pages/platform/Profile/AccountsTab/AccountsTab';
 import { SettingsTab } from 'pages/platform/Profile/SettingsTab/SettingsTab';
 import { PersonaTab } from './PersonaTab/PersonaTab';
 
 export const ProfilePage: FC = () => {
+  const navigate = useNavigate();
+  const [logoutModalOpen, setLogoutModalOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    try {
+      await AuthService.logout();
+    } finally {
+      navigate('/login');
+    }
+  };
+
   const tabItems: TabsProps['items'] = [
     {
       key: 'persona',
@@ -26,6 +41,22 @@ export const ProfilePage: FC = () => {
   return (
     <div className="platformPage">
       <Tabs items={tabItems} />
+      <div style={{ marginTop: 24 }}>
+        <Button danger onClick={() => setLogoutModalOpen(true)}>
+          Sign out
+        </Button>
+      </div>
+
+      <Modal
+        title="Sign out"
+        open={logoutModalOpen}
+        onOk={handleLogout}
+        onCancel={() => setLogoutModalOpen(false)}
+        okText="Sign out"
+        okButtonProps={{ danger: true, loading: loggingOut }}
+      >
+        <p>Are you sure you want to sign out?</p>
+      </Modal>
     </div>
   );
 };
