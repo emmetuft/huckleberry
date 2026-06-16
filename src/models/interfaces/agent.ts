@@ -16,7 +16,7 @@ export interface Agent {
   permission?: Permission;
   settings?: any;
   uiSettings?: any;
-  theme: any;
+  theme?: any;
   created?: string;
   createdBy?: number;
   updated?: string;

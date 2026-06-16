@@ -1,16 +1,19 @@
 import { createAppSlice } from '../createAppSlice';
 import {
-  createCustomAgent,
+  deleteCustomAgent,
   fetchAgentById,
   fetchAgents,
   fetchAIModels,
-  updateCustomAgent,
+  fetchSessions,
+  upsertCustomAgent,
 } from './actions';
 import { Agent } from 'models/interfaces/agent';
 import { AIModel } from 'models/interfaces/aiModel';
+import { AgentSession } from 'models/interfaces/session';
 
 interface AgentsState {
   agents: Agent[];
+  agentSessions: AgentSession[];
   aiModels: AIModel[];
   loading: boolean;
   loadingAgentId: string | null;
@@ -20,6 +23,7 @@ interface AgentsState {
 
 const initialState: AgentsState = {
   agents: [],
+  agentSessions: [],
   aiModels: [],
   loading: false,
   loadingAgentId: null,
@@ -44,46 +48,51 @@ export const AgentsSlice = createAppSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchAgents.fulfilled, (state, action) => {
-        state.loading = false;
-        state.agents = action.payload;
-      })
       .addCase(fetchAgents.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch agents';
       })
+      .addCase(fetchAgents.fulfilled, (state, action) => {
+        state.loading = false;
+        state.agents = action.payload;
+      })
+      .addCase(fetchSessions.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchSessions.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to fetch sessions';
+      })
+      .addCase(fetchSessions.fulfilled, (state, action) => {
+        state.loading = false;
+        state.agentSessions = action.payload;
+      })
       .addCase(fetchAIModels.fulfilled, (state, action) => {
         state.aiModels = action.payload;
       })
-      .addCase(createCustomAgent.pending, (state, action) => {
+      .addCase(upsertCustomAgent.pending, (state) => {
         state.upserting = true;
         state.error = null;
       })
-      .addCase(createCustomAgent.rejected, (state, action) => {
+      .addCase(upsertCustomAgent.rejected, (state, action) => {
         state.upserting = false;
-        state.error = action.error.message || 'Failed to create agent';
+        state.error = action.error.message || 'Failed to save agent';
       })
-      .addCase(createCustomAgent.fulfilled, (state, action) => {
-        state.upserting = false;
-        state.agents.push(action.payload);
-      })
-      .addCase(updateCustomAgent.pending, (state, action) => {
-        state.upserting = true;
-        state.error = null;
-      })
-      .addCase(updateCustomAgent.rejected, (state, action) => {
-        state.upserting = false;
-        state.error = action.error.message || 'Failed to update agent';
-      })
-      .addCase(updateCustomAgent.fulfilled, (state, action) => {
+      .addCase(upsertCustomAgent.fulfilled, (state, action) => {
         state.upserting = false;
         const index = state.agents.findIndex((a) => a.id === action.payload.id);
         if (index !== -1) {
           state.agents[index] = action.payload;
+        } else {
+          state.agents.push(action.payload);
         }
       })
       .addCase(fetchAgentById.pending, (state, action) => {
         state.loadingAgentId = action.meta.arg;
+      })
+      .addCase(fetchAgentById.rejected, (state) => {
+        state.loadingAgentId = null;
       })
       .addCase(fetchAgentById.fulfilled, (state, action) => {
         state.loadingAgentId = null;
@@ -92,12 +101,14 @@ export const AgentsSlice = createAppSlice({
           state.agents.push(action.payload);
         }
       })
-      .addCase(fetchAgentById.rejected, (state) => {
-        state.loadingAgentId = null;
+      .addCase(deleteCustomAgent.fulfilled, (state, action) => {
+        const agentId = action.payload;
+        state.agents = state.agents.filter((a) => a.id !== agentId);
       });
   },
   selectors: {
     selectAgents: (state: AgentsState) => state.agents,
+    selectAgentSessions: (state: AgentsState) => state.agentSessions,
     selectAIModels: (state: AgentsState) => state.aiModels,
     selectLoading: (state: AgentsState) => state.loading,
     selectLoadingAgentId: (state: AgentsState) => state.loadingAgentId,
@@ -110,6 +121,7 @@ export const { setAgents, clearError } = AgentsSlice.actions;
 
 export const {
   selectAgents,
+  selectAgentSessions,
   selectAIModels,
   selectLoading,
   selectLoadingAgentId,

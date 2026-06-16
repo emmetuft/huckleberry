@@ -315,7 +315,18 @@ interface AIServiceRequestEvent extends AISessionEventBase {
 interface AIServiceResponseEvent extends AISessionEventBase {
   type: AISessionEventType.AI_SERVICE_RESPONSE;
   service: string;
-  serviceResponse: unknown;
+  serviceResponse: {
+    modelId: string;
+    modelProviderUsage: {
+      inputTokens: number;
+      outputTokens: number;
+      totalTokens: number;
+    };
+    output: string;
+    prompt: string;
+    requestId: string;
+    sessionId: string;
+  };
   durationMs?: number;
 }
 

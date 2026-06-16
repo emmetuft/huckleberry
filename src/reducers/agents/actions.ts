@@ -40,16 +40,12 @@ export const fetchAgentById = createAsyncThunk<
   return AgentService.getAgent(agentId);
 });
 
-export const createCustomAgent = createAsyncThunk<Agent, Agent>(
-  'agents/createCustomAgent',
+export const upsertCustomAgent = createAsyncThunk<Agent, Agent>(
+  'agents/upsertCustomAgent',
   async (agent) => {
-    return AgentService.createAgent(agent);
-  },
-);
-
-export const updateCustomAgent = createAsyncThunk<Agent, Agent>(
-  'agents/updateCustomAgent',
-  async (agent) => {
+    if (agent.id === 'new') {
+      return AgentService.createAgent(agent);
+    }
     return AgentService.updateAgent(agent);
   },
 );

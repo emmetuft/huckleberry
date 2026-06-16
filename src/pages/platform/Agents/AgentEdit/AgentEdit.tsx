@@ -1,11 +1,16 @@
 import { FC, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 import { Button, Select, Spin } from 'antd';
 import styles from './AgentEdit.module.css';
 import { useAppDispatch } from 'reducers';
-import { selectAgents, selectLoadingAgentId } from 'reducers/agents/slice';
-import { createCustomAgent, fetchAgentById } from 'reducers/agents/actions';
+import {
+  selectAgents,
+  selectLoadingAgentId,
+  selectUpserting,
+} from 'reducers/agents/slice';
+import { fetchAgentById, upsertCustomAgent } from 'reducers/agents/actions';
 import { AGENT_FORM_FIELDS, AgentStep } from 'constants/agent';
 import { AccessEntry } from 'models/enums/permission';
 import { Agent } from 'models/interfaces/agent';
@@ -21,6 +26,7 @@ export const AgentEdit: FC = () => {
   const navigate = useNavigate();
   const agents = useSelector(selectAgents);
   const loadingAgentId = useSelector(selectLoadingAgentId);
+  const upserting = useSelector(selectUpserting);
 
   const [currentStep, setCurrentStep] = useState<AgentStep>(AgentStep.Persona);
   const [agentForm, setAgentForm] = useState<AgentFormState>({});
@@ -31,9 +37,9 @@ export const AgentEdit: FC = () => {
   const [usersAndGroups, setUsersAndGroups] = useState<AccessEntry[]>([]);
 
   const { agentId } = useParams<{ agentId: string }>();
+  const isNewAgent = agentId === 'new';
 
   const agent = useMemo(() => {
-    const isNewAgent = agentId === 'new';
     const currAgent = isNewAgent
       ? null
       : (agents.find((a) => a.id === agentId) ?? null);
@@ -74,7 +80,8 @@ export const AgentEdit: FC = () => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    if (!agentId) return;
     const { name, description, prompt, systemMessage, model } = agentForm;
 
     if (!name || !description || !prompt || !systemMessage || !model) {
@@ -82,9 +89,9 @@ export const AgentEdit: FC = () => {
       return;
     }
 
-    dispatch(
-      createCustomAgent({
-        id: 'new',
+    const result = await dispatch(
+      upsertCustomAgent({
+        id: agentId,
         name,
         description,
         prompt,
@@ -93,6 +100,9 @@ export const AgentEdit: FC = () => {
         toolkitIds: [],
       }),
     );
+    if (upsertCustomAgent.fulfilled.match(result)) {
+      toast.success(`Agent ${isNewAgent ? 'created' : 'updated'} successfully`);
+    }
   };
 
   if (loadingAgentId === agentId) {
@@ -122,7 +132,12 @@ export const AgentEdit: FC = () => {
               navigate(`/agents/${value}/edit`);
             }}
           />
-          <Button shape="round" type="primary">
+          <Button
+            shape="round"
+            type="primary"
+            onClick={handleSubmit}
+            loading={upserting}
+          >
             Save
           </Button>
         </div>

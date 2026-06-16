@@ -1,0 +1,78 @@
+.sessionOverview {
+  display: flex;
+  gap: var(--space-2xl);
+  height: 100%;
+
+  .left {
+    flex: 1;
+    padding: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+
+  .right {
+    flex: 1;
+    padding: var(--space-md);
+    background-color: var(--grey-bg);
+    border-radius: var(--br-md);
+  }
+
+  .sessionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .tagWrapper {
+    display: flex;
+    gap: var(--space-sm);
+
+    .tagLabel {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--grey-text);
+      margin-right: var(--space-xs);
+    }
+
+    .tagValue {
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 400;
+    }
+  }
+
+  .priceEstimate {
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-md);
+    background-color: var(--success-bg);
+    border-radius: var(--br-md);
+  }
+
+  .chartTitle {
+    margin-bottom: var(--space-md);
+    font-weight: 600;
+  }
+
+  .chartLegend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    padding-top: var(--space-xs);
+
+    .chartLegendItem {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+      font-size: 12px;
+      color: var(--grey-text);
+    }
+
+    .chartLegendSwatch {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+  }
+}
