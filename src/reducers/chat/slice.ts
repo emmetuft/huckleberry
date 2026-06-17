@@ -30,6 +30,7 @@ interface State {
   error: string | null;
   streamingTurnId: string | null;
   sessionId?: string;
+  agentId?: string;
 }
 
 const initialState: State = {
@@ -78,6 +79,7 @@ export const ChatSlice = createAppSlice({
       state.turns = [];
       state.error = null;
       state.sessionId = undefined;
+      state.agentId = undefined;
       state.streamingTurnId = null;
     }),
     applyStreamEvent: create.reducer(
@@ -108,6 +110,11 @@ export const ChatSlice = createAppSlice({
     setSessionId: create.reducer((state, action: { payload: string }) => {
       state.sessionId = action.payload;
     }),
+    setAgentId: create.reducer(
+      (state, action: { payload: string | undefined }) => {
+        state.agentId = action.payload;
+      },
+    ),
   }),
   extraReducers: (builder) => {
     builder
@@ -131,8 +138,6 @@ export const ChatSlice = createAppSlice({
         state.loading = false;
         state.sessionId = payload.id;
         state.turns = sessionEventsToMessages(payload.events ?? []);
-        state.error = null;
-        state.streamingTurnId = null;
       })
       // Delete agent session
       .addCase(deleteSession.fulfilled, (state, { meta }) => {
@@ -201,6 +206,7 @@ export const ChatSlice = createAppSlice({
     selectLoading: (state: State) => state.loading,
     selectError: (state: State) => state.error,
     selectSessionId: (state: State) => state.sessionId,
+    selectAgentId: (state: State) => state.agentId,
   },
 });
 
@@ -209,6 +215,7 @@ export const {
   applyStreamEvent,
   toggleProcessStep,
   setSessionId,
+  setAgentId,
 } = ChatSlice.actions;
 
 export const {
@@ -219,6 +226,7 @@ export const {
   selectLoading,
   selectError,
   selectSessionId,
+  selectAgentId,
 } = ChatSlice.selectors;
 
 export default ChatSlice.reducer;

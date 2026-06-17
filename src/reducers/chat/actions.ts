@@ -9,6 +9,7 @@ import {
 } from 'models/interfaces/userRequest';
 import { applyStreamEvent, setSessionId } from './slice';
 import { AgentSessionService } from 'services/agentSession';
+import { AgentStreamService } from 'services/agentStream';
 import { DataService } from 'services/data';
 import { HuckleberryService } from 'services/huckleberry';
 
@@ -75,11 +76,12 @@ export const executeStream = createAsyncThunk<
   },
   { state: RootState }
 >('chat/executeStream', async (params, { getState, dispatch }) => {
-  const { sessionId } = getState().chat;
+  const { sessionId, agentId } = getState().chat;
 
-  for await (const event of HuckleberryService.executeStream(
+  for await (const event of AgentStreamService.executeStream(
     params,
     sessionId,
+    agentId,
   )) {
     handleStreamEvent(event, dispatch, sessionId);
   }
@@ -99,7 +101,7 @@ export const resumeStream = createAsyncThunk<
 >(
   'chat/resumeStream',
   async ({ batchId, requestId, responses }, { getState, dispatch }) => {
-    const { sessionId } = getState().chat;
+    const { sessionId, agentId } = getState().chat;
 
     if (!sessionId || !batchId) {
       throw new Error('Session ID or batch ID missing');
@@ -112,9 +114,10 @@ export const resumeStream = createAsyncThunk<
       responseItems: responses,
     };
 
-    for await (const event of HuckleberryService.resumeStream(
+    for await (const event of AgentStreamService.resumeStream(
       params,
       sessionId,
+      agentId,
     )) {
       handleStreamEvent(event, dispatch, sessionId);
     }
