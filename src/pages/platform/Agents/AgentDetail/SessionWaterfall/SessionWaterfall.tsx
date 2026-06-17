@@ -290,9 +290,13 @@ const WaterfallChart: FC<{
 
 interface SessionWaterfallProps {
   events: AISessionEvent[];
+  loading: boolean;
 }
 
-export const SessionWaterfall: FC<SessionWaterfallProps> = ({ events }) => {
+export const SessionWaterfall: FC<SessionWaterfallProps> = ({
+  events,
+  loading,
+}) => {
   const [activeRequestId, setActiveRequestId] = useState<string | null>(null);
   const [selectedRowKey, setSelectedRowKey] = useState<string | null>(null);
 

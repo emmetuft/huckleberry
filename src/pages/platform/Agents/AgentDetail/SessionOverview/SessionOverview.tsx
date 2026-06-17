@@ -21,10 +21,14 @@ import {
   AISessionEventType,
 } from 'models/interfaces/sessionEvent';
 import { formatDuration, formatCompactNumber } from 'utils/datetime';
+import { ForceGraph } from 'pages/platform/Ontology/GraphExploration/ForceGraph';
+import { selectGraphData } from 'reducers/ontology/slice';
+import { GraphPlayback } from 'pages/platform/Ontology/GraphExploration/GraphControls/GraphPlayback/GraphPlayback';
 
 interface SessionOverviewProps {
   agentSession: AgentSession | null;
   sessionEvents: AISessionEvent[];
+  loading: boolean;
 }
 
 interface ModelProviderUsage {
@@ -40,9 +44,11 @@ interface ServiceResponsePayload {
 export const SessionOverview: FC<SessionOverviewProps> = ({
   agentSession,
   sessionEvents,
+  loading,
 }) => {
   const agents = useSelector(selectAgents);
   const models = useSelector(selectAIModels);
+  const graphData = useSelector(selectGraphData);
 
   const agent =
     agents.find((a) => a.id === agentSession?.groupEntityId) ?? null;
@@ -175,7 +181,12 @@ export const SessionOverview: FC<SessionOverviewProps> = ({
           </div>
         )}
       </div>
-      <div className={styles.right}></div>
+      <div className={styles.right}>
+        <div className={styles.playbackWrapper}>
+          <GraphPlayback isOpen onPlaybackChange={() => {}} />
+        </div>
+        <ForceGraph data={graphData} mode="2d" />
+      </div>
     </div>
   );
 };

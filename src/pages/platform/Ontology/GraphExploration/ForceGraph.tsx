@@ -1,4 +1,10 @@
-import React, { useCallback, useMemo, useRef, useEffect } from 'react';
+import React, {
+  useCallback,
+  useMemo,
+  useRef,
+  useEffect,
+  useState,
+} from 'react';
 import { useSelector } from 'react-redux';
 import ForceGraph3D from 'react-force-graph-3d';
 import ForceGraph2D from 'react-force-graph-2d';
@@ -42,6 +48,22 @@ export const ForceGraph: React.FC<ForceGraphProps> = ({
   const highlightedNodeId = useSelector(selectHighlightedNodeId);
 
   const graphRef = useRef<any>();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [dimensions, setDimensions] = useState<{
+    width: number;
+    height: number;
+  } | null>(null);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect;
+      setDimensions({ width, height });
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   const graphData = useMemo(() => {
     const d3Nodes: D3Node[] = data.nodes.map((node) => ({
@@ -136,40 +158,45 @@ export const ForceGraph: React.FC<ForceGraphProps> = ({
     linkDirectionalParticleWidth: 2,
     linkDirectionalParticleSpeed: 0.005,
     onEngineStop: handleEngineStop,
+    ...(dimensions ?? {}),
   };
 
   if (mode === '2d') {
     return (
-      <ForceGraph2D
-        {...sharedProps}
-        nodeCanvasObjectMode={() => 'after'}
-        nodeCanvasObject={(
-          node: any,
-          ctx: CanvasRenderingContext2D,
-          globalScale: number,
-        ) => {
-          const label = node.name;
-          const fontSize = 12 / globalScale;
-          ctx.font = `${fontSize}px Sans-Serif`;
-          ctx.fillStyle = getNodeColor(node);
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'top';
-          ctx.fillText(label, node.x, node.y + 6);
-        }}
-      />
+      <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
+        <ForceGraph2D
+          {...sharedProps}
+          nodeCanvasObjectMode={() => 'after'}
+          nodeCanvasObject={(
+            node: any,
+            ctx: CanvasRenderingContext2D,
+            globalScale: number,
+          ) => {
+            const label = node.name;
+            const fontSize = 12 / globalScale;
+            ctx.font = `${fontSize}px Sans-Serif`;
+            ctx.fillStyle = getNodeColor(node);
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            ctx.fillText(label, node.x, node.y + 6);
+          }}
+        />
+      </div>
     );
   }
 
   return (
-    <ForceGraph3D
-      {...sharedProps}
-      nodeThreeObjectExtend={true}
-      nodeThreeObject={(node: any) => {
-        const sprite = new SpriteText(node.name);
-        sprite.color = getNodeColor(node);
-        sprite.position.y = 8;
-        return sprite;
-      }}
-    />
+    <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
+      <ForceGraph3D
+        {...sharedProps}
+        nodeThreeObjectExtend={true}
+        nodeThreeObject={(node: any) => {
+          const sprite = new SpriteText(node.name);
+          sprite.color = getNodeColor(node);
+          sprite.position.y = 8;
+          return sprite;
+        }}
+      />
+    </div>
   );
 };

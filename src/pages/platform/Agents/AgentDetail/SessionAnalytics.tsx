@@ -15,15 +15,17 @@ export const SessionAnalytics: FC<SessionAnalyticsProps> = ({
   agentSession,
 }) => {
   const [sessionEvents, setSessionEvents] = useState<AISessionEvent[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (!agentSession) {
       setSessionEvents([]);
       return;
     }
-    AgentSessionService.getSessionEvents(agentSession.id).then(
-      setSessionEvents,
-    );
+    setLoading(true);
+    AgentSessionService.getSessionEvents(agentSession.id)
+      .then(setSessionEvents)
+      .finally(() => setLoading(false));
   }, [agentSession?.id]);
 
   if (tab === 'overview') {
@@ -31,9 +33,10 @@ export const SessionAnalytics: FC<SessionAnalyticsProps> = ({
       <SessionOverview
         agentSession={agentSession}
         sessionEvents={sessionEvents}
+        loading={loading}
       />
     );
   } else {
-    return <SessionWaterfall events={sessionEvents} />;
+    return <SessionWaterfall events={sessionEvents} loading={loading} />;
   }
 };
