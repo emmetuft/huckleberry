@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { toast } from 'sonner';
 import { Button, Tag, Tooltip as AntTooltip } from 'antd';
@@ -50,6 +50,10 @@ export const SessionOverview: FC<SessionOverviewProps> = ({
   const models = useSelector(selectAIModels);
   const graphData = useSelector(selectGraphData);
 
+  const [visibleNodeIds, setVisibleNodeIds] = useState<Set<string> | null>(
+    null,
+  );
+
   const agent =
     agents.find((a) => a.id === agentSession?.groupEntityId) ?? null;
 
@@ -83,6 +87,15 @@ export const SessionOverview: FC<SessionOverviewProps> = ({
     inputTokens: e.serviceResponse?.modelProviderUsage?.inputTokens ?? 0,
     outputTokens: e.serviceResponse?.modelProviderUsage?.outputTokens ?? 0,
   }));
+
+  const filteredGraphData = useMemo(() => {
+    if (!visibleNodeIds) return graphData;
+    const nodes = graphData.nodes.filter((n) => visibleNodeIds.has(n.id));
+    const edges = graphData.edges.filter(
+      (e) => visibleNodeIds.has(e.source) && visibleNodeIds.has(e.target),
+    );
+    return { nodes, edges };
+  }, [graphData, visibleNodeIds]);
 
   const handleClickCopy = () => {
     navigator.clipboard.writeText(agentSession?.id ?? '');
@@ -127,6 +140,11 @@ export const SessionOverview: FC<SessionOverviewProps> = ({
         </div>
         <div className={styles.priceEstimate}>
           <p>Price estimate</p>
+          <p className={styles.priceFormula}>
+            [Per unit price of selected model] ÷ [Contract Rate for standard
+            credits specified in the applicable Service Order ] = [X] credits
+            per million tokens
+          </p>
         </div>
         {tokenChartData.length > 0 && (
           <div>
@@ -183,9 +201,13 @@ export const SessionOverview: FC<SessionOverviewProps> = ({
       </div>
       <div className={styles.right}>
         <div className={styles.playbackWrapper}>
-          <GraphPlayback isOpen onPlaybackChange={() => {}} />
+          <GraphPlayback
+            nodes={graphData.nodes}
+            isOpen
+            onPlaybackChange={setVisibleNodeIds}
+          />
         </div>
-        <ForceGraph data={graphData} mode="2d" />
+        <ForceGraph data={filteredGraphData} mode="2d" />
       </div>
     </div>
   );

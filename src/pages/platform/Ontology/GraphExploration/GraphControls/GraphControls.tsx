@@ -197,6 +197,7 @@ export const GraphControls: FC<GraphControlsProps> = ({ onPlaybackChange }) => {
         className={`${styles.playbackDrawer} ${playbackOpen ? styles.open : ''}`}
       >
         <GraphPlayback
+          nodes={graphData.nodes}
           isOpen={playbackOpen}
           onPlaybackChange={onPlaybackChange}
         />

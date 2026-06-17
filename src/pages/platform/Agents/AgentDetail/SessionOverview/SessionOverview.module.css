@@ -49,6 +49,10 @@
     padding: var(--space-md);
     background-color: var(--success-bg);
     border-radius: var(--br-md);
+
+    .priceFormula {
+      font-family: 'IBM Plex Mono', monospace;
+    }
   }
 
   .chartTitle {

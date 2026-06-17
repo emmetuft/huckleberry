@@ -6,10 +6,11 @@ import {
   ArrowCounterClockwiseIcon,
 } from '@phosphor-icons/react';
 import styles from './GraphPlayback.module.css';
-import { PEOPLE_SKILLS_GRAPH } from 'constants/graph';
+import { GraphNode } from 'models/interfaces/ontology';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
 
 interface GraphPlaybackProps {
+  nodes: GraphNode[];
   isOpen: boolean;
   onPlaybackChange: (visibleNodeIds: Set<string> | null) => void;
 }
@@ -19,11 +20,10 @@ const PLAYBACK_SPEED = 60;
 const TICK_MS = 50;
 
 export const GraphPlayback: React.FC<GraphPlaybackProps> = ({
+  nodes,
   isOpen,
   onPlaybackChange,
 }) => {
-  const nodes = PEOPLE_SKILLS_GRAPH.nodes;
-
   const sortedNodes = useMemo(
     () =>
       nodes
