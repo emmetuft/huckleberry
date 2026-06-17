@@ -1,3 +1,4 @@
+import { apiFetch } from 'services/headers';
 import { Agent } from 'models/interfaces/agent';
 import { handleResponse } from 'utils/service';
 import { PeopleService } from 'services/people';
@@ -12,7 +13,7 @@ const getAgents = async (
   offset: number = 0,
   filters?: { type: string; values: any[] }[],
 ): Promise<Agent[]> => {
-  const response = await fetch(`${AGENT_API_BASE}/search`, {
+  const response = await apiFetch(`${AGENT_API_BASE}/search`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ limit, offset, filters }),
@@ -43,7 +44,7 @@ const getAgents = async (
  * Retrieve an agent by ID
  */
 const getAgent = async (agentId: string): Promise<Agent> => {
-  const response = await fetch(`${AGENT_API_BASE}/${agentId}`);
+  const response = await apiFetch(`${AGENT_API_BASE}/${agentId}`);
   return handleResponse<Agent>(response);
 };
 interface AgentPayload {
@@ -71,7 +72,7 @@ const createAgent = async (agent: Agent): Promise<Agent> => {
     toolkitIds: agent.toolkitIds,
   };
 
-  const response = await fetch(AGENT_API_BASE, {
+  const response = await apiFetch(AGENT_API_BASE, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -93,7 +94,7 @@ const updateAgent = async (agent: Agent): Promise<Agent> => {
     toolkitIds: agent.toolkitIds,
   };
 
-  const response = await fetch(`${AGENT_API_BASE}/${agent.id}`, {
+  const response = await apiFetch(`${AGENT_API_BASE}/${agent.id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -106,7 +107,7 @@ const updateAgent = async (agent: Agent): Promise<Agent> => {
  * Delete an agent by ID
  */
 const deleteAgent = async (agentId: string): Promise<void> => {
-  await fetch(`${AGENT_API_BASE}/${agentId}`, {
+  await apiFetch(`${AGENT_API_BASE}/${agentId}`, {
     method: 'DELETE',
   });
 };

@@ -1,3 +1,4 @@
+import { apiFetch } from 'services/headers';
 import {
   MCPServerConfig,
   MCPServerCreateInput,
@@ -15,7 +16,7 @@ const MCP_API_BASE = '/api/mcp';
 export const createServer = async (
   input: MCPServerCreateInput,
 ): Promise<MCPServerConfig> => {
-  const response = await fetch(`${MCP_API_BASE}/servers`, {
+  const response = await apiFetch(`${MCP_API_BASE}/servers`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
@@ -29,12 +30,12 @@ export const getServers = async (
   const url = enabledOnly
     ? `${MCP_API_BASE}/servers?enabled=true`
     : `${MCP_API_BASE}/servers`;
-  const response = await fetch(url);
+  const response = await apiFetch(url);
   return handleResponse<MCPServerConfig[]>(response);
 };
 
 export const getServer = async (id: string): Promise<MCPServerConfig> => {
-  const response = await fetch(`${MCP_API_BASE}/servers/${id}`);
+  const response = await apiFetch(`${MCP_API_BASE}/servers/${id}`);
   return handleResponse<MCPServerConfig>(response);
 };
 
@@ -42,7 +43,7 @@ export const updateServer = async (
   id: string,
   input: MCPServerUpdateInput,
 ): Promise<MCPServerConfig> => {
-  const response = await fetch(`${MCP_API_BASE}/servers/${id}`, {
+  const response = await apiFetch(`${MCP_API_BASE}/servers/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
@@ -53,7 +54,7 @@ export const updateServer = async (
 export const deleteServer = async (
   id: string,
 ): Promise<{ deleted: boolean }> => {
-  const response = await fetch(`${MCP_API_BASE}/servers/${id}`, {
+  const response = await apiFetch(`${MCP_API_BASE}/servers/${id}`, {
     method: 'DELETE',
   });
   return handleResponse<{ deleted: boolean }>(response);
@@ -62,7 +63,7 @@ export const deleteServer = async (
 export const testServerConnection = async (
   id: string,
 ): Promise<MCPTestConnectionResult> => {
-  const response = await fetch(`${MCP_API_BASE}/servers/${id}/test`, {
+  const response = await apiFetch(`${MCP_API_BASE}/servers/${id}/test`, {
     method: 'POST',
   });
   return handleResponse<MCPTestConnectionResult>(response);
@@ -71,7 +72,7 @@ export const testServerConnection = async (
 export const syncServerTools = async (
   id: string,
 ): Promise<{ server: MCPServerConfig; toolCount: number }> => {
-  const response = await fetch(`${MCP_API_BASE}/servers/${id}/sync`, {
+  const response = await apiFetch(`${MCP_API_BASE}/servers/${id}/sync`, {
     method: 'POST',
   });
   return handleResponse<{ server: MCPServerConfig; toolCount: number }>(
@@ -83,7 +84,7 @@ export const toggleServer = async (
   id: string,
   enabled: boolean,
 ): Promise<MCPServerConfig> => {
-  const response = await fetch(`${MCP_API_BASE}/servers/${id}/toggle`, {
+  const response = await apiFetch(`${MCP_API_BASE}/servers/${id}/toggle`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ enabled }),
@@ -92,7 +93,7 @@ export const toggleServer = async (
 };
 
 export const getTools = async (): Promise<MCPToolDefinition[]> => {
-  const response = await fetch(`${MCP_API_BASE}/tools`);
+  const response = await apiFetch(`${MCP_API_BASE}/tools`);
   return handleResponse<MCPToolDefinition[]>(response);
 };
 
@@ -101,7 +102,7 @@ export const executeTool = async (
   toolName: string,
   params?: Record<string, unknown>,
 ): Promise<MCPToolResult> => {
-  const response = await fetch(`${MCP_API_BASE}/tools/execute`, {
+  const response = await apiFetch(`${MCP_API_BASE}/tools/execute`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ serverId, toolName, params }),
@@ -132,14 +133,16 @@ export interface OAuth2DiscoveryResponse {
 export const initiateOAuth2 = async (
   serverId: string,
 ): Promise<OAuth2AuthorizationResponse> => {
-  const response = await fetch(`${MCP_API_BASE}/oauth2/authorize/${serverId}`);
+  const response = await apiFetch(
+    `${MCP_API_BASE}/oauth2/authorize/${serverId}`,
+  );
   return handleResponse<OAuth2AuthorizationResponse>(response);
 };
 
 export const revokeOAuth2 = async (
   serverId: string,
 ): Promise<{ revoked: boolean }> => {
-  const response = await fetch(`${MCP_API_BASE}/oauth2/revoke/${serverId}`, {
+  const response = await apiFetch(`${MCP_API_BASE}/oauth2/revoke/${serverId}`, {
     method: 'POST',
   });
   return handleResponse<{ revoked: boolean }>(response);
@@ -148,16 +151,19 @@ export const revokeOAuth2 = async (
 export const getOAuth2Status = async (
   serverId: string,
 ): Promise<OAuth2StatusResponse> => {
-  const response = await fetch(`${MCP_API_BASE}/oauth2/status/${serverId}`);
+  const response = await apiFetch(`${MCP_API_BASE}/oauth2/status/${serverId}`);
   return handleResponse<OAuth2StatusResponse>(response);
 };
 
 export const discoverOAuth2 = async (
   serverId: string,
 ): Promise<OAuth2DiscoveryResponse> => {
-  const response = await fetch(`${MCP_API_BASE}/oauth2/discover/${serverId}`, {
-    method: 'POST',
-  });
+  const response = await apiFetch(
+    `${MCP_API_BASE}/oauth2/discover/${serverId}`,
+    {
+      method: 'POST',
+    },
+  );
   return handleResponse<OAuth2DiscoveryResponse>(response);
 };
 

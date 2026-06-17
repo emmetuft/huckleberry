@@ -1,3 +1,4 @@
+import { apiFetch } from 'services/headers';
 /**
  * Auth client — talks to the huckleberry BFF's Layer A endpoints.
  *
@@ -59,7 +60,7 @@ function withCsrf(init: RequestInit = {}): RequestInit {
  * (existence-oracle protection).
  */
 async function requestMagicLink(email: string): Promise<void> {
-  const res = await fetch(
+  const res = await apiFetch(
     `${BASE}/signin/request`,
     withCsrf({
       method: 'POST',
@@ -79,7 +80,7 @@ async function requestMagicLink(email: string): Promise<void> {
  * already exists (idempotent, existence-oracle protection).
  */
 async function signup(email: string): Promise<void> {
-  const res = await fetch(
+  const res = await apiFetch(
     `${BASE}/signup`,
     withCsrf({
       method: 'POST',
@@ -97,21 +98,24 @@ async function signup(email: string): Promise<void> {
  * already used.
  */
 async function consumeMagicLink(token: string): Promise<ConsumeResponse> {
-  const res = await fetch(`${BASE}/signin?token=${encodeURIComponent(token)}`, {
-    credentials: 'same-origin',
-  });
+  const res = await apiFetch(
+    `${BASE}/signin?token=${encodeURIComponent(token)}`,
+    {
+      credentials: 'same-origin',
+    },
+  );
   return parseJson<ConsumeResponse>(res);
 }
 
 /** Returns the signed-in user — null if no valid session. */
 async function me(): Promise<MeResponse | null> {
-  const res = await fetch(`${BASE}/me`, { credentials: 'same-origin' });
+  const res = await apiFetch(`${BASE}/me`, { credentials: 'same-origin' });
   if (res.status === 401) return null;
   return parseJson<MeResponse>(res);
 }
 
 async function logout(): Promise<void> {
-  await fetch(`${BASE}/logout`, withCsrf({ method: 'POST' }));
+  await apiFetch(`${BASE}/logout`, withCsrf({ method: 'POST' }));
 }
 
 /**
@@ -122,7 +126,7 @@ async function logout(): Promise<void> {
  * `/workspace?linked=1`.
  */
 async function startDomoLink(): Promise<{ authorizeUrl: string }> {
-  const res = await fetch(
+  const res = await apiFetch(
     `${BASE}/domo/link/start`,
     withCsrf({ method: 'POST', body: '{}' }),
   );

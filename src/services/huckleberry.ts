@@ -1,10 +1,11 @@
+import { apiFetch } from 'services/headers';
 import { AgentSession } from 'models/interfaces/session';
 import { handleResponse } from 'utils/service';
 
 const HUCKLEBERRY_API_BASE = '/api/huckleberry';
 
 const getSessions = async (): Promise<AgentSession[]> => {
-  const response = await fetch(`${HUCKLEBERRY_API_BASE}/sessions`, {
+  const response = await apiFetch(`${HUCKLEBERRY_API_BASE}/sessions`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
   });

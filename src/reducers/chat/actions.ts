@@ -85,6 +85,10 @@ export const executeStream = createAsyncThunk<
   )) {
     handleStreamEvent(event, dispatch, sessionId);
   }
+
+  if (!sessionId) {
+    dispatch(fetchSessions());
+  }
 });
 
 /**

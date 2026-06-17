@@ -1,3 +1,4 @@
+import { apiFetch } from 'services/headers';
 import { SearchQuery } from 'models/interfaces/search';
 import { AgentSession } from 'models/interfaces/session';
 import { AISessionEvent } from 'models/interfaces/sessionEvent';
@@ -45,7 +46,7 @@ const getSessions = async (
     ...query,
   };
 
-  const response = await fetch(
+  const response = await apiFetch(
     `${SESSION_API_BASE}${agentId ? `?agentId=${agentId}` : ''}`,
     {
       method: 'POST',
@@ -65,7 +66,7 @@ const getSessions = async (
  * Retrieve an agent session by session ID
  */
 const getSession = async (sessionId: string): Promise<AgentSession> => {
-  const response = await fetch(`${SESSION_API_BASE}/${sessionId}`, {
+  const response = await apiFetch(`${SESSION_API_BASE}/${sessionId}`, {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
   });
@@ -79,7 +80,7 @@ const getSession = async (sessionId: string): Promise<AgentSession> => {
 const getSessionEvents = async (
   sessionId: string,
 ): Promise<AISessionEvent[]> => {
-  const response = await fetch(`${SESSION_API_BASE}/${sessionId}/events`, {
+  const response = await apiFetch(`${SESSION_API_BASE}/${sessionId}/events`, {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
   });
@@ -97,12 +98,38 @@ const getSessionEvents = async (
  * Delete an agent session by session ID
  */
 const deleteSession = async (sessionId: string): Promise<any> => {
-  const response = await fetch(`${SESSION_API_BASE}/${sessionId}`, {
+  const response = await apiFetch(`${SESSION_API_BASE}/${sessionId}`, {
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json' },
   });
 
   return await handleResponse<any>(response); // Returns empty string for data
+};
+
+/**
+ * Search sessions across all users (admin/cross-user endpoint).
+ */
+const getAllSessions = async (
+  query: SearchQuery = {},
+): Promise<AgentSession[]> => {
+  const defaultQuery: SearchQuery = {
+    sortFieldMap: { LAST_ACTIVITY: 'DESC' },
+    limit: 50,
+    offset: 0,
+    ...query,
+  };
+
+  const response = await apiFetch(`${SESSION_API_BASE}/search/all-sessions`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(defaultQuery),
+  });
+
+  const data = await handleResponse<{
+    pageContext: any;
+    sessions: AgentSession[];
+  }>(response);
+  return data.sessions;
 };
 
 export const AgentSessionService = {

@@ -154,6 +154,8 @@ export const ForceGraph: React.FC<ForceGraphProps> = ({
     linkLabel: (link: any) => link.type,
     linkColor: () => 'rgba(100, 100, 100, 1)',
     linkWidth: 1,
+    linkDirectionalArrowLength: 4,
+    linkDirectionalArrowRelPos: 1,
     linkDirectionalParticles: 2,
     linkDirectionalParticleWidth: 2,
     linkDirectionalParticleSpeed: 0.005,
@@ -166,6 +168,8 @@ export const ForceGraph: React.FC<ForceGraphProps> = ({
       <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
         <ForceGraph2D
           {...sharedProps}
+          dagMode="td"
+          dagLevelDistance={40}
           nodeCanvasObjectMode={() => 'after'}
           nodeCanvasObject={(
             node: any,

@@ -1,3 +1,4 @@
+import { apiFetch } from 'services/headers';
 import { NodeFilter } from 'models/interfaces/graphFilter';
 import type {
   CypherSearchRequest,
@@ -18,7 +19,7 @@ const getNodes = async <T = NodeResult>({
   filter: NodeFilter;
   limit?: number;
 }): Promise<T[]> => {
-  const response = await fetch(`${GRAPH_API_BASE}/nodes`, {
+  const response = await apiFetch(`${GRAPH_API_BASE}/nodes`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ filter, limit }),
@@ -29,7 +30,7 @@ const getNodes = async <T = NodeResult>({
 const cypherSearch = async (
   request: CypherSearchRequest,
 ): Promise<CypherSearchResult> => {
-  const response = await fetch(`${GRAPH_API_BASE}/cypher`, {
+  const response = await apiFetch(`${GRAPH_API_BASE}/cypher`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(request),
@@ -46,7 +47,7 @@ const getSchema = async (opts?: {
     params.set('sampleSize', String(opts.sampleSize));
   if (opts?.includeProperties) params.set('includeProperties', 'true');
   const qs = params.toString() ? `?${params.toString()}` : '';
-  const response = await fetch(`${GRAPH_API_BASE}/schema${qs}`, {
+  const response = await apiFetch(`${GRAPH_API_BASE}/schema${qs}`, {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
   });
@@ -56,7 +57,7 @@ const getSchema = async (opts?: {
 const shortestPath = async (
   request: ShortestPathRequest,
 ): Promise<PathResult | null> => {
-  const response = await fetch(`${GRAPH_API_BASE}/path`, {
+  const response = await apiFetch(`${GRAPH_API_BASE}/path`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(request),

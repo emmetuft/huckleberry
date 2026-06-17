@@ -11,6 +11,7 @@
 
 interface ImportMetaEnv {
   readonly DOMO_SUPPORT: string;
+  readonly DOMO_DEV_TOKEN?: string;
 }
 
 interface ImportMeta {

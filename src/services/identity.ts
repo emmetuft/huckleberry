@@ -1,3 +1,4 @@
+import { apiFetch } from 'services/headers';
 import { handleResponse } from 'utils/service';
 
 const IDENTITY_API_BASE = '/api/identity';
@@ -12,7 +13,7 @@ const authenticate = async () => {
 };
 
 const getIdentity = async () => {
-  const response = await fetch(IDENTITY_API_BASE);
+  const response = await apiFetch(IDENTITY_API_BASE);
   const data = await handleResponse<any>(response);
   return data;
 };

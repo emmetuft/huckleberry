@@ -3,7 +3,9 @@ import { Button, Drawer } from 'antd';
 import styles from './AgentDetail.module.css';
 import { AgentSession } from 'models/interfaces/session';
 import { AISessionEvent } from 'models/interfaces/sessionEvent';
+import { GraphData } from 'models/interfaces/ontology';
 import { AgentSessionService } from 'services/agentSession';
+import { GraphService } from 'services/graph';
 import { SessionWaterfall } from './SessionWaterfall/SessionWaterfall';
 import { SessionOverview } from './SessionOverview/SessionOverview';
 
@@ -22,6 +24,7 @@ export const SessionAnalytics: FC<SessionAnalyticsProps> = ({
   setSelectedSession,
 }) => {
   const [sessionEvents, setSessionEvents] = useState<AISessionEvent[]>([]);
+  const [graphData, setGraphData] = useState<GraphData | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [drawerSize, setDrawerSize] = useState<number>(700);
   const [drawerTab, setDrawerTab] = useState<'overview' | 'waterfall'>(
@@ -31,48 +34,51 @@ export const SessionAnalytics: FC<SessionAnalyticsProps> = ({
   useEffect(() => {
     if (!selectedSession) {
       setSessionEvents([]);
+      setGraphData(null);
       return;
     }
     setLoading(true);
-    AgentSessionService.getSessionEvents(selectedSession.id)
-      .then(setSessionEvents)
+
+    const eventsPromise = AgentSessionService.getSessionEvents(agentSession.id);
+    const graphPromise = GraphService.cypherSearch({
+      cypherQuery:
+        'MATCH (n)-[r]->(m) WHERE n.sessionId = $sessionId RETURN n, r, m',
+      parameters: { sessionId: agentSession.id },
+    });
+
+    Promise.all([eventsPromise, graphPromise])
+      .then(([events, cypherResult]) => {
+        setSessionEvents(events);
+        if (cypherResult.graph) {
+          setGraphData({
+            nodes: cypherResult.graph.nodes.map((n) => ({
+              id: n.id,
+              labels: n.labels,
+              properties: n.properties as Record<string, any>,
+            })),
+            edges: cypherResult.graph.edges.map((e) => ({
+              id: e.id,
+              source: e.source,
+              target: e.target,
+              type: e.type,
+              properties: e.properties as Record<string, any>,
+            })),
+          });
+        }
+      })
       .finally(() => setLoading(false));
   }, [selectedSession?.id]);
 
-  return (
-    <Drawer
-      title={
-        <div className={styles.drawerHeader}>
-          {drawerTabs.map((tab) => (
-            <Button
-              key={tab.value}
-              shape="round"
-              type={drawerTab === tab.value ? 'primary' : 'default'}
-              onClick={() => setDrawerTab(tab.value)}
-            >
-              {tab.label}
-            </Button>
-          ))}
-        </div>
-      }
-      placement="bottom"
-      size={drawerSize}
-      resizable={{
-        onResize: (newSize) => setDrawerSize(newSize),
-      }}
-      open={selectedSession !== null}
-      onClose={() => setSelectedSession(null)}
-      style={{ position: 'relative' }}
-    >
-      {drawerTab === 'overview' ? (
-        <SessionOverview
-          agentSession={selectedSession}
-          sessionEvents={sessionEvents}
-          loading={loading}
-        />
-      ) : (
-        <SessionWaterfall events={sessionEvents} loading={loading} />
-      )}
-    </Drawer>
-  );
+  if (tab === 'overview') {
+    return (
+      <SessionOverview
+        agentSession={agentSession}
+        sessionEvents={sessionEvents}
+        graphData={graphData}
+        loading={loading}
+      />
+    );
+  } else {
+    return <SessionWaterfall events={sessionEvents} loading={loading} />;
+  }
 };

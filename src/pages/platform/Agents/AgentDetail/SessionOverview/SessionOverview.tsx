@@ -16,18 +16,20 @@ import styles from './SessionOverview.module.css';
 import { selectAgents, selectAIModels } from 'reducers/agents/slice';
 import { nodeColors } from 'constants/styles';
 import { AgentSession } from 'models/interfaces/session';
+import { GraphData } from 'models/interfaces/ontology';
 import {
   AISessionEvent,
   AISessionEventType,
 } from 'models/interfaces/sessionEvent';
 import { formatDuration, formatCompactNumber } from 'utils/datetime';
 import { ForceGraph } from 'pages/platform/Ontology/GraphExploration/ForceGraph';
-import { selectGraphData } from 'reducers/ontology/slice';
+import { buildSessionGraph } from 'utils/sessionGraph';
 import { GraphPlayback } from 'pages/platform/Ontology/GraphExploration/GraphControls/GraphPlayback/GraphPlayback';
 
 interface SessionOverviewProps {
   agentSession: AgentSession | null;
   sessionEvents: AISessionEvent[];
+  graphData: GraphData | null;
   loading: boolean;
 }
 
@@ -44,11 +46,16 @@ interface ServiceResponsePayload {
 export const SessionOverview: FC<SessionOverviewProps> = ({
   agentSession,
   sessionEvents,
+  graphData: graphDataProp,
   loading,
 }) => {
   const agents = useSelector(selectAgents);
   const models = useSelector(selectAIModels);
-  const graphData = useSelector(selectGraphData);
+  const fallbackGraph = useMemo(
+    () => buildSessionGraph(sessionEvents),
+    [sessionEvents],
+  );
+  const graphData = graphDataProp ?? fallbackGraph;
 
   const [visibleNodeIds, setVisibleNodeIds] = useState<Set<string> | null>(
     null,
