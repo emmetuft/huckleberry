@@ -4,6 +4,7 @@ import {
   fetchAgentById,
   fetchAgents,
   fetchAIModels,
+  fetchAllSessions,
   fetchSessions,
   upsertCustomAgent,
 } from './actions';
@@ -14,6 +15,8 @@ import { AgentSession } from 'models/interfaces/session';
 interface AgentsState {
   agents: Agent[];
   agentSessions: AgentSession[];
+  allSessions: AgentSession[];
+  loadingAllSessions: boolean;
   aiModels: AIModel[];
   loading: boolean;
   loadingAgentId: string | null;
@@ -24,6 +27,8 @@ interface AgentsState {
 const initialState: AgentsState = {
   agents: [],
   agentSessions: [],
+  allSessions: [],
+  loadingAllSessions: false,
   aiModels: [],
   loading: false,
   loadingAgentId: null,
@@ -68,6 +73,18 @@ export const AgentsSlice = createAppSlice({
         state.loading = false;
         state.agentSessions = action.payload;
       })
+      .addCase(fetchAllSessions.pending, (state) => {
+        state.loadingAllSessions = true;
+        state.error = null;
+      })
+      .addCase(fetchAllSessions.rejected, (state, action) => {
+        state.loadingAllSessions = false;
+        state.error = action.error.message || 'Failed to fetch all sessions';
+      })
+      .addCase(fetchAllSessions.fulfilled, (state, action) => {
+        state.loadingAllSessions = false;
+        state.allSessions = action.payload;
+      })
       .addCase(fetchAIModels.fulfilled, (state, action) => {
         state.aiModels = action.payload;
       })
@@ -109,6 +126,8 @@ export const AgentsSlice = createAppSlice({
   selectors: {
     selectAgents: (state: AgentsState) => state.agents,
     selectAgentSessions: (state: AgentsState) => state.agentSessions,
+    selectAllSessions: (state: AgentsState) => state.allSessions,
+    selectLoadingAllSessions: (state: AgentsState) => state.loadingAllSessions,
     selectAIModels: (state: AgentsState) => state.aiModels,
     selectLoading: (state: AgentsState) => state.loading,
     selectLoadingAgentId: (state: AgentsState) => state.loadingAgentId,
@@ -122,6 +141,8 @@ export const { setAgents, clearError } = AgentsSlice.actions;
 export const {
   selectAgents,
   selectAgentSessions,
+  selectAllSessions,
+  selectLoadingAllSessions,
   selectAIModels,
   selectLoading,
   selectLoadingAgentId,

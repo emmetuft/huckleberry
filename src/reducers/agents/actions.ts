@@ -68,3 +68,10 @@ export const fetchSessions = createAsyncThunk(
     return AgentSessionService.getSessions(query, agentId);
   },
 );
+
+export const fetchAllSessions = createAsyncThunk(
+  'agents/fetchAllSessions',
+  async (query?: SearchQuery) => {
+    return AgentSessionService.getAllSessions(query);
+  },
+);
