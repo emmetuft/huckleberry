@@ -1,64 +1,72 @@
 import { NodeFilter } from 'models/interfaces/graphFilter';
+import type {
+  CypherSearchRequest,
+  CypherSearchResult,
+  GraphSchema,
+  NodeResult,
+  PathResult,
+  ShortestPathRequest,
+} from 'models/interfaces/graph';
 import { handleResponse } from 'utils/service';
 
-const GRAPH_DB_URL = '/api/graph';
+const GRAPH_API_BASE = '/api/graph';
 
-const getNodeModels = async <T = any>(): Promise<T[]> => {
-  // TODO: Not implemented on server yet
-  const response = await fetch(`${GRAPH_DB_URL}/nodes`, {
-    method: 'GET',
-  });
-  return handleResponse<T[]>(response);
-};
-
-const getRelationshipModels = async <T = any>(): Promise<T[]> => {
-  // TODO: Not implemented on server yet
-  const response = await fetch(`${GRAPH_DB_URL}/nodes`, {
-    method: 'GET',
-  });
-  return handleResponse<T[]>(response);
-};
-
-interface FetchNodesInput {
-  filter: NodeFilter;
-  limit?: number;
-}
-
-const getNodes = async <T = any>({
+const getNodes = async <T = NodeResult>({
   filter,
   limit,
-}: FetchNodesInput): Promise<T[]> => {
-  const response = await fetch(`${GRAPH_DB_URL}/nodes`, {
+}: {
+  filter: NodeFilter;
+  limit?: number;
+}): Promise<T[]> => {
+  const response = await fetch(`${GRAPH_API_BASE}/nodes`, {
     method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ filter, limit }),
   });
   return handleResponse<T[]>(response);
 };
 
-const getNodeLabels = async <T = unknown>(): Promise<T[]> => {
-  // TODO: Not implemented on server yet
-  const response = await fetch(`${GRAPH_DB_URL}/nodes`, {
-    method: 'GET',
+const cypherSearch = async (
+  request: CypherSearchRequest,
+): Promise<CypherSearchResult> => {
+  const response = await fetch(`${GRAPH_API_BASE}/cypher`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(request),
   });
-  return handleResponse<T[]>(response);
+  return handleResponse<CypherSearchResult>(response);
 };
 
-const getPropertyValues = async <T = unknown>(
-  label: string,
-  property: string,
-  limit: number,
-): Promise<T[]> => {
-  // TODO: Not implemented on server yet
-  const response = await fetch(`${GRAPH_DB_URL}/nodes`, {
+const getSchema = async (opts?: {
+  sampleSize?: number;
+  includeProperties?: boolean;
+}): Promise<GraphSchema> => {
+  const params = new URLSearchParams();
+  if (opts?.sampleSize != null)
+    params.set('sampleSize', String(opts.sampleSize));
+  if (opts?.includeProperties) params.set('includeProperties', 'true');
+  const qs = params.toString() ? `?${params.toString()}` : '';
+  const response = await fetch(`${GRAPH_API_BASE}/schema${qs}`, {
     method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
   });
-  return handleResponse<T[]>(response);
+  return handleResponse<GraphSchema>(response);
+};
+
+const shortestPath = async (
+  request: ShortestPathRequest,
+): Promise<PathResult | null> => {
+  const response = await fetch(`${GRAPH_API_BASE}/path`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(request),
+  });
+  return handleResponse<PathResult | null>(response);
 };
 
 export const GraphService = {
-  getNodeModels,
-  getRelationshipModels,
   getNodes,
-  getNodeLabels,
-  getPropertyValues,
+  cypherSearch,
+  getSchema,
+  shortestPath,
 };
