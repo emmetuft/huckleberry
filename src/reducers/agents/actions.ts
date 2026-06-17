@@ -2,6 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from 'reducers';
 import { Agent } from 'models/interfaces/agent';
 import { AIModel } from 'models/interfaces/aiModel';
+import { SearchQuery } from 'models/interfaces/search';
 import { AgentService } from 'services/agent';
 import { AgentSessionService } from 'services/agentSession';
 import { DomoAIService } from 'services/ai';
@@ -60,5 +61,10 @@ export const deleteCustomAgent = createAsyncThunk<string, string>(
 
 export const fetchSessions = createAsyncThunk(
   'agents/fetchSessions',
-  AgentSessionService.getSessions,
+  async ({
+    agentId,
+    query,
+  }: { agentId?: string; query?: SearchQuery } = {}) => {
+    return AgentSessionService.getSessions(query, agentId);
+  },
 );

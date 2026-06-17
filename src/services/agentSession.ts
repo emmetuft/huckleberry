@@ -1,4 +1,4 @@
-import { SearchFilter, SearchQuery } from 'models/interfaces/search';
+import { SearchQuery } from 'models/interfaces/search';
 import { AgentSession } from 'models/interfaces/session';
 import { AISessionEvent } from 'models/interfaces/sessionEvent';
 import { handleResponse } from 'utils/service';
@@ -6,21 +6,25 @@ import { handleResponse } from 'utils/service';
 const SESSION_API_BASE = '/api/sessions';
 
 /**
- * Retrieve all agent sessions
+ * Retrieve agent sessions with optional filters, sorting, and pagination.
  */
-const getSessions = async ({
-  agentId,
-  filters,
-}: {
-  agentId?: string;
-  filters?: SearchFilter[];
-}): Promise<AgentSession[]> => {
+const getSessions = async (
+  query: SearchQuery = {},
+  agentId?: string,
+): Promise<AgentSession[]> => {
+  const defaultQuery: SearchQuery = {
+    sortFieldMap: { LAST_ACTIVITY: 'DESC' },
+    limit: 50,
+    offset: 0,
+    ...query,
+  };
+
   const response = await fetch(
     `${SESSION_API_BASE}${agentId ? `?agentId=${agentId}` : ''}`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ filters }),
+      body: JSON.stringify(defaultQuery),
     },
   );
 
@@ -28,10 +32,7 @@ const getSessions = async ({
     pageContext: any;
     sessions: AgentSession[];
   }>(response);
-  return data.sessions.sort(
-    (a, b) =>
-      new Date(b.lastActivity).getTime() - new Date(a.lastActivity).getTime(),
-  );
+  return data.sessions;
 };
 
 /**
@@ -80,25 +81,28 @@ const deleteSession = async (sessionId: string): Promise<any> => {
 
 /**
  * Search sessions across all users (admin/cross-user endpoint).
- * Requires an authenticated Huckleberry session — no additional auth needed.
  */
 const getAllSessions = async (
   query: SearchQuery = {},
 ): Promise<AgentSession[]> => {
+  const defaultQuery: SearchQuery = {
+    sortFieldMap: { LAST_ACTIVITY: 'DESC' },
+    limit: 50,
+    offset: 0,
+    ...query,
+  };
+
   const response = await fetch(`${SESSION_API_BASE}/search/all-sessions`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(query),
+    body: JSON.stringify(defaultQuery),
   });
 
   const data = await handleResponse<{
     pageContext: any;
     sessions: AgentSession[];
   }>(response);
-  return data.sessions.sort(
-    (a, b) =>
-      new Date(b.lastActivity).getTime() - new Date(a.lastActivity).getTime(),
-  );
+  return data.sessions;
 };
 
 export const AgentSessionService = {
