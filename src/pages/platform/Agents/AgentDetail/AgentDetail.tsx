@@ -1,7 +1,7 @@
 import { FC, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Button, Drawer, Table } from 'antd';
+import { Button, Table } from 'antd';
 import type { TableColumnsType } from 'antd';
 import { AgentSession } from 'models/interfaces/session';
 import {
@@ -18,15 +18,10 @@ import {
   selectAgentSessions,
   selectAIModels,
 } from 'reducers/agents/slice';
-import { formatDateTime } from 'utils/datetime';
-import { PeopleService } from 'services/people';
 import { Avatar } from 'components/shared/Avatar/Avatar';
 import { SessionAnalytics } from './SessionAnalytics';
-
-const drawerTabs = [
-  { label: 'Overview', value: 'overview' },
-  { label: 'Event waterfall', value: 'waterfall' },
-] as const;
+import { formatDateTime } from 'utils/datetime';
+import { PeopleService } from 'services/people';
 
 export const AgentDetail: FC = () => {
   const navigate = useNavigate();
@@ -38,10 +33,6 @@ export const AgentDetail: FC = () => {
   const [ownerName, setOwnerName] = useState<string>('');
   const [selectedSession, setSelectedSession] = useState<AgentSession | null>(
     null,
-  );
-  const [drawerSize, setDrawerSize] = useState<number>(700);
-  const [drawerTab, setDrawerTab] = useState<'overview' | 'waterfall'>(
-    'overview',
   );
 
   const { agentId } = useParams<{ agentId: string }>();
@@ -149,32 +140,10 @@ export const AgentDetail: FC = () => {
           style: { cursor: 'pointer' },
         })}
       />
-      <Drawer
-        title={
-          <div className={styles.drawerHeader}>
-            {drawerTabs.map((tab) => (
-              <Button
-                key={tab.value}
-                shape="round"
-                type={drawerTab === tab.value ? 'primary' : 'default'}
-                onClick={() => setDrawerTab(tab.value)}
-              >
-                {tab.label}
-              </Button>
-            ))}
-          </div>
-        }
-        placement="bottom"
-        size={drawerSize}
-        resizable={{
-          onResize: (newSize) => setDrawerSize(newSize),
-        }}
-        open={selectedSession !== null}
-        onClose={() => setSelectedSession(null)}
-        style={{ position: 'relative' }}
-      >
-        <SessionAnalytics tab={drawerTab} agentSession={selectedSession} />
-      </Drawer>
+      <SessionAnalytics
+        selectedSession={selectedSession}
+        setSelectedSession={setSelectedSession}
+      />
     </div>
   );
 };
