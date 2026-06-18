@@ -201,14 +201,16 @@ export const AgentEdit: FC = () => {
             onUsersAndGroupsChange={setUsersAndGroups}
           />
           <div className={styles.btnWrapper}>
-            <Button
-              type="primary"
-              shape="round"
-              disabled={isLastStep ? isSaveDisabled : isContinueDisabled}
-              onClick={isLastStep ? handleSubmit : goToNextStep}
-            >
-              {isLastStep ? 'Done' : 'Continue'}
-            </Button>
+            {!isLastStep && (
+              <Button
+                type="primary"
+                shape="round"
+                disabled={isContinueDisabled}
+                onClick={goToNextStep}
+              >
+                Continue
+              </Button>
+            )}
           </div>
         </div>
       </div>
