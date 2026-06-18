@@ -44,13 +44,29 @@
 
   .priceEstimate {
     display: flex;
-    flex-direction: column;
-    padding: var(--space-md);
+    align-items: center;
+    gap: var(--space-lg);
+    padding: var(--space-xl);
     background-color: var(--success-bg);
     border-radius: var(--br-md);
 
-    .priceFormula {
-      font-family: 'IBM Plex Mono', monospace;
+    .priceTitle {
+      font-weight: 600;
+    }
+
+    .priceBreakdown {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+
+      .priceFormula {
+        font-family: 'IBM Plex Mono', monospace;
+      }
+    }
+
+    .total {
+      margin-left: auto;
+      font-size: 30px;
     }
   }
 

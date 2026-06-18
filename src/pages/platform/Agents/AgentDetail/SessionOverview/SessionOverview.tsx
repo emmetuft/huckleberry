@@ -28,6 +28,7 @@ import { buildSessionGraph } from 'utils/sessionGraph';
 import { AnimatePresence, motion } from 'framer-motion';
 import { NodeDetailModal } from 'pages/platform/Ontology/GraphExploration/NodeDetailModal/NodeDetailModal';
 import AppTooltip from 'components/shared/Tooltip';
+import { PriceEstimator } from './PriceEstimator';
 
 interface ModelProviderUsage {
   totalTokens?: number;
@@ -144,26 +145,22 @@ export const SessionOverview: FC<SessionOverviewProps> = ({
             </span>
           </Tag>
           <Tag>
-            <span className={styles.tagLabel}>duration</span>
-            <span className={styles.tagValue}>
-              {formatDuration(totalDuration)}
-            </span>
-          </Tag>
-          <Tag>
             <span className={styles.tagLabel}>tokens</span>
             <span className={styles.tagValue}>
               {formatCompactNumber(totalTokens)}
             </span>
           </Tag>
+          <Tag>
+            <span className={styles.tagLabel}>duration</span>
+            <span className={styles.tagValue}>
+              {formatDuration(totalDuration)}
+            </span>
+          </Tag>
         </div>
-        <div className={styles.priceEstimate}>
-          <p>Price estimate</p>
-          <p className={styles.priceFormula}>
-            [Per unit price of selected model] ÷ [Contract Rate for standard
-            credits specified in the applicable Service Order ] = [X] credits
-            per million tokens
-          </p>
-        </div>
+        <PriceEstimator
+          agentSession={agentSession}
+          sessionEvents={sessionEvents}
+        />
         {tokenChartData.length > 0 && (
           <div>
             <p className={styles.chartTitle}>Token usage</p>
@@ -223,7 +220,10 @@ export const SessionOverview: FC<SessionOverviewProps> = ({
             <Button
               shape="round"
               icon={<ClockCounterClockwiseIcon />}
-              onClick={() => setPlaybackOpen(!playbackOpen)}
+              onClick={() => {
+                setPlaybackOpen(!playbackOpen);
+                setVisibleNodeIds(null);
+              }}
             />
           </AppTooltip>
           <AnimatePresence>
