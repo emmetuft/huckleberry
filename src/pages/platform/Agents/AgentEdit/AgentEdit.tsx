@@ -45,7 +45,7 @@ export const AgentEdit: FC = () => {
       ? null
       : (agents.find((a) => a.id === agentId) ?? null);
     return currAgent;
-  }, [agentId]);
+  }, [agentId, agents, isNewAgent]);
 
   useEffect(() => {
     dispatch(searchToolkits({ limit: 50 }));
@@ -60,12 +60,12 @@ export const AgentEdit: FC = () => {
   useEffect(() => {
     if (agent) {
       setAgentForm(agent);
-      if (agent.toolkitIds) {
-        setSelectedToolkitIds(agent.toolkitIds);
-      }
+      setSelectedToolkitIds(agent.toolkitIds ?? []);
     } else {
       setAgentForm({});
+      setSelectedToolkitIds([]);
     }
+    setCurrentStep(AgentStep.Persona);
   }, [agent]);
 
   const updateField = (key: keyof Agent, value: any) => {
@@ -79,9 +79,23 @@ export const AgentEdit: FC = () => {
     Boolean(agentForm[field.key]),
   );
   const isToolkitSelected = selectedToolkitIds.length > 0;
+
+  const hasChanges = useMemo(() => {
+    if (isNewAgent) return true;
+    if (!agent) return false;
+    const formChanged = AGENT_FORM_FIELDS.some(
+      (field) => agentForm[field.key] !== agent[field.key],
+    );
+    const toolkitsChanged =
+      JSON.stringify([...selectedToolkitIds].sort()) !==
+      JSON.stringify([...(agent.toolkitIds ?? [])].sort());
+    return formChanged || toolkitsChanged;
+  }, [agentForm, selectedToolkitIds, agent, isNewAgent]);
+
   const isContinueDisabled =
     currentStep === AgentStep.Persona && !isPersonaComplete;
-  const isSaveDisabled = !isPersonaComplete || !isToolkitSelected;
+  const isSaveDisabled =
+    !isPersonaComplete || !isToolkitSelected || !hasChanges;
 
   const goToNextStep = () => {
     const currentIndex = steps.indexOf(currentStep);
