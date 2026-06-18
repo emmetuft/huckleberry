@@ -9,6 +9,7 @@ import {
   HeartIcon,
   LightningIcon,
   PlayIcon,
+  ScalesIcon,
 } from '@phosphor-icons/react';
 import styles from './AgentDetail.module.css';
 import { useAppDispatch } from 'reducers';
@@ -20,6 +21,7 @@ import {
 } from 'reducers/agents/slice';
 import { Avatar } from 'components/shared/Avatar/Avatar';
 import { SessionAnalytics } from './SessionAnalytics';
+import { SessionCompare } from './SessionCompare/SessionCompare';
 import { formatDateTime } from 'utils/datetime';
 import { PeopleService } from 'services/people';
 
@@ -34,6 +36,8 @@ export const AgentDetail: FC = () => {
   const [selectedSession, setSelectedSession] = useState<AgentSession | null>(
     null,
   );
+  const [compareIds, setCompareIds] = useState<string[]>([]);
+  const [showCompare, setShowCompare] = useState(false);
 
   const { agentId } = useParams<{ agentId: string }>();
 
@@ -135,11 +139,44 @@ export const AgentDetail: FC = () => {
         dataSource={agentSessions}
         rowKey="id"
         pagination={{ pageSize: 10 }}
+        rowSelection={{
+          selectedRowKeys: compareIds,
+          onChange: (keys) => setCompareIds((keys as string[]).slice(0, 2)),
+          getCheckboxProps: (record) => ({
+            disabled: compareIds.length >= 2 && !compareIds.includes(record.id),
+          }),
+        }}
         onRow={(record) => ({
           onClick: () => setSelectedSession(record),
           style: { cursor: 'pointer' },
         })}
       />
+      {compareIds.length === 2 && (
+        <div className={styles.compareFab}>
+          <span className={styles.fabLabel}>
+            {agentSessions.find((s) => s.id === compareIds[0])?.name} vs{' '}
+            {agentSessions.find((s) => s.id === compareIds[1])?.name}
+          </span>
+          <Button
+            type="primary"
+            shape="round"
+            icon={<ScalesIcon />}
+            onClick={() => setShowCompare(true)}
+          >
+            Compare
+          </Button>
+          <Button shape="round" size="small" onClick={() => setCompareIds([])}>
+            Clear
+          </Button>
+        </div>
+      )}
+      {showCompare && compareIds.length === 2 && (
+        <SessionCompare
+          sessionA={agentSessions.find((s) => s.id === compareIds[0])!}
+          sessionB={agentSessions.find((s) => s.id === compareIds[1])!}
+          onClose={() => setShowCompare(false)}
+        />
+      )}
       <SessionAnalytics
         selectedSession={selectedSession}
         setSelectedSession={setSelectedSession}
