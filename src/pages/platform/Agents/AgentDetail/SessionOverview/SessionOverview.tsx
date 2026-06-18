@@ -11,27 +11,23 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import { KeyIcon } from '@phosphor-icons/react';
+import { ClockCounterClockwiseIcon, KeyIcon } from '@phosphor-icons/react';
 import styles from './SessionOverview.module.css';
 import { selectAgents, selectAIModels } from 'reducers/agents/slice';
 import { nodeColors } from 'constants/styles';
 import { AgentSession } from 'models/interfaces/session';
-import { GraphData } from 'models/interfaces/ontology';
+import { GraphData, GraphNode } from 'models/interfaces/ontology';
 import {
   AISessionEvent,
   AISessionEventType,
 } from 'models/interfaces/sessionEvent';
 import { formatDuration, formatCompactNumber } from 'utils/datetime';
 import { ForceGraph } from 'pages/platform/Ontology/GraphExploration/ForceGraph';
-import { buildSessionGraph } from 'utils/sessionGraph';
 import { GraphPlayback } from 'pages/platform/Ontology/GraphExploration/GraphControls/GraphPlayback/GraphPlayback';
-
-interface SessionOverviewProps {
-  agentSession: AgentSession | null;
-  sessionEvents: AISessionEvent[];
-  graphData: GraphData | null;
-  loading: boolean;
-}
+import { buildSessionGraph } from 'utils/sessionGraph';
+import { AnimatePresence, motion } from 'framer-motion';
+import { NodeDetailModal } from 'pages/platform/Ontology/GraphExploration/NodeDetailModal/NodeDetailModal';
+import AppTooltip from 'components/shared/Tooltip';
 
 interface ModelProviderUsage {
   totalTokens?: number;
@@ -41,6 +37,13 @@ interface ModelProviderUsage {
 
 interface ServiceResponsePayload {
   modelProviderUsage?: ModelProviderUsage;
+}
+
+interface SessionOverviewProps {
+  agentSession: AgentSession | null;
+  sessionEvents: AISessionEvent[];
+  graphData: GraphData | null;
+  loading: boolean;
 }
 
 export const SessionOverview: FC<SessionOverviewProps> = ({
@@ -57,9 +60,11 @@ export const SessionOverview: FC<SessionOverviewProps> = ({
   );
   const graphData = graphDataProp ?? fallbackGraph;
 
+  const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
   const [visibleNodeIds, setVisibleNodeIds] = useState<Set<string> | null>(
     null,
   );
+  const [playbackOpen, setPlaybackOpen] = useState<boolean>(false);
 
   const agent =
     agents.find((a) => a.id === agentSession?.groupEntityId) ?? null;
@@ -103,6 +108,12 @@ export const SessionOverview: FC<SessionOverviewProps> = ({
     );
     return { nodes, edges };
   }, [graphData, visibleNodeIds]);
+
+  const nodeLabels = useMemo(() => {
+    const labels = new Set<string>();
+    graphData.nodes.forEach((n) => n.labels.forEach((l) => labels.add(l)));
+    return Array.from(labels);
+  }, [graphData]);
 
   const handleClickCopy = () => {
     navigator.clipboard.writeText(agentSession?.id ?? '');
@@ -208,13 +219,46 @@ export const SessionOverview: FC<SessionOverviewProps> = ({
       </div>
       <div className={styles.right}>
         <div className={styles.playbackWrapper}>
-          <GraphPlayback
-            nodes={graphData.nodes}
-            isOpen
-            onPlaybackChange={setVisibleNodeIds}
-          />
+          <AppTooltip title="Graph playback">
+            <Button
+              shape="round"
+              icon={<ClockCounterClockwiseIcon />}
+              onClick={() => setPlaybackOpen(!playbackOpen)}
+            />
+          </AppTooltip>
+          <AnimatePresence>
+            {playbackOpen && (
+              <motion.div
+                initial={{ y: 40, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 40, opacity: 0 }}
+                transition={{ duration: 0.2, ease: 'easeInOut' }}
+                style={{ flex: 1 }}
+              >
+                <GraphPlayback
+                  nodes={graphData.nodes}
+                  isOpen={playbackOpen}
+                  onPlaybackChange={setVisibleNodeIds}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-        <ForceGraph data={filteredGraphData} mode="2d" />
+        <ForceGraph
+          data={filteredGraphData}
+          mode="2d"
+          nodeLabels={nodeLabels}
+          onNodeClick={setSelectedNode}
+        />
+        <AnimatePresence>
+          {selectedNode && (
+            <NodeDetailModal
+              key={selectedNode.id}
+              node={selectedNode}
+              onClose={() => setSelectedNode(null)}
+            />
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

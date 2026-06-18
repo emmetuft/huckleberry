@@ -5,7 +5,7 @@ import { AgentSession } from 'models/interfaces/session';
 import { AISessionEvent } from 'models/interfaces/sessionEvent';
 import { GraphData } from 'models/interfaces/ontology';
 import { AgentSessionService } from 'services/agentSession';
-import { GraphService } from 'services/graph';
+import { fetchSessionGraph } from 'utils/graph';
 import { SessionWaterfall } from './SessionWaterfall/SessionWaterfall';
 import { SessionOverview } from './SessionOverview/SessionOverview';
 
@@ -17,40 +17,6 @@ const drawerTabs = [
 interface SessionAnalyticsProps {
   selectedSession: AgentSession | null;
   setSelectedSession: (session: AgentSession | null) => void;
-}
-
-function getGraphNodeName(
-  labels: string[],
-  props: Record<string, any>,
-): string {
-  const type = labels.find(
-    (l) => l !== 'Entity' && l !== 'AISessionEvent' && l !== 'AIContext',
-  );
-
-  switch (type) {
-    case 'Session':
-      return 'Session';
-    case 'Request':
-      return props.inputPreview ? props.inputPreview.slice(0, 50) : 'Request';
-    case 'Generation':
-      return props.service || 'Generation';
-    case 'ToolCall':
-      return props.toolName || 'Tool Call';
-    case 'ActionExecution':
-      return props.actionType || 'Action';
-    case 'ThinkingStep':
-      return 'Thinking';
-    case 'McpExchange':
-      return props.method || 'MCP';
-    case 'Dataset':
-      return props.name || 'Dataset';
-    case 'Card':
-      return props.name || 'Card';
-    case 'Page':
-      return props.name || 'Page';
-    default:
-      return type || 'Node';
-  }
 }
 
 export const SessionAnalytics: FC<SessionAnalyticsProps> = ({
@@ -73,50 +39,54 @@ export const SessionAnalytics: FC<SessionAnalyticsProps> = ({
     }
     setLoading(true);
 
-    const eventsPromise = AgentSessionService.getSessionEvents(agentSession.id);
-    const graphPromise = GraphService.cypherSearch({
-      cypherQuery:
-        'MATCH (s:Session {localId: $sessionId})-[r*1..5]-(m) RETURN s, r, m',
-      parameters: { sessionId: agentSession.id },
-    });
+    const eventsPromise = AgentSessionService.getSessionEvents(
+      selectedSession.id,
+    );
+    const graphPromise = fetchSessionGraph(selectedSession.id);
 
     Promise.all([eventsPromise, graphPromise])
-      .then(([events, cypherResult]) => {
+      .then(([events, graph]) => {
         setSessionEvents(events);
-        if (cypherResult.graph && cypherResult.graph.nodes.length > 0) {
-          setGraphData({
-            nodes: cypherResult.graph.nodes.map((n) => {
-              const props = n.properties as Record<string, any>;
-              const name = getGraphNodeName(n.labels, props);
-              return {
-                id: n.id,
-                labels: n.labels,
-                properties: { ...props, name },
-              };
-            }),
-            edges: cypherResult.graph.edges.map((e) => ({
-              id: e.id,
-              source: e.source,
-              target: e.target,
-              type: e.type,
-              properties: e.properties as Record<string, any>,
-            })),
-          });
-        }
+        setGraphData(graph);
       })
       .finally(() => setLoading(false));
   }, [selectedSession?.id]);
 
-  if (tab === 'overview') {
-    return (
-      <SessionOverview
-        agentSession={agentSession}
-        sessionEvents={sessionEvents}
-        graphData={graphData}
-        loading={loading}
-      />
-    );
-  } else {
-    return <SessionWaterfall events={sessionEvents} loading={loading} />;
-  }
+  return (
+    <Drawer
+      title={
+        <div className={styles.drawerHeader}>
+          {drawerTabs.map((tab) => (
+            <Button
+              key={tab.value}
+              shape="round"
+              type={drawerTab === tab.value ? 'primary' : 'default'}
+              onClick={() => setDrawerTab(tab.value)}
+            >
+              {tab.label}
+            </Button>
+          ))}
+        </div>
+      }
+      placement="bottom"
+      size={drawerSize}
+      resizable={{
+        onResize: (newSize) => setDrawerSize(newSize),
+      }}
+      open={selectedSession !== null}
+      onClose={() => setSelectedSession(null)}
+      style={{ position: 'relative' }}
+    >
+      {drawerTab === 'overview' ? (
+        <SessionOverview
+          agentSession={selectedSession}
+          sessionEvents={sessionEvents}
+          graphData={graphData}
+          loading={loading}
+        />
+      ) : (
+        <SessionWaterfall events={sessionEvents} loading={loading} />
+      )}
+    </Drawer>
+  );
 };

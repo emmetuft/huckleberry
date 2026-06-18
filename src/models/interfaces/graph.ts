@@ -17,12 +17,6 @@ export interface NodeResult {
 
 // Cypher search
 
-export interface CypherSearchRequest {
-  cypherQuery: string;
-  parameters?: Record<string, unknown>;
-  limit?: number;
-}
-
 export interface CypherVisualizationNode {
   id: string;
   nodeIdentifier: NodeIdentifier;
@@ -41,6 +35,12 @@ export interface CypherVisualizationEdge {
 export interface CypherVisualizationGraph {
   nodes: CypherVisualizationNode[];
   edges: CypherVisualizationEdge[];
+}
+
+export interface CypherSearchRequest {
+  cypherQuery: string;
+  parameters?: Record<string, unknown>;
+  limit?: number;
 }
 
 export interface CypherSearchResult {

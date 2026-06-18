@@ -14,7 +14,6 @@
   .right {
     position: relative;
     flex: 1;
-    padding: var(--space-md);
     background-color: var(--grey-bg);
     border-radius: var(--br-md);
     overflow: hidden;
@@ -88,5 +87,8 @@
     left: var(--space-md);
     right: var(--space-md);
     z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
   }
 }

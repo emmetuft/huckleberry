@@ -113,14 +113,15 @@ export const GraphControls: FC<GraphControlsProps> = ({ onPlaybackChange }) => {
     if (colonIdx === -1) return [];
     const nodeLabel = columnKey.substring(0, colonIdx);
     const property = columnKey.substring(colonIdx + 1);
-    const values = await GraphService.getPropertyValues(
-      nodeLabel,
-      property,
-      VALUE_QUERY_LIMIT,
-    );
-    return values.length < VALUE_QUERY_LIMIT
-      ? values.map((v: any) => ({ label: String(v), value: v }))
-      : [];
+    // const values = await GraphService.getPropertyValues(
+    //   nodeLabel,
+    //   property,
+    //   VALUE_QUERY_LIMIT,
+    // );
+    // return values.length < VALUE_QUERY_LIMIT
+    //   ? values.map((v: any) => ({ label: String(v), value: v }))
+    //   : [];
+    return [];
   };
 
   const handleApplyFilters = (filters: Filter[]) => {
