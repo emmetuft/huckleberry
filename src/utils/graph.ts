@@ -43,7 +43,7 @@ export async function fetchSessionGraph(
 ): Promise<GraphData | null> {
   const cypherResult: CypherSearchResult = await GraphService.cypherSearch({
     cypherQuery:
-      'MATCH (s:Session {localId: $sessionId})-[r*1..5]-(m) RETURN s, r, m',
+      'MATCH (s:Session {localId: $sessionId})-[r*1..8]-(m) RETURN s, r, m',
     parameters: { sessionId },
   });
 
