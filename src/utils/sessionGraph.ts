@@ -49,6 +49,7 @@ const USE_CONTEXT_ACTIONS = new Set([
 
 const NOISE_TYPES = new Set<AISessionEventType>([
   AISessionEventType.AI_HEARTBEAT,
+  AISessionEventType.AI_DURATION,
   AISessionEventType.ASSISTANT_RESPONSE_CHUNK,
   AISessionEventType.ASSISTANT_RESPONSE_START,
   AISessionEventType.ASSISTANT_RESPONSE_END,

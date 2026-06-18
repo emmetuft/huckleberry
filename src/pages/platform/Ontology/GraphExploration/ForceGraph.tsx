@@ -16,6 +16,76 @@ import {
 import { GraphData, GraphNode } from 'models/interfaces/ontology';
 import { getColorForGroup } from 'utils/styles';
 
+const TOOLTIP_HIDDEN_KEYS = new Set([
+  '_version',
+  'graphId',
+  'customerId',
+  'localId',
+  'createdAt',
+  'updatedAt',
+]);
+
+const formatTooltipValue = (key: string, value: any): string => {
+  if (key === 'durationMs' && typeof value === 'number') {
+    return value >= 1000 ? `${(value / 1000).toFixed(1)}s` : `${value}ms`;
+  }
+  if (
+    (key === 'startedAt' || key === 'completedAt') &&
+    typeof value === 'number'
+  ) {
+    return new Date(value).toLocaleTimeString();
+  }
+  if (typeof value === 'string' && value.length > 80) {
+    return value.slice(0, 80) + '…';
+  }
+  return String(value);
+};
+
+const NodeTooltip: React.FC<{ node: D3Node; x: number; y: number }> = ({
+  node,
+  x,
+  y,
+}) => {
+  const entries = Object.entries(node.properties).filter(
+    ([key, val]) => !TOOLTIP_HIDDEN_KEYS.has(key) && val != null,
+  );
+
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        left: x + 12,
+        top: y - 10,
+        background: 'rgba(20, 20, 28, 0.95)',
+        border: '1px solid rgba(255,255,255,0.12)',
+        borderRadius: 6,
+        padding: '8px 10px',
+        fontSize: 11,
+        color: '#e0e0e0',
+        pointerEvents: 'none',
+        zIndex: 100,
+        maxWidth: 300,
+        lineHeight: 1.5,
+      }}
+    >
+      <div style={{ fontWeight: 600, marginBottom: 4, color: '#fff' }}>
+        {node.labels
+          .filter(
+            (l) =>
+              l !== 'Entity' && l !== 'AISessionEvent' && l !== 'AIContext',
+          )
+          .join(', ') || 'Node'}
+      </div>
+      {entries.map(([key, val]) => (
+        <div key={key}>
+          <span style={{ color: '#888' }}>{key}: </span>
+          {formatTooltipValue(key, val)}
+        </div>
+      ))}
+    </div>
+  );
+};
+
 interface ForceGraphProps {
   data: GraphData;
   mode?: '2d' | '3d';
@@ -53,6 +123,11 @@ export const ForceGraph: React.FC<ForceGraphProps> = ({
     width: number;
     height: number;
   } | null>(null);
+  const [hoveredNode, setHoveredNode] = useState<D3Node | null>(null);
+  const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number }>({
+    x: 0,
+    y: 0,
+  });
 
   useEffect(() => {
     const el = containerRef.current;
@@ -85,6 +160,24 @@ export const ForceGraph: React.FC<ForceGraphProps> = ({
 
     return { nodes: d3Nodes, links: d3Links };
   }, [data]);
+
+  useEffect(() => {
+    if (!graphRef.current || mode !== '2d') return;
+    graphRef.current.d3Force('charge')?.strength(-400).distanceMax(500);
+    const firstNode = graphData.nodes[0];
+    if (firstNode) {
+      setTimeout(() => {
+        if (!graphRef.current) return;
+        const node = graphRef.current
+          .graphData()
+          .nodes.find((n: any) => n.id === firstNode.id);
+        if (node && node.x != null) {
+          graphRef.current.centerAt(node.x, node.y, 500);
+          graphRef.current.zoom(1.5, 500);
+        }
+      }, 800);
+    }
+  }, [graphData, mode]);
 
   useEffect(() => {
     if (!graphRef.current) return;
@@ -165,11 +258,20 @@ export const ForceGraph: React.FC<ForceGraphProps> = ({
 
   if (mode === '2d') {
     return (
-      <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
+      <div
+        ref={containerRef}
+        style={{ width: '100%', height: '100%', position: 'relative' }}
+      >
         <ForceGraph2D
           {...sharedProps}
           dagMode="td"
-          dagLevelDistance={40}
+          dagLevelDistance={120}
+          d3AlphaDecay={0.02}
+          d3VelocityDecay={0.3}
+          onNodeHover={(node: any) => {
+            setHoveredNode(node || null);
+          }}
+          onBackgroundClick={() => setHoveredNode(null)}
           nodeCanvasObjectMode={() => 'after'}
           nodeCanvasObject={(
             node: any,
@@ -177,14 +279,36 @@ export const ForceGraph: React.FC<ForceGraphProps> = ({
             globalScale: number,
           ) => {
             const label = node.name;
-            const fontSize = 12 / globalScale;
+            const fontSize = 11 / globalScale;
             ctx.font = `${fontSize}px Sans-Serif`;
-            ctx.fillStyle = getNodeColor(node);
+            const textWidth = ctx.measureText(label).width;
+            const padding = 2 / globalScale;
+
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            ctx.fillRect(
+              node.x - textWidth / 2 - padding,
+              node.y + 6,
+              textWidth + padding * 2,
+              fontSize + padding,
+            );
+
+            ctx.fillStyle = '#fff';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'top';
-            ctx.fillText(label, node.x, node.y + 6);
+            ctx.fillText(label, node.x, node.y + 6 + padding / 2);
+
+            if (hoveredNode?.id === node.id && graphRef.current) {
+              const coords = graphRef.current.graph2ScreenCoords(
+                node.x,
+                node.y,
+              );
+              setTooltipPos({ x: coords.x, y: coords.y });
+            }
           }}
         />
+        {hoveredNode && (
+          <NodeTooltip node={hoveredNode} x={tooltipPos.x} y={tooltipPos.y} />
+        )}
       </div>
     );
   }

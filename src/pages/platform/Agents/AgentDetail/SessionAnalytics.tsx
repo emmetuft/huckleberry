@@ -19,6 +19,40 @@ interface SessionAnalyticsProps {
   setSelectedSession: (session: AgentSession | null) => void;
 }
 
+function getGraphNodeName(
+  labels: string[],
+  props: Record<string, any>,
+): string {
+  const type = labels.find(
+    (l) => l !== 'Entity' && l !== 'AISessionEvent' && l !== 'AIContext',
+  );
+
+  switch (type) {
+    case 'Session':
+      return 'Session';
+    case 'Request':
+      return props.inputPreview ? props.inputPreview.slice(0, 50) : 'Request';
+    case 'Generation':
+      return props.service || 'Generation';
+    case 'ToolCall':
+      return props.toolName || 'Tool Call';
+    case 'ActionExecution':
+      return props.actionType || 'Action';
+    case 'ThinkingStep':
+      return 'Thinking';
+    case 'McpExchange':
+      return props.method || 'MCP';
+    case 'Dataset':
+      return props.name || 'Dataset';
+    case 'Card':
+      return props.name || 'Card';
+    case 'Page':
+      return props.name || 'Page';
+    default:
+      return type || 'Node';
+  }
+}
+
 export const SessionAnalytics: FC<SessionAnalyticsProps> = ({
   selectedSession,
   setSelectedSession,
@@ -42,20 +76,24 @@ export const SessionAnalytics: FC<SessionAnalyticsProps> = ({
     const eventsPromise = AgentSessionService.getSessionEvents(agentSession.id);
     const graphPromise = GraphService.cypherSearch({
       cypherQuery:
-        'MATCH (n)-[r]->(m) WHERE n.sessionId = $sessionId RETURN n, r, m',
+        'MATCH (s:Session {localId: $sessionId})-[r*1..5]-(m) RETURN s, r, m',
       parameters: { sessionId: agentSession.id },
     });
 
     Promise.all([eventsPromise, graphPromise])
       .then(([events, cypherResult]) => {
         setSessionEvents(events);
-        if (cypherResult.graph) {
+        if (cypherResult.graph && cypherResult.graph.nodes.length > 0) {
           setGraphData({
-            nodes: cypherResult.graph.nodes.map((n) => ({
-              id: n.id,
-              labels: n.labels,
-              properties: n.properties as Record<string, any>,
-            })),
+            nodes: cypherResult.graph.nodes.map((n) => {
+              const props = n.properties as Record<string, any>;
+              const name = getGraphNodeName(n.labels, props);
+              return {
+                id: n.id,
+                labels: n.labels,
+                properties: { ...props, name },
+              };
+            }),
             edges: cypherResult.graph.edges.map((e) => ({
               id: e.id,
               source: e.source,

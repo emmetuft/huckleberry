@@ -1,5 +1,6 @@
 import { AISessionEvent } from 'models/interfaces/sessionEvent';
 import { ResumeRequest, StreamRequest } from 'models/interfaces/userRequest';
+import { apiFetch } from 'services/headers';
 
 const HUCKLEBERRY_API_BASE = '/api/huckleberry';
 const AGENTS_API_BASE = '/api/agents';
@@ -94,7 +95,7 @@ const executeStream = async function* (
     }),
   };
 
-  const response = await fetch(getExecuteUrl(agentId), {
+  const response = await apiFetch(getExecuteUrl(agentId), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(requestBody),
@@ -119,7 +120,7 @@ const resumeStream = async function* (
     {} as Record<string, { action: string; content: Record<string, unknown> }>,
   );
 
-  const response = await fetch(getResumeUrl(agentId), {
+  const response = await apiFetch(getResumeUrl(agentId), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
