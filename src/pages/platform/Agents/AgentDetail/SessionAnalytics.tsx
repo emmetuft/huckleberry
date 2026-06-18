@@ -49,6 +49,9 @@ export const SessionAnalytics: FC<SessionAnalyticsProps> = ({
         setSessionEvents(events);
         setGraphData(graph);
       })
+      .catch((err) => {
+        console.error('[SessionAnalytics] graph query failed:', err);
+      })
       .finally(() => setLoading(false));
   }, [selectedSession?.id]);
 

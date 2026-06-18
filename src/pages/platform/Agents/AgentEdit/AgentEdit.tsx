@@ -7,15 +7,16 @@ import styles from './AgentEdit.module.css';
 import { useAppDispatch } from 'reducers';
 import { selectAgents, selectLoadingAgentId } from 'reducers/agents/slice';
 import {
-  createCustomAgent,
-  fetchAgentById,
-  updateCustomAgent,
-} from 'reducers/agents/actions';
+  selectAgents,
+  selectLoadingAgentId,
+  selectUpserting,
+} from 'reducers/agents/slice';
+import { fetchAgentById, upsertCustomAgent } from 'reducers/agents/actions';
+import { searchToolkits } from 'reducers/toolkits/actions';
 import { AGENT_FORM_FIELDS, AgentStep } from 'constants/agent';
 import { AccessEntry } from 'models/enums/permission';
 import { Agent } from 'models/interfaces/agent';
 import { DataSource } from 'models/interfaces/dataSource';
-import { Tool } from 'models/interfaces/toolkit';
 import { Chat } from '../Chat/Chat';
 import { AgentStepContent } from './AgentStepContent';
 
@@ -30,7 +31,7 @@ export const AgentEdit: FC = () => {
 
   const [currentStep, setCurrentStep] = useState<AgentStep>(AgentStep.Persona);
   const [agentForm, setAgentForm] = useState<AgentFormState>({});
-  const [selectedTools, setSelectedTools] = useState<Tool[]>([]);
+  const [selectedToolkitIds, setSelectedToolkitIds] = useState<string[]>([]);
   const [selectedDataSources, setSelectedDataSources] = useState<DataSource[]>(
     [],
   );
@@ -47,6 +48,10 @@ export const AgentEdit: FC = () => {
   }, [agentId]);
 
   useEffect(() => {
+    dispatch(searchToolkits({ limit: 50 }));
+  }, []);
+
+  useEffect(() => {
     if (!agent && agentId && agentId !== 'new') {
       dispatch(fetchAgentById(agentId));
     }
@@ -55,6 +60,9 @@ export const AgentEdit: FC = () => {
   useEffect(() => {
     if (agent) {
       setAgentForm(agent);
+      if (agent.toolkitIds) {
+        setSelectedToolkitIds(agent.toolkitIds);
+      }
     } else {
       setAgentForm({});
     }
@@ -70,8 +78,10 @@ export const AgentEdit: FC = () => {
   const isPersonaComplete = AGENT_FORM_FIELDS.every((field) =>
     Boolean(agentForm[field.key]),
   );
+  const isToolkitSelected = selectedToolkitIds.length > 0;
   const isContinueDisabled =
     currentStep === AgentStep.Persona && !isPersonaComplete;
+  const isSaveDisabled = !isPersonaComplete || !isToolkitSelected;
 
   const goToNextStep = () => {
     const currentIndex = steps.indexOf(currentStep);
@@ -85,37 +95,33 @@ export const AgentEdit: FC = () => {
     const { name, description, prompt, systemMessage, model } = agentForm;
 
     if (!name || !description || !prompt || !systemMessage || !model) {
-      // TODO: surface validation errors to the user
       return;
     }
 
-    const isEditing = agent !== null;
+    const context = {
+      dataSourceIds: selectedDataSources.map((ds) => ds.id),
+      fileSets: [],
+    };
 
-    if (isEditing) {
-      dispatch(
-        updateCustomAgent({
-          ...agent,
-          name,
-          description,
-          prompt,
-          systemMessage,
-          model,
-          toolkitIds: agentForm.toolkitIds ?? agent.toolkitIds ?? [],
-          context: agentForm.context ?? agent.context,
-        }),
-      );
-    } else {
-      dispatch(
-        createCustomAgent({
-          id: 'new',
-          name,
-          description,
-          prompt,
-          systemMessage,
-          model,
-          toolkitIds: [],
-        }),
-      );
+    const toolkitIds = [
+      ...new Set([...selectedToolkitIds, 'agent_utility_toolkit']),
+    ];
+
+    const result = await dispatch(
+      upsertCustomAgent({
+        id: agentId,
+        name,
+        description,
+        prompt,
+        systemMessage,
+        model,
+        toolkitIds,
+        context,
+        settings: agentForm.settings,
+      }),
+    );
+    if (upsertCustomAgent.fulfilled.match(result)) {
+      toast.success(`Agent ${isNewAgent ? 'created' : 'updated'} successfully`);
     }
   };
 
@@ -146,7 +152,13 @@ export const AgentEdit: FC = () => {
               navigate(`/agents/${value}/edit`);
             }}
           />
-          <Button shape="round" type="primary" onClick={handleSubmit}>
+          <Button
+            shape="round"
+            type="primary"
+            onClick={handleSubmit}
+            loading={upserting}
+            disabled={isSaveDisabled}
+          >
             Save
           </Button>
         </div>
@@ -181,8 +193,8 @@ export const AgentEdit: FC = () => {
             currentStep={currentStep}
             agentForm={agentForm}
             onFieldChange={updateField}
-            selectedTools={selectedTools}
-            onToolsChange={setSelectedTools}
+            selectedToolkitIds={selectedToolkitIds}
+            onToolkitIdsChange={setSelectedToolkitIds}
             selectedDataSources={selectedDataSources}
             onDataSourcesChange={setSelectedDataSources}
             usersAndGroups={usersAndGroups}
@@ -192,7 +204,7 @@ export const AgentEdit: FC = () => {
             <Button
               type="primary"
               shape="round"
-              disabled={isContinueDisabled}
+              disabled={isLastStep ? isSaveDisabled : isContinueDisabled}
               onClick={isLastStep ? handleSubmit : goToNextStep}
             >
               {isLastStep ? 'Done' : 'Continue'}

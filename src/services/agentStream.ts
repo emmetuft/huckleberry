@@ -9,6 +9,8 @@ interface AgentStreamRequest {
   input: string;
   sessionId?: string;
   aiAssistantContext?: any;
+  agentType?: 'REACT' | 'TOOL_CALLING';
+  agentSettingOverrides?: Record<string, any>;
 }
 
 function getExecuteUrl(agentId?: string): string {
@@ -88,6 +90,7 @@ const executeStream = async function* (
   const requestBody: AgentStreamRequest = {
     input: params.userInput,
     sessionId,
+    agentType: agentId ? 'TOOL_CALLING' : undefined,
     ...(params.dataSources && {
       aiAssistantContext: {
         dataSourceIds: params.dataSources,

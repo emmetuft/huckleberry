@@ -121,7 +121,7 @@ export const SessionOverview: FC<SessionOverviewProps> = ({
     toast.success('Session id copied to clipboard');
   };
 
-  if (!agentSession || !agent) return null;
+  if (!agentSession) return null;
 
   return (
     <div className={styles.sessionOverview}>
@@ -140,7 +140,7 @@ export const SessionOverview: FC<SessionOverviewProps> = ({
           <Tag>
             <span className={styles.tagLabel}>model</span>
             <span className={styles.tagValue}>
-              {models.find((model) => model.id === agent.model)?.name ??
+              {models.find((model) => model.id === agent?.model)?.name ??
                 'Default'}
             </span>
           </Tag>

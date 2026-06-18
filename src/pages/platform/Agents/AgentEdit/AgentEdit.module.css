@@ -184,3 +184,35 @@
     color: var(--grey-text);
   }
 }
+
+.toolkitBrowser {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+
+  .selectedList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+
+  .toolkitList {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: var(--space-md);
+
+    .toolIcon {
+      border: 1px solid var(--grey-border);
+    }
+
+    .connectAction {
+      display: flex;
+      align-items: center;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+  }
+}

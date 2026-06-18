@@ -53,8 +53,22 @@ interface AgentPayload {
   prompt: string;
   systemMessage: string;
   model?: string;
-  settings?: Record<string, any>;
-  context?: Record<string, any>;
+  settings?: {
+    id?: string | null;
+    properties: Record<string, any>;
+  };
+  uiSettings?: Record<string, any>;
+  theme?: Record<string, any>;
+  context?: {
+    dataSourceIds?: string[];
+    cardIds?: string[];
+    pageIds?: string[];
+    ignorableDataSourceIds?: string[];
+    filters?: any[];
+    fileSets?: any[];
+    dataApps?: any[];
+    descriptions?: Record<string, string>;
+  };
   toolkitIds?: string[];
 }
 
@@ -68,7 +82,13 @@ const createAgent = async (agent: Agent): Promise<Agent> => {
     prompt: agent.prompt,
     systemMessage: agent.systemMessage,
     model: agent.model,
-    context: agent.context,
+    settings: agent.settings ?? {
+      properties: {
+        reasoningEffort: 'MEDIUM',
+        allowSkipPlanning: false,
+      },
+    },
+    context: agent.context ?? { dataSourceIds: [], fileSets: [] },
     toolkitIds: agent.toolkitIds,
   };
 

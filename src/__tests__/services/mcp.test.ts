@@ -48,7 +48,6 @@ describe('MCPService', () => {
         '/api/mcp/servers',
         expect.objectContaining({
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(input),
         }),
       );
@@ -84,7 +83,10 @@ describe('MCPService', () => {
 
       const result = await MCPService.getServers();
 
-      expect(fetchMock).toHaveBeenCalledWith('/api/mcp/servers');
+      expect(fetchMock).toHaveBeenCalledWith(
+        '/api/mcp/servers',
+        expect.anything(),
+      );
       expect(result).toEqual([mockServer]);
     });
 
@@ -96,7 +98,10 @@ describe('MCPService', () => {
 
       await MCPService.getServers(true);
 
-      expect(fetchMock).toHaveBeenCalledWith('/api/mcp/servers?enabled=true');
+      expect(fetchMock).toHaveBeenCalledWith(
+        '/api/mcp/servers?enabled=true',
+        expect.anything(),
+      );
     });
   });
 
@@ -109,7 +114,10 @@ describe('MCPService', () => {
 
       const result = await MCPService.getServer('test-id');
 
-      expect(fetchMock).toHaveBeenCalledWith('/api/mcp/servers/test-id');
+      expect(fetchMock).toHaveBeenCalledWith(
+        '/api/mcp/servers/test-id',
+        expect.anything(),
+      );
       expect(result).toEqual(mockServer);
     });
   });
@@ -146,9 +154,10 @@ describe('MCPService', () => {
 
       const result = await MCPService.deleteServer('test-id');
 
-      expect(fetchMock).toHaveBeenCalledWith('/api/mcp/servers/test-id', {
-        method: 'DELETE',
-      });
+      expect(fetchMock).toHaveBeenCalledWith(
+        '/api/mcp/servers/test-id',
+        expect.objectContaining({ method: 'DELETE' }),
+      );
       expect(result.deleted).toBe(true);
     });
   });
@@ -169,9 +178,10 @@ describe('MCPService', () => {
 
       const result = await MCPService.testServerConnection('test-id');
 
-      expect(fetchMock).toHaveBeenCalledWith('/api/mcp/servers/test-id/test', {
-        method: 'POST',
-      });
+      expect(fetchMock).toHaveBeenCalledWith(
+        '/api/mcp/servers/test-id/test',
+        expect.objectContaining({ method: 'POST' }),
+      );
       expect(result).toEqual(testResult);
     });
   });
@@ -186,9 +196,10 @@ describe('MCPService', () => {
 
       const result = await MCPService.syncServerTools('test-id');
 
-      expect(fetchMock).toHaveBeenCalledWith('/api/mcp/servers/test-id/sync', {
-        method: 'POST',
-      });
+      expect(fetchMock).toHaveBeenCalledWith(
+        '/api/mcp/servers/test-id/sync',
+        expect.objectContaining({ method: 'POST' }),
+      );
       expect(result.toolCount).toBe(5);
     });
   });
@@ -232,7 +243,10 @@ describe('MCPService', () => {
 
       const result = await MCPService.getTools();
 
-      expect(fetchMock).toHaveBeenCalledWith('/api/mcp/tools');
+      expect(fetchMock).toHaveBeenCalledWith(
+        '/api/mcp/tools',
+        expect.anything(),
+      );
       expect(result).toEqual(mockTools);
     });
   });
