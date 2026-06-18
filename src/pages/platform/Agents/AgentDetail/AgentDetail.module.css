@@ -59,33 +59,3 @@
     }
   }
 }
-
-.drawerHeader {
-  display: flex;
-  gap: var(--space-md);
-}
-
-.compareFab {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 900;
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-  padding: var(--space-sm) var(--space-lg);
-  background: var(--background);
-  border: 1px solid var(--grey-border);
-  border-radius: 40px;
-  box-shadow: 0 8px 24px rgb(0 0 0 / 12%);
-
-  .fabLabel {
-    font-size: var(--font-sm);
-    color: var(--grey-text);
-    white-space: nowrap;
-    max-width: 300px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-}

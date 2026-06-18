@@ -7,9 +7,9 @@ import {
   AISessionEventType,
 } from 'models/interfaces/sessionEvent';
 import { AgentSessionService } from 'services/agentSession';
-import { SessionWaterfall } from '../SessionWaterfall/SessionWaterfall';
 import { formatDuration, formatCompactNumber } from 'utils/datetime';
 import styles from './SessionCompare.module.css';
+import { SessionWaterfall } from '../SessionAnalytics/SessionWaterfall/SessionWaterfall';
 
 interface SessionCompareProps {
   sessionA: AgentSession;

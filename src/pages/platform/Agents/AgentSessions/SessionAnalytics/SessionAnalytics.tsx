@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 import { Button, Drawer } from 'antd';
-import styles from './AgentDetail.module.css';
+import styles from './SessionAnalytics.module.css';
 import { AgentSession } from 'models/interfaces/session';
 import { AISessionEvent } from 'models/interfaces/sessionEvent';
 import { GraphData } from 'models/interfaces/ontology';

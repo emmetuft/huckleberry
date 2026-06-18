@@ -24,20 +24,20 @@ const getAgents = async (
     customAgents: Agent[];
   }>(response);
   const agents = data.customAgents;
-  return agents;
+  // return agents;
 
-  // const ownerIds = Array.from(
-  //   new Set(agents.map((agent) => agent.owner.toString())),
-  // );
-  // const owners = await PeopleService.getUsers(ownerIds);
-  // const ownerDisplayNameById = new Map(
-  //   owners.map((user) => [user.id, user.displayName]),
-  // );
+  const ownerIds = Array.from(
+    new Set(agents.map((agent) => agent.owner.toString())),
+  );
+  const owners = await PeopleService.getUsers(ownerIds);
+  const ownerDisplayNameById = new Map(
+    owners.map((user) => [user.id, user.displayName]),
+  );
 
-  // return agents.map((agent) => ({
-  //   ...agent,
-  //   ownerDisplayName: ownerDisplayNameById.get(agent.owner.toString()),
-  // }));
+  return agents.map((agent) => ({
+    ...agent,
+    ownerDisplayName: ownerDisplayNameById.get(Number(agent.owner)),
+  }));
 };
 
 /**

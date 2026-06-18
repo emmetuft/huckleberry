@@ -7,33 +7,35 @@ import {
 } from 'models/interfaces/sessionEvent';
 import styles from './SessionWaterfall.module.css';
 import { EventDetailModal } from './EventDetailModal/EventDetailModal';
+import { formatDuration } from 'utils/datetime';
 
-export type EventCategory =
-  | 'tool'
-  | 'action'
-  | 'aiService'
-  | 'assistant'
-  | 'mcp'
-  | 'other'
-  | 'confirmation';
+export enum EventCategory {
+  ASSISTANT = 'assistant',
+  AI_SERVICE = 'aiService',
+  ACTION = 'action',
+  CONFIRMATION = 'confirmation',
+  TOOL = 'tool',
+  MCP = 'mcp',
+  OTHER = 'other',
+}
 
 export const CATEGORY_COLORS: Record<EventCategory, string> = {
-  tool: '#3a9e72',
-  action: '#bfff00',
-  aiService: '#705be7',
   assistant: '#e0a030',
+  aiService: '#705be7',
+  action: '#bfff00',
+  confirmation: '#30b8b0',
+  tool: '#3a9e72',
   mcp: '#c45a4a',
   other: '#a4abc0',
-  confirmation: '#30b8b0',
 };
 
 export const CATEGORY_LABELS: Record<EventCategory, string> = {
-  tool: 'Tool',
-  action: 'Action',
-  aiService: 'AI Service',
   assistant: 'Assistant',
-  mcp: 'MCP',
+  aiService: 'AI Service',
+  action: 'Action',
   confirmation: 'User Confirmation',
+  tool: 'Tool',
+  mcp: 'MCP',
   other: 'Other',
 };
 
@@ -75,22 +77,22 @@ function getCategory(type: AISessionEventType): EventCategory {
     case AISessionEventType.TOOL_STARTED:
     case AISessionEventType.TOOL_COMPLETED:
     case AISessionEventType.TOOL_FINISHED:
-      return 'tool';
+      return EventCategory.TOOL;
     case AISessionEventType.ACTION_STARTED:
     case AISessionEventType.ACTION_COMPLETED:
-      return 'action';
+      return EventCategory.ACTION;
     case AISessionEventType.AI_SERVICE_REQUEST:
     case AISessionEventType.AI_SERVICE_RESPONSE:
-      return 'aiService';
+      return EventCategory.AI_SERVICE;
     case AISessionEventType.ASSISTANT_REQUEST:
     case AISessionEventType.ASSISTANT_RESPONSE:
     case AISessionEventType.ASSISTANT_PAUSED:
-      return 'assistant';
+      return EventCategory.ASSISTANT;
     case AISessionEventType.MCP_REQUEST:
     case AISessionEventType.MCP_RESPONSE:
-      return 'mcp';
+      return EventCategory.MCP;
     default:
-      return 'other';
+      return EventCategory.OTHER;
   }
 }
 
@@ -133,17 +135,22 @@ function buildTurns(events: AISessionEvent[]): TurnInfo[] {
       const totalDuration = Math.max(maxTime - minTime, 1);
 
       const pairedEndIds = new Set<string>();
-      const rows: WaterfallRow[] = [];
+      const rawBars: Array<{
+        key: string;
+        label: string;
+        category: EventCategory;
+        startMs: number;
+        durationMs: number;
+      }> = [];
 
       for (const event of sorted) {
         if (event.type === AISessionEventType.AI_DURATION) {
           const startTime = new Date(event.timestamp).getTime();
-          rows.push({
+          rawBars.push({
             key: event.eventId,
             label: event.description,
-            category: 'other',
-            startPct: ((startTime - minTime) / totalDuration) * 100,
-            widthPct: Math.max((event.duration / totalDuration) * 100, 0.5),
+            category: EventCategory.OTHER,
+            startMs: startTime - minTime,
             durationMs: event.duration,
           });
           continue;
@@ -170,17 +177,16 @@ function buildTurns(events: AISessionEvent[]): TurnInfo[] {
           explicitDurationMs ??
           new Date(endEvent.timestamp).getTime() - startTime;
 
-        rows.push({
+        rawBars.push({
           key: event.eventId,
           label: getLabel(event),
           category: getCategory(event.type),
-          startPct: ((startTime - minTime) / totalDuration) * 100,
-          widthPct: Math.max((durationMs / totalDuration) * 100, 0.5),
+          startMs: startTime - minTime,
           durationMs,
         });
       }
 
-      // Second pass: confirmation pauses (TOOL_PAUSED → TOOL_RESUMED)
+      // Confirmation pauses (TOOL_PAUSED → TOOL_RESUMED)
       for (const event of sorted) {
         if (event.type !== AISessionEventType.TOOL_PAUSED) continue;
         const pauseStart = new Date(event.timestamp).getTime();
@@ -190,19 +196,16 @@ function buildTurns(events: AISessionEvent[]): TurnInfo[] {
             e.pausedEventId === event.eventId,
         );
         if (!resumeEvent) continue;
-        const durationMs =
-          new Date(resumeEvent.timestamp).getTime() - pauseStart;
-        rows.push({
+        rawBars.push({
           key: `pause-tool-${event.eventId}`,
           label: `User confirmation: ${event.tool}`,
-          category: 'confirmation',
-          startPct: ((pauseStart - minTime) / totalDuration) * 100,
-          widthPct: Math.max((durationMs / totalDuration) * 100, 0.5),
-          durationMs,
+          category: EventCategory.CONFIRMATION,
+          startMs: pauseStart - minTime,
+          durationMs: new Date(resumeEvent.timestamp).getTime() - pauseStart,
         });
       }
 
-      // Second pass: confirmation pauses (ASSISTANT_PAUSED → ASSISTANT_RESUMED)
+      // Confirmation pauses (ASSISTANT_PAUSED → ASSISTANT_RESUMED)
       for (const event of sorted) {
         if (event.type !== AISessionEventType.ASSISTANT_PAUSED) continue;
         const pauseStart = new Date(event.timestamp).getTime();
@@ -212,43 +215,53 @@ function buildTurns(events: AISessionEvent[]): TurnInfo[] {
             e.parentEventId === event.eventId,
         );
         if (!resumeEvent) continue;
-        const durationMs =
-          new Date(resumeEvent.timestamp).getTime() - pauseStart;
-        rows.push({
+        rawBars.push({
           key: `pause-assistant-${event.eventId}`,
           label: 'User confirmation',
-          category: 'confirmation',
-          startPct: ((pauseStart - minTime) / totalDuration) * 100,
-          widthPct: Math.max((durationMs / totalDuration) * 100, 0.5),
-          durationMs,
+          category: EventCategory.CONFIRMATION,
+          startMs: pauseStart - minTime,
+          durationMs: new Date(resumeEvent.timestamp).getTime() - pauseStart,
         });
       }
 
-      rows.sort((a, b) => a.startPct - b.startPct);
+      // Use actual max end time as denominator so no bar can exceed 100%.
+      const effectiveDuration = Math.max(
+        rawBars.reduce(
+          (max, b) => Math.max(max, b.startMs + b.durationMs),
+          totalDuration,
+        ),
+        1,
+      );
+
+      const rows: WaterfallRow[] = rawBars
+        .map((b) => ({
+          key: b.key,
+          label: b.label,
+          category: b.category,
+          startPct: (b.startMs / effectiveDuration) * 100,
+          widthPct: Math.max((b.durationMs / effectiveDuration) * 100, 0.5),
+          durationMs: b.durationMs,
+        }))
+        .sort((a, b) => a.startPct - b.startPct);
 
       return { requestId, tabLabel: `Turn ${index + 1}`, rows };
     },
   );
 }
 
-const Legend: FC<{ rows: WaterfallRow[] }> = ({ rows }) => {
-  const present = Array.from(new Set(rows.map((r) => r.category)));
-  return (
-    <div className={styles.legend}>
-      {present.map((category) => (
-        <div key={category} className={styles.legendItem}>
-          <span
-            className={styles.legendSwatch}
-            style={{ backgroundColor: CATEGORY_COLORS[category] }}
-          />
-          <span className={styles.legendLabel}>
-            {CATEGORY_LABELS[category]}
-          </span>
-        </div>
-      ))}
-    </div>
-  );
-};
+const Legend: FC<{ rows: WaterfallRow[] }> = ({ rows }) => (
+  <div className={styles.legend}>
+    {Object.values(EventCategory).map((category) => (
+      <div key={category} className={styles.legendItem}>
+        <span
+          className={styles.legendSwatch}
+          style={{ backgroundColor: CATEGORY_COLORS[category] }}
+        />
+        <span className={styles.legendLabel}>{CATEGORY_LABELS[category]}</span>
+      </div>
+    ))}
+  </div>
+);
 
 const WaterfallChart: FC<{
   rows: WaterfallRow[];
@@ -260,30 +273,32 @@ const WaterfallChart: FC<{
 
   return (
     <div className={styles.chart}>
-      {rows.map((row) => (
-        <div key={row.key} className={styles.row}>
-          <div className={styles.rowLabel} title={row.label}>
-            {row.label}
+      {rows.map((row) => {
+        const safeStart = Math.min(Math.max(row.startPct, 0), 100);
+        const safeWidth = Math.min(row.widthPct, 100 - safeStart);
+        return (
+          <div key={row.key} className={styles.row}>
+            <div className={styles.rowLabel} title={row.label}>
+              {row.label}
+            </div>
+            <div className={styles.rowTrack}>
+              <div
+                className={styles.bar}
+                style={{
+                  left: `${safeStart}%`,
+                  width: `${safeWidth}%`,
+                  backgroundColor: CATEGORY_COLORS[row.category],
+                }}
+                onClick={() => onRowClick(row.key)}
+              >
+                <span className={styles.durationLabel}>
+                  {formatDuration(row.durationMs)}
+                </span>
+              </div>
+            </div>
           </div>
-          <div className={styles.rowTrack}>
-            <div
-              className={styles.bar}
-              style={{
-                left: `${row.startPct}%`,
-                width: `${row.widthPct}%`,
-                backgroundColor: CATEGORY_COLORS[row.category],
-              }}
-              onClick={() => onRowClick(row.key)}
-            />
-            <span
-              className={styles.durationLabel}
-              style={{ left: `${row.startPct + row.widthPct}%` }}
-            >
-              {row.durationMs}ms
-            </span>
-          </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 };

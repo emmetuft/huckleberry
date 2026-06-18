@@ -13,12 +13,12 @@ const getUsers = async (ids?: string[]): Promise<User[]> => {
   const response = await apiFetch(
     `${PEOPLE_API_BASE}/users${ids ? `?ids=${ids.join(',')}` : ''}`,
   );
-  const data = await handleResponse<{ users: DomoUser[] }>(response);
-  return data.users.map((domoUser) => ({
+  const data = await handleResponse<DomoUser[]>(response);
+  return data.map((domoUser) => ({
     id: domoUser.id,
-    username: domoUser.userName,
+    username: '',
     displayName: domoUser.displayName,
-    email: domoUser.emailAddress,
+    email: domoUser.detail.email,
   }));
 };
 
@@ -36,12 +36,13 @@ const getGroups = async (): Promise<Group[]> => {
 const getUserById = async (id: string): Promise<User | null> => {
   const response = await apiFetch(`${PEOPLE_API_BASE}/users/${id}`);
   if (response.status === 404) return null;
-  const data = await handleResponse<DomoUser>(response);
+  const data = await handleResponse<DomoUser[]>(response);
+  const user = data[0];
   return {
-    id: data.id,
-    username: data.userName,
-    displayName: data.displayName,
-    email: data.emailAddress,
+    id: user.id,
+    username: '',
+    displayName: user.displayName,
+    email: user.detail.email,
   };
 };
 

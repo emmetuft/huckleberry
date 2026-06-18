@@ -1,0 +1,4 @@
+.drawerHeader {
+  display: flex;
+  gap: var(--space-md);
+}

@@ -1,6 +1,8 @@
 .container {
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .legend {
@@ -53,6 +55,7 @@
 
   .rowTrack {
     flex: 1;
+    min-width: 0;
     position: relative;
     height: 100%;
     background: var(--grey-bg);
@@ -68,6 +71,10 @@
       cursor: pointer;
       opacity: 0.85;
       transition: opacity 0.1s;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
     }
 
     .bar:hover {
@@ -75,13 +82,12 @@
     }
 
     .durationLabel {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      padding-left: var(--space-xs);
+      padding: 0 var(--space-xs);
       font-size: var(--font-xs);
+      font-weight: 600;
       font-family: 'IBM Plex Mono', monospace;
-      color: var(--grey-text);
+      color: #fff;
+      white-space: nowrap;
       pointer-events: none;
     }
   }

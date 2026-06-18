@@ -159,7 +159,9 @@ export const SessionOverview: FC<SessionOverviewProps> = ({
         </div>
         <PriceEstimator
           agentSession={agentSession}
-          sessionEvents={sessionEvents}
+          sessionEvents={serviceResponseEvents.filter(
+            (e) => e.service !== 'CHAT_COMPLETION',
+          )}
         />
         {tokenChartData.length > 0 && (
           <div>

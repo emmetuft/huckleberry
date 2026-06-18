@@ -9,7 +9,7 @@ export interface Agent {
   prompt: string;
   systemMessage: string;
   model: string;
-  owner?: number;
+  owner: number;
   ownerDisplayName?: string;
   context?: AgentContext;
   toolkitIds?: string[];
