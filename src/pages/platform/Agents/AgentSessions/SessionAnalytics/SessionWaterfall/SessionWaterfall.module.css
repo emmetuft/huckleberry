@@ -94,6 +94,9 @@
 }
 
 .empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   padding: var(--space-md) 0;
   color: var(--grey-text);
 }
