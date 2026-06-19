@@ -132,6 +132,13 @@ export const ForceGraph: React.FC<ForceGraphProps> = ({
     highlightNode();
   }, [highlightedNodeId]);
 
+  useEffect(() => {
+    if (!graphRef.current || !dagMode) return;
+    graphRef.current.d3Force('charge')?.strength(-600);
+    graphRef.current.d3Force('link')?.distance(100);
+    graphRef.current.d3ReheatSimulation();
+  }, [dagMode, graphData]);
+
   const highlightNode = () => {
     if (!graphRef.current) return;
     const node = graphData.nodes.find((n) => n.id === highlightedNodeId);
@@ -199,7 +206,7 @@ export const ForceGraph: React.FC<ForceGraphProps> = ({
     linkDirectionalParticleWidth: 2,
     linkDirectionalParticleSpeed: 0.005,
     onEngineStop: handleEngineStop,
-    ...(dagMode ? { dagMode, dagLevelDistance: 60 } : {}),
+    ...(dagMode ? { dagMode, dagLevelDistance: 100 } : {}),
     ...(dimensions ?? {}),
   };
 
