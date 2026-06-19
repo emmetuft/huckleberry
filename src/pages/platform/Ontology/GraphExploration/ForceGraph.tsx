@@ -70,6 +70,7 @@ interface D3Link {
 interface ForceGraphProps {
   data: GraphData;
   mode?: '2d' | '3d';
+  dagMode?: 'td' | 'bu' | 'lr' | 'rl' | 'radialout' | 'radialin';
   nodeLabels?: string[];
   onNodeClick?: (node: GraphNode) => void;
 }
@@ -77,6 +78,7 @@ interface ForceGraphProps {
 export const ForceGraph: React.FC<ForceGraphProps> = ({
   data,
   mode = '3d',
+  dagMode,
   nodeLabels: propsNodeLabels,
   onNodeClick,
 }) => {
@@ -197,6 +199,7 @@ export const ForceGraph: React.FC<ForceGraphProps> = ({
     linkDirectionalParticleWidth: 2,
     linkDirectionalParticleSpeed: 0.005,
     onEngineStop: handleEngineStop,
+    ...(dagMode ? { dagMode, dagLevelDistance: 60 } : {}),
     ...(dimensions ?? {}),
   };
 

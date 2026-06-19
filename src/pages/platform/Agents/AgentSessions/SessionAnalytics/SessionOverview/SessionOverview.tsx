@@ -240,6 +240,7 @@ export const SessionOverview: FC<SessionOverviewProps> = ({
         <ForceGraph
           data={filteredGraphData}
           mode="2d"
+          dagMode="td"
           nodeLabels={nodeLabels}
           onNodeClick={setSelectedNode}
         />
