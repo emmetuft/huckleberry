@@ -1,6 +1,6 @@
-import { FC, useEffect, useRef } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { XIcon } from '@phosphor-icons/react';
+import { XIcon, CopySimpleIcon, CheckIcon } from '@phosphor-icons/react';
 import { AISessionEvent } from 'models/interfaces/sessionEvent';
 import {
   WaterfallRow,
@@ -8,7 +8,7 @@ import {
   CATEGORY_LABELS,
 } from '../SessionWaterfall';
 import styles from './EventDetailModal.module.css';
-import { Button, Tag } from 'antd';
+import { Button, Tag, Tooltip } from 'antd';
 import { formatDuration } from 'utils/datetime';
 
 interface EventDetailModalProps {
@@ -23,6 +23,7 @@ export const EventDetailModal: FC<EventDetailModalProps> = ({
   onClose,
 }) => {
   const panelRef = useRef<HTMLDivElement>(null);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const handleMouseDown = (e: MouseEvent) => {
@@ -33,6 +34,12 @@ export const EventDetailModal: FC<EventDetailModalProps> = ({
     document.addEventListener('mousedown', handleMouseDown);
     return () => document.removeEventListener('mousedown', handleMouseDown);
   }, [onClose]);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(JSON.stringify(event, null, 2));
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
 
   return (
     <motion.div
@@ -68,6 +75,18 @@ export const EventDetailModal: FC<EventDetailModalProps> = ({
         </Tag>
       </div>
       <div className={styles.body}>
+        <div className={styles.bodyHeader}>
+          <Tooltip title={copied ? 'Copied!' : 'Copy JSON'}>
+            <Button
+              type="text"
+              size="small"
+              icon={
+                copied ? <CheckIcon size={14} /> : <CopySimpleIcon size={14} />
+              }
+              onClick={handleCopy}
+            />
+          </Tooltip>
+        </div>
         <pre className={styles.eventJson}>{JSON.stringify(event, null, 2)}</pre>
       </div>
     </motion.div>

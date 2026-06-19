@@ -64,6 +64,24 @@
 .body {
   flex: 1;
   overflow: auto;
+  position: relative;
+}
+
+.bodyHeader {
+  position: sticky;
+  top: 0;
+  display: flex;
+  justify-content: flex-end;
+  pointer-events: none;
+
+  button {
+    pointer-events: all;
+    opacity: 0.5;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
 }
 
 .eventJson {
