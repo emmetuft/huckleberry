@@ -1,6 +1,16 @@
 // import { AgentCategory } from 'constants/agent';
 import { Permission } from 'models/enums/permission';
 
+export interface AgentSettings {
+  id?: string | null;
+  properties: {
+    reasoningEffort?: string;
+    allowSkipPlanning?: boolean;
+    memoryRetrievalEnabled?: boolean;
+    [key: string]: any;
+  };
+}
+
 export interface Agent {
   id: string;
   name: string;
@@ -14,7 +24,7 @@ export interface Agent {
   context?: AgentContext;
   toolkitIds?: string[];
   permission?: Permission;
-  settings?: any;
+  settings?: AgentSettings;
   uiSettings?: any;
   theme?: any;
   created?: string;

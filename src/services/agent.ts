@@ -1,5 +1,5 @@
 import { apiFetch } from 'services/headers';
-import { Agent } from 'models/interfaces/agent';
+import { Agent, AgentSettings } from 'models/interfaces/agent';
 import { handleResponse } from 'utils/service';
 import { PeopleService } from 'services/people';
 
@@ -53,10 +53,7 @@ interface AgentPayload {
   prompt: string;
   systemMessage: string;
   model?: string;
-  settings?: {
-    id?: string | null;
-    properties: Record<string, any>;
-  };
+  settings?: AgentSettings;
   uiSettings?: Record<string, any>;
   theme?: Record<string, any>;
   context?: {
@@ -86,6 +83,7 @@ const createAgent = async (agent: Agent): Promise<Agent> => {
       properties: {
         reasoningEffort: 'MEDIUM',
         allowSkipPlanning: false,
+        memoryRetrievalEnabled: true,
       },
     },
     context: agent.context ?? { dataSourceIds: [], fileSets: [] },
@@ -110,6 +108,8 @@ const updateAgent = async (agent: Agent): Promise<Agent> => {
     description: agent.description,
     prompt: agent.prompt,
     systemMessage: agent.systemMessage,
+    model: agent.model,
+    settings: agent.settings,
     context: agent.context,
     toolkitIds: agent.toolkitIds,
   };

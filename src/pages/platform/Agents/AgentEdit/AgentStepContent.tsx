@@ -9,6 +9,7 @@ import {
   LockSimpleIcon,
   MagicWandIcon,
   MagnifyingGlassIcon,
+  BrainIcon,
   PlusIcon,
   ToolboxIcon,
   TrashIcon,
@@ -300,6 +301,32 @@ export const AgentStepContent: FC<AgentStepContentProps> = ({
             </div>
           </div>
           {renderPrivacyNotice('Files and integrations', 'file or integration')}
+          <div className={styles.memoryFeature}>
+            <div className={styles.memoryFeatureContent}>
+              <div className={styles.memoryFeatureHeader}>
+                <BrainIcon size={16} weight="fill" />
+                Long-Term Memory
+              </div>
+              <p className={styles.memoryFeatureDescription}>
+                Recalls facts learned about the user across sessions — so every
+                conversation feels like it picks up where the last one left off.
+              </p>
+            </div>
+            <Switch
+              checked={
+                agentForm.settings?.properties?.memoryRetrievalEnabled ?? true
+              }
+              onChange={(checked) =>
+                onFieldChange('settings', {
+                  ...agentForm.settings,
+                  properties: {
+                    ...agentForm.settings?.properties,
+                    memoryRetrievalEnabled: checked,
+                  },
+                })
+              }
+            />
+          </div>
         </div>
       );
     case AgentStep.Tools:
