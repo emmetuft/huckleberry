@@ -16,6 +16,13 @@ import {
 import { GraphData, GraphNode } from 'models/interfaces/ontology';
 import { getColorForGroup } from 'utils/styles';
 
+const GENERATION_SERVICE_LABELS: Record<string, string> = {
+  CHAT_COMPLETION: 'Chat Completion',
+  MESSAGES: 'LLM Call',
+  TOOL_CALLING: 'Tool Calling',
+  PLANNING: 'Planning',
+};
+
 function getNodeDisplayName(node: GraphNode): string {
   const p = node.properties as Record<string, any>;
   const primaryLabel =
@@ -24,10 +31,16 @@ function getNodeDisplayName(node: GraphNode): string {
     ) ?? node.labels[0];
 
   switch (primaryLabel) {
+    case 'Session':
+      return 'Session';
+    case 'Request':
+      return p.inputPreview ? String(p.inputPreview).slice(0, 50) : 'Request';
     case 'Generation':
-      return p.service ?? 'Generation';
+      return GENERATION_SERVICE_LABELS[p.service] ?? p.service ?? 'Generation';
+    case 'ThinkingStep':
+      return 'Thinking';
     case 'ToolCall':
-      return p.toolName ?? 'Tool Call';
+      return p.toolName ?? 'Tool';
     case 'ActionExecution':
       return p.actionType ?? 'Action';
     case 'McpExchange':
