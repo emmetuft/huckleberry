@@ -16,11 +16,32 @@ import {
 import { GraphData, GraphNode } from 'models/interfaces/ontology';
 import { getColorForGroup } from 'utils/styles';
 
+const SESSION_NODE_COLORS: Record<string, string> = {
+  Session: '#e0a030',
+  Request: '#705be7',
+  Generation: '#6d8ae9',
+  ThinkingStep: '#e0a030',
+  ToolCall: '#3a9e72',
+  ActionExecution: '#bfff00',
+  McpExchange: '#c45a4a',
+};
+
 const GENERATION_SERVICE_LABELS: Record<string, string> = {
   CHAT_COMPLETION: 'Chat Completion',
   MESSAGES: 'LLM Call',
   TOOL_CALLING: 'Tool Calling',
   PLANNING: 'Planning',
+  TEXT_TO_SQL: 'Text to SQL',
+};
+
+const ACTION_TYPE_LABELS: Record<string, string> = {
+  DATASET_LOOKUP_ACTION: 'Dataset Lookup',
+  DATASET_TEXT_TO_SQL_ACTION: 'Text to SQL',
+  DATASET_QUERY_ACTION: 'Query Dataset',
+  DATASET_CREATE_ACTION: 'Create Dataset',
+  DATASET_UPLOAD_ACTION: 'Upload Dataset',
+  SEARCH_ACTION: 'Search',
+  EXTENDED_THINKING_ACTION: 'Extended Thinking',
 };
 
 function getNodeDisplayName(node: GraphNode): string {
@@ -42,7 +63,7 @@ function getNodeDisplayName(node: GraphNode): string {
     case 'ToolCall':
       return p.toolName ?? 'Tool';
     case 'ActionExecution':
-      return p.actionType ?? 'Action';
+      return ACTION_TYPE_LABELS[p.actionType] ?? p.actionType ?? 'Action';
     case 'McpExchange':
       return p.method ?? 'MCP';
     default:
@@ -178,9 +199,16 @@ export const ForceGraph: React.FC<ForceGraphProps> = ({
 
   const getNodeColor = useCallback(
     (node: any) => {
-      const primaryLabel = node.labels[0] || 'Unknown';
-      const labelIndex = nodeLabels.indexOf(primaryLabel);
-      const baseColor = getColorForGroup(labelIndex);
+      const primaryLabel =
+        node.labels.find(
+          (l: string) =>
+            l !== 'Entity' && l !== 'AISessionEvent' && l !== 'AIContext',
+        ) ??
+        node.labels[0] ??
+        'Unknown';
+      const baseColor =
+        SESSION_NODE_COLORS[primaryLabel] ??
+        getColorForGroup(nodeLabels.indexOf(primaryLabel));
 
       if (highlightedNodeId) {
         if (node.id === highlightedNodeId) return '#2fcb3fff';
@@ -227,7 +255,7 @@ export const ForceGraph: React.FC<ForceGraphProps> = ({
             const label = node.name;
             const fontSize = 12 / globalScale;
             ctx.font = `${fontSize}px Sans-Serif`;
-            ctx.fillStyle = getNodeColor(node);
+            ctx.fillStyle = '#222222';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'top';
             ctx.fillText(label, node.x, node.y + 6);
@@ -244,7 +272,7 @@ export const ForceGraph: React.FC<ForceGraphProps> = ({
         nodeThreeObjectExtend={true}
         nodeThreeObject={(node: any) => {
           const sprite = new SpriteText(node.name);
-          sprite.color = getNodeColor(node);
+          sprite.color = '#222222';
           sprite.position.y = 8;
           return sprite;
         }}

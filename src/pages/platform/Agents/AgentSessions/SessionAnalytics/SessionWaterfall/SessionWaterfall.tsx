@@ -1,5 +1,5 @@
 import { FC, useEffect, useMemo, useState } from 'react';
-import { Tabs } from 'antd';
+import { Spin, Tabs } from 'antd';
 import { AnimatePresence } from 'framer-motion';
 import {
   AISessionEvent,
@@ -60,6 +60,7 @@ const START_TYPES = new Set<AISessionEventType>([
   AISessionEventType.AI_SERVICE_REQUEST,
   AISessionEventType.ASSISTANT_REQUEST,
   AISessionEventType.MCP_REQUEST,
+  AISessionEventType.AGENT_THINKING_STARTED,
 ]);
 
 const END_TYPES = new Set<AISessionEventType>([
@@ -70,6 +71,7 @@ const END_TYPES = new Set<AISessionEventType>([
   AISessionEventType.ASSISTANT_RESPONSE,
   AISessionEventType.ASSISTANT_PAUSED,
   AISessionEventType.MCP_RESPONSE,
+  AISessionEventType.AGENT_THINKING_COMPLETED,
 ]);
 
 function getCategory(type: AISessionEventType): EventCategory {
@@ -87,6 +89,8 @@ function getCategory(type: AISessionEventType): EventCategory {
     case AISessionEventType.ASSISTANT_REQUEST:
     case AISessionEventType.ASSISTANT_RESPONSE:
     case AISessionEventType.ASSISTANT_PAUSED:
+    case AISessionEventType.AGENT_THINKING_STARTED:
+    case AISessionEventType.AGENT_THINKING_COMPLETED:
       return EventCategory.ASSISTANT;
     case AISessionEventType.MCP_REQUEST:
     case AISessionEventType.MCP_RESPONSE:
@@ -96,16 +100,98 @@ function getCategory(type: AISessionEventType): EventCategory {
   }
 }
 
+const TOOL_LABELS: Record<string, string> = {
+  ExtendedThinkingTool: 'Extended Thinking',
+  EXTENDED_THINKING: 'Extended Thinking',
+  SearchTool: 'Search',
+  DatasetUploadTool: 'Upload Dataset',
+  DatasetCreateTool: 'Create Dataset',
+  DomoSqlQueryTool: 'SQL Query',
+  TEXT_TO_SQL: 'Text to SQL',
+  domo_create_page: 'Create Page',
+};
+
+const SERVICE_LABELS: Record<string, string> = {
+  MESSAGES: 'LLM Call',
+  CHAT_COMPLETION: 'Chat Completion',
+  TOOL_CALLING: 'Tool Calling',
+  TEXT_TO_SQL: 'Text to SQL',
+  PLANNING: 'Planning',
+  CUSTOM_AGENT_TOOL_CALLING: 'Agent Tool Calling',
+  MEMORY_ENTITY_EXTRACTION: 'Memory Extraction',
+  MEMORY_RERANKING: 'Memory Reranking',
+  MEMORY_GATE: 'Memory Gate',
+};
+
+const ACTION_TYPE_LABELS: Record<string, string> = {
+  DATASET_LOOKUP_ACTION: 'Dataset Lookup',
+  DATASET_TEXT_TO_SQL_ACTION: 'Text to SQL',
+  DATASET_QUERY_ACTION: 'Query Dataset',
+  DATASET_CREATE_ACTION: 'Create Dataset',
+  DATASET_UPLOAD_ACTION: 'Upload Dataset',
+  SEARCH_ACTION: 'Search',
+  EXTENDED_THINKING_ACTION: 'Extended Thinking',
+};
+
+const DURATION_LABELS: Record<string, string> = {
+  CUSTOM_AGENT_TOOL_CALLING: 'Agent Tool Calling',
+  EXTENDED_THINKING: 'Extended Thinking',
+  MEMORY_ENTITY_EXTRACTION: 'Memory Extraction',
+  MEMORY_FACT_EXTRACTION: 'Memory Fact Extraction',
+  MEMORY_GATE: 'Memory Gate',
+  MEMORY_RERANKING: 'Memory Reranking',
+  MEMORY_RESOLUTION: 'Memory Resolution',
+  SESSION_TITLE: 'Session Title',
+  TEXT_TO_SQL: 'Text to SQL',
+};
+
+function getDurationCategory(description: string): EventCategory {
+  const key = description.startsWith('runTool: ')
+    ? description.slice('runTool: '.length)
+    : description;
+  const toolCategories: Record<string, EventCategory> = {
+    ExtendedThinkingTool: EventCategory.ASSISTANT,
+    EXTENDED_THINKING: EventCategory.ASSISTANT,
+    SearchTool: EventCategory.TOOL,
+    DatasetUploadTool: EventCategory.TOOL,
+    DatasetCreateTool: EventCategory.TOOL,
+    DomoSqlQueryTool: EventCategory.ACTION,
+    TEXT_TO_SQL: EventCategory.ACTION,
+    domo_create_page: EventCategory.TOOL,
+    CUSTOM_AGENT_TOOL_CALLING: EventCategory.ACTION,
+    MEMORY_ENTITY_EXTRACTION: EventCategory.AI_SERVICE,
+    MEMORY_FACT_EXTRACTION: EventCategory.AI_SERVICE,
+    MEMORY_GATE: EventCategory.AI_SERVICE,
+    MEMORY_RERANKING: EventCategory.AI_SERVICE,
+    MEMORY_RESOLUTION: EventCategory.AI_SERVICE,
+  };
+  return toolCategories[key] ?? EventCategory.OTHER;
+}
+
+function getDurationLabel(description: string): string {
+  if (description.startsWith('runTool: ')) {
+    const tool = description.slice('runTool: '.length);
+    return TOOL_LABELS[tool] ?? tool;
+  }
+  return DURATION_LABELS[description] ?? description;
+}
+
 function getLabel(event: AISessionEvent): string {
   switch (event.type) {
     case AISessionEventType.TOOL_STARTED:
-      return `Tool: ${event.tool}`;
+      return TOOL_LABELS[event.tool] ?? event.tool;
     case AISessionEventType.ACTION_STARTED:
-      return `${event.tool} (${event.actionType})`;
+      return (
+        ACTION_TYPE_LABELS[event.actionType] ??
+        TOOL_LABELS[event.tool] ??
+        event.tool
+      );
     case AISessionEventType.AI_SERVICE_REQUEST:
-      return `AI Service: ${event.service}`;
+      return SERVICE_LABELS[event.service] ?? event.service;
     case AISessionEventType.ASSISTANT_REQUEST:
       return `User: ${event.request.input.slice(0, 40)}`;
+    case AISessionEventType.AGENT_THINKING_STARTED:
+      return 'Thinking';
     case AISessionEventType.MCP_REQUEST:
       return `MCP: ${event.payload.method}`;
     default:
@@ -148,8 +234,8 @@ function buildTurns(events: AISessionEvent[]): TurnInfo[] {
           const startTime = new Date(event.timestamp).getTime();
           rawBars.push({
             key: event.eventId,
-            label: event.description,
-            category: EventCategory.OTHER,
+            label: getDurationLabel(event.description),
+            category: getDurationCategory(event.description),
             startMs: startTime - minTime,
             durationMs: event.duration,
           });
@@ -329,6 +415,14 @@ export const SessionWaterfall: FC<SessionWaterfallProps> = ({
     currentTurn?.rows.find((r) => r.key === selectedRowKey) ?? null;
   const selectedEvent =
     events.find((e) => e.eventId === selectedRowKey) ?? null;
+
+  if (loading) {
+    return (
+      <div className={styles.empty}>
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   if (!turns.length) {
     return <div className={styles.empty}>No events</div>;

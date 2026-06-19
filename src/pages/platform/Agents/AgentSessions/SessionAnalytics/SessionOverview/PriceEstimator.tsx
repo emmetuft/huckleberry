@@ -9,10 +9,15 @@ import {
 } from 'models/interfaces/sessionEvent';
 import { TOKEN_PRICING } from 'constants/tokenPricing';
 import { selectAIModels } from 'reducers/agents/slice';
+import {
+  SkeletonBlock,
+  SkeletonGroup,
+} from 'components/shared/Skeleton/Skeleton';
 
 interface PriceEstimatorProps {
   agentSession: AgentSession | null;
   sessionEvents: AISessionEvent[];
+  loading?: boolean;
 }
 
 interface ModelUsage {
@@ -28,6 +33,7 @@ interface ModelUsage {
 export const PriceEstimator: FC<PriceEstimatorProps> = ({
   agentSession,
   sessionEvents,
+  loading = false,
 }) => {
   const aiModels = useSelector(selectAIModels);
 
@@ -76,8 +82,17 @@ export const PriceEstimator: FC<PriceEstimatorProps> = ({
     <div className={styles.priceEstimate}>
       <PiggyBankIcon size={22} />
       <div className={styles.priceBreakdown}>
-        <p className={styles.priceTitle}>Price estimate</p>
-        {modelEntries.length === 0 ? (
+        {loading ? (
+          <SkeletonBlock height={13} width={100} />
+        ) : (
+          <p className={styles.priceTitle}>Price estimate</p>
+        )}
+        {loading ? (
+          <SkeletonGroup>
+            <SkeletonBlock height={11} width="90%" />
+            <SkeletonBlock height={11} width="82%" />
+          </SkeletonGroup>
+        ) : modelEntries.length === 0 ? (
           <p className={styles.priceFormula}>No pricing data available</p>
         ) : (
           modelEntries.map((usage) => (
@@ -92,7 +107,13 @@ export const PriceEstimator: FC<PriceEstimatorProps> = ({
           ))
         )}
       </div>
-      <div className={styles.total}>{`$${total.toFixed(6)}`}</div>
+      <div className={styles.total}>
+        {loading ? (
+          <SkeletonBlock height={28} width={80} />
+        ) : (
+          `$${total.toFixed(6)}`
+        )}
+      </div>
     </div>
   );
 };
