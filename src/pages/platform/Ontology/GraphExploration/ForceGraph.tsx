@@ -16,6 +16,27 @@ import {
 import { GraphData, GraphNode } from 'models/interfaces/ontology';
 import { getColorForGroup } from 'utils/styles';
 
+function getNodeDisplayName(node: GraphNode): string {
+  const p = node.properties as Record<string, any>;
+  const primaryLabel =
+    node.labels.find(
+      (l) => l !== 'Entity' && l !== 'AISessionEvent' && l !== 'AIContext',
+    ) ?? node.labels[0];
+
+  switch (primaryLabel) {
+    case 'Generation':
+      return p.service ?? 'Generation';
+    case 'ToolCall':
+      return p.toolName ?? 'Tool Call';
+    case 'ActionExecution':
+      return p.actionType ?? 'Action';
+    case 'McpExchange':
+      return p.method ?? 'MCP';
+    default:
+      return p.name ?? primaryLabel ?? node.id;
+  }
+}
+
 interface D3Node {
   id: string;
   name: string;
@@ -72,7 +93,7 @@ export const ForceGraph: React.FC<ForceGraphProps> = ({
   const graphData = useMemo(() => {
     const d3Nodes: D3Node[] = data.nodes.map((node) => ({
       id: node.id,
-      name: node.properties.name || node.id,
+      name: getNodeDisplayName(node),
       labels: node.labels,
       properties: node.properties,
     }));
