@@ -1,5 +1,5 @@
 import { apiFetch } from 'services/headers';
-import { Agent, AgentSettings } from 'models/interfaces/agent';
+import { Agent, AgentPayload } from 'models/interfaces/agent';
 import { handleResponse } from 'utils/service';
 import { PeopleService } from 'services/people';
 
@@ -47,27 +47,6 @@ const getAgent = async (agentId: string): Promise<Agent> => {
   const response = await apiFetch(`${AGENT_API_BASE}/${agentId}`);
   return handleResponse<Agent>(response);
 };
-interface AgentPayload {
-  name: string;
-  description: string;
-  prompt: string;
-  systemMessage: string;
-  model?: string;
-  settings?: AgentSettings;
-  uiSettings?: Record<string, any>;
-  theme?: Record<string, any>;
-  context?: {
-    dataSourceIds?: string[];
-    cardIds?: string[];
-    pageIds?: string[];
-    ignorableDataSourceIds?: string[];
-    filters?: any[];
-    fileSets?: any[];
-    dataApps?: any[];
-    descriptions?: Record<string, string>;
-  };
-  toolkitIds?: string[];
-}
 
 /**
  * Create a new agent

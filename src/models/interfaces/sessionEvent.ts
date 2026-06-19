@@ -1,3 +1,10 @@
+/** Token usage returned by an AI model provider. */
+export interface ModelProviderUsage {
+  inputTokens: number;
+  outputTokens: number;
+  totalTokens: number;
+}
+
 // ─── Primitives ───────────────────────────────────────────────────────────────
 
 export enum AISessionEventType {
@@ -317,11 +324,7 @@ interface AIServiceResponseEvent extends AISessionEventBase {
   service: string;
   serviceResponse: {
     modelId: string;
-    modelProviderUsage: {
-      inputTokens: number;
-      outputTokens: number;
-      totalTokens: number;
-    };
+    modelProviderUsage: ModelProviderUsage;
     output: string;
     prompt: string;
     requestId: string;

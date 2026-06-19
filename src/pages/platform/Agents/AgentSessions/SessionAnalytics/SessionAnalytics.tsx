@@ -1,11 +1,16 @@
 import { FC, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Button, Drawer } from 'antd';
 import styles from './SessionAnalytics.module.css';
+import { useAppDispatch } from 'reducers';
+import {
+  selectSessionGraphs,
+  selectLoadingSessionGraphs,
+} from 'reducers/agents/slice';
+import { fetchSessionGraphThunk } from 'reducers/agents/actions';
 import { AgentSession } from 'models/interfaces/session';
 import { AISessionEvent } from 'models/interfaces/sessionEvent';
-import { GraphData } from 'models/interfaces/ontology';
 import { AgentSessionService } from 'services/agentSession';
-import { fetchSessionGraph } from 'utils/graph';
 import { SessionWaterfall } from './SessionWaterfall/SessionWaterfall';
 import { SessionOverview } from './SessionOverview/SessionOverview';
 
@@ -23,37 +28,41 @@ export const SessionAnalytics: FC<SessionAnalyticsProps> = ({
   selectedSession,
   setSelectedSession,
 }) => {
+  const dispatch = useAppDispatch();
+  const sessionGraphs = useSelector(selectSessionGraphs);
+  const loadingSessionGraphs = useSelector(selectLoadingSessionGraphs);
+
   const [sessionEvents, setSessionEvents] = useState<AISessionEvent[]>([]);
-  const [graphData, setGraphData] = useState<GraphData | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loadingEvents, setLoadingEvents] = useState<boolean>(false);
   const [drawerSize, setDrawerSize] = useState<number>(700);
   const [drawerTab, setDrawerTab] = useState<'overview' | 'waterfall'>(
     'overview',
   );
 
+  const sessionId = selectedSession?.id ?? null;
+  const graphData = sessionId ? (sessionGraphs[sessionId] ?? null) : null;
+  const loadingGraph = sessionId
+    ? (loadingSessionGraphs[sessionId] ?? false)
+    : false;
+  const loading = loadingEvents || loadingGraph;
+
   useEffect(() => {
-    if (!selectedSession) {
+    if (!sessionId) {
       setSessionEvents([]);
-      setGraphData(null);
       return;
     }
-    setLoading(true);
+    setLoadingEvents(true);
+    AgentSessionService.getSessionEvents(sessionId)
+      .then(setSessionEvents)
+      .catch((err) =>
+        console.error('[SessionAnalytics] events fetch failed:', err),
+      )
+      .finally(() => setLoadingEvents(false));
 
-    const eventsPromise = AgentSessionService.getSessionEvents(
-      selectedSession.id,
-    );
-    const graphPromise = fetchSessionGraph(selectedSession.id);
-
-    Promise.all([eventsPromise, graphPromise])
-      .then(([events, graph]) => {
-        setSessionEvents(events);
-        setGraphData(graph);
-      })
-      .catch((err) => {
-        console.error('[SessionAnalytics] graph query failed:', err);
-      })
-      .finally(() => setLoading(false));
-  }, [selectedSession?.id]);
+    if (!(sessionId in sessionGraphs)) {
+      dispatch(fetchSessionGraphThunk(sessionId));
+    }
+  }, [sessionId]);
 
   return (
     <Drawer

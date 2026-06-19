@@ -11,6 +11,17 @@ export interface AgentSettings {
   };
 }
 
+export interface AgentContext {
+  dataSourceIds?: string[];
+  ignorableDataSourceIds?: string[];
+  cardIds?: string[];
+  pageIds?: string[];
+  filters?: Object[];
+  fileSets?: Object[];
+  dataApps?: any[];
+  descriptions?: Record<string, string>;
+}
+
 export interface Agent {
   id: string;
   name: string;
@@ -34,9 +45,16 @@ export interface Agent {
   iconUrl?: string;
 }
 
-export interface AgentContext {
-  dataSourceIds?: string[];
-  ignorableDataSourceIds?: string[];
-  filters?: Object[];
-  fileSets?: Object[];
+/** Write payload for create/update — omits server-managed fields. */
+export interface AgentPayload {
+  name: string;
+  description: string;
+  prompt: string;
+  systemMessage: string;
+  model?: string;
+  settings?: AgentSettings;
+  uiSettings?: Record<string, any>;
+  theme?: Record<string, any>;
+  context?: AgentContext;
+  toolkitIds?: string[];
 }

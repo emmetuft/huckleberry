@@ -6,6 +6,7 @@ import { SearchQuery } from 'models/interfaces/search';
 import { AgentService } from 'services/agent';
 import { AgentSessionService } from 'services/agentSession';
 import { DomoAIService } from 'services/ai';
+import { fetchSessionGraph } from 'utils/graph';
 
 export const fetchAgents = createAsyncThunk<
   Agent[],
@@ -73,5 +74,13 @@ export const fetchAllSessions = createAsyncThunk(
   'agents/fetchAllSessions',
   async (query?: SearchQuery) => {
     return AgentSessionService.getAllSessions(query);
+  },
+);
+
+export const fetchSessionGraphThunk = createAsyncThunk(
+  'agents/fetchSessionGraph',
+  async (sessionId: string) => {
+    const graph = await fetchSessionGraph(sessionId);
+    return { sessionId, graph };
   },
 );

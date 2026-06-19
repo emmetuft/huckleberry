@@ -20,6 +20,7 @@ import { GraphData, GraphNode } from 'models/interfaces/ontology';
 import {
   AISessionEvent,
   AISessionEventType,
+  ModelProviderUsage,
 } from 'models/interfaces/sessionEvent';
 import { formatDuration, formatCompactNumber } from 'utils/datetime';
 import { ForceGraph } from 'pages/platform/Ontology/GraphExploration/ForceGraph';
@@ -29,16 +30,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { NodeDetailModal } from 'pages/platform/Ontology/GraphExploration/NodeDetailModal/NodeDetailModal';
 import AppTooltip from 'components/shared/Tooltip';
 import { PriceEstimator } from './PriceEstimator';
-
-interface ModelProviderUsage {
-  totalTokens?: number;
-  inputTokens?: number;
-  outputTokens?: number;
-}
-
-interface ServiceResponsePayload {
-  modelProviderUsage?: ModelProviderUsage;
-}
 
 interface SessionOverviewProps {
   agentSession: AgentSession | null;
@@ -80,7 +71,7 @@ export const SessionOverview: FC<SessionOverviewProps> = ({
     (e) => e.type === AISessionEventType.AI_SERVICE_RESPONSE,
   ) as (AISessionEvent & {
     service: string;
-    serviceResponse: ServiceResponsePayload;
+    serviceResponse: { modelProviderUsage?: ModelProviderUsage };
   })[];
 
   const totalTokens = serviceResponseEvents.reduce((sum, e) => {

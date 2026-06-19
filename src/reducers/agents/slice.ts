@@ -6,11 +6,13 @@ import {
   fetchAIModels,
   fetchAllSessions,
   fetchSessions,
+  fetchSessionGraphThunk,
   upsertCustomAgent,
 } from './actions';
 import { Agent } from 'models/interfaces/agent';
 import { AIModel } from 'models/interfaces/aiModel';
 import { AgentSession } from 'models/interfaces/session';
+import { GraphData } from 'models/interfaces/ontology';
 
 interface AgentsState {
   agents: Agent[];
@@ -22,6 +24,8 @@ interface AgentsState {
   loadingAgentId: string | null;
   upserting: boolean;
   error: string | null;
+  sessionGraphs: Record<string, GraphData | null>;
+  loadingSessionGraphs: Record<string, boolean>;
 }
 
 const initialState: AgentsState = {
@@ -34,6 +38,8 @@ const initialState: AgentsState = {
   loadingAgentId: null,
   upserting: false,
   error: null,
+  sessionGraphs: {},
+  loadingSessionGraphs: {},
 };
 
 export const AgentsSlice = createAppSlice({
@@ -121,6 +127,17 @@ export const AgentsSlice = createAppSlice({
       .addCase(deleteCustomAgent.fulfilled, (state, action) => {
         const agentId = action.payload;
         state.agents = state.agents.filter((a) => a.id !== agentId);
+      })
+      .addCase(fetchSessionGraphThunk.pending, (state, action) => {
+        state.loadingSessionGraphs[action.meta.arg] = true;
+      })
+      .addCase(fetchSessionGraphThunk.rejected, (state, action) => {
+        state.loadingSessionGraphs[action.meta.arg] = false;
+      })
+      .addCase(fetchSessionGraphThunk.fulfilled, (state, action) => {
+        const { sessionId, graph } = action.payload;
+        state.loadingSessionGraphs[sessionId] = false;
+        state.sessionGraphs[sessionId] = graph;
       });
   },
   selectors: {
@@ -133,6 +150,9 @@ export const AgentsSlice = createAppSlice({
     selectLoadingAgentId: (state: AgentsState) => state.loadingAgentId,
     selectUpserting: (state: AgentsState) => state.upserting,
     selectError: (state: AgentsState) => state.error,
+    selectSessionGraphs: (state: AgentsState) => state.sessionGraphs,
+    selectLoadingSessionGraphs: (state: AgentsState) =>
+      state.loadingSessionGraphs,
   },
 });
 
@@ -148,6 +168,8 @@ export const {
   selectLoadingAgentId,
   selectUpserting,
   selectError,
+  selectSessionGraphs,
+  selectLoadingSessionGraphs,
 } = AgentsSlice.selectors;
 
 export default AgentsSlice.reducer;
