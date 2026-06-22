@@ -8,6 +8,7 @@ const AGENTS_API_BASE = '/api/agents';
 interface AgentStreamRequest {
   input: string;
   sessionId?: string;
+  toolkitIds?: string[];
   aiAssistantContext?: any;
   agentType?: 'REACT' | 'TOOL_CALLING';
   agentSettingOverrides?: Record<string, any>;
@@ -91,6 +92,7 @@ const executeStream = async function* (
     input: params.userInput,
     sessionId,
     agentType: agentId ? 'TOOL_CALLING' : undefined,
+    ...(params.toolkitIds && { toolkitIds: params.toolkitIds }),
     ...(params.dataSources && {
       aiAssistantContext: {
         dataSourceIds: params.dataSources,

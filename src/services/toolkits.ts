@@ -6,9 +6,7 @@ const TOOLKITS_API_BASE = '/api/toolkits';
 
 const getToolkits = async (): Promise<Toolkit[]> => {
   const response = await apiFetch(TOOLKITS_API_BASE);
-  const data = await handleResponse<{ pageContext: any; toolkits: Toolkit[] }>(
-    response,
-  );
+  const data = await handleResponse<{ toolkits: Toolkit[] }>(response);
   return data.toolkits;
 };
 

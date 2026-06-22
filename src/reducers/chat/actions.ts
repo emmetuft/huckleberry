@@ -2,7 +2,6 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from '../index';
 import { AISessionEvent } from 'models/interfaces/sessionEvent';
 import { ProcessedFile } from 'models/interfaces/files';
-import { Tool } from 'models/interfaces/toolkit';
 import {
   ElicitationResponse,
   ResumeRequest,
@@ -70,7 +69,7 @@ export const executeStream = createAsyncThunk<
   void,
   {
     userInput: string;
-    tools?: Tool[];
+    toolkitIds?: string[];
     dataSources?: any;
     files?: ProcessedFile[];
   },

@@ -1,6 +1,6 @@
 export interface StreamRequest {
   userInput: string;
-  tools?: any[];
+  toolkitIds?: string[];
   dataSources?: any[];
   files?: any[];
 }

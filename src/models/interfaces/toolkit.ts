@@ -2,10 +2,13 @@ export interface Toolkit {
   toolkitId: string;
   name: string;
   description: string;
-  tools: Tool[];
-  context: Record<string, any>;
-  createdAt: string;
-  createdBy: string;
+  tools?: Tool[];
+  type?: 'CUSTOM' | 'DOMO_PROVIDED';
+  status?: string;
+  icon?: string;
+  context?: Record<string, any>;
+  createdAt?: string;
+  createdBy?: string;
   updatedAt?: string;
   updatedBy?: string;
 }

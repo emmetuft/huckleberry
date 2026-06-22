@@ -3,7 +3,6 @@ import { useSelector } from 'react-redux';
 import { WrenchIcon } from '@phosphor-icons/react';
 import { selectLoading } from 'reducers/chat/slice';
 import { DataSource } from 'models/interfaces/dataSource';
-import { Tool } from 'models/interfaces/toolkit';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
 import { BrowserModal } from 'components/modals/BrowserModal/BrowserModal';
 import { DataSourceBrowser } from 'components/shared/DataSourceBrowser/DataSourceBrowser';
@@ -16,8 +15,8 @@ import { isEmpty } from 'utils/misc';
 
 interface IntentInputControlsProps {
   textContent?: string;
-  selectedTools: Tool[];
-  setSelectedTools: (tools: Tool[]) => void;
+  selectedToolkitIds: string[];
+  onToolkitIdsChange: (ids: string[]) => void;
   uploadedFiles: File[];
   setUploadedFiles: (files: File[]) => void;
   selectedDataSources: DataSource[];
@@ -27,8 +26,8 @@ interface IntentInputControlsProps {
 
 export const IntentInputControls: FC<IntentInputControlsProps> = ({
   textContent,
-  selectedTools,
-  setSelectedTools,
+  selectedToolkitIds,
+  onToolkitIdsChange,
   uploadedFiles,
   setUploadedFiles,
   selectedDataSources,
@@ -57,16 +56,7 @@ export const IntentInputControls: FC<IntentInputControlsProps> = ({
     setSuggestedActions(getSuggestedActions(textContent, selectedDataSources));
   }, [selectedDataSources]);
 
-  const handleToolModalConfirm = (tools: Tool[]) => {
-    const newTools = tools.filter(
-      (tool) => !selectedTools.some((t) => t.toolId === tool.toolId),
-    );
-    setSelectedTools([...selectedTools, ...newTools]);
-    setShowToolBrowser(false);
-  };
-
   const handleFileUpload = (file: File) => {
-    // TODO: Process the uploaded file and add to context
     setUploadedFiles([...uploadedFiles, file]);
   };
 
@@ -115,15 +105,22 @@ export const IntentInputControls: FC<IntentInputControlsProps> = ({
           />
         )}
       </BrowserModal>
-      <BrowserModal<Tool>
+      <BrowserModal<string>
         open={showToolBrowser}
-        title="Browse Tools"
-        itemLabel="tool"
+        title="Browse Toolkits"
+        itemLabel="toolkit"
         onCancel={() => setShowToolBrowser(false)}
-        onConfirm={handleToolModalConfirm}
+        onConfirm={(ids) => {
+          onToolkitIdsChange([...new Set([...selectedToolkitIds, ...ids])]);
+          setShowToolBrowser(false);
+        }}
       >
         {(selected, onChange) => (
-          <ToolBrowser selectedTools={selected} onToolsChange={onChange} />
+          <ToolBrowser
+            mode="toolkit"
+            selectedToolkitIds={selected}
+            onToolkitIdsChange={onChange}
+          />
         )}
       </BrowserModal>
     </>
