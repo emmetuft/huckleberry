@@ -1,17 +1,13 @@
-import { Dispatch, FC, SetStateAction, useMemo, useState } from 'react';
+import { Dispatch, FC, SetStateAction, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Button, Select, Switch, Empty, Input, Tag, Spin } from 'antd';
+import { Button, Select, Switch } from 'antd';
 import { AnimatePresence, motion } from 'framer-motion';
 import { toast } from 'sonner';
 import {
-  CheckIcon,
   GlobeIcon,
   LockSimpleIcon,
   MagicWandIcon,
-  MagnifyingGlassIcon,
   BrainIcon,
-  PlusIcon,
-  ToolboxIcon,
   TrashIcon,
   UserCircleIcon,
   UsersThreeIcon,
@@ -20,10 +16,6 @@ import styles from './AgentEdit.module.css';
 import labelInputStyles from 'components/shared/LabelInput/LabelInput.module.css';
 import { selectAIModels } from 'reducers/agents/slice';
 import { selectAllPeople } from 'reducers/people/slice';
-import {
-  selectToolkits,
-  selectLoading as selectToolkitsLoading,
-} from 'reducers/toolkits/slice';
 import { AGENT_FORM_FIELDS, AgentStep } from 'constants/agent';
 import { AccessEntry, Permission } from 'models/enums/permission';
 import { Agent } from 'models/interfaces/agent';
@@ -37,6 +29,7 @@ import {
   InputField,
   LabelInput,
 } from 'components/shared/LabelInput/LabelInput';
+import { ToolBrowser } from 'components/shared/ToolBrowser/ToolBrowser';
 import PermissionSelect from 'components/shared/PermissionSelect';
 import AppTooltip from 'components/shared/Tooltip';
 import { DomoAIService } from 'services/ai';
@@ -86,37 +79,16 @@ export const AgentStepContent: FC<AgentStepContentProps> = ({
 }) => {
   const aiModels = useSelector(selectAIModels);
   const allPeople = useSelector(selectAllPeople);
-  const toolkitResults = useSelector(selectToolkits);
-  const searchingToolkits = useSelector(selectToolkitsLoading);
   const [generatingFields, setGeneratingFields] = useState<Set<keyof Agent>>(
     new Set(),
   );
   const [addAllWorkspaceContent, setAddAllWorkspaceContent] = useState(false);
-  const [toolkitSearch, setToolkitSearch] = useState('');
 
   const modelOptions = aiModels.map((model) => ({
     label: model.name,
     value: model.id,
     description: model.description,
   }));
-
-  const filteredToolkits = useMemo(() => {
-    if (!toolkitSearch) return toolkitResults;
-    const query = toolkitSearch.toLowerCase();
-    return toolkitResults.filter(
-      (tk) =>
-        tk.name.toLowerCase().includes(query) ||
-        tk.description?.toLowerCase().includes(query),
-    );
-  }, [toolkitResults, toolkitSearch]);
-
-  const handleToggleToolkit = (toolkitId: string) => {
-    if (selectedToolkitIds.includes(toolkitId)) {
-      onToolkitIdsChange(selectedToolkitIds.filter((id) => id !== toolkitId));
-    } else {
-      onToolkitIdsChange([...selectedToolkitIds, toolkitId]);
-    }
-  };
 
   const handleGenerateField = async (
     field: InputField<keyof Agent>,
@@ -342,71 +314,12 @@ export const AgentStepContent: FC<AgentStepContentProps> = ({
               execution
             </p>
             <div className={labelInputStyles.inputWrapper}>
-              <div className={styles.toolkitBrowser}>
-                <Input
-                  placeholder="Search toolkits..."
-                  prefix={<MagnifyingGlassIcon />}
-                  value={toolkitSearch}
-                  onChange={(e) => setToolkitSearch(e.target.value)}
-                  allowClear
-                />
-
-                {selectedToolkitIds.length > 0 && (
-                  <div className={styles.selectedList}>
-                    {selectedToolkitIds.map((id) => {
-                      const tk = toolkitResults.find((t) => t.toolkitId === id);
-                      return (
-                        <Tag
-                          key={id}
-                          closable
-                          onClose={() => handleToggleToolkit(id)}
-                        >
-                          {tk?.name ?? id}
-                        </Tag>
-                      );
-                    })}
-                  </div>
-                )}
-
-                {searchingToolkits ? (
-                  <div className={styles.loadingWrapper}>
-                    <Spin size="small" />
-                  </div>
-                ) : filteredToolkits.length === 0 ? (
-                  <Empty description="No toolkits found" />
-                ) : (
-                  <div className={styles.toolkitList}>
-                    {filteredToolkits.map((toolkit) => {
-                      const selected = selectedToolkitIds.includes(
-                        toolkit.toolkitId,
-                      );
-                      return (
-                        <div key={toolkit.toolkitId} className="appCard">
-                          <div className={`defaultAppIcon ${styles.toolIcon}`}>
-                            <ToolboxIcon />
-                          </div>
-                          <div className="appInfo">
-                            <h4>{toolkit.name}</h4>
-                            <p title={toolkit.description}>
-                              {toolkit.description || 'No description'}
-                            </p>
-                          </div>
-                          <div className={styles.connectAction}>
-                            <Button
-                              size="small"
-                              type={selected ? 'primary' : 'default'}
-                              icon={selected ? <CheckIcon /> : <PlusIcon />}
-                              onClick={() =>
-                                handleToggleToolkit(toolkit.toolkitId)
-                              }
-                            />
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
+              <ToolBrowser
+                mode="toolkit"
+                selectedToolkitIds={selectedToolkitIds}
+                onToolkitIdsChange={onToolkitIdsChange}
+                height={400}
+              />
             </div>
           </div>
           {renderPrivacyNotice('Tools', 'tool')}
