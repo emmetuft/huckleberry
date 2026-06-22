@@ -15,6 +15,7 @@
     max-width: 150px;
 
     .contextItemTitle {
+      font-size: var(--font-xs);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;

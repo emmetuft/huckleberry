@@ -12,7 +12,7 @@ import { DataSource } from 'models/interfaces/dataSource';
 import { MentionItem } from 'models/interfaces/mention';
 import { Toolkit } from 'models/interfaces/toolkit';
 import { CommandPopup } from './CommandPopup/CommandPopup';
-import { ContextItems } from './context/ContextItems';
+import { ContextItems } from './ContextItems/ContextItems';
 import { IntentInputControls } from './Controls/Controls';
 import { ModelSelect } from './Controls/ModelSelect';
 import { SendButton } from './Controls/SendBtn';

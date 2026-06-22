@@ -27,11 +27,13 @@ export const ModelSelect: FC<ModelSelectProps> = ({
       popupMatchSelectWidth={false}
       variant="borderless"
       value={selectedModelId}
+      onChange={(value) => setSelectedModelId(value)}
       options={models.map((model) => ({
         label: model.name,
         value: model.id,
       }))}
       suffixIcon={<CaretDownIcon color="#000" />}
+      styles={{ content: { fontSize: 'var(--font-xs)' } }}
     />
   );
 };
