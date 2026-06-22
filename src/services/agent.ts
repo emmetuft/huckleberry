@@ -24,20 +24,23 @@ const getAgents = async (
     customAgents: Agent[];
   }>(response);
   const agents = data.customAgents;
-  // return agents;
 
-  const ownerIds = Array.from(
-    new Set(agents.map((agent) => agent.owner.toString())),
-  );
-  const owners = await PeopleService.getUsers(ownerIds);
-  const ownerDisplayNameById = new Map(
-    owners.map((user) => [user.id, user.displayName]),
-  );
-
-  return agents.map((agent) => ({
-    ...agent,
-    ownerDisplayName: ownerDisplayNameById.get(Number(agent.owner)),
-  }));
+  let ownerDisplayNameById = new Map<number, string | undefined>();
+  try {
+    const ownerIds = Array.from(
+      new Set(agents.map((agent) => agent.owner.toString())),
+    );
+    const owners = await PeopleService.getUsers(ownerIds);
+    ownerDisplayNameById = new Map(
+      owners.map((user) => [user.id, user.displayName]),
+    );
+  } catch {
+  } finally {
+    return agents.map((agent) => ({
+      ...agent,
+      ownerDisplayName: ownerDisplayNameById.get(Number(agent.owner)),
+    }));
+  }
 };
 
 /**
@@ -45,7 +48,15 @@ const getAgents = async (
  */
 const getAgent = async (agentId: string): Promise<Agent> => {
   const response = await apiFetch(`${AGENT_API_BASE}/${agentId}`);
-  return handleResponse<Agent>(response);
+  const data = await handleResponse<Agent>(response);
+  let ownerDisplayName: string | undefined;
+  try {
+    const owner = await PeopleService.getUserById(data.owner.toString());
+    ownerDisplayName = owner?.displayName;
+  } catch {
+  } finally {
+    return { ...data, ownerDisplayName };
+  }
 };
 
 /**
