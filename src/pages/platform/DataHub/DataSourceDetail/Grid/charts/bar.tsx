@@ -62,7 +62,7 @@ const BarChart: React.FC<BarChartProps> = ({ distribution, onClickValue }) => {
       .join('g')
       .attr('class', 'row-group')
       .attr('transform', (d) => `translate(0, ${y(d.label) ?? 0})`)
-      .on('mouseover', function (_, d) {
+      .on('mouseover', function (_, _d) {
         d3.select(this).select('.bar').attr('fill', 'var(--info-icon)'); // Highlight bar
       })
       .on('mouseout', function () {

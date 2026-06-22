@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Button, Tag } from 'antd';
+import { Tag } from 'antd';
 import {
   CalendarBlankIcon,
   GithubLogoIcon,

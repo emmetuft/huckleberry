@@ -1,10 +1,11 @@
+import { apiFetch } from 'services/headers';
 import { Persona } from 'models/interfaces/persona';
 
 const PERSONA_API_BASE = '/api/persona';
 
-const fetchUserPersona = async (userId: number): Promise<Persona> => {
+const getUserPersona = async (userId: number): Promise<Persona> => {
   try {
-    const response = await fetch(`${PERSONA_API_BASE}/${userId}`, {
+    const response = await apiFetch(`${PERSONA_API_BASE}/${userId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -34,7 +35,7 @@ const saveUserPersona = async (
   userPersona: Persona,
 ): Promise<Persona> => {
   try {
-    const response = await fetch(`${PERSONA_API_BASE}/${userId}`, {
+    const response = await apiFetch(`${PERSONA_API_BASE}/${userId}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -61,6 +62,6 @@ const saveUserPersona = async (
 };
 
 export const StorageService = {
-  fetchUserPersona,
+  getUserPersona,
   saveUserPersona,
 };

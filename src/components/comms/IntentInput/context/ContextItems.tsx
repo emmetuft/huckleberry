@@ -1,35 +1,38 @@
 import { FC } from 'react';
+import { useSelector } from 'react-redux';
 import {
   DatabaseIcon,
   FileIcon,
-  WrenchIcon,
+  ToolboxIcon,
   XIcon,
 } from '@phosphor-icons/react';
 import { DataSource } from 'models/interfaces/dataSource';
+import { selectToolkits } from 'reducers/toolkits/slice';
 import styles from './Context.module.css';
-import { Tool } from 'models/interfaces/toolkit';
 
 interface ContextItemsProps {
   uploadedFiles: File[];
   selectedDataSources: DataSource[];
-  selectedTools: Tool[];
+  selectedToolkitIds: string[];
   onRemoveFile: (fileName: string) => void;
   onRemoveDataSource: (dataSourceId: string) => void;
-  onRemoveTool: (tool: Tool) => void;
+  onRemoveToolkit: (toolkitId: string) => void;
 }
 
 export const ContextItems: FC<ContextItemsProps> = ({
   uploadedFiles,
   selectedDataSources,
-  selectedTools,
+  selectedToolkitIds,
   onRemoveFile,
   onRemoveDataSource,
-  onRemoveTool,
+  onRemoveToolkit,
 }) => {
+  const toolkits = useSelector(selectToolkits);
+
   if (
     uploadedFiles.length === 0 &&
     selectedDataSources.length === 0 &&
-    selectedTools.length === 0
+    selectedToolkitIds.length === 0
   ) {
     return null;
   }
@@ -58,20 +61,20 @@ export const ContextItems: FC<ContextItemsProps> = ({
           </button>
         </div>
       ))}
-      {selectedTools.map((tool) => (
-        <div key={tool.toolId} className={styles.contextItem}>
-          <WrenchIcon size={14} />
-          <span
-            className={styles.contextItemTitle}
-            title={tool.overrideToolName}
-          >
-            {tool.overrideToolName}
-          </span>
-          <button onClick={() => onRemoveTool(tool)}>
-            <XIcon className={styles.closeIcon} />
-          </button>
-        </div>
-      ))}
+      {selectedToolkitIds.map((id) => {
+        const tk = toolkits.find((t) => t.toolkitId === id);
+        return (
+          <div key={id} className={styles.contextItem}>
+            <ToolboxIcon size={14} />
+            <span className={styles.contextItemTitle} title={tk?.name ?? id}>
+              {tk?.name ?? id}
+            </span>
+            <button onClick={() => onRemoveToolkit(id)}>
+              <XIcon className={styles.closeIcon} />
+            </button>
+          </div>
+        );
+      })}
     </div>
   );
 };

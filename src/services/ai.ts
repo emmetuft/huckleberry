@@ -1,3 +1,4 @@
+import { apiFetch } from 'services/headers';
 import { AIModel } from 'models/interfaces/aiModel';
 import {
   DomoAIResponse,
@@ -14,8 +15,8 @@ import { handleResponse } from 'utils/service';
 
 const AI_SERVICE_ENDPOINT = '/api/ai';
 
-async function fetchModels(): Promise<AIModel[]> {
-  const response = await fetch(`${AI_SERVICE_ENDPOINT}/models`, {
+async function getModels(): Promise<AIModel[]> {
+  const response = await apiFetch(`${AI_SERVICE_ENDPOINT}/models`, {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
   });
@@ -33,7 +34,7 @@ async function generateText<T>(
   request: TextGenRequest,
   parseJSON: boolean = false,
 ): Promise<T> {
-  const response = await fetch(`${AI_SERVICE_ENDPOINT}/text/generation`, {
+  const response = await apiFetch(`${AI_SERVICE_ENDPOINT}/text/generation`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(request),
@@ -61,7 +62,7 @@ async function generateText<T>(
 }
 
 async function imageToText(request: ImageToTextRequest): Promise<string> {
-  const response = await fetch(`${AI_SERVICE_ENDPOINT}/image/text`, {
+  const response = await apiFetch(`${AI_SERVICE_ENDPOINT}/image/text`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(request),
@@ -77,7 +78,7 @@ async function imageToText(request: ImageToTextRequest): Promise<string> {
 }
 
 export const DomoAIService = {
-  fetchModels,
+  getModels,
   generateText,
   imageToText,
 };

@@ -8,40 +8,19 @@
     flex-wrap: wrap;
     gap: var(--space-sm);
   }
-
-  .serverCollapse {
-    overflow-y: auto;
-    background: transparent;
-    border-radius: var(--br-lg);
-  }
-}
-
-.header {
-  display: flex;
-  align-items: center;
-  margin-top: 1px;
-  min-width: 0;
-  overflow: hidden;
-
-  .serverLabel {
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .toolCount {
-    flex-shrink: 0;
-    margin-left: 6px;
-    font-size: 12px;
-  }
 }
 
 .toolList {
   display: flex;
   flex-direction: column;
   gap: var(--space-lg);
+  padding-top: 2px;
+  overflow-y: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   .toolIcon {
     border: 1px solid var(--grey-border);

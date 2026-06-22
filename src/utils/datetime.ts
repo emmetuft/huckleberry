@@ -63,6 +63,19 @@ export const formatMessageTimestamp = (timestamp: number): string => {
   });
 };
 
+export const formatDuration = (ms: number): string => {
+  if (ms < 1000) return `${ms}ms`;
+  const seconds = ms / 1000;
+  if (seconds < 60) return `${seconds.toFixed(2)}s`;
+  const minutes = seconds / 60;
+  return `${minutes.toFixed(2)}m`;
+};
+
+export const formatCompactNumber = (n: number): string => {
+  if (n < 1000) return String(n);
+  return `${(n / 1000).toFixed(1).replace(/\.0$/, '')}k`;
+};
+
 /**
  * Determines whether to show a timestamp above a turn.
  * Shows timestamp if it's the first turn or if an hour or more has passed since the previous turn.

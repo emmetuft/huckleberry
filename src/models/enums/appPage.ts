@@ -19,6 +19,7 @@ export enum AppPage {
   AGENT_DETAIL = 'agent_detail',
   AGENT_EDIT = 'agent_edit',
   AGENT_CHAT = 'agent_chat',
+  AGENTS_MONITORING = 'agents_monitoring',
   APPS = 'apps',
   AUTOMATION = 'automation',
   DATA_HEALTH = 'data_health',
@@ -41,6 +42,7 @@ export const AppPageTitle: Record<string, string> = {
   [AppPage.AGENT_DETAIL]: 'Agent',
   [AppPage.AGENT_EDIT]: 'Agent',
   [AppPage.AGENT_CHAT]: 'Agent Chat',
+  [AppPage.AGENTS_MONITORING]: 'Agent Monitoring',
   [AppPage.APPS]: 'Apps',
   [AppPage.AUTOMATION]: 'Automations',
   [AppPage.DATA_HEALTH]: 'Data Health',
@@ -89,6 +91,7 @@ export const platformRoutePaths: Record<AppPage, string> = {
   [AppPage.AGENT_DETAIL]: '/agents/:agentId',
   [AppPage.AGENT_EDIT]: '/agents/:agentId/edit',
   [AppPage.AGENT_CHAT]: '/agents/:agentId/chat',
+  [AppPage.AGENTS_MONITORING]: '/agents/monitoring',
   [AppPage.AUTOMATION]: '/automation',
   [AppPage.DATA_HEALTH]: '/data-health',
   [AppPage.DATA_HUB]: '/data-hub',
@@ -106,9 +109,17 @@ export const platformRoutePaths: Record<AppPage, string> = {
 };
 
 // Helper to get AppPage from platform path
+// Static (param-free) paths are checked first so e.g. /agents/monitoring
+// doesn't match /agents/:agentId before its own entry is tested.
 export const getAppPageFromPath = (path: string): AppPage => {
-  const entry = Object.entries(platformRoutePaths).find(
-    ([_, routePath]) => matchPath(routePath, path) !== null,
+  const entries = Object.entries(platformRoutePaths).sort(([, a], [, b]) => {
+    const isDynamicA = a.includes(':');
+    const isDynamicB = b.includes(':');
+    if (isDynamicA === isDynamicB) return 0;
+    return isDynamicA ? 1 : -1;
+  });
+  const entry = entries.find(
+    ([, routePath]) => matchPath(routePath, path) !== null,
   );
   return entry ? (entry[0] as AppPage) : AppPage.HOME;
 };

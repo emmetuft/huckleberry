@@ -7,6 +7,7 @@ import {
   GlobeIcon,
   LockSimpleIcon,
   MagicWandIcon,
+  BrainIcon,
   TrashIcon,
   UserCircleIcon,
   UsersThreeIcon,
@@ -20,7 +21,6 @@ import { AccessEntry, Permission } from 'models/enums/permission';
 import { Agent } from 'models/interfaces/agent';
 import { Group, isUser, User } from 'models/interfaces/mention';
 import { DataSource } from 'models/interfaces/dataSource';
-import { Tool } from 'models/interfaces/toolkit';
 import { Avatar } from 'components/shared/Avatar/Avatar';
 import { DataSourceBrowser } from 'components/shared/DataSourceBrowser/DataSourceBrowser';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
@@ -29,8 +29,8 @@ import {
   InputField,
   LabelInput,
 } from 'components/shared/LabelInput/LabelInput';
-import PermissionSelect from 'components/shared/PermissionSelect';
 import { ToolBrowser } from 'components/shared/ToolBrowser/ToolBrowser';
+import PermissionSelect from 'components/shared/PermissionSelect';
 import AppTooltip from 'components/shared/Tooltip';
 import { DomoAIService } from 'services/ai';
 import { buildFieldGenerationPrompt } from 'utils/ai';
@@ -39,8 +39,8 @@ interface AgentStepContentProps {
   currentStep: AgentStep;
   agentForm: Partial<Agent>;
   onFieldChange: (key: keyof Agent, value: any) => void;
-  selectedTools: Tool[];
-  onToolsChange: (tools: Tool[]) => void;
+  selectedToolkitIds: string[];
+  onToolkitIdsChange: (ids: string[]) => void;
   selectedDataSources: DataSource[];
   onDataSourcesChange: (dataSources: DataSource[]) => void;
   usersAndGroups: AccessEntry[];
@@ -70,8 +70,8 @@ export const AgentStepContent: FC<AgentStepContentProps> = ({
   currentStep,
   agentForm,
   onFieldChange,
-  selectedTools,
-  onToolsChange,
+  selectedToolkitIds,
+  onToolkitIdsChange,
   selectedDataSources,
   onDataSourcesChange,
   usersAndGroups,
@@ -276,20 +276,48 @@ export const AgentStepContent: FC<AgentStepContentProps> = ({
             </div>
           </div>
           {renderPrivacyNotice('Files and integrations', 'file or integration')}
+          <div className={styles.memoryFeature}>
+            <div className={styles.memoryFeatureContent}>
+              <div className={styles.memoryFeatureHeader}>
+                <BrainIcon size={16} weight="fill" />
+                Long-Term Memory
+              </div>
+              <p className={styles.memoryFeatureDescription}>
+                Recalls facts learned about the user across sessions — so every
+                conversation feels like it picks up where the last one left off.
+              </p>
+            </div>
+            <Switch
+              checked={
+                agentForm.settings?.properties?.memoryRetrievalEnabled ?? true
+              }
+              onChange={(checked) =>
+                onFieldChange('settings', {
+                  ...agentForm.settings,
+                  properties: {
+                    ...agentForm.settings?.properties,
+                    memoryRetrievalEnabled: checked,
+                  },
+                })
+              }
+            />
+          </div>
         </div>
       );
     case AgentStep.Tools:
       return (
         <div className={styles.pageContent}>
           <div className={labelInputStyles.labelInput}>
-            <p className={labelInputStyles.label}>Tools</p>
+            <p className={labelInputStyles.label}>Toolkits</p>
             <p className={labelInputStyles.description}>
-              Give your agent access to tools that it can use during execution
+              Select toolkits to give your agent access to tools during
+              execution
             </p>
             <div className={labelInputStyles.inputWrapper}>
               <ToolBrowser
-                selectedTools={selectedTools}
-                onToolsChange={onToolsChange}
+                mode="toolkit"
+                selectedToolkitIds={selectedToolkitIds}
+                onToolkitIdsChange={onToolkitIdsChange}
                 height={400}
               />
             </div>
@@ -332,7 +360,6 @@ export const AgentStepContent: FC<AgentStepContentProps> = ({
                       userId={member.id}
                       name={member.displayName}
                       showName
-                      // height={30}
                     />
                   ) : (
                     <div className={styles.group}>

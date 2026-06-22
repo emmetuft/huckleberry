@@ -1,3 +1,4 @@
+import { createSelector } from '@reduxjs/toolkit';
 import { createAppSlice } from '../createAppSlice';
 import { fetchUsers, fetchGroups } from './actions';
 import { User, Group } from 'models/interfaces/mention';
@@ -56,7 +57,6 @@ export const PeopleSlice = createAppSlice({
   selectors: {
     selectUsers: (state: PeopleState) => state.users,
     selectGroups: (state: PeopleState) => state.groups,
-    selectAllPeople: (state: PeopleState) => [...state.users, ...state.groups],
     selectLoading: (state: PeopleState) => state.loading,
     selectError: (state: PeopleState) => state.error,
   },
@@ -64,12 +64,14 @@ export const PeopleSlice = createAppSlice({
 
 export const { clearError } = PeopleSlice.actions;
 
-export const {
-  selectUsers,
-  selectGroups,
-  selectAllPeople,
-  selectLoading,
-  selectError,
-} = PeopleSlice.selectors;
+const { selectUsers, selectGroups, selectLoading, selectError } =
+  PeopleSlice.selectors;
+
+export const selectAllPeople = createSelector(
+  [selectUsers, selectGroups],
+  (users, groups) => [...users, ...groups],
+);
+
+export { selectUsers, selectGroups, selectLoading, selectError };
 
 export default PeopleSlice.reducer;

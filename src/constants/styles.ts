@@ -45,3 +45,8 @@ export const greenTagStyle = {
   color: 'var(--success-icon)',
   backgroundColor: 'var(--success-bg)',
 };
+
+export const blueTagStyle = {
+  color: 'var(--info-icon)',
+  backgroundColor: 'var(--info-bg)',
+};

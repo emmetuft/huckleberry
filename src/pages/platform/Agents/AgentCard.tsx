@@ -3,11 +3,14 @@ import {
   LightningIcon,
   PencilSimpleIcon,
   RocketLaunchIcon,
+  TrashIcon,
 } from '@phosphor-icons/react';
 import { Tag } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import styles from './Agents.module.css';
-import { defaultTagStyle, greenTagStyle } from 'constants/styles';
+import { useAppDispatch } from 'reducers';
+import { deleteCustomAgent } from 'reducers/agents/actions';
+import { blueTagStyle, defaultTagStyle, greenTagStyle } from 'constants/styles';
 import { Agent } from 'models/interfaces/agent';
 import { Avatar } from 'components/shared/Avatar/Avatar';
 import { isEmpty } from 'utils/misc';
@@ -20,6 +23,7 @@ const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
 export const AgentCard: FC<AgentCardProps> = ({ agent }) => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const now = Date.now();
   const isNew =
     agent.created && now - new Date(agent.created).getTime() < ONE_WEEK_MS;
@@ -41,7 +45,7 @@ export const AgentCard: FC<AgentCardProps> = ({ agent }) => {
           {isNew ? (
             <Tag style={greenTagStyle}>New</Tag>
           ) : isUpdated ? (
-            <Tag>Updated</Tag>
+            <Tag style={blueTagStyle}>Updated</Tag>
           ) : null}
         </div>
         <p>
@@ -72,6 +76,15 @@ export const AgentCard: FC<AgentCardProps> = ({ agent }) => {
           >
             <PencilSimpleIcon />
             Edit
+          </Tag>
+          <Tag
+            onClick={(e) => {
+              e.stopPropagation();
+              dispatch(deleteCustomAgent(agent.id));
+            }}
+          >
+            <TrashIcon />
+            Delete
           </Tag>
         </div>
       </div>

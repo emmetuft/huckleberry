@@ -1,4 +1,10 @@
-import React, { useCallback, useMemo, useRef, useEffect } from 'react';
+import React, {
+  useCallback,
+  useMemo,
+  useRef,
+  useEffect,
+  useState,
+} from 'react';
 import { useSelector } from 'react-redux';
 import ForceGraph3D from 'react-force-graph-3d';
 import ForceGraph2D from 'react-force-graph-2d';
@@ -10,10 +16,59 @@ import {
 import { GraphData, GraphNode } from 'models/interfaces/ontology';
 import { getColorForGroup } from 'utils/styles';
 
-interface ForceGraphProps {
-  data: GraphData;
-  mode?: '2d' | '3d';
-  onNodeClick?: (node: GraphNode) => void;
+const SESSION_NODE_COLORS: Record<string, string> = {
+  Session: '#e0a030',
+  Request: '#705be7',
+  Generation: '#6d8ae9',
+  ThinkingStep: '#e0a030',
+  ToolCall: '#3a9e72',
+  ActionExecution: '#bfff00',
+  McpExchange: '#c45a4a',
+};
+
+const GENERATION_SERVICE_LABELS: Record<string, string> = {
+  CHAT_COMPLETION: 'Chat Completion',
+  MESSAGES: 'LLM Call',
+  TOOL_CALLING: 'Tool Calling',
+  PLANNING: 'Planning',
+  TEXT_TO_SQL: 'Text to SQL',
+};
+
+const ACTION_TYPE_LABELS: Record<string, string> = {
+  DATASET_LOOKUP_ACTION: 'Dataset Lookup',
+  DATASET_TEXT_TO_SQL_ACTION: 'Text to SQL',
+  DATASET_QUERY_ACTION: 'Query Dataset',
+  DATASET_CREATE_ACTION: 'Create Dataset',
+  DATASET_UPLOAD_ACTION: 'Upload Dataset',
+  SEARCH_ACTION: 'Search',
+  EXTENDED_THINKING_ACTION: 'Extended Thinking',
+};
+
+function getNodeDisplayName(node: GraphNode): string {
+  const p = node.properties as Record<string, any>;
+  const primaryLabel =
+    node.labels.find(
+      (l) => l !== 'Entity' && l !== 'AISessionEvent' && l !== 'AIContext',
+    ) ?? node.labels[0];
+
+  switch (primaryLabel) {
+    case 'Session':
+      return 'Session';
+    case 'Request':
+      return p.inputPreview ? String(p.inputPreview).slice(0, 50) : 'Request';
+    case 'Generation':
+      return GENERATION_SERVICE_LABELS[p.service] ?? p.service ?? 'Generation';
+    case 'ThinkingStep':
+      return 'Thinking';
+    case 'ToolCall':
+      return p.toolName ?? 'Tool';
+    case 'ActionExecution':
+      return ACTION_TYPE_LABELS[p.actionType] ?? p.actionType ?? 'Action';
+    case 'McpExchange':
+      return p.method ?? 'MCP';
+    default:
+      return p.name ?? primaryLabel ?? node.id;
+  }
 }
 
 interface D3Node {
@@ -33,20 +88,48 @@ interface D3Link {
   type: string;
 }
 
+interface ForceGraphProps {
+  data: GraphData;
+  mode?: '2d' | '3d';
+  dagMode?: 'td' | 'bu' | 'lr' | 'rl' | 'radialout' | 'radialin';
+  nodeLabels?: string[];
+  onNodeClick?: (node: GraphNode) => void;
+}
+
 export const ForceGraph: React.FC<ForceGraphProps> = ({
   data,
   mode = '3d',
+  dagMode,
+  nodeLabels: propsNodeLabels,
   onNodeClick,
 }) => {
-  const nodeLabels = useSelector(selectNodeLabels);
+  const ontologyNodeLabels = useSelector(selectNodeLabels);
   const highlightedNodeId = useSelector(selectHighlightedNodeId);
 
+  const nodeLabels = propsNodeLabels ?? ontologyNodeLabels;
+
   const graphRef = useRef<any>();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [dimensions, setDimensions] = useState<{
+    width: number;
+    height: number;
+  } | null>(null);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect;
+      setDimensions({ width, height });
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   const graphData = useMemo(() => {
     const d3Nodes: D3Node[] = data.nodes.map((node) => ({
       id: node.id,
-      name: node.properties.name || node.id,
+      name: getNodeDisplayName(node),
       labels: node.labels,
       properties: node.properties,
     }));
@@ -70,6 +153,13 @@ export const ForceGraph: React.FC<ForceGraphProps> = ({
     highlightNode();
   }, [highlightedNodeId]);
 
+  useEffect(() => {
+    if (!graphRef.current || !dagMode) return;
+    graphRef.current.d3Force('charge')?.strength(-600);
+    graphRef.current.d3Force('link')?.distance(100);
+    graphRef.current.d3ReheatSimulation();
+  }, [dagMode, graphData]);
+
   const highlightNode = () => {
     if (!graphRef.current) return;
     const node = graphData.nodes.find((n) => n.id === highlightedNodeId);
@@ -88,7 +178,7 @@ export const ForceGraph: React.FC<ForceGraphProps> = ({
   };
 
   const handleNodeClick = useCallback(
-    (node: any, event: MouseEvent) => {
+    (node: any, _event: MouseEvent) => {
       const neo4jNode = data.nodes.find((n) => n.id === node.id);
       if (neo4jNode && onNodeClick) {
         onNodeClick(neo4jNode);
@@ -109,9 +199,16 @@ export const ForceGraph: React.FC<ForceGraphProps> = ({
 
   const getNodeColor = useCallback(
     (node: any) => {
-      const primaryLabel = node.labels[0] || 'Unknown';
-      const labelIndex = nodeLabels.indexOf(primaryLabel);
-      const baseColor = getColorForGroup(labelIndex);
+      const primaryLabel =
+        node.labels.find(
+          (l: string) =>
+            l !== 'Entity' && l !== 'AISessionEvent' && l !== 'AIContext',
+        ) ??
+        node.labels[0] ??
+        'Unknown';
+      const baseColor =
+        SESSION_NODE_COLORS[primaryLabel] ??
+        getColorForGroup(nodeLabels.indexOf(primaryLabel));
 
       if (highlightedNodeId) {
         if (node.id === highlightedNodeId) return '#2fcb3fff';
@@ -129,6 +226,7 @@ export const ForceGraph: React.FC<ForceGraphProps> = ({
     backgroundColor: 'rgba(0,0,0,0)',
     nodeColor: getNodeColor,
     onNodeClick: handleNodeClick,
+    nodeLabel: () => '',
     linkLabel: (link: any) => link.type,
     linkColor: () => 'rgba(100, 100, 100, 1)',
     linkWidth: 1,
@@ -136,40 +234,49 @@ export const ForceGraph: React.FC<ForceGraphProps> = ({
     linkDirectionalParticleWidth: 2,
     linkDirectionalParticleSpeed: 0.005,
     onEngineStop: handleEngineStop,
+    ...(dagMode ? { dagMode, dagLevelDistance: 100 } : {}),
+    ...(dimensions ?? {}),
   };
 
   if (mode === '2d') {
     return (
-      <ForceGraph2D
-        {...sharedProps}
-        nodeCanvasObjectMode={() => 'after'}
-        nodeCanvasObject={(
-          node: any,
-          ctx: CanvasRenderingContext2D,
-          globalScale: number,
-        ) => {
-          const label = node.name;
-          const fontSize = 12 / globalScale;
-          ctx.font = `${fontSize}px Sans-Serif`;
-          ctx.fillStyle = getNodeColor(node);
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'top';
-          ctx.fillText(label, node.x, node.y + 6);
-        }}
-      />
+      <div
+        ref={containerRef}
+        style={{ width: '100%', height: '100%', position: 'relative' }}
+      >
+        <ForceGraph2D
+          {...sharedProps}
+          nodeCanvasObjectMode={() => 'after'}
+          nodeCanvasObject={(
+            node: any,
+            ctx: CanvasRenderingContext2D,
+            globalScale: number,
+          ) => {
+            const label = node.name;
+            const fontSize = 12 / globalScale;
+            ctx.font = `${fontSize}px Sans-Serif`;
+            ctx.fillStyle = getNodeColor(node);
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            ctx.fillText(label, node.x, node.y + 6);
+          }}
+        />
+      </div>
     );
   }
 
   return (
-    <ForceGraph3D
-      {...sharedProps}
-      nodeThreeObjectExtend={true}
-      nodeThreeObject={(node: any) => {
-        const sprite = new SpriteText(node.name);
-        sprite.color = getNodeColor(node);
-        sprite.position.y = 8;
-        return sprite;
-      }}
-    />
+    <div ref={containerRef} style={{ width: '100%', height: '100%' }}>
+      <ForceGraph3D
+        {...sharedProps}
+        nodeThreeObjectExtend={true}
+        nodeThreeObject={(node: any) => {
+          const sprite = new SpriteText(node.name);
+          sprite.color = getNodeColor(node);
+          sprite.position.y = 8;
+          return sprite;
+        }}
+      />
+    </div>
   );
 };

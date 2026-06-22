@@ -1,13 +1,6 @@
 import { FC, useEffect } from 'react';
 import { Modal, Form, Input, Select, Switch, message, Typography } from 'antd';
-import { useAppDispatch } from 'reducers';
-import {
-  MCPServerConfig,
-  MCPServerCreateInput,
-  MCPAuthType,
-  MCPTransportType,
-  OAuth2DiscoveredConfig,
-} from 'models/interfaces/mcpServer';
+import { MCPServerConfig } from 'models/interfaces/mcpServer';
 
 const { Text } = Typography;
 
@@ -24,7 +17,6 @@ export const AddServerModal: FC<AddServerModalProps> = ({
   onClose,
   onSuccess,
 }) => {
-  const dispatch = useAppDispatch();
   const [form] = Form.useForm();
   const isEditing = !!server;
 
@@ -62,65 +54,9 @@ export const AddServerModal: FC<AddServerModalProps> = ({
 
   const handleSubmit = async () => {
     try {
-      const values = await form.validateFields();
-
-      const input: MCPServerCreateInput = {
-        name: values.name,
-        description: values.description || undefined,
-        url: values.url,
-        transport: values.transport as MCPTransportType,
-        authType: values.authType as MCPAuthType,
-        authHeader: values.authHeader || undefined,
-        authToken: values.authToken || undefined,
-        enabled: values.enabled,
-        // For OAuth2, only pass optional client credentials
-        // The rest will be auto-discovered
-        oauth2ClientId:
-          values.authType === 'oauth2'
-            ? values.oauth2ClientId || undefined
-            : undefined,
-        oauth2ClientSecret:
-          values.authType === 'oauth2'
-            ? values.oauth2ClientSecret || undefined
-            : undefined,
-      };
+      await form.validateFields();
 
       if (isEditing && server) {
-        // Build updated OAuth2 discovered config if needed
-        let oauth2DiscoveredConfig: OAuth2DiscoveredConfig | undefined =
-          undefined;
-        if (
-          values.authType === 'oauth2' &&
-          (values.oauth2ClientId ||
-            values.oauth2ClientSecret ||
-            values.oauth2Scopes ||
-            server.oauth2DiscoveredConfig)
-        ) {
-          // Parse user-provided scopes or use discovered ones
-          const scopesSupported = values.oauth2Scopes
-            ? values.oauth2Scopes.split(/\s+/).filter(Boolean)
-            : server.oauth2DiscoveredConfig?.scopesSupported || [];
-
-          oauth2DiscoveredConfig = {
-            authorizationServers:
-              server.oauth2DiscoveredConfig?.authorizationServers || [],
-            scopesSupported,
-            resourceMetadataUrl:
-              server.oauth2DiscoveredConfig?.resourceMetadataUrl,
-            authorizationEndpoint:
-              server.oauth2DiscoveredConfig?.authorizationEndpoint,
-            tokenEndpoint: server.oauth2DiscoveredConfig?.tokenEndpoint,
-            registrationEndpoint:
-              server.oauth2DiscoveredConfig?.registrationEndpoint,
-            discoveredAt: server.oauth2DiscoveredConfig?.discoveredAt,
-            clientId:
-              values.oauth2ClientId || server.oauth2DiscoveredConfig?.clientId,
-            clientSecret:
-              values.oauth2ClientSecret ||
-              server.oauth2DiscoveredConfig?.clientSecret,
-          };
-        }
-
         // await dispatch(
         //   editServer({
         //     id: server.id,

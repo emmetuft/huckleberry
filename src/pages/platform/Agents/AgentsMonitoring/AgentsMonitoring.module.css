@@ -1,0 +1,59 @@
+.agentsMonitoring {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+
+  .splitStats {
+    display: flex;
+
+    .statWithChart {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+
+      .statTitle {
+        font-weight: 600;
+      }
+    }
+  }
+
+  .tokensByAgent {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .agentBarRow {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    align-items: center;
+    gap: var(--space-md);
+  }
+
+  .agentBarName {
+    font-size: 13px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .agentBarTrack {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    min-width: 0;
+  }
+
+  .agentBar {
+    height: 16px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  .agentBarLabel {
+    font-size: 12px;
+    color: var(--text-muted, #888);
+    white-space: nowrap;
+  }
+}

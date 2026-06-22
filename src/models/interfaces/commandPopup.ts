@@ -17,7 +17,7 @@ export const toolToCommandItem = (tool: Tool): CommandPopupItem => ({
 });
 
 export const userToCommandItem = (user: User): CommandPopupItem => ({
-  id: user.id,
+  id: user.id.toString(),
   name: user.displayName || user.username,
   description: `@${user.username}`,
   groupKey: 'users',
@@ -25,7 +25,7 @@ export const userToCommandItem = (user: User): CommandPopupItem => ({
 });
 
 export const groupToCommandItem = (group: Group): CommandPopupItem => ({
-  id: group.id,
+  id: group.id.toString(),
   name: group.name,
   description: group.description,
   groupKey: 'groups',

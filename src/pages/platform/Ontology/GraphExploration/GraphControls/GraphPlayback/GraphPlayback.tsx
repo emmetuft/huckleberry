@@ -6,10 +6,11 @@ import {
   ArrowCounterClockwiseIcon,
 } from '@phosphor-icons/react';
 import styles from './GraphPlayback.module.css';
-import { PEOPLE_SKILLS_GRAPH } from 'constants/graph';
+import { GraphNode } from 'models/interfaces/ontology';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
 
 interface GraphPlaybackProps {
+  nodes: GraphNode[];
   isOpen: boolean;
   onPlaybackChange: (visibleNodeIds: Set<string> | null) => void;
 }
@@ -19,11 +20,10 @@ const PLAYBACK_SPEED = 60;
 const TICK_MS = 50;
 
 export const GraphPlayback: React.FC<GraphPlaybackProps> = ({
+  nodes,
   isOpen,
   onPlaybackChange,
 }) => {
-  const nodes = PEOPLE_SKILLS_GRAPH.nodes;
-
   const sortedNodes = useMemo(
     () =>
       nodes
@@ -55,16 +55,29 @@ export const GraphPlayback: React.FC<GraphPlaybackProps> = ({
   const prevVisibleCountRef = useRef(0);
 
   useEffect(() => {
+    if (minTime > 0) {
+      setCurrentTime(minTime);
+    }
+  }, [minTime]);
+
+  const canPlayback =
+    sortedNodes.length >= 2 && sortedNodes.length === nodes.length;
+
+  useEffect(() => {
     if (!isOpen) return;
+    if (!canPlayback) {
+      onPlaybackChange(null);
+      return;
+    }
     const visibleNodes = sortedNodes.filter(
       (n) => new Date(n.createdAt!).getTime() <= currentTime,
     );
     prevVisibleCountRef.current = visibleNodes.length;
     onPlaybackChange(new Set(visibleNodes.map((n) => n.id)));
-  }, [isOpen]);
+  }, [isOpen, canPlayback]);
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || !canPlayback) return;
     const visibleNodes = sortedNodes.filter(
       (n) => new Date(n.createdAt!).getTime() <= currentTime,
     );
@@ -72,7 +85,7 @@ export const GraphPlayback: React.FC<GraphPlaybackProps> = ({
       prevVisibleCountRef.current = visibleNodes.length;
       onPlaybackChange(new Set(visibleNodes.map((n) => n.id)));
     }
-  }, [currentTime, sortedNodes, onPlaybackChange]);
+  }, [currentTime, sortedNodes, onPlaybackChange, canPlayback]);
 
   useEffect(() => {
     if (isPlaying) {
@@ -117,7 +130,7 @@ export const GraphPlayback: React.FC<GraphPlaybackProps> = ({
       second: '2-digit',
     });
 
-  if (!sortedNodes.length) return null;
+  if (!canPlayback) return null;
 
   return (
     <div className={styles.graphPlayback}>

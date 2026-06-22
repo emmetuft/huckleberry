@@ -11,7 +11,6 @@ import {
 } from 'models/interfaces/sessionEvent';
 import {
   ProcessStepStatus,
-  ProcessStepType,
   ProcessStepWithUI,
 } from 'models/interfaces/processStep';
 import { ProcessedFile } from 'models/interfaces/files';

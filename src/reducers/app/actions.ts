@@ -18,7 +18,7 @@ export const fetchUserPersona = createAsyncThunk<
   if (!identity) {
     throw new Error('User identity is not available');
   }
-  return StorageService.fetchUserPersona(identity.id);
+  return StorageService.getUserPersona(identity.id);
 });
 
 export const saveUserPersona = createAsyncThunk<

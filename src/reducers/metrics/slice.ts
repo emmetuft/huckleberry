@@ -19,7 +19,7 @@ export const MetricsSlice = createAppSlice({
   name: 'metrics',
   initialState,
   reducers: () => ({}),
-  extraReducers: (builder) => {},
+  extraReducers: (_builder) => {},
   selectors: {
     selectMetricCatalogSchema: (state) => state.metricCatalogSchema,
   },

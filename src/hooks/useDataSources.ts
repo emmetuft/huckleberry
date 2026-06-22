@@ -39,7 +39,7 @@ export function useDataSources({
       loadingRef.current = true;
       setLoading(true);
       try {
-        const result = await DataService.fetchDataSources({
+        const result = await DataService.getDataSources({
           page: pageNum,
           size: pageSize,
           searchTerm: search,
