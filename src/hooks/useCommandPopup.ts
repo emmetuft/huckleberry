@@ -1,7 +1,6 @@
 import { RefObject, useState, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { selectUsers, selectGroups } from 'reducers/people/slice';
-import { selectToolkits } from 'reducers/toolkits/slice';
 import { InputCommand } from 'models/enums/inputCommand';
 import {
   CommandPopupItem,

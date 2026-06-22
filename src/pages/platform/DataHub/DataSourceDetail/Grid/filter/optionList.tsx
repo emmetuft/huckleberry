@@ -1,11 +1,9 @@
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Input, Spin } from 'antd';
 import styles from './index.module.css';
-import AppTooltip from 'components/shared/Tooltip';
 import { BLANK_LABEL } from 'constants/data';
-import { Filter, FilterOperator } from 'models/interfaces/filter';
-import { Column } from 'models/interfaces/column';
+import { FilterOperator } from 'models/interfaces/filter';
 import { DataType, isDateType } from 'models/enums/dataType';
 import { useFilterOptions } from 'hooks/useFilterOptions';
 import { formatDate, formatDateTime } from 'utils/datetime';
@@ -47,7 +45,11 @@ type OptionListItemProp = {
   onClick: () => void;
 };
 
-const OptionListItem: FC<OptionListItemProp> = ({ item, checked, onClick }) => (
+const OptionListItem: FC<OptionListItemProp> = ({
+  item,
+  checked: _checked,
+  onClick: _onClick,
+}) => (
   <div key={item.value} className={styles.listItem}>
     {item.value}
     {/* <ListItemButton role={undefined} onClick={onClick}>
@@ -90,7 +92,7 @@ const OptionListItem: FC<OptionListItemProp> = ({ item, checked, onClick }) => (
 export const OptionList: FC<Props> = ({
   columnName,
   dataType,
-  operator,
+  operator: _operator,
   selectedOptions,
   setSelectedOptions,
 }) => {
@@ -103,11 +105,10 @@ export const OptionList: FC<Props> = ({
     [filters, columnName],
   );
 
-  const [loading, queryResults, doSearch, reset, searchApplied] =
-    useFilterOptions({
-      columnName,
-      filters,
-    });
+  const [loading, queryResults, doSearch, reset] = useFilterOptions({
+    columnName,
+    filters,
+  });
 
   const displayOptions = useMemo(
     () => buildOptionsArr(dataType, queryResults),

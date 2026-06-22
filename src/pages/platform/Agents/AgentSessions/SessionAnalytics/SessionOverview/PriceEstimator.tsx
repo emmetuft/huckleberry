@@ -28,7 +28,7 @@ interface ModelUsage {
 }
 
 export const PriceEstimator: FC<PriceEstimatorProps> = ({
-  agentSession,
+  agentSession: _agentSession,
   sessionEvents,
   loading = false,
 }) => {

@@ -335,7 +335,7 @@ function buildTurns(events: AISessionEvent[]): TurnInfo[] {
   );
 }
 
-const Legend: FC<{ rows: WaterfallRow[] }> = ({ rows }) => (
+const Legend: FC<{ rows: WaterfallRow[] }> = ({ rows: _rows }) => (
   <div className={styles.legend}>
     {Object.values(EventCategory).map((category) => (
       <div key={category} className={styles.legendItem}>

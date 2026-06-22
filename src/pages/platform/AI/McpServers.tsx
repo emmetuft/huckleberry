@@ -7,12 +7,10 @@ import {
 } from '@phosphor-icons/react';
 import styles from './McpServers.module.css';
 import { MCPServerConfig } from 'models/interfaces/mcpServer';
-import { useAppDispatch } from 'reducers';
 import { OAuth2Status } from './OAuth2Status';
 import { AddServerModal } from './AddServerModal';
 
 export const McpServers: FC = () => {
-  const dispatch = useAppDispatch();
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [editingServer, setEditingServer] = useState<MCPServerConfig | null>(
     null,
@@ -57,12 +55,12 @@ export const McpServers: FC = () => {
     setAddModalOpen(true);
   };
 
-  const handleDeleteServer = async (id: string) => {
+  const handleDeleteServer = async (_id: string) => {
     // await dispatch(removeServer(id));
     message.success('Server deleted');
   };
 
-  const handleTestConnection = async (id: string) => {
+  const handleTestConnection = async (_id: string) => {
     // const result = await dispatch(testConnection(id)).unwrap();
     // if (result.success) {
     //   message.success(
@@ -91,7 +89,7 @@ export const McpServers: FC = () => {
     // }
   };
 
-  const handleSyncTools = async (id: string) => {
+  const handleSyncTools = async (_id: string) => {
     // try {
     //   const result = await dispatch(syncTools(id)).unwrap();
     //   message.success(`Synced ${result.toolCount} tools`);
@@ -101,12 +99,12 @@ export const McpServers: FC = () => {
     // }
   };
 
-  const handleToggleEnabled = async (id: string, enabled: boolean) => {
+  const handleToggleEnabled = async (_id: string, _enabled: boolean) => {
     // await dispatch(toggleServerEnabled({ id, enabled }));
     // dispatch(fetchTools());
   };
 
-  const handleServerClick = (server: MCPServerConfig) => {
+  const handleServerClick = (_server: MCPServerConfig) => {
     // dispatch(
     //   setSelectedServer(server.id === selectedServerId ? null : server.id),
     // );

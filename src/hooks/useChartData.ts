@@ -4,7 +4,7 @@ import { DataService } from 'services/data';
 import { DEFAULT_PAGE_SIZE } from 'constants/data';
 import { Column } from 'models/interfaces/column';
 
-type UseChartDataOptions<T> = {
+type UseChartDataOptions<_T> = {
   dataSourceId: string;
   schema: Column[];
   filters?: Filter[];
@@ -17,10 +17,10 @@ type UseChartDataOptions<T> = {
 export function useChartData<T>({
   dataSourceId,
   schema,
-  filters,
-  customSelect,
-  groupBy,
-  orderBy,
+  filters: _filters,
+  customSelect: _customSelect,
+  groupBy: _groupBy,
+  orderBy: _orderBy,
   limit,
 }: UseChartDataOptions<T>) {
   const [data, setData] = useState<T[]>([]);

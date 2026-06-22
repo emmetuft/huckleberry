@@ -178,7 +178,7 @@ export const ForceGraph: React.FC<ForceGraphProps> = ({
   };
 
   const handleNodeClick = useCallback(
-    (node: any, event: MouseEvent) => {
+    (node: any, _event: MouseEvent) => {
       const neo4jNode = data.nodes.find((n) => n.id === node.id);
       if (neo4jNode && onNodeClick) {
         onNodeClick(neo4jNode);

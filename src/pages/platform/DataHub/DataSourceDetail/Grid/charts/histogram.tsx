@@ -14,7 +14,7 @@ interface HistogramProps {
 const Histogram: React.FC<HistogramProps> = ({
   distribution,
   dataType,
-  onClickValue,
+  onClickValue: _onClickValue,
   width = 120,
   height = 100,
 }) => {
@@ -31,7 +31,7 @@ const Histogram: React.FC<HistogramProps> = ({
   const maxBars = 20;
 
   if (
-    Object.entries(distribution).filter(([key, value]) => key !== 'Null')
+    Object.entries(distribution).filter(([key, _value]) => key !== 'Null')
       .length === 0
   )
     return null;
@@ -42,7 +42,7 @@ const Histogram: React.FC<HistogramProps> = ({
       chartRef.current.innerHTML = '';
 
       const entries = Object.entries(distribution)
-        .filter(([key, value]) => key !== 'Null')
+        .filter(([key, _value]) => key !== 'Null')
         .map(([key, value]) => ({
           key:
             dataType === 'dateString'
@@ -163,7 +163,7 @@ const Histogram: React.FC<HistogramProps> = ({
         .attr('width', x.bandwidth())
         .attr('height', (d) => height - y(d.value))
         .attr('fill', 'var(--grey-border)')
-        .on('mouseenter', function (event, d) {
+        .on('mouseenter', function (_event, d) {
           d3.select(this).attr('fill', 'var(--info-icon)');
           setHoveredRange({
             range: d.key,

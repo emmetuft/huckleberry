@@ -52,28 +52,6 @@ export const StepDetails: FC<StepDetailsProps> = ({ step }) => {
     </>
   );
 
-  // TOOL Step Details
-  const renderToolDetails = () => (
-    <>
-      {inputs && Object.keys(inputs).length > 0 && (
-        <div className={styles.section}>
-          <p className={styles.sectionLabel}>Arguments:</p>
-          <pre className={styles.codeBlock}>
-            <code>{JSON.stringify(inputs, null, 2)}</code>
-          </pre>
-        </div>
-      )}
-      {outputs && outputs.length > 0 && (
-        <div className={styles.section}>
-          <p className={styles.sectionLabel}>Response:</p>
-          <pre className={styles.codeBlock}>
-            <code>{JSON.stringify(outputs[0], null, 2)}</code>
-          </pre>
-        </div>
-      )}
-    </>
-  );
-
   // MCP Step Details
   const renderMcpDetails = () => {
     if (!mcpData) return null;

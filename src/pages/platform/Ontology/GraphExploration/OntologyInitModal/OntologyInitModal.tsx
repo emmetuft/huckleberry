@@ -1,12 +1,10 @@
-import { FC, useEffect, useRef, useState } from 'react';
+import { FC, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Modal, Select, Table } from 'antd';
 import { DatabaseIcon } from '@phosphor-icons/react';
 import styles from './OntologyInitModal.module.css';
-import { useAppDispatch } from 'reducers';
 import { selectLoading } from 'reducers/ontology/slice';
 import { OntologySource } from 'models/interfaces/ontology';
-import { DataService } from 'services/data';
 import { useDataSources } from 'hooks/useDataSources';
 
 interface OntologyInitModalProps {
@@ -18,7 +16,6 @@ export const OntologyInitModal: FC<OntologyInitModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const dispatch = useAppDispatch();
   const ontologyLoading = useSelector(selectLoading).initGeneration;
 
   const [ontologySources, setOntologySources] = useState<OntologySource[]>([]);
@@ -29,11 +26,7 @@ export const OntologyInitModal: FC<OntologyInitModalProps> = ({
   });
 
   // asynchronous loading state for UI
-  const [schemaLoadingIds, setSchemaLoadingIds] = useState<Set<string>>(
-    new Set(),
-  );
-  // synchronous loading state to prevent duplicate fetches
-  const schemaLoadingRef = useRef<Set<string>>(new Set());
+  const [schemaLoadingIds] = useState<Set<string>>(new Set());
 
   // useEffect(() => {
   //   const fetchSchemasForEmptySources = async () => {

@@ -19,11 +19,9 @@ import {
   clearHighlightedNode,
 } from 'reducers/ontology/slice';
 import { fetchNodes } from 'reducers/ontology/actions';
-import { VALUE_QUERY_LIMIT } from 'constants/service';
 import { Filter } from 'models/interfaces/filter';
 import { FilterPopup } from 'components/shared/FilterPopup/FilterPopup';
 import { GraphPlayback } from './GraphPlayback/GraphPlayback';
-import { GraphService } from 'services/graph';
 import {
   buildFilterColumns,
   filtersToGraphConditions,
@@ -111,8 +109,8 @@ export const GraphControls: FC<GraphControlsProps> = ({ onPlaybackChange }) => {
   const handleLoadOptions = async (columnKey: string) => {
     const colonIdx = columnKey.indexOf(':');
     if (colonIdx === -1) return [];
-    const nodeLabel = columnKey.substring(0, colonIdx);
-    const property = columnKey.substring(colonIdx + 1);
+    // const nodeLabel = columnKey.substring(0, colonIdx);
+    // const property = columnKey.substring(colonIdx + 1);
     // const values = await GraphService.getPropertyValues(
     //   nodeLabel,
     //   property,

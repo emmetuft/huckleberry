@@ -67,7 +67,6 @@ export type {
   AssistantPausedEvent,
 };
 type McpMessageDirection = 'SENT' | 'RECEIVED';
-type McpMessageType = 'REQUEST' | 'RESPONSE' | 'NOTIFICATION';
 type McpMethod =
   | 'initialize'
   | 'tools/list'
@@ -175,11 +174,6 @@ interface McpNotificationPayload {
   method: McpMethod;
   params?: unknown;
 }
-
-type McpJsonRpcPayload =
-  | McpRequestPayload
-  | McpResponsePayload
-  | McpNotificationPayload;
 
 // ─── Base ─────────────────────────────────────────────────────────────────────
 

@@ -14,7 +14,7 @@ interface SaveMetricModalProps {
 export const SaveMetricModal: FC<SaveMetricModalProps> = ({
   isOpen,
   onClose,
-  datasourceId,
+  datasourceId: _datasourceId,
   query,
 }) => {
   const [form] = Form.useForm();
@@ -28,7 +28,7 @@ export const SaveMetricModal: FC<SaveMetricModalProps> = ({
 
   const onOk = async () => {
     try {
-      const values = await form.validateFields();
+      await form.validateFields();
       setLoading(true);
 
       // TODO: Implement API call to save metric

@@ -8,9 +8,7 @@ import { formatCurrentDate } from 'utils/datetime';
 interface ResourcesProps {}
 
 export const Resources: FC<ResourcesProps> = ({}) => {
-  const [selectedTab, setSelectedTab] = useState<'templates' | 'agents'>(
-    'templates',
-  );
+  const [selectedTab] = useState<'templates' | 'agents'>('templates');
 
   return (
     <div className={styles.resources}>
