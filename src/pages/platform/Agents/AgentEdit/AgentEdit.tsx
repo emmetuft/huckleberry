@@ -11,7 +11,6 @@ import {
   selectUpserting,
 } from 'reducers/agents/slice';
 import { fetchAgentById, upsertCustomAgent } from 'reducers/agents/actions';
-import { searchToolkits } from 'reducers/toolkits/actions';
 import { AGENT_FORM_FIELDS, AgentStep } from 'constants/agent';
 import { AccessEntry } from 'models/enums/permission';
 import { Agent } from 'models/interfaces/agent';
@@ -45,10 +44,6 @@ export const AgentEdit: FC = () => {
       : (agents.find((a) => a.id === agentId) ?? null);
     return currAgent;
   }, [agentId, agents, isNewAgent]);
-
-  useEffect(() => {
-    dispatch(searchToolkits({ limit: 50 }));
-  }, []);
 
   useEffect(() => {
     if (!agent && agentId && agentId !== 'new') {
@@ -116,10 +111,6 @@ export const AgentEdit: FC = () => {
       fileSets: [],
     };
 
-    const toolkitIds = [
-      ...new Set([...selectedToolkitIds, 'agent_utility_toolkit']),
-    ];
-
     const result = await dispatch(
       upsertCustomAgent({
         id: agentId,
@@ -128,7 +119,7 @@ export const AgentEdit: FC = () => {
         prompt,
         systemMessage,
         model,
-        toolkitIds,
+        toolkitIds: selectedToolkitIds,
         context,
         settings: agentForm.settings,
       }),

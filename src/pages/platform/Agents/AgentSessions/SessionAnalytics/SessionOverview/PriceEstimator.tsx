@@ -1,6 +1,7 @@
 import { FC, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { PiggyBankIcon } from '@phosphor-icons/react';
+import { Skeleton } from 'antd';
 import styles from './SessionOverview.module.css';
 import { AgentSession } from 'models/interfaces/session';
 import {
@@ -9,10 +10,6 @@ import {
 } from 'models/interfaces/sessionEvent';
 import { TOKEN_PRICING } from 'constants/tokenPricing';
 import { selectAIModels } from 'reducers/agents/slice';
-import {
-  SkeletonBlock,
-  SkeletonGroup,
-} from 'components/shared/Skeleton/Skeleton';
 
 interface PriceEstimatorProps {
   agentSession: AgentSession | null;
@@ -83,15 +80,33 @@ export const PriceEstimator: FC<PriceEstimatorProps> = ({
       <PiggyBankIcon size={22} />
       <div className={styles.priceBreakdown}>
         {loading ? (
-          <SkeletonBlock height={13} width={100} />
+          <Skeleton.Button
+            active
+            size="small"
+            style={{ width: 100, height: 13 }}
+          />
         ) : (
           <p className={styles.priceTitle}>Price estimate</p>
         )}
         {loading ? (
-          <SkeletonGroup>
-            <SkeletonBlock height={11} width="90%" />
-            <SkeletonBlock height={11} width="82%" />
-          </SkeletonGroup>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 'var(--space-sm)',
+            }}
+          >
+            <Skeleton.Button
+              active
+              size="small"
+              style={{ width: '90%', height: 11 }}
+            />
+            <Skeleton.Button
+              active
+              size="small"
+              style={{ width: '82%', height: 11 }}
+            />
+          </div>
         ) : modelEntries.length === 0 ? (
           <p className={styles.priceFormula}>No pricing data available</p>
         ) : (
@@ -109,7 +124,11 @@ export const PriceEstimator: FC<PriceEstimatorProps> = ({
       </div>
       <div className={styles.total}>
         {loading ? (
-          <SkeletonBlock height={28} width={80} />
+          <Skeleton.Button
+            active
+            size="small"
+            style={{ width: 80, height: 28 }}
+          />
         ) : (
           `$${total.toFixed(6)}`
         )}

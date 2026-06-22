@@ -255,7 +255,7 @@ export const ForceGraph: React.FC<ForceGraphProps> = ({
             const label = node.name;
             const fontSize = 12 / globalScale;
             ctx.font = `${fontSize}px Sans-Serif`;
-            ctx.fillStyle = '#222222';
+            ctx.fillStyle = getNodeColor(node);
             ctx.textAlign = 'center';
             ctx.textBaseline = 'top';
             ctx.fillText(label, node.x, node.y + 6);
@@ -272,7 +272,7 @@ export const ForceGraph: React.FC<ForceGraphProps> = ({
         nodeThreeObjectExtend={true}
         nodeThreeObject={(node: any) => {
           const sprite = new SpriteText(node.name);
-          sprite.color = '#222222';
+          sprite.color = getNodeColor(node);
           sprite.position.y = 8;
           return sprite;
         }}

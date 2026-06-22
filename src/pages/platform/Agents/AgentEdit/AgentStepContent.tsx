@@ -20,7 +20,10 @@ import styles from './AgentEdit.module.css';
 import labelInputStyles from 'components/shared/LabelInput/LabelInput.module.css';
 import { selectAIModels } from 'reducers/agents/slice';
 import { selectAllPeople } from 'reducers/people/slice';
-import { selectSearchResults, selectSearching } from 'reducers/toolkits/slice';
+import {
+  selectToolkits,
+  selectLoading as selectToolkitsLoading,
+} from 'reducers/toolkits/slice';
 import { AGENT_FORM_FIELDS, AgentStep } from 'constants/agent';
 import { AccessEntry, Permission } from 'models/enums/permission';
 import { Agent } from 'models/interfaces/agent';
@@ -83,8 +86,8 @@ export const AgentStepContent: FC<AgentStepContentProps> = ({
 }) => {
   const aiModels = useSelector(selectAIModels);
   const allPeople = useSelector(selectAllPeople);
-  const toolkitResults = useSelector(selectSearchResults);
-  const searchingToolkits = useSelector(selectSearching);
+  const toolkitResults = useSelector(selectToolkits);
+  const searchingToolkits = useSelector(selectToolkitsLoading);
   const [generatingFields, setGeneratingFields] = useState<Set<keyof Agent>>(
     new Set(),
   );
