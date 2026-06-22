@@ -27,8 +27,12 @@ dist-ssr
 *.sw?
 .env
 .env.*
+!.env.example
 .environment/.env
 .environment/.env.*
+!.environment/.env.development
+!.environment/.env.production
+!.environment/.env.example
 
 # production
 /build
