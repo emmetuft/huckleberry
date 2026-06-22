@@ -41,6 +41,7 @@ export const AgentSessions: FC<AgentSessionsProps> = ({ agentId }) => {
     if (agentId) {
       dispatch(fetchSessions({ agentId }));
     } else {
+      // TODO: This endpoint does not exist in production or in DEV-3 and needs to be scoped, designed, and protected
       dispatch(fetchAllSessions());
     }
   }, [agentId]);
