@@ -5,7 +5,6 @@ import { toast } from 'sonner';
 import { Button, Select, Spin } from 'antd';
 import styles from './AgentEdit.module.css';
 import { useAppDispatch } from 'reducers';
-import { selectAgents, selectLoadingAgentId } from 'reducers/agents/slice';
 import {
   selectAgents,
   selectLoadingAgentId,

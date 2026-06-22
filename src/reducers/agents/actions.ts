@@ -42,13 +42,15 @@ export const fetchAgentById = createAsyncThunk<
   return AgentService.getAgent(agentId);
 });
 
-export const upsertCustomAgent = createAsyncThunk<Agent, Agent>(
+type UpsertAgentPayload = Omit<Agent, 'owner'> & { owner?: number };
+
+export const upsertCustomAgent = createAsyncThunk<Agent, UpsertAgentPayload>(
   'agents/upsertCustomAgent',
   async (agent) => {
     if (agent.id === 'new') {
-      return AgentService.createAgent(agent);
+      return AgentService.createAgent(agent as Agent);
     }
-    return AgentService.updateAgent(agent);
+    return AgentService.updateAgent(agent as Agent);
   },
 );
 
