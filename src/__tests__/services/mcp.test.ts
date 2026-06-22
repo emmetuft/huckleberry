@@ -83,10 +83,7 @@ describe('MCPService', () => {
 
       const result = await MCPService.getServers();
 
-      expect(fetchMock).toHaveBeenCalledWith(
-        '/api/mcp/servers',
-        expect.anything(),
-      );
+      expect(fetchMock).toHaveBeenCalledWith('/api/mcp/servers', undefined);
       expect(result).toEqual([mockServer]);
     });
 
@@ -100,7 +97,7 @@ describe('MCPService', () => {
 
       expect(fetchMock).toHaveBeenCalledWith(
         '/api/mcp/servers?enabled=true',
-        expect.anything(),
+        undefined,
       );
     });
   });
@@ -116,7 +113,7 @@ describe('MCPService', () => {
 
       expect(fetchMock).toHaveBeenCalledWith(
         '/api/mcp/servers/test-id',
-        expect.anything(),
+        undefined,
       );
       expect(result).toEqual(mockServer);
     });
@@ -243,10 +240,7 @@ describe('MCPService', () => {
 
       const result = await MCPService.getTools();
 
-      expect(fetchMock).toHaveBeenCalledWith(
-        '/api/mcp/tools',
-        expect.anything(),
-      );
+      expect(fetchMock).toHaveBeenCalledWith('/api/mcp/tools', undefined);
       expect(result).toEqual(mockTools);
     });
   });
