@@ -12,5 +12,5 @@ export const fetchToolkits = createAsyncThunk<
   if (toolkits.length > 0) {
     return toolkits;
   }
-  return ToolkitsService.getToolkits();
+  return ToolkitsService.getToolkits({ filters: [], limit: 50, offset: 0 });
 });

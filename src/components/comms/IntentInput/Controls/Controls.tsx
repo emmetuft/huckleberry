@@ -12,11 +12,12 @@ import { DictateButton } from './DictateBtn/DictateBtn';
 import { SuggestedActions } from './SuggestedActions/SuggestedActions';
 import { ActionType, getSuggestedActions } from 'utils/temp';
 import { isEmpty } from 'utils/misc';
+import { Toolkit } from 'models/interfaces/toolkit';
 
 interface IntentInputControlsProps {
   textContent?: string;
-  selectedToolkitIds: string[];
-  onToolkitIdsChange: (ids: string[]) => void;
+  selectedToolkits: Toolkit[];
+  onToolkitsChange: (toolkits: Toolkit[]) => void;
   uploadedFiles: File[];
   setUploadedFiles: (files: File[]) => void;
   selectedDataSources: DataSource[];
@@ -26,8 +27,8 @@ interface IntentInputControlsProps {
 
 export const IntentInputControls: FC<IntentInputControlsProps> = ({
   textContent,
-  selectedToolkitIds,
-  onToolkitIdsChange,
+  selectedToolkits,
+  onToolkitsChange,
   uploadedFiles,
   setUploadedFiles,
   selectedDataSources,
@@ -105,21 +106,20 @@ export const IntentInputControls: FC<IntentInputControlsProps> = ({
           />
         )}
       </BrowserModal>
-      <BrowserModal<string>
+      <BrowserModal<Toolkit>
         open={showToolBrowser}
         title="Browse Toolkits"
         itemLabel="toolkit"
         onCancel={() => setShowToolBrowser(false)}
-        onConfirm={(ids) => {
-          onToolkitIdsChange([...new Set([...selectedToolkitIds, ...ids])]);
+        onConfirm={(toolkits) => {
+          onToolkitsChange([...new Set([...selectedToolkits, ...toolkits])]);
           setShowToolBrowser(false);
         }}
       >
         {(selected, onChange) => (
           <ToolBrowser
-            mode="toolkit"
-            selectedToolkitIds={selected}
-            onToolkitIdsChange={onChange}
+            selectedToolkits={selected}
+            onToolkitsChange={onChange}
           />
         )}
       </BrowserModal>

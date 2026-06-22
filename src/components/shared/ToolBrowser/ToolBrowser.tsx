@@ -1,5 +1,4 @@
-import { FC, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { FC, useCallback, useState } from 'react';
 import { Input, Button, Empty, Tag, Spin } from 'antd';
 import {
   CheckIcon,
@@ -8,107 +7,122 @@ import {
   ToolboxIcon,
 } from '@phosphor-icons/react';
 import styles from './ToolBrowser.module.css';
-import { selectToolkits, selectLoading } from 'reducers/toolkits/slice';
+import { Toolkit } from 'models/interfaces/toolkit';
+import { ToolkitsService } from 'services/toolkits';
+import { useInfiniteScroll } from 'hooks/useInfiniteScroll';
 
 interface ToolBrowserProps {
-  mode?: 'toolkit';
-  selectedToolkitIds: string[];
-  onToolkitIdsChange: (ids: string[]) => void;
+  selectedToolkits: Toolkit[];
+  onToolkitsChange: (toolkits: Toolkit[]) => void;
   height?: number;
 }
 
 // TODO: Add per-tool selection mode when individual tool APIs are available
 export const ToolBrowser: FC<ToolBrowserProps> = ({
-  selectedToolkitIds,
-  onToolkitIdsChange,
+  selectedToolkits,
+  onToolkitsChange,
   height,
 }) => {
-  const toolkits = useSelector(selectToolkits);
-  const loading = useSelector(selectLoading);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
-  const filteredToolkits = useMemo(() => {
-    if (!searchQuery) return toolkits;
-    const query = searchQuery.toLowerCase();
-    return toolkits.filter(
-      (tk) =>
-        tk.name.toLowerCase().includes(query) ||
-        tk.description?.toLowerCase().includes(query),
-    );
-  }, [toolkits, searchQuery]);
+  const fetcher = useCallback(
+    async (limit: number, offset: number) => {
+      const result = await ToolkitsService.getToolkits({
+        filters: [],
+        limit,
+        offset,
+      });
+      return result;
+    },
+    [searchTerm],
+  );
 
-  const isToolkitSelected = (toolkitId: string) =>
-    selectedToolkitIds.includes(toolkitId);
+  const {
+    items: toolkits,
+    loading,
+    hasMore,
+    sentinelRef,
+  } = useInfiniteScroll<Toolkit>({
+    fetcher,
+    resetDeps: [searchTerm],
+    pageSize: 20,
+    debounceMs: 500,
+  });
 
-  const handleToggleToolkit = (toolkitId: string) => {
-    if (isToolkitSelected(toolkitId)) {
-      onToolkitIdsChange(selectedToolkitIds.filter((id) => id !== toolkitId));
+  const isToolkitSelected = (toolkit: Toolkit) =>
+    selectedToolkits.some((tk) => tk.toolkitId === toolkit.toolkitId);
+
+  const handleToggleToolkit = (toolkit: Toolkit) => {
+    if (isToolkitSelected(toolkit)) {
+      onToolkitsChange(
+        selectedToolkits.filter((tk) => tk.toolkitId !== toolkit.toolkitId),
+      );
     } else {
-      onToolkitIdsChange([...selectedToolkitIds, toolkitId]);
+      onToolkitsChange([...selectedToolkits, toolkit]);
     }
   };
-
-  if (loading) {
-    return (
-      <div className={styles.toolBrowser}>
-        <Spin size="small" />
-      </div>
-    );
-  }
 
   return (
     <div className={styles.toolBrowser}>
       <Input
         placeholder="Search toolkits..."
         prefix={<MagnifyingGlassIcon />}
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
         allowClear
       />
 
-      {selectedToolkitIds.length > 0 && (
+      {selectedToolkits.length > 0 && (
         <div className={styles.selectedList}>
-          {selectedToolkitIds.map((id) => {
-            const tk = toolkits.find((t) => t.toolkitId === id);
-            return (
-              <Tag key={id} closable onClose={() => handleToggleToolkit(id)}>
-                {tk?.name ?? id}
-              </Tag>
-            );
-          })}
+          {selectedToolkits.map((toolkit) => (
+            <Tag
+              key={toolkit.toolkitId}
+              closable
+              onClose={() => handleToggleToolkit(toolkit)}
+            >
+              {toolkit.name}
+            </Tag>
+          ))}
         </div>
       )}
 
-      {filteredToolkits.length === 0 ? (
-        <Empty description="No toolkits found" />
-      ) : (
-        <div className={styles.toolList} style={{ maxHeight: height ?? 400 }}>
-          {filteredToolkits.map((toolkit) => {
-            const selected = isToolkitSelected(toolkit.toolkitId);
-            return (
-              <div key={toolkit.toolkitId} className="appCard">
-                <div className={`defaultAppIcon ${styles.toolIcon}`}>
-                  <ToolboxIcon />
+      <div className={styles.toolList} style={{ maxHeight: height ?? 400 }}>
+        {toolkits.length === 0 && !loading ? (
+          <Empty description="No toolkits found" />
+        ) : (
+          <>
+            {toolkits.map((toolkit) => {
+              const selected = isToolkitSelected(toolkit);
+              return (
+                <div key={toolkit.toolkitId} className="appCard">
+                  <div className={`defaultAppIcon ${styles.toolIcon}`}>
+                    <ToolboxIcon />
+                  </div>
+                  <div className="appInfo">
+                    <h4>{toolkit.name}</h4>
+                    <p title={toolkit.description}>
+                      {toolkit.description || 'No description'}
+                    </p>
+                  </div>
+                  <div className={styles.connectAction}>
+                    <Button
+                      size="small"
+                      type={selected ? 'primary' : 'default'}
+                      icon={selected ? <CheckIcon /> : <PlusIcon />}
+                      onClick={() => handleToggleToolkit(toolkit)}
+                    />
+                  </div>
                 </div>
-                <div className="appInfo">
-                  <h4>{toolkit.name}</h4>
-                  <p title={toolkit.description}>
-                    {toolkit.description || 'No description'}
-                  </p>
-                </div>
-                <div className={styles.connectAction}>
-                  <Button
-                    size="small"
-                    type={selected ? 'primary' : 'default'}
-                    icon={selected ? <CheckIcon /> : <PlusIcon />}
-                    onClick={() => handleToggleToolkit(toolkit.toolkitId)}
-                  />
-                </div>
+              );
+            })}
+            {hasMore && (
+              <div ref={sentinelRef} className={styles.loadingTrigger}>
+                {loading && <Spin />}
               </div>
-            );
-          })}
-        </div>
-      )}
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 };

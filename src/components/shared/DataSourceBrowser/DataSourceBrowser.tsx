@@ -67,7 +67,6 @@ export const DataSourceBrowser: FC<DataSourceBrowserProps> = ({
       <Input
         placeholder="Search datasources..."
         prefix={<MagnifyingGlassIcon />}
-        suffix={loading && searchTerm ? <Spin size="small" /> : null}
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         allowClear

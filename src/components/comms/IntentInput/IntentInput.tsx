@@ -10,6 +10,7 @@ import { AppPage } from 'models/enums/appPage';
 import { InputCommand } from 'models/enums/inputCommand';
 import { DataSource } from 'models/interfaces/dataSource';
 import { MentionItem } from 'models/interfaces/mention';
+import { Toolkit } from 'models/interfaces/toolkit';
 import { CommandPopup } from './CommandPopup/CommandPopup';
 import { ContextItems } from './context/ContextItems';
 import { IntentInputControls } from './Controls/Controls';
@@ -41,7 +42,7 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [mentionedItems, setMentionedItems] = useState<MentionItem[]>([]);
 
-  const [selectedToolkitIds, setSelectedToolkitIds] = useState<string[]>([]);
+  const [selectedToolkits, setSelectedToolkits] = useState<Toolkit[]>([]);
   const [selectedDataSources, setSelectedDataSources] = useState<DataSource[]>(
     [],
   );
@@ -104,7 +105,9 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   };
 
   const onRemoveToolkit = (toolkitId: string) => {
-    setSelectedToolkitIds(selectedToolkitIds.filter((id) => id !== toolkitId));
+    setSelectedToolkits(
+      selectedToolkits.filter((t) => t.toolkitId !== toolkitId),
+    );
   };
 
   const onRemoveDataSource = (dataSourceId: string) => {
@@ -152,6 +155,12 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     const el = editableRef.current;
     if (!el || isEmpty || !textContent) return;
 
+    // Process toolkits to send only toolkitId
+    const processedToolkits =
+      selectedToolkits.length > 0
+        ? selectedToolkits.map((t) => t.toolkitId)
+        : undefined;
+
     // Process datasources to send only id and name
     const processedDataSources =
       selectedDataSources.length > 0
@@ -165,8 +174,7 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     dispatch(
       executeStream({
         userInput: textContent,
-        toolkitIds:
-          selectedToolkitIds.length > 0 ? selectedToolkitIds : undefined,
+        toolkitIds: processedToolkits,
         dataSources: processedDataSources,
         files: processedFiles,
       }),
@@ -181,7 +189,7 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     el.innerText = '';
     setIsEmpty(true);
     setTextContent('');
-    setSelectedToolkitIds([]);
+    setSelectedToolkits([]);
     setUploadedFiles([]);
     setSelectedDataSources([]);
   };
@@ -197,7 +205,7 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
         <ContextItems
           uploadedFiles={uploadedFiles}
           selectedDataSources={selectedDataSources}
-          selectedToolkitIds={selectedToolkitIds}
+          selectedToolkits={selectedToolkits}
           onRemoveFile={onRemoveFile}
           onRemoveDataSource={onRemoveDataSource}
           onRemoveToolkit={onRemoveToolkit}
@@ -214,8 +222,8 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
           <div className={styles.buttons}>
             <IntentInputControls
               textContent={textContent}
-              selectedToolkitIds={selectedToolkitIds}
-              onToolkitIdsChange={setSelectedToolkitIds}
+              selectedToolkits={selectedToolkits}
+              onToolkitsChange={setSelectedToolkits}
               uploadedFiles={uploadedFiles}
               setUploadedFiles={setUploadedFiles}
               selectedDataSources={selectedDataSources}

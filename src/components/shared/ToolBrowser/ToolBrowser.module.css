@@ -33,3 +33,9 @@
     flex-shrink: 0;
   }
 }
+
+.loadingTrigger {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-lg);
+}
