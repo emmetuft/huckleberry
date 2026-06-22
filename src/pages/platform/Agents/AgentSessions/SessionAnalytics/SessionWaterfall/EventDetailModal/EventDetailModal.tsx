@@ -1,15 +1,12 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { XIcon, CopySimpleIcon, CheckIcon } from '@phosphor-icons/react';
-import { AISessionEvent } from 'models/interfaces/sessionEvent';
-import {
-  WaterfallRow,
-  CATEGORY_COLORS,
-  CATEGORY_LABELS,
-} from '../SessionWaterfall';
-import styles from './EventDetailModal.module.css';
 import { Button, Tag, Tooltip } from 'antd';
+import { XIcon, CopySimpleIcon, CheckIcon } from '@phosphor-icons/react';
+import styles from './EventDetailModal.module.css';
+import { AISessionEvent } from 'models/interfaces/sessionEvent';
+import { WaterfallRow } from '../SessionWaterfall';
 import { formatDuration } from 'utils/datetime';
+import { CATEGORY_COLORS, CATEGORY_LABELS } from 'utils/sessionGraph';
 
 interface EventDetailModalProps {
   row: WaterfallRow;

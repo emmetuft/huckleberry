@@ -12,7 +12,6 @@ import { TOKEN_PRICING } from 'constants/tokenPricing';
 import { selectAIModels } from 'reducers/agents/slice';
 
 interface PriceEstimatorProps {
-  agentSession: AgentSession | null;
   sessionEvents: AISessionEvent[];
   loading?: boolean;
 }
@@ -28,7 +27,6 @@ interface ModelUsage {
 }
 
 export const PriceEstimator: FC<PriceEstimatorProps> = ({
-  agentSession: _agentSession,
   sessionEvents,
   loading = false,
 }) => {

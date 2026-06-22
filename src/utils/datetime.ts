@@ -26,6 +26,13 @@ export const isValidDate = (value: string) => {
   return isValid(date);
 };
 
+export const formatTime = (ts: number) =>
+  new Date(ts).toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
+
 /**
  * Formats a timestamp for message display (iPhone-style).
  * Shows just the time for today, "Yesterday" prefix for yesterday,

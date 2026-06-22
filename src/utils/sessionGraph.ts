@@ -4,48 +4,104 @@ import {
 } from 'models/interfaces/sessionEvent';
 import { GraphData, GraphNode, GraphEdge } from 'models/interfaces/ontology';
 
-export type SessionNodeCategory =
-  | 'userPrompt'
-  | 'planThink'
-  | 'getContext'
-  | 'useContext'
-  | 'modelCall'
-  | 'answer'
-  | 'other';
+export enum EventCategory {
+  ASSISTANT = 'assistant',
+  AI_SERVICE = 'aiService',
+  ACTION = 'action',
+  CONFIRMATION = 'confirmation',
+  TOOL = 'tool',
+  MCP = 'mcp',
+  OTHER = 'other',
+}
 
-export const SESSION_NODE_COLORS: Record<SessionNodeCategory, string> = {
-  userPrompt: '#6d8ae9',
-  planThink: '#705be7',
-  getContext: '#3a9e72',
-  useContext: '#e0a030',
-  modelCall: '#30b8b0',
-  answer: '#bfff00',
+export const CATEGORY_LABELS: Record<EventCategory, string> = {
+  assistant: 'Assistant',
+  aiService: 'AI Service',
+  action: 'Action',
+  confirmation: 'User Confirmation',
+  tool: 'Tool',
+  mcp: 'MCP',
+  other: 'Other',
+};
+
+export const CATEGORY_COLORS: Record<EventCategory, string> = {
+  assistant: '#e0a030',
+  aiService: '#705be7',
+  action: '#6d8ae9',
+  confirmation: '#30b8b0',
+  tool: '#3a9e72',
+  mcp: '#c45a4a',
   other: '#a4abc0',
 };
 
-const GET_CONTEXT_ACTIONS = new Set([
-  'dataset_query_action',
-  'dataset_lookup_action',
-  'dataset_schema_by_id_action',
-  'dataset_text_to_sql_action',
-  'vector_db_query_action',
-  'kb_query_action',
-  'fileset_query_action',
-  'search_action',
-  'google_query_action',
-  'firecrawl_action',
-]);
+export const getNodePrimaryLabel = (node: GraphNode): string => {
+  const primaryLabel =
+    node.labels.find(
+      (l) => l !== 'Entity' && l !== 'AISessionEvent' && l !== 'AIContext',
+    ) ?? node.labels[0];
+  return primaryLabel ?? 'Unknown';
+};
 
-const USE_CONTEXT_ACTIONS = new Set([
-  'chart_builder_action',
-  'page_builder_action',
-  'html_generation_action',
-  'javascript_generation_action',
-  'code_engine_action',
-  'card_action',
-  'create_data_app_action',
-  'design_app_spec_action',
-]);
+export function getNodeLabel(node: GraphNode): string {
+  const p = node.properties as Record<string, any>;
+  const primaryLabel = getNodePrimaryLabel(node);
+
+  switch (primaryLabel) {
+    case 'Session':
+      return 'Session';
+    case 'Request':
+      return p.inputPreview ? String(p.inputPreview).slice(0, 50) : 'Request';
+    case 'Generation':
+      return p.service ?? 'Generation';
+    case 'ThinkingStep':
+      return 'Thinking';
+    case 'ToolCall':
+      return p.toolName ?? 'Tool';
+    case 'ActionExecution':
+      return p.actionType ?? 'Action';
+    case 'McpExchange':
+      return p.method ?? 'MCP';
+    default:
+      return p.name ?? primaryLabel ?? node.id;
+  }
+}
+
+export function getEventCategory(type: AISessionEventType): EventCategory {
+  switch (type) {
+    case AISessionEventType.TOOL_STARTED:
+    case AISessionEventType.TOOL_COMPLETED:
+    case AISessionEventType.TOOL_FINISHED:
+    case AISessionEventType.TOOL_PAUSED:
+    case AISessionEventType.TOOL_RESUMED:
+      return EventCategory.TOOL;
+    case AISessionEventType.ACTION_STARTED:
+    case AISessionEventType.ACTION_COMPLETED:
+    case AISessionEventType.ACTION_PROMPT:
+    case AISessionEventType.ACTION_REQUEST:
+    case AISessionEventType.CARD_ACTION_RESPONSE_CHUNK:
+      return EventCategory.ACTION;
+    case AISessionEventType.AI_SERVICE_REQUEST:
+    case AISessionEventType.AI_SERVICE_RESPONSE:
+    case AISessionEventType.AI_DURATION:
+      return EventCategory.AI_SERVICE;
+    case AISessionEventType.ASSISTANT_REQUEST:
+    case AISessionEventType.ASSISTANT_RESPONSE:
+    case AISessionEventType.ASSISTANT_RESPONSE_START:
+    case AISessionEventType.ASSISTANT_RESPONSE_END:
+    case AISessionEventType.ASSISTANT_RESPONSE_CHUNK:
+    case AISessionEventType.ASSISTANT_PAUSED:
+    case AISessionEventType.AGENT_THINKING_STARTED:
+    case AISessionEventType.AGENT_THINKING_COMPLETED:
+    case AISessionEventType.CONFIRMATION_REQUEST:
+      return EventCategory.ASSISTANT;
+    case AISessionEventType.MCP_REQUEST:
+    case AISessionEventType.MCP_RESPONSE:
+    case AISessionEventType.MCP_NOTIFICATION:
+      return EventCategory.MCP;
+    default:
+      return EventCategory.OTHER;
+  }
+}
 
 const NOISE_TYPES = new Set<AISessionEventType>([
   AISessionEventType.AI_HEARTBEAT,
@@ -56,80 +112,6 @@ const NOISE_TYPES = new Set<AISessionEventType>([
   AISessionEventType.CARD_ACTION_RESPONSE_CHUNK,
 ]);
 
-function categorizeEvent(event: AISessionEvent): SessionNodeCategory {
-  switch (event.type) {
-    case AISessionEventType.ASSISTANT_REQUEST:
-      return 'userPrompt';
-
-    case AISessionEventType.ASSISTANT_RESPONSE:
-    case AISessionEventType.ASSISTANT_PAUSED:
-      return 'answer';
-
-    case AISessionEventType.AI_SERVICE_REQUEST:
-    case AISessionEventType.AI_SERVICE_RESPONSE:
-      if ('service' in event && event.service === 'PLANNING')
-        return 'planThink';
-      return 'modelCall';
-
-    case AISessionEventType.ACTION_STARTED:
-    case AISessionEventType.ACTION_COMPLETED: {
-      const actionType =
-        'actionType' in event
-          ? (event.actionType as string)?.toLowerCase()
-          : '';
-      if (GET_CONTEXT_ACTIONS.has(actionType)) return 'getContext';
-      if (USE_CONTEXT_ACTIONS.has(actionType)) return 'useContext';
-      return 'other';
-    }
-
-    case AISessionEventType.TOOL_STARTED:
-    case AISessionEventType.TOOL_COMPLETED:
-    case AISessionEventType.TOOL_FINISHED: {
-      const tool = 'tool' in event ? (event.tool as string)?.toLowerCase() : '';
-      for (const action of GET_CONTEXT_ACTIONS) {
-        if (tool.includes(action.replace('_action', ''))) return 'getContext';
-      }
-      for (const action of USE_CONTEXT_ACTIONS) {
-        if (tool.includes(action.replace('_action', ''))) return 'useContext';
-      }
-      return 'other';
-    }
-
-    case AISessionEventType.MCP_REQUEST:
-    case AISessionEventType.MCP_RESPONSE:
-      return 'other';
-
-    default:
-      return 'other';
-  }
-}
-
-function getNodeLabel(event: AISessionEvent): string {
-  switch (event.type) {
-    case AISessionEventType.ASSISTANT_REQUEST:
-      return event.request.input.slice(0, 60);
-    case AISessionEventType.ASSISTANT_RESPONSE:
-      return 'Response';
-    case AISessionEventType.ASSISTANT_PAUSED:
-      return 'Paused (awaiting confirmation)';
-    case AISessionEventType.AI_SERVICE_REQUEST:
-    case AISessionEventType.AI_SERVICE_RESPONSE:
-      return event.service;
-    case AISessionEventType.ACTION_STARTED:
-    case AISessionEventType.ACTION_COMPLETED:
-      return `${event.tool} (${event.actionType})`;
-    case AISessionEventType.TOOL_STARTED:
-      return event.tool;
-    case AISessionEventType.TOOL_COMPLETED:
-    case AISessionEventType.TOOL_FINISHED:
-      return event.tool;
-    case AISessionEventType.MCP_REQUEST:
-      return `MCP: ${event.payload.method}`;
-    default:
-      return event.type;
-  }
-}
-
 export function buildSessionGraph(events: AISessionEvent[]): GraphData {
   const filtered = events.filter((e) => !NOISE_TYPES.has(e.type));
   const eventMap = new Map(filtered.map((e) => [e.eventId, e]));
@@ -138,15 +120,15 @@ export function buildSessionGraph(events: AISessionEvent[]): GraphData {
   const edges: GraphEdge[] = [];
 
   for (const event of filtered) {
-    const category = categorizeEvent(event);
+    const category = getEventCategory(event.type);
 
     nodes.push({
       id: event.eventId,
       labels: [category, event.type],
       properties: {
-        name: getNodeLabel(event),
+        name: CATEGORY_LABELS[category],
         category,
-        color: SESSION_NODE_COLORS[category],
+        color: CATEGORY_COLORS[category],
         timestamp: event.timestamp,
         requestId: event.requestId,
         ...('durationMs' in event ? { durationMs: event.durationMs } : {}),

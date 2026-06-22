@@ -15,61 +15,7 @@ import {
 } from 'reducers/ontology/slice';
 import { GraphData, GraphNode } from 'models/interfaces/ontology';
 import { getColorForGroup } from 'utils/styles';
-
-const SESSION_NODE_COLORS: Record<string, string> = {
-  Session: '#e0a030',
-  Request: '#705be7',
-  Generation: '#6d8ae9',
-  ThinkingStep: '#e0a030',
-  ToolCall: '#3a9e72',
-  ActionExecution: '#bfff00',
-  McpExchange: '#c45a4a',
-};
-
-const GENERATION_SERVICE_LABELS: Record<string, string> = {
-  CHAT_COMPLETION: 'Chat Completion',
-  MESSAGES: 'LLM Call',
-  TOOL_CALLING: 'Tool Calling',
-  PLANNING: 'Planning',
-  TEXT_TO_SQL: 'Text to SQL',
-};
-
-const ACTION_TYPE_LABELS: Record<string, string> = {
-  DATASET_LOOKUP_ACTION: 'Dataset Lookup',
-  DATASET_TEXT_TO_SQL_ACTION: 'Text to SQL',
-  DATASET_QUERY_ACTION: 'Query Dataset',
-  DATASET_CREATE_ACTION: 'Create Dataset',
-  DATASET_UPLOAD_ACTION: 'Upload Dataset',
-  SEARCH_ACTION: 'Search',
-  EXTENDED_THINKING_ACTION: 'Extended Thinking',
-};
-
-function getNodeDisplayName(node: GraphNode): string {
-  const p = node.properties as Record<string, any>;
-  const primaryLabel =
-    node.labels.find(
-      (l) => l !== 'Entity' && l !== 'AISessionEvent' && l !== 'AIContext',
-    ) ?? node.labels[0];
-
-  switch (primaryLabel) {
-    case 'Session':
-      return 'Session';
-    case 'Request':
-      return p.inputPreview ? String(p.inputPreview).slice(0, 50) : 'Request';
-    case 'Generation':
-      return GENERATION_SERVICE_LABELS[p.service] ?? p.service ?? 'Generation';
-    case 'ThinkingStep':
-      return 'Thinking';
-    case 'ToolCall':
-      return p.toolName ?? 'Tool';
-    case 'ActionExecution':
-      return ACTION_TYPE_LABELS[p.actionType] ?? p.actionType ?? 'Action';
-    case 'McpExchange':
-      return p.method ?? 'MCP';
-    default:
-      return p.name ?? primaryLabel ?? node.id;
-  }
-}
+import { getNodeLabel, getNodePrimaryLabel } from 'utils/sessionGraph';
 
 interface D3Node {
   id: string;
@@ -129,7 +75,7 @@ export const ForceGraph: React.FC<ForceGraphProps> = ({
   const graphData = useMemo(() => {
     const d3Nodes: D3Node[] = data.nodes.map((node) => ({
       id: node.id,
-      name: getNodeDisplayName(node),
+      name: getNodeLabel(node),
       labels: node.labels,
       properties: node.properties,
     }));
@@ -199,16 +145,8 @@ export const ForceGraph: React.FC<ForceGraphProps> = ({
 
   const getNodeColor = useCallback(
     (node: any) => {
-      const primaryLabel =
-        node.labels.find(
-          (l: string) =>
-            l !== 'Entity' && l !== 'AISessionEvent' && l !== 'AIContext',
-        ) ??
-        node.labels[0] ??
-        'Unknown';
-      const baseColor =
-        SESSION_NODE_COLORS[primaryLabel] ??
-        getColorForGroup(nodeLabels.indexOf(primaryLabel));
+      const primaryLabel = getNodePrimaryLabel(node);
+      const baseColor = getColorForGroup(nodeLabels.indexOf(primaryLabel));
 
       if (highlightedNodeId) {
         if (node.id === highlightedNodeId) return '#2fcb3fff';

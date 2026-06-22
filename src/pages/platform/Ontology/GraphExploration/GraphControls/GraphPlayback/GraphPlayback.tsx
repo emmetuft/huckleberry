@@ -8,6 +8,7 @@ import {
 import styles from './GraphPlayback.module.css';
 import { GraphNode } from 'models/interfaces/ontology';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
+import { formatTime } from 'utils/datetime';
 
 interface GraphPlaybackProps {
   nodes: GraphNode[];
@@ -48,20 +49,20 @@ export const GraphPlayback: React.FC<GraphPlaybackProps> = ({
     [sortedNodes],
   );
 
-  const [currentTime, setCurrentTime] = useState(minTime);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState<number>(minTime);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+
   const lastTickRef = useRef<number>(0);
   const intervalRef = useRef<ReturnType<typeof setInterval>>();
   const prevVisibleCountRef = useRef(0);
+
+  const canPlayback = sortedNodes.length >= 2;
 
   useEffect(() => {
     if (minTime > 0) {
       setCurrentTime(minTime);
     }
   }, [minTime]);
-
-  const canPlayback =
-    sortedNodes.length >= 2 && sortedNodes.length === nodes.length;
 
   useEffect(() => {
     if (!isOpen) return;
@@ -85,7 +86,7 @@ export const GraphPlayback: React.FC<GraphPlaybackProps> = ({
       prevVisibleCountRef.current = visibleNodes.length;
       onPlaybackChange(new Set(visibleNodes.map((n) => n.id)));
     }
-  }, [currentTime, sortedNodes, onPlaybackChange, canPlayback]);
+  }, [currentTime, sortedNodes]);
 
   useEffect(() => {
     if (isPlaying) {
@@ -123,15 +124,6 @@ export const GraphPlayback: React.FC<GraphPlaybackProps> = ({
     setCurrentTime(minTime);
   };
 
-  const formatTime = (ts: number) =>
-    new Date(ts).toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-    });
-
-  if (!canPlayback) return null;
-
   return (
     <div className={styles.graphPlayback}>
       <div>
@@ -140,6 +132,7 @@ export const GraphPlayback: React.FC<GraphPlaybackProps> = ({
           icon={
             isPlaying ? <PauseIcon weight="fill" /> : <PlayIcon weight="fill" />
           }
+          disabled={!canPlayback}
           onClick={() => setIsPlaying((p) => !p)}
         />
       </div>

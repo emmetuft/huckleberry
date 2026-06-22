@@ -149,7 +149,6 @@ export const SessionOverview: FC<SessionOverviewProps> = ({
           </Tag>
         </div>
         <PriceEstimator
-          agentSession={agentSession}
           sessionEvents={serviceResponseEvents}
           loading={loading}
         />
