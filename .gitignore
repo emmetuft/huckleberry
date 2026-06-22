@@ -26,12 +26,9 @@ dist-ssr
 *.sln
 *.sw?
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.environment/.env.development
-.environment/.env.production
+.env.*
+.environment/.env
+.environment/.env.*
 
 # production
 /build
