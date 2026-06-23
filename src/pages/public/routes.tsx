@@ -8,16 +8,29 @@ import { Login } from './auth/Login/Login';
 import { Signin } from './auth/Signin';
 import { Terms } from './legal/Terms/Terms';
 import { Privacy } from './legal/Privacy/Privacy';
+import { RedirectIfAuthenticated } from 'components/layouts/RedirectIfAuthenticated/RedirectIfAuthenticated';
 import { publicRoutePaths, PublicPage } from 'models/enums/appPage';
 
 export const publicRoutes: RouteObject[] = [
   {
     element: <PublicLayout />,
     children: [
+      // Routes a signed-in visitor shouldn't see — bounce them to /workspace
+      // before rendering the marketing landing or the sign-in form.
       {
-        path: publicRoutePaths[PublicPage.LANDING],
-        element: <Landing />,
+        element: <RedirectIfAuthenticated />,
+        children: [
+          {
+            path: publicRoutePaths[PublicPage.LANDING],
+            element: <Landing />,
+          },
+          {
+            path: publicRoutePaths[PublicPage.LOGIN],
+            element: <Login />,
+          },
+        ],
       },
+      // Always-accessible public pages (marketing, magic-link callback, legal).
       {
         path: publicRoutePaths[PublicPage.ABOUT],
         element: <About />,
@@ -29,10 +42,6 @@ export const publicRoutes: RouteObject[] = [
       {
         path: publicRoutePaths[PublicPage.PRICING],
         element: <Pricing />,
-      },
-      {
-        path: publicRoutePaths[PublicPage.LOGIN],
-        element: <Login />,
       },
       {
         path: publicRoutePaths[PublicPage.SIGNIN],
