@@ -50,7 +50,7 @@ export const AppPageTitle: Record<string, string> = {
   [AppPage.HOME]: 'Huckleberry',
   [AppPage.INTEGRATIONS]: 'Connectors',
   [AppPage.METRICS]: 'Metric Catalog',
-  [AppPage.ONTOLOGY]: 'Business Ontology',
+  [AppPage.ONTOLOGY]: 'Ontology',
   [AppPage.PROFILE]: 'Profile',
   [AppPage.PROJECTS]: 'Projects',
   [AppPage.PROJECT_DETAIL]: 'Project Detail',
@@ -106,6 +106,18 @@ export const platformRoutePaths: Record<AppPage, string> = {
   [AppPage.SESSION]: '/sessions/:sessionId',
   [AppPage.WORKFLOWS]: '/workflows',
   [AppPage.WORKFLOW_DETAIL]: '/workflows/:workflowId',
+};
+
+export interface NavSubPageEntry {
+  page: AppPage;
+  label: string;
+}
+
+export const navSubPages: Partial<Record<AppPage, NavSubPageEntry[]>> = {
+  [AppPage.AGENTS]: [
+    { page: AppPage.AGENTS, label: 'All agents' },
+    { page: AppPage.AGENTS_MONITORING, label: 'Agent monitoring' },
+  ],
 };
 
 // Helper to get AppPage from platform path

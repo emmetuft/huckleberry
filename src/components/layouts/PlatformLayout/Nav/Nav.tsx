@@ -1,4 +1,5 @@
 import React, { FC, ReactNode, useEffect, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
@@ -33,6 +34,8 @@ import { clearMessages, selectSessions } from 'reducers/chat/slice';
 import {
   AppPage,
   AppPageTitle,
+  NavSubPageEntry,
+  navSubPages,
   platformRoutePaths,
 } from 'models/enums/appPage';
 import { spaceList } from 'models/interfaces/workspace';
@@ -57,11 +60,13 @@ export const Nav: FC<NavProps> = ({}) => {
 
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
   const [expanded, setExpanded] = useState<boolean>(true);
+  const [openAccordion, setOpenAccordion] = useState<AppPage | null>(null);
 
   const isMobile = useIsMobile();
 
   useEffect(() => {
     setMobileOpen(false);
+    setOpenAccordion(null);
   }, [location.pathname]);
 
   const onClickLogo = () => {
@@ -147,6 +152,42 @@ export const Nav: FC<NavProps> = ({}) => {
     );
   };
 
+  const renderAccordionItem = (page: AppPage, subPages: NavSubPageEntry[]) => {
+    const isOpen = openAccordion === page;
+    return (
+      <div key={page} className={styles.accordionWrapper}>
+        {renderIconBtn({
+          key: page,
+          icon: navIconMap[page],
+          label: AppPageTitle[page],
+          onClick: () => setOpenAccordion(isOpen ? null : page),
+        })}
+        <AnimatePresence initial={false}>
+          {expanded && isOpen && (
+            <motion.div
+              className={styles.accordion}
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2, ease: 'easeInOut' }}
+              style={{ overflow: 'hidden' }}
+            >
+              {subPages.map(({ page: subPage, label }) => (
+                <Link
+                  key={subPage}
+                  to={platformRoutePaths[subPage]}
+                  className={styles.subPageBtn}
+                >
+                  {label}
+                </Link>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    );
+  };
+
   return (
     <React.Fragment>
       <div className={styles.navBar}>
@@ -227,14 +268,17 @@ export const Nav: FC<NavProps> = ({}) => {
           )}
         </div>
         <div className={styles.buttons}>
-          {pages.map((page) =>
-            renderIconBtn({
-              key: page,
-              icon: navIconMap[page],
-              label: AppPageTitle[page],
-              page,
-            }),
-          )}
+          {pages.map((page) => {
+            const subPageList = navSubPages[page];
+            return subPageList
+              ? renderAccordionItem(page, subPageList)
+              : renderIconBtn({
+                  key: page,
+                  icon: navIconMap[page],
+                  label: AppPageTitle[page],
+                  page,
+                });
+          })}
         </div>
         <div className={styles.buttons}>
           {expanded && <p>Spaces</p>}

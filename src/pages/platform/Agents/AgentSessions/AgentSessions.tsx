@@ -17,12 +17,14 @@ import { Avatar } from 'components/shared/Avatar/Avatar';
 import { SessionAnalytics } from './SessionAnalytics/SessionAnalytics';
 import { SessionCompare } from './SessionCompare/SessionCompare';
 import { formatDateTime } from 'utils/datetime';
+import { SearchFilter } from 'models/interfaces/search';
 
 interface AgentSessionsProps {
   agentId?: string;
+  filters?: SearchFilter[];
 }
 
-export const AgentSessions: FC<AgentSessionsProps> = ({ agentId }) => {
+export const AgentSessions: FC<AgentSessionsProps> = ({ agentId, filters }) => {
   const dispatch = useAppDispatch();
   const agents = useSelector(selectAgents);
   const agentSessions = useSelector(selectAgentSessions);
@@ -41,7 +43,6 @@ export const AgentSessions: FC<AgentSessionsProps> = ({ agentId }) => {
     if (agentId) {
       dispatch(fetchSessions({ agentId }));
     } else {
-      // TODO: This endpoint does not exist in production or in DEV-3 and needs to be scoped, designed, and protected
       dispatch(fetchAllSessions());
     }
   }, [agentId]);
@@ -70,7 +71,7 @@ export const AgentSessions: FC<AgentSessionsProps> = ({ agentId }) => {
             dataIndex: 'groupEntityId',
             key: 'groupEntityId',
             render: (agentId: string) =>
-              agents.find((a) => a.id === agentId)?.name || 'N/A',
+              agents.find((a) => a.id === agentId)?.name || agentId,
           },
           {
             title: 'Model',
@@ -79,12 +80,11 @@ export const AgentSessions: FC<AgentSessionsProps> = ({ agentId }) => {
             render: (agentId: string) => {
               const agent = agents.find((a) => a.id === agentId);
               const modelId = agent?.model;
-              return models.find((m) => m.id === modelId)?.name || 'N/A';
+              return models.find((m) => m.id === modelId)?.name || '';
             },
           },
         ]
       : []),
-    { title: 'Version', dataIndex: 'version', key: 'version', width: 90 },
     {
       title: 'Created',
       dataIndex: 'created',
@@ -112,6 +112,7 @@ export const AgentSessions: FC<AgentSessionsProps> = ({ agentId }) => {
           getCheckboxProps: (record) => ({
             disabled: compareIds.length >= 2 && !compareIds.includes(record.id),
           }),
+          hideSelectAll: true,
         }}
         onRow={(record) => ({
           onClick: () => setSelectedSession(record),

@@ -48,6 +48,29 @@
     }
   }
 
+  .accordionWrapper {
+    display: flex;
+    flex-direction: column;
+
+    .accordion {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+      margin: var(--space-sm) 0 var(--space-sm) var(--space-lg);
+      padding-left: var(--space-md);
+      border-left: 1px solid var(--grey-dark);
+
+      .subPageBtn {
+        padding: var(--space-xs) 0;
+        color: var(--grey-dark);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-decoration: none;
+      }
+    }
+  }
+
   .memoryIcon {
     display: flex;
     justify-content: center;
