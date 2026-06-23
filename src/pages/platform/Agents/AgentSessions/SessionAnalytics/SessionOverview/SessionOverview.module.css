@@ -15,7 +15,7 @@
     position: relative;
     flex: 1;
     background-color: var(--grey-bg);
-    border-radius: var(--br-md);
+    border-radius: var(--br-lg);
     overflow: hidden;
   }
 
@@ -62,6 +62,13 @@
       .priceFormula {
         font-family: 'IBM Plex Mono', monospace;
       }
+
+      .modelTag {
+        width: fit-content;
+        margin-bottom: var(--space-xs);
+        background-color: var(--grey-dark);
+        color: var(--background);
+      }
     }
 
     .total {
@@ -97,7 +104,7 @@
     }
   }
 
-  .playbackWrapper {
+  .controlsWrapper {
     position: absolute;
     bottom: var(--space-md);
     left: var(--space-md);
@@ -106,5 +113,41 @@
     display: flex;
     align-items: center;
     gap: var(--space-sm);
+
+    .playbackWrapper {
+      flex: 1;
+      padding: 0 var(--space-sm);
+      background-color: var(--background);
+      border-radius: 30px;
+    }
+  }
+
+  .radioGroup {
+    display: flex;
+
+    label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-inline: var(--space-md);
+    }
+
+    > *:first-child {
+      border-start-start-radius: 30px;
+      border-end-start-radius: 30px;
+    }
+
+    > *:last-child {
+      border-start-end-radius: 30px;
+      border-end-end-radius: 30px;
+    }
+  }
+
+  .radioButton {
+    span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
 }

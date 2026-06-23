@@ -61,17 +61,6 @@ export const ForceGraph: React.FC<ForceGraphProps> = ({
     height: number;
   } | null>(null);
 
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const ro = new ResizeObserver(([entry]) => {
-      const { width, height } = entry.contentRect;
-      setDimensions({ width, height });
-    });
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-
   const graphData = useMemo(() => {
     const d3Nodes: D3Node[] = data.nodes.map((node) => ({
       id: node.id,
@@ -94,17 +83,32 @@ export const ForceGraph: React.FC<ForceGraphProps> = ({
   }, [data]);
 
   useEffect(() => {
-    if (!graphRef.current) return;
-    if (!highlightedNodeId) return resetCamera();
+    const el = containerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect;
+      setDimensions({ width, height });
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!graphRef.current || !highlightedNodeId) return;
     highlightNode();
   }, [highlightedNodeId]);
 
   useEffect(() => {
-    if (!graphRef.current || !dagMode) return;
-    graphRef.current.d3Force('charge')?.strength(-600);
-    graphRef.current.d3Force('link')?.distance(100);
-    graphRef.current.d3ReheatSimulation();
-  }, [dagMode, graphData]);
+    if (!graphRef.current) return;
+    if (!dagMode) {
+      graphData.nodes.forEach((node: any) => {
+        node.x = 0;
+        node.y = 0;
+        node.vx = 0;
+        node.vy = 0;
+      });
+    }
+  }, [dagMode]);
 
   const highlightNode = () => {
     if (!graphRef.current) return;
@@ -132,16 +136,6 @@ export const ForceGraph: React.FC<ForceGraphProps> = ({
     },
     [data.nodes, onNodeClick],
   );
-
-  const handleEngineStop = () => {
-    if (!graphRef.current) return;
-    // resetCamera();
-  };
-
-  const resetCamera = () => {
-    if (!graphRef.current) return;
-    // graphRef.current.zoomToFit(1500, 50);
-  };
 
   const getNodeColor = useCallback(
     (node: any) => {
@@ -171,8 +165,8 @@ export const ForceGraph: React.FC<ForceGraphProps> = ({
     linkDirectionalParticles: 2,
     linkDirectionalParticleWidth: 2,
     linkDirectionalParticleSpeed: 0.005,
-    onEngineStop: handleEngineStop,
-    ...(dagMode ? { dagMode, dagLevelDistance: 100 } : {}),
+    dagMode,
+    ...(dagMode ? { dagLevelDistance: 100 } : {}),
     ...(dimensions ?? {}),
   };
 

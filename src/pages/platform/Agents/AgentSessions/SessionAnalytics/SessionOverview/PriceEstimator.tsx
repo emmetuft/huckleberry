@@ -1,15 +1,14 @@
 import { FC, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { PiggyBankIcon } from '@phosphor-icons/react';
-import { Skeleton } from 'antd';
+import { Skeleton, Tag } from 'antd';
 import styles from './SessionOverview.module.css';
-import { AgentSession } from 'models/interfaces/session';
+import { selectAIModels } from 'reducers/agents/slice';
+import { TOKEN_PRICING } from 'constants/tokenPricing';
 import {
   AISessionEvent,
   AISessionEventType,
 } from 'models/interfaces/sessionEvent';
-import { TOKEN_PRICING } from 'constants/tokenPricing';
-import { selectAIModels } from 'reducers/agents/slice';
 
 interface PriceEstimatorProps {
   sessionEvents: AISessionEvent[];
@@ -77,23 +76,9 @@ export const PriceEstimator: FC<PriceEstimatorProps> = ({
     <div className={styles.priceEstimate}>
       <PiggyBankIcon size={22} />
       <div className={styles.priceBreakdown}>
+        <p className={styles.priceTitle}>Price estimate</p>
         {loading ? (
-          <Skeleton.Button
-            active
-            size="small"
-            style={{ width: 100, height: 13 }}
-          />
-        ) : (
-          <p className={styles.priceTitle}>Price estimate</p>
-        )}
-        {loading ? (
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 'var(--space-sm)',
-            }}
-          >
+          <>
             <Skeleton.Button
               active
               size="small"
@@ -104,17 +89,18 @@ export const PriceEstimator: FC<PriceEstimatorProps> = ({
               size="small"
               style={{ width: '82%', height: 11 }}
             />
-          </div>
+          </>
         ) : modelEntries.length === 0 ? (
           <p className={styles.priceFormula}>No pricing data available</p>
         ) : (
           modelEntries.map((usage) => (
             <div key={usage.modelName}>
+              <Tag className={styles.modelTag}>{usage.modelName}</Tag>
               <p className={styles.priceFormula}>
-                {`Input:  ${usage.inputTokens.toLocaleString()} tokens × $${usage.inputPricePerMillion.toFixed(4)}/M = $${usage.inputCost.toFixed(6)}`}
+                {`Input:  ${usage.inputTokens.toLocaleString()} tokens × $${usage.inputPricePerMillion.toFixed(4)}/M = $${usage.inputCost.toFixed(4)}`}
               </p>
               <p className={styles.priceFormula}>
-                {`Output: ${usage.outputTokens.toLocaleString()} tokens × $${usage.outputPricePerMillion.toFixed(4)}/M = $${usage.outputCost.toFixed(6)}`}
+                {`Output: ${usage.outputTokens.toLocaleString()} tokens × $${usage.outputPricePerMillion.toFixed(4)}/M = $${usage.outputCost.toFixed(4)}`}
               </p>
             </div>
           ))
@@ -128,7 +114,7 @@ export const PriceEstimator: FC<PriceEstimatorProps> = ({
             style={{ width: 80, height: 28 }}
           />
         ) : (
-          `$${total.toFixed(6)}`
+          `$${total.toFixed(4)}`
         )}
       </div>
     </div>

@@ -1,20 +1,14 @@
 import { FC, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { AnimatePresence, motion } from 'framer-motion';
 import { toast } from 'sonner';
-import { Button, Tag, Tooltip as AntTooltip } from 'antd';
+import { Button, Tag, Tooltip as AntTooltip, Radio } from 'antd';
 import {
-  BarChart,
-  Bar,
-  Cell,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
-import { ClockCounterClockwiseIcon, KeyIcon } from '@phosphor-icons/react';
+  ClockCounterClockwiseIcon,
+  GraphIcon,
+  KeyIcon,
+  TreeViewIcon,
+} from '@phosphor-icons/react';
 import styles from './SessionOverview.module.css';
-import { selectAgents, selectAIModels } from 'reducers/agents/slice';
-import { nodeColors } from 'constants/styles';
 import { AgentSession } from 'models/interfaces/session';
 import { GraphData, GraphNode } from 'models/interfaces/ontology';
 import {
@@ -22,14 +16,18 @@ import {
   AISessionEventType,
   ModelProviderUsage,
 } from 'models/interfaces/sessionEvent';
-import { formatDuration, formatCompactNumber } from 'utils/datetime';
 import { ForceGraph } from 'pages/platform/Ontology/GraphExploration/ForceGraph';
 import { GraphPlayback } from 'pages/platform/Ontology/GraphExploration/GraphControls/GraphPlayback/GraphPlayback';
-import { buildSessionGraph } from 'utils/sessionGraph';
-import { AnimatePresence, motion } from 'framer-motion';
 import { NodeDetailModal } from 'pages/platform/Ontology/GraphExploration/NodeDetailModal/NodeDetailModal';
 import AppTooltip from 'components/shared/Tooltip';
 import { PriceEstimator } from './PriceEstimator';
+import { TokenChart } from './TokenChart';
+import {
+  formatDuration,
+  formatCompactNumber,
+  formatMessageTimestamp,
+} from 'utils/datetime';
+import { buildSessionGraph } from 'utils/sessionGraph';
 
 interface SessionOverviewProps {
   agentSession: AgentSession | null;
@@ -44,8 +42,6 @@ export const SessionOverview: FC<SessionOverviewProps> = ({
   graphData: graphDataProp,
   loading,
 }) => {
-  const agents = useSelector(selectAgents);
-  const models = useSelector(selectAIModels);
   const fallbackGraph = useMemo(
     () => buildSessionGraph(sessionEvents),
     [sessionEvents],
@@ -56,10 +52,8 @@ export const SessionOverview: FC<SessionOverviewProps> = ({
   const [visibleNodeIds, setVisibleNodeIds] = useState<Set<string> | null>(
     null,
   );
+  const [graphMode, setGraphMode] = useState<'fd' | 'dag'>('fd');
   const [playbackOpen, setPlaybackOpen] = useState<boolean>(false);
-
-  const agent =
-    agents.find((a) => a.id === agentSession?.groupEntityId) ?? null;
 
   const totalDuration =
     sessionEvents.length >= 2
@@ -77,20 +71,6 @@ export const SessionOverview: FC<SessionOverviewProps> = ({
   const totalTokens = serviceResponseEvents.reduce((sum, e) => {
     return sum + (e.serviceResponse?.modelProviderUsage?.totalTokens ?? 0);
   }, 0);
-
-  const serviceNames = [
-    ...new Set(serviceResponseEvents.map((e) => e.service)),
-  ].sort();
-  const serviceColorMap = Object.fromEntries(
-    serviceNames.map((name, i) => [name, nodeColors[i % nodeColors.length]]),
-  );
-
-  const tokenChartData = [...serviceResponseEvents].map((e) => ({
-    id: e.eventId,
-    name: e.service,
-    inputTokens: e.serviceResponse?.modelProviderUsage?.inputTokens ?? 0,
-    outputTokens: e.serviceResponse?.modelProviderUsage?.outputTokens ?? 0,
-  }));
 
   const filteredGraphData = useMemo(() => {
     if (!visibleNodeIds) return graphData;
@@ -129,16 +109,9 @@ export const SessionOverview: FC<SessionOverviewProps> = ({
         </div>
         <div className={styles.tagWrapper}>
           <Tag>
-            <span className={styles.tagLabel}>model</span>
+            <span className={styles.tagLabel}>started</span>
             <span className={styles.tagValue}>
-              {models.find((model) => model.id === agent?.model)?.name ??
-                'Default'}
-            </span>
-          </Tag>
-          <Tag>
-            <span className={styles.tagLabel}>tokens</span>
-            <span className={styles.tagValue}>
-              {formatCompactNumber(totalTokens)}
+              {formatMessageTimestamp(agentSession.created)}
             </span>
           </Tag>
           <Tag>
@@ -147,70 +120,40 @@ export const SessionOverview: FC<SessionOverviewProps> = ({
               {formatDuration(totalDuration)}
             </span>
           </Tag>
+          <Tag>
+            <span className={styles.tagLabel}>tokens</span>
+            <span className={styles.tagValue}>
+              {formatCompactNumber(totalTokens)}
+            </span>
+          </Tag>
         </div>
         <PriceEstimator
           sessionEvents={serviceResponseEvents}
           loading={loading}
         />
-        {tokenChartData.length > 0 && (
-          <div>
-            <p className={styles.chartTitle}>Token usage</p>
-            <ResponsiveContainer width="100%" height={200}>
-              <BarChart
-                data={tokenChartData}
-                margin={{ left: -15, bottom: -15 }}
-              >
-                <XAxis
-                  dataKey="id"
-                  tickFormatter={(id) =>
-                    tokenChartData.find((d) => d.id === id)?.name ?? id
-                  }
-                  tick={false}
-                />
-                <YAxis tickFormatter={(v) => formatCompactNumber(v)} />
-                <Tooltip
-                  cursor={false}
-                  formatter={(v) => formatCompactNumber(v as number)}
-                  labelFormatter={(id) =>
-                    tokenChartData.find((d) => d.id === id)?.name ?? id
-                  }
-                />
-                <Bar dataKey="inputTokens" stackId="a" name="Input">
-                  {tokenChartData.map((entry) => (
-                    <Cell
-                      key={entry.id}
-                      fill={serviceColorMap[entry.name]}
-                      fillOpacity={0.4}
-                    />
-                  ))}
-                </Bar>
-                <Bar dataKey="outputTokens" stackId="a" name="Output">
-                  {tokenChartData.map((entry) => (
-                    <Cell key={entry.id} fill={serviceColorMap[entry.name]} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-            <div className={styles.chartLegend}>
-              {serviceNames.map((name) => (
-                <div key={name} className={styles.chartLegendItem}>
-                  <span
-                    className={styles.chartLegendSwatch}
-                    style={{ backgroundColor: serviceColorMap[name] }}
-                  />
-                  {name}
-                </div>
-              ))}
-            </div>
-          </div>
+        {serviceResponseEvents.length > 0 && (
+          <TokenChart sessionEvents={serviceResponseEvents} />
         )}
       </div>
       <div className={styles.right}>
-        <div className={styles.playbackWrapper}>
+        <div className={styles.controlsWrapper}>
+          <Radio.Group
+            className={styles.radioGroup}
+            value={graphMode}
+            onChange={(e) => setGraphMode(e.target.value)}
+            defaultValue="fd"
+          >
+            <Radio.Button value="fd" className={styles.radioButton}>
+              <GraphIcon size={18} />
+            </Radio.Button>
+            <Radio.Button value="dag" className={styles.radioButton}>
+              <TreeViewIcon size={18} />
+            </Radio.Button>
+          </Radio.Group>
           <AppTooltip title="Graph playback">
             <Button
               shape="round"
-              icon={<ClockCounterClockwiseIcon />}
+              icon={<ClockCounterClockwiseIcon size={18} />}
               onClick={() => {
                 setPlaybackOpen(!playbackOpen);
                 setVisibleNodeIds(null);
@@ -220,11 +163,11 @@ export const SessionOverview: FC<SessionOverviewProps> = ({
           <AnimatePresence>
             {playbackOpen && (
               <motion.div
+                className={styles.playbackWrapper}
                 initial={{ y: 40, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: 40, opacity: 0 }}
                 transition={{ duration: 0.2, ease: 'easeInOut' }}
-                style={{ flex: 1 }}
               >
                 <GraphPlayback
                   nodes={graphData.nodes}
@@ -238,7 +181,7 @@ export const SessionOverview: FC<SessionOverviewProps> = ({
         <ForceGraph
           data={filteredGraphData}
           mode="2d"
-          dagMode="td"
+          dagMode={graphMode === 'dag' ? 'td' : undefined}
           nodeLabels={nodeLabels}
           onNodeClick={setSelectedNode}
         />

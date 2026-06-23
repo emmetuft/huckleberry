@@ -38,8 +38,8 @@ export const formatTime = (ts: number) =>
  * Shows just the time for today, "Yesterday" prefix for yesterday,
  * or the date with time for older messages.
  */
-export const formatMessageTimestamp = (timestamp: number): string => {
-  const date = new Date(timestamp);
+export const formatMessageTimestamp = (timestamp: number | string): string => {
+  const date = new Date(typeof timestamp === 'string' ? timestamp : timestamp);
   const now = new Date();
   const isToday = date.toDateString() === now.toDateString();
 

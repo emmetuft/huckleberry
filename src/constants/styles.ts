@@ -8,7 +8,6 @@ export const nodeColors = [
   '#e0a030',
   '#c048ae',
   '#30b8b0',
-  '#bfff00',
 ];
 
 export const chartColors = [...nodeColors, '#2792c7'];
