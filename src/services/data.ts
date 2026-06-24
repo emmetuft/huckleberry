@@ -1,3 +1,4 @@
+import { apiFetch } from 'services/headers';
 import { Column } from 'models/interfaces/column';
 import { DataSource } from 'models/interfaces/dataSource';
 import { getDatasetRequestBody, handleResponse } from 'utils/service';
@@ -10,7 +11,7 @@ interface FetchDataSourcesInput {
   searchTerm?: string;
 }
 
-const fetchDataSources = async ({
+const getDataSources = async ({
   page,
   size,
   searchTerm,
@@ -19,7 +20,7 @@ const fetchDataSources = async ({
   total: number;
 }> => {
   try {
-    const response = await fetch(
+    const response = await apiFetch(
       `${DATA_SOURCES_URL}?offset=${(page - 1) * size}&limit=${size}${searchTerm ? `&nameLike=${encodeURIComponent(searchTerm)}` : ''}`,
     );
     const data = await handleResponse<{
@@ -35,11 +36,13 @@ const fetchDataSources = async ({
   }
 };
 
-const fetchDataSource = async (
+const getDataSource = async (
   dataSourceId: string,
 ): Promise<{ dataSource: DataSource; columns: Column[] }> => {
   try {
-    const response = await fetch(`${DATA_SOURCES_URL}/${dataSourceId}/schema`);
+    const response = await apiFetch(
+      `${DATA_SOURCES_URL}/${dataSourceId}/schema`,
+    );
     const data = await handleResponse<{
       dataSource: any;
       schemaContract: any;
@@ -60,7 +63,7 @@ interface FetchDataParams {
   pageSize: number;
 }
 
-const fetchDataSourceRows = async ({
+const getDataSourceRows = async ({
   dataSourceId,
   schema,
   page,
@@ -76,7 +79,7 @@ const fetchDataSourceRows = async ({
     body: JSON.stringify(requestBody),
   };
 
-  const response = await fetch(url, options);
+  const response = await apiFetch(url, options);
   if (response.ok) {
     const result = await response.json();
     const datasetResponse = result.data ?? result;
@@ -98,7 +101,7 @@ const formatRowsWithKeys = (schema: Column[], rows: string[][]) =>
   });
 
 export const DataService = {
-  fetchDataSources,
-  fetchDataSource,
-  fetchDataSourceRows,
+  getDataSources,
+  getDataSource,
+  getDataSourceRows,
 };

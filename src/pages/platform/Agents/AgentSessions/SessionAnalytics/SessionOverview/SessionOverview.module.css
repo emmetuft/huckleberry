@@ -1,0 +1,153 @@
+.sessionOverview {
+  display: flex;
+  gap: var(--space-2xl);
+  height: 100%;
+
+  .left {
+    flex: 1;
+    padding: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+
+  .right {
+    position: relative;
+    flex: 1;
+    background-color: var(--grey-bg);
+    border-radius: var(--br-lg);
+    overflow: hidden;
+  }
+
+  .sessionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .tagWrapper {
+    display: flex;
+    gap: var(--space-sm);
+
+    .tagLabel {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--grey-text);
+      margin-right: var(--space-xs);
+    }
+
+    .tagValue {
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 400;
+    }
+  }
+
+  .priceEstimate {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+    padding: var(--space-xl);
+    background-color: var(--success-bg);
+    border-radius: var(--br-md);
+
+    .priceTitle {
+      font-weight: 600;
+    }
+
+    .priceBreakdown {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+
+      .priceFormula {
+        font-family: 'IBM Plex Mono', monospace;
+      }
+
+      .modelTag {
+        width: fit-content;
+        margin-bottom: var(--space-xs);
+        background-color: var(--grey-dark);
+        color: var(--background);
+      }
+    }
+
+    .total {
+      margin-left: auto;
+      font-size: 30px;
+    }
+  }
+
+  .chartTitle {
+    margin-bottom: var(--space-md);
+    font-weight: 600;
+  }
+
+  .chartLegend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    padding-top: var(--space-xs);
+
+    .chartLegendItem {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+      font-size: 12px;
+      color: var(--grey-text);
+    }
+
+    .chartLegendSwatch {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+  }
+
+  .controlsWrapper {
+    position: absolute;
+    bottom: var(--space-md);
+    left: var(--space-md);
+    right: var(--space-md);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+
+    .playbackWrapper {
+      flex: 1;
+      padding: 0 var(--space-sm);
+      background-color: var(--background);
+      border-radius: 30px;
+    }
+  }
+
+  .radioGroup {
+    display: flex;
+
+    label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-inline: var(--space-md);
+    }
+
+    > *:first-child {
+      border-start-start-radius: 30px;
+      border-end-start-radius: 30px;
+    }
+
+    > *:last-child {
+      border-start-end-radius: 30px;
+      border-end-end-radius: 30px;
+    }
+  }
+
+  .radioButton {
+    span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}

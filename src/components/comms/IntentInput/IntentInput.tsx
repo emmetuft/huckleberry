@@ -10,9 +10,9 @@ import { AppPage } from 'models/enums/appPage';
 import { InputCommand } from 'models/enums/inputCommand';
 import { DataSource } from 'models/interfaces/dataSource';
 import { MentionItem } from 'models/interfaces/mention';
-import { Tool } from 'models/interfaces/toolkit';
+import { Toolkit } from 'models/interfaces/toolkit';
 import { CommandPopup } from './CommandPopup/CommandPopup';
-import { ContextItems } from './context/ContextItems';
+import { ContextItems } from './ContextItems/ContextItems';
 import { IntentInputControls } from './Controls/Controls';
 import { ModelSelect } from './Controls/ModelSelect';
 import { SendButton } from './Controls/SendBtn';
@@ -42,7 +42,7 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [mentionedItems, setMentionedItems] = useState<MentionItem[]>([]);
 
-  const [selectedTools, setSelectedTools] = useState<Tool[]>([]);
+  const [selectedToolkits, setSelectedToolkits] = useState<Toolkit[]>([]);
   const [selectedDataSources, setSelectedDataSources] = useState<DataSource[]>(
     [],
   );
@@ -54,19 +54,7 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   const pendingNavigate = useRef(false);
   const [textContent, setTextContent] = useState('');
 
-  const toolPopup = useCommandPopup<Tool>(editableRef, {
-    trigger: InputCommand.TOOL,
-    removeOnSelect: true,
-    popupRef,
-    onSelect: (tool) => {
-      // Avoid duplicates
-      if (selectedTools.some((t) => t.toolId === tool.toolId)) {
-        return;
-      }
-      setSelectedTools([...selectedTools, tool]);
-    },
-  });
-
+  // TODO: Add per-tool selection via /command popup when individual tool APIs are available
   const mentionPopup = useCommandPopup<MentionItem>(editableRef, {
     trigger: InputCommand.MENTION,
     removeOnSelect: false,
@@ -110,16 +98,16 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     setTextContent(text.trim());
 
     if (isNowEmpty) {
-      toolPopup.resetPopup();
       mentionPopup.resetPopup();
     } else {
-      toolPopup.controlPopup(text);
       mentionPopup.controlPopup(text);
     }
   };
 
-  const onRemoveTool = (tool: Tool) => {
-    setSelectedTools(selectedTools.filter((t) => !(t.toolId === tool.toolId)));
+  const onRemoveToolkit = (toolkitId: string) => {
+    setSelectedToolkits(
+      selectedToolkits.filter((t) => t.toolkitId !== toolkitId),
+    );
   };
 
   const onRemoveDataSource = (dataSourceId: string) => {
@@ -155,7 +143,6 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   };
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (toolPopup.handleKeyDown(event)) return;
     if (mentionPopup.handleKeyDown(event)) return;
 
     if (event.key === 'Enter' && !event.shiftKey) {
@@ -167,6 +154,12 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
   const onClickSend = async () => {
     const el = editableRef.current;
     if (!el || isEmpty || !textContent) return;
+
+    // Process toolkits to send only toolkitId
+    const processedToolkits =
+      selectedToolkits.length > 0
+        ? selectedToolkits.map((t) => t.toolkitId)
+        : undefined;
 
     // Process datasources to send only id and name
     const processedDataSources =
@@ -181,7 +174,7 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     dispatch(
       executeStream({
         userInput: textContent,
-        tools: selectedTools,
+        toolkitIds: processedToolkits,
         dataSources: processedDataSources,
         files: processedFiles,
       }),
@@ -196,18 +189,15 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     el.innerText = '';
     setIsEmpty(true);
     setTextContent('');
-    setSelectedTools([]);
+    setSelectedToolkits([]);
     setUploadedFiles([]);
     setSelectedDataSources([]);
   };
 
   return (
     <div className={styles.intentInput}>
-      {(toolPopup.showPopup || mentionPopup.showPopup) && (
-        <CommandPopup
-          popupRef={popupRef}
-          popup={toolPopup.showPopup ? toolPopup : mentionPopup}
-        />
+      {mentionPopup.showPopup && (
+        <CommandPopup popupRef={popupRef} popup={mentionPopup} />
       )}
       <div
         className={`${styles.inputWrapper} ${animate ? styles.animate : ''} card`}
@@ -215,10 +205,10 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
         <ContextItems
           uploadedFiles={uploadedFiles}
           selectedDataSources={selectedDataSources}
-          selectedTools={selectedTools}
+          selectedToolkits={selectedToolkits}
           onRemoveFile={onRemoveFile}
           onRemoveDataSource={onRemoveDataSource}
-          onRemoveTool={onRemoveTool}
+          onRemoveToolkit={onRemoveToolkit}
         />
         <EditableInput
           ref={editableRef}
@@ -232,8 +222,8 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
           <div className={styles.buttons}>
             <IntentInputControls
               textContent={textContent}
-              selectedTools={selectedTools}
-              setSelectedTools={setSelectedTools}
+              selectedToolkits={selectedToolkits}
+              onToolkitsChange={setSelectedToolkits}
               uploadedFiles={uploadedFiles}
               setUploadedFiles={setUploadedFiles}
               selectedDataSources={selectedDataSources}

@@ -3,7 +3,6 @@ import { useSelector } from 'react-redux';
 import { WrenchIcon } from '@phosphor-icons/react';
 import { selectLoading } from 'reducers/chat/slice';
 import { DataSource } from 'models/interfaces/dataSource';
-import { Tool } from 'models/interfaces/toolkit';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
 import { BrowserModal } from 'components/modals/BrowserModal/BrowserModal';
 import { DataSourceBrowser } from 'components/shared/DataSourceBrowser/DataSourceBrowser';
@@ -13,11 +12,12 @@ import { DictateButton } from './DictateBtn/DictateBtn';
 import { SuggestedActions } from './SuggestedActions/SuggestedActions';
 import { ActionType, getSuggestedActions } from 'utils/temp';
 import { isEmpty } from 'utils/misc';
+import { Toolkit } from 'models/interfaces/toolkit';
 
 interface IntentInputControlsProps {
   textContent?: string;
-  selectedTools: Tool[];
-  setSelectedTools: (tools: Tool[]) => void;
+  selectedToolkits: Toolkit[];
+  onToolkitsChange: (toolkits: Toolkit[]) => void;
   uploadedFiles: File[];
   setUploadedFiles: (files: File[]) => void;
   selectedDataSources: DataSource[];
@@ -27,8 +27,8 @@ interface IntentInputControlsProps {
 
 export const IntentInputControls: FC<IntentInputControlsProps> = ({
   textContent,
-  selectedTools,
-  setSelectedTools,
+  selectedToolkits,
+  onToolkitsChange,
   uploadedFiles,
   setUploadedFiles,
   selectedDataSources,
@@ -57,16 +57,7 @@ export const IntentInputControls: FC<IntentInputControlsProps> = ({
     setSuggestedActions(getSuggestedActions(textContent, selectedDataSources));
   }, [selectedDataSources]);
 
-  const handleToolModalConfirm = (tools: Tool[]) => {
-    const newTools = tools.filter(
-      (tool) => !selectedTools.some((t) => t.toolId === tool.toolId),
-    );
-    setSelectedTools([...selectedTools, ...newTools]);
-    setShowToolBrowser(false);
-  };
-
   const handleFileUpload = (file: File) => {
-    // TODO: Process the uploaded file and add to context
     setUploadedFiles([...uploadedFiles, file]);
   };
 
@@ -115,15 +106,21 @@ export const IntentInputControls: FC<IntentInputControlsProps> = ({
           />
         )}
       </BrowserModal>
-      <BrowserModal<Tool>
+      <BrowserModal<Toolkit>
         open={showToolBrowser}
-        title="Browse Tools"
-        itemLabel="tool"
+        title="Browse Toolkits"
+        itemLabel="toolkit"
         onCancel={() => setShowToolBrowser(false)}
-        onConfirm={handleToolModalConfirm}
+        onConfirm={(toolkits) => {
+          onToolkitsChange([...new Set([...selectedToolkits, ...toolkits])]);
+          setShowToolBrowser(false);
+        }}
       >
         {(selected, onChange) => (
-          <ToolBrowser selectedTools={selected} onToolsChange={onChange} />
+          <ToolBrowser
+            selectedToolkits={selected}
+            onToolkitsChange={onChange}
+          />
         )}
       </BrowserModal>
     </>

@@ -2,34 +2,34 @@ import { FC } from 'react';
 import {
   DatabaseIcon,
   FileIcon,
-  WrenchIcon,
+  ToolboxIcon,
   XIcon,
 } from '@phosphor-icons/react';
-import { DataSource } from 'models/interfaces/dataSource';
 import styles from './Context.module.css';
-import { Tool } from 'models/interfaces/toolkit';
+import { DataSource } from 'models/interfaces/dataSource';
+import { Toolkit } from 'models/interfaces/toolkit';
 
 interface ContextItemsProps {
   uploadedFiles: File[];
   selectedDataSources: DataSource[];
-  selectedTools: Tool[];
+  selectedToolkits: Toolkit[];
   onRemoveFile: (fileName: string) => void;
   onRemoveDataSource: (dataSourceId: string) => void;
-  onRemoveTool: (tool: Tool) => void;
+  onRemoveToolkit: (toolkitId: string) => void;
 }
 
 export const ContextItems: FC<ContextItemsProps> = ({
   uploadedFiles,
   selectedDataSources,
-  selectedTools,
+  selectedToolkits,
   onRemoveFile,
   onRemoveDataSource,
-  onRemoveTool,
+  onRemoveToolkit,
 }) => {
   if (
     uploadedFiles.length === 0 &&
     selectedDataSources.length === 0 &&
-    selectedTools.length === 0
+    selectedToolkits.length === 0
   ) {
     return null;
   }
@@ -58,16 +58,13 @@ export const ContextItems: FC<ContextItemsProps> = ({
           </button>
         </div>
       ))}
-      {selectedTools.map((tool) => (
-        <div key={tool.toolId} className={styles.contextItem}>
-          <WrenchIcon size={14} />
-          <span
-            className={styles.contextItemTitle}
-            title={tool.overrideToolName}
-          >
-            {tool.overrideToolName}
+      {selectedToolkits.map((tk) => (
+        <div key={tk.toolkitId} className={styles.contextItem}>
+          <ToolboxIcon size={14} />
+          <span className={styles.contextItemTitle} title={tk.name}>
+            {tk.name}
           </span>
-          <button onClick={() => onRemoveTool(tool)}>
+          <button onClick={() => onRemoveToolkit(tk.toolkitId)}>
             <XIcon className={styles.closeIcon} />
           </button>
         </div>

@@ -101,9 +101,9 @@ const DonutChart: React.FC<DonutChartProps> = ({
       .attr('stroke', 'var(--background)')
       .style('stroke-width', '2px')
       .style('transition', 'opacity 0.3s ease')
-      .on('mouseover', (event, d) => handleHover(d.data.label))
+      .on('mouseover', (_event, d) => handleHover(d.data.label))
       .on('mouseout', handleMouseOut)
-      .on('click', (event, d) =>
+      .on('click', (_event, d) =>
         onClickValue(isEmpty(d.data.label) ? 'Null' : d.data.label),
       ); // Call onClickValue on section click
   }, [data, width, height, innerRadiusRatio, color, totalValue]);

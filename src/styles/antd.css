@@ -117,6 +117,14 @@ textarea.ant-input {
   border-bottom: none;
 }
 
+.ant-table-wrapper .ant-table-tbody > tr.ant-table-row-selected > td {
+  background: var(--grey-bg) !important;
+}
+
+.ant-table-wrapper .ant-table-tbody > tr.ant-table-row-selected:hover > td {
+  background: var(--grey-light) !important;
+}
+
 .ant-empty-normal {
   margin-block: unset;
 }

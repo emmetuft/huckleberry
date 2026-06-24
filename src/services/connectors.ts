@@ -1,9 +1,10 @@
+import { apiFetch } from 'services/headers';
 import { Connector, ConnectorFilter } from 'models/interfaces/connector';
 import { handleResponse } from 'utils/service';
 
 const CONNECTORS_API_BASE = '/api/connectors';
 
-const fetchConnectors = async (
+const getConnectors = async (
   filters: ConnectorFilter[],
   count: number = 51,
   offset: number = 0,
@@ -13,7 +14,7 @@ const fetchConnectors = async (
     count,
     offset,
   };
-  const response = await fetch(CONNECTORS_API_BASE, {
+  const response = await apiFetch(CONNECTORS_API_BASE, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(params),
@@ -22,5 +23,5 @@ const fetchConnectors = async (
 };
 
 export const ConnectorsService = {
-  fetchConnectors,
+  getConnectors,
 };

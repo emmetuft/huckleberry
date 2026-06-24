@@ -1,16 +1,20 @@
 import { FC, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 import { Button, Select, Spin } from 'antd';
 import styles from './AgentEdit.module.css';
 import { useAppDispatch } from 'reducers';
-import { selectAgents, selectLoadingAgentId } from 'reducers/agents/slice';
-import { createCustomAgent, fetchAgentById } from 'reducers/agents/actions';
+import {
+  selectAgents,
+  selectLoadingAgentId,
+  selectUpserting,
+} from 'reducers/agents/slice';
+import { fetchAgentById, upsertCustomAgent } from 'reducers/agents/actions';
 import { AGENT_FORM_FIELDS, AgentStep } from 'constants/agent';
 import { AccessEntry } from 'models/enums/permission';
 import { Agent } from 'models/interfaces/agent';
 import { DataSource } from 'models/interfaces/dataSource';
-import { Tool } from 'models/interfaces/toolkit';
 import { Chat } from '../Chat/Chat';
 import { AgentStepContent } from './AgentStepContent';
 
@@ -21,24 +25,25 @@ export const AgentEdit: FC = () => {
   const navigate = useNavigate();
   const agents = useSelector(selectAgents);
   const loadingAgentId = useSelector(selectLoadingAgentId);
+  const upserting = useSelector(selectUpserting);
 
   const [currentStep, setCurrentStep] = useState<AgentStep>(AgentStep.Persona);
   const [agentForm, setAgentForm] = useState<AgentFormState>({});
-  const [selectedTools, setSelectedTools] = useState<Tool[]>([]);
+  const [selectedToolkitIds, setSelectedToolkitIds] = useState<string[]>([]);
   const [selectedDataSources, setSelectedDataSources] = useState<DataSource[]>(
     [],
   );
   const [usersAndGroups, setUsersAndGroups] = useState<AccessEntry[]>([]);
 
   const { agentId } = useParams<{ agentId: string }>();
+  const isNewAgent = agentId === 'new';
 
   const agent = useMemo(() => {
-    const isNewAgent = agentId === 'new';
     const currAgent = isNewAgent
       ? null
       : (agents.find((a) => a.id === agentId) ?? null);
     return currAgent;
-  }, [agentId]);
+  }, [agentId, agents, isNewAgent]);
 
   useEffect(() => {
     if (!agent && agentId && agentId !== 'new') {
@@ -49,9 +54,12 @@ export const AgentEdit: FC = () => {
   useEffect(() => {
     if (agent) {
       setAgentForm(agent);
+      setSelectedToolkitIds(agent.toolkitIds ?? []);
     } else {
       setAgentForm({});
+      setSelectedToolkitIds([]);
     }
+    setCurrentStep(AgentStep.Persona);
   }, [agent]);
 
   const updateField = (key: keyof Agent, value: any) => {
@@ -64,8 +72,24 @@ export const AgentEdit: FC = () => {
   const isPersonaComplete = AGENT_FORM_FIELDS.every((field) =>
     Boolean(agentForm[field.key]),
   );
+  const isToolkitSelected = selectedToolkitIds.length > 0;
+
+  const hasChanges = useMemo(() => {
+    if (isNewAgent) return true;
+    if (!agent) return false;
+    const formChanged = AGENT_FORM_FIELDS.some(
+      (field) => agentForm[field.key] !== agent[field.key],
+    );
+    const toolkitsChanged =
+      JSON.stringify([...selectedToolkitIds].sort()) !==
+      JSON.stringify([...(agent.toolkitIds ?? [])].sort());
+    return formChanged || toolkitsChanged;
+  }, [agentForm, selectedToolkitIds, agent, isNewAgent]);
+
   const isContinueDisabled =
     currentStep === AgentStep.Persona && !isPersonaComplete;
+  const isSaveDisabled =
+    !isPersonaComplete || !isToolkitSelected || !hasChanges;
 
   const goToNextStep = () => {
     const currentIndex = steps.indexOf(currentStep);
@@ -74,25 +98,35 @@ export const AgentEdit: FC = () => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    if (!agentId) return;
     const { name, description, prompt, systemMessage, model } = agentForm;
 
     if (!name || !description || !prompt || !systemMessage || !model) {
-      // TODO: surface validation errors to the user
       return;
     }
 
-    dispatch(
-      createCustomAgent({
-        id: 'new',
+    const context = {
+      dataSourceIds: selectedDataSources.map((ds) => ds.id),
+      fileSets: [],
+    };
+
+    const result = await dispatch(
+      upsertCustomAgent({
+        id: agentId,
         name,
         description,
         prompt,
         systemMessage,
         model,
-        toolkitIds: [],
+        toolkitIds: selectedToolkitIds,
+        context,
+        settings: agentForm.settings,
       }),
     );
+    if (upsertCustomAgent.fulfilled.match(result)) {
+      toast.success(`Agent ${isNewAgent ? 'created' : 'updated'} successfully`);
+    }
   };
 
   if (loadingAgentId === agentId) {
@@ -122,7 +156,13 @@ export const AgentEdit: FC = () => {
               navigate(`/agents/${value}/edit`);
             }}
           />
-          <Button shape="round" type="primary">
+          <Button
+            shape="round"
+            type="primary"
+            onClick={handleSubmit}
+            loading={upserting}
+            disabled={isSaveDisabled}
+          >
             Save
           </Button>
         </div>
@@ -157,22 +197,24 @@ export const AgentEdit: FC = () => {
             currentStep={currentStep}
             agentForm={agentForm}
             onFieldChange={updateField}
-            selectedTools={selectedTools}
-            onToolsChange={setSelectedTools}
+            selectedToolkitIds={selectedToolkitIds}
+            onToolkitIdsChange={setSelectedToolkitIds}
             selectedDataSources={selectedDataSources}
             onDataSourcesChange={setSelectedDataSources}
             usersAndGroups={usersAndGroups}
             onUsersAndGroupsChange={setUsersAndGroups}
           />
           <div className={styles.btnWrapper}>
-            <Button
-              type="primary"
-              shape="round"
-              disabled={isContinueDisabled}
-              onClick={isLastStep ? handleSubmit : goToNextStep}
-            >
-              {isLastStep ? 'Done' : 'Continue'}
-            </Button>
+            {!isLastStep && (
+              <Button
+                type="primary"
+                shape="round"
+                disabled={isContinueDisabled}
+                onClick={goToNextStep}
+              >
+                Continue
+              </Button>
+            )}
           </div>
         </div>
       </div>

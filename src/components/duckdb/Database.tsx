@@ -89,7 +89,7 @@ const Database: FC = () => {
       const batches = await Promise.all(
         Array.from({ length: totalBatches }, (_, i) =>
           limit(() =>
-            DataService.fetchDataSourceRows({
+            DataService.getDataSourceRows({
               dataSourceId: datasource.id,
               schema,
               page: i + 1,

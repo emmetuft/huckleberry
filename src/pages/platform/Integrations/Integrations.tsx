@@ -32,7 +32,7 @@ export const Integrations: FC<IntegrationsProps> = () => {
   const fetchConnectors = useCallback(
     (limit: number, offset: number) => {
       const filters = buildFilters(selectedCategory, selectedType, searchQuery);
-      return ConnectorsService.fetchConnectors(filters, limit, offset);
+      return ConnectorsService.getConnectors(filters, limit, offset);
     },
     [selectedCategory, selectedType, searchQuery],
   );

@@ -6,10 +6,12 @@ import {
   ArrowCounterClockwiseIcon,
 } from '@phosphor-icons/react';
 import styles from './GraphPlayback.module.css';
-import { PEOPLE_SKILLS_GRAPH } from 'constants/graph';
+import { GraphNode } from 'models/interfaces/ontology';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
+import { formatTime } from 'utils/datetime';
 
 interface GraphPlaybackProps {
+  nodes: GraphNode[];
   isOpen: boolean;
   onPlaybackChange: (visibleNodeIds: Set<string> | null) => void;
 }
@@ -19,11 +21,10 @@ const PLAYBACK_SPEED = 60;
 const TICK_MS = 50;
 
 export const GraphPlayback: React.FC<GraphPlaybackProps> = ({
+  nodes,
   isOpen,
   onPlaybackChange,
 }) => {
-  const nodes = PEOPLE_SKILLS_GRAPH.nodes;
-
   const sortedNodes = useMemo(
     () =>
       nodes
@@ -48,23 +49,36 @@ export const GraphPlayback: React.FC<GraphPlaybackProps> = ({
     [sortedNodes],
   );
 
-  const [currentTime, setCurrentTime] = useState(minTime);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState<number>(minTime);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+
   const lastTickRef = useRef<number>(0);
   const intervalRef = useRef<ReturnType<typeof setInterval>>();
   const prevVisibleCountRef = useRef(0);
 
+  const canPlayback = sortedNodes.length >= 2;
+
+  useEffect(() => {
+    if (minTime > 0) {
+      setCurrentTime(minTime);
+    }
+  }, [minTime]);
+
   useEffect(() => {
     if (!isOpen) return;
+    if (!canPlayback) {
+      onPlaybackChange(null);
+      return;
+    }
     const visibleNodes = sortedNodes.filter(
       (n) => new Date(n.createdAt!).getTime() <= currentTime,
     );
     prevVisibleCountRef.current = visibleNodes.length;
     onPlaybackChange(new Set(visibleNodes.map((n) => n.id)));
-  }, [isOpen]);
+  }, [isOpen, canPlayback]);
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || !canPlayback) return;
     const visibleNodes = sortedNodes.filter(
       (n) => new Date(n.createdAt!).getTime() <= currentTime,
     );
@@ -72,7 +86,7 @@ export const GraphPlayback: React.FC<GraphPlaybackProps> = ({
       prevVisibleCountRef.current = visibleNodes.length;
       onPlaybackChange(new Set(visibleNodes.map((n) => n.id)));
     }
-  }, [currentTime, sortedNodes, onPlaybackChange]);
+  }, [currentTime, sortedNodes]);
 
   useEffect(() => {
     if (isPlaying) {
@@ -110,15 +124,6 @@ export const GraphPlayback: React.FC<GraphPlaybackProps> = ({
     setCurrentTime(minTime);
   };
 
-  const formatTime = (ts: number) =>
-    new Date(ts).toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-    });
-
-  if (!sortedNodes.length) return null;
-
   return (
     <div className={styles.graphPlayback}>
       <div>
@@ -127,6 +132,7 @@ export const GraphPlayback: React.FC<GraphPlaybackProps> = ({
           icon={
             isPlaying ? <PauseIcon weight="fill" /> : <PlayIcon weight="fill" />
           }
+          disabled={!canPlayback}
           onClick={() => setIsPlaying((p) => !p)}
         />
       </div>

@@ -9,11 +9,11 @@ import { renderVal } from 'utils/data';
 export const MetricCatalog: FC = () => {
   const metricCatalogSchema = useSelector(selectMetricCatalogSchema);
 
-  const [data, setData] = useState<any[]>([]);
+  const [data] = useState<any[]>([]);
   const [page, setPage] = useState<number>(1);
   const [size, setSize] = useState<number>(20);
-  const [totalRows, setTotalRows] = useState<number>(0);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [totalRows] = useState<number>(0);
+  const [loading] = useState<boolean>(false);
   const loadingRef = useRef<boolean>(false);
 
   const onChangePagination = (newPage: number, newSize: number) => {

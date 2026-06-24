@@ -27,7 +27,7 @@ export const DataSourceBrowser: FC<DataSourceBrowserProps> = ({
 
   const fetcher = useCallback(
     async (limit: number, offset: number) => {
-      const result = await DataService.fetchDataSources({
+      const result = await DataService.getDataSources({
         page: Math.floor(offset / limit) + 1,
         size: limit,
         searchTerm: searchTerm || undefined,
@@ -67,7 +67,6 @@ export const DataSourceBrowser: FC<DataSourceBrowserProps> = ({
       <Input
         placeholder="Search datasources..."
         prefix={<MagnifyingGlassIcon />}
-        suffix={loading && searchTerm ? <Spin size="small" /> : null}
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         allowClear

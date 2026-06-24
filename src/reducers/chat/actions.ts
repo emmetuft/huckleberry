@@ -2,13 +2,13 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from '../index';
 import { AISessionEvent } from 'models/interfaces/sessionEvent';
 import { ProcessedFile } from 'models/interfaces/files';
-import { Tool } from 'models/interfaces/toolkit';
 import {
   ElicitationResponse,
   ResumeRequest,
 } from 'models/interfaces/userRequest';
 import { applyStreamEvent, setSessionId } from './slice';
 import { AgentSessionService } from 'services/agentSession';
+import { AgentStreamService } from 'services/agentStream';
 import { DataService } from 'services/data';
 import { HuckleberryService } from 'services/huckleberry';
 
@@ -23,7 +23,7 @@ export const fetchDataSources = createAsyncThunk<
 
   const entries = await Promise.all(
     uncachedIds.map(async (id) => {
-      const datasource = await DataService.fetchDataSource(id);
+      const datasource = await DataService.getDataSource(id);
       return [id, datasource] as const;
     }),
   );
@@ -32,7 +32,7 @@ export const fetchDataSources = createAsyncThunk<
 
 export const fetchSessions = createAsyncThunk(
   'chat/fetchSessions',
-  AgentSessionService.getSessions,
+  HuckleberryService.getSessions,
 );
 
 export const fetchSession = createAsyncThunk(
@@ -69,19 +69,24 @@ export const executeStream = createAsyncThunk<
   void,
   {
     userInput: string;
-    tools?: Tool[];
+    toolkitIds?: string[];
     dataSources?: any;
     files?: ProcessedFile[];
   },
   { state: RootState }
 >('chat/executeStream', async (params, { getState, dispatch }) => {
-  const { sessionId } = getState().chat;
+  const { sessionId, agentId } = getState().chat;
 
-  for await (const event of HuckleberryService.executeStream(
+  for await (const event of AgentStreamService.executeStream(
     params,
     sessionId,
+    agentId,
   )) {
     handleStreamEvent(event, dispatch, sessionId);
+  }
+
+  if (!sessionId) {
+    dispatch(fetchSessions());
   }
 });
 
@@ -99,7 +104,7 @@ export const resumeStream = createAsyncThunk<
 >(
   'chat/resumeStream',
   async ({ batchId, requestId, responses }, { getState, dispatch }) => {
-    const { sessionId } = getState().chat;
+    const { sessionId, agentId } = getState().chat;
 
     if (!sessionId || !batchId) {
       throw new Error('Session ID or batch ID missing');
@@ -112,9 +117,10 @@ export const resumeStream = createAsyncThunk<
       responseItems: responses,
     };
 
-    for await (const event of HuckleberryService.resumeStream(
+    for await (const event of AgentStreamService.resumeStream(
       params,
       sessionId,
+      agentId,
     )) {
       handleStreamEvent(event, dispatch, sessionId);
     }

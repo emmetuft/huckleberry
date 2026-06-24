@@ -1,4 +1,5 @@
-import { Agent } from 'models/interfaces/agent';
+import { apiFetch } from 'services/headers';
+import { Agent, AgentPayload } from 'models/interfaces/agent';
 import { handleResponse } from 'utils/service';
 import { PeopleService } from 'services/people';
 
@@ -12,7 +13,7 @@ const getAgents = async (
   offset: number = 0,
   filters?: { type: string; values: any[] }[],
 ): Promise<Agent[]> => {
-  const response = await fetch(`${AGENT_API_BASE}/search`, {
+  const response = await apiFetch(`${AGENT_API_BASE}/search`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ limit, offset, filters }),
@@ -23,36 +24,44 @@ const getAgents = async (
     customAgents: Agent[];
   }>(response);
   const agents = data.customAgents;
-  return agents;
 
-  // const ownerIds = Array.from(
-  //   new Set(agents.map((agent) => agent.owner.toString())),
-  // );
-  // const owners = await PeopleService.getUsers(ownerIds);
-  // const ownerDisplayNameById = new Map(
-  //   owners.map((user) => [user.id, user.displayName]),
-  // );
+  let ownerDisplayNameById = new Map<number, string | undefined>();
+  try {
+    const ownerIds = Array.from(
+      new Set(agents.map((agent) => agent.owner.toString())),
+    );
+    const owners = await PeopleService.getUsers(ownerIds);
+    ownerDisplayNameById = new Map(
+      owners.map((user) => [user.id, user.displayName]),
+    );
+  } catch {
+  } finally {
+    return agents.map((agent) => ({
+      ...agent,
+      ownerDisplayName: ownerDisplayNameById.get(Number(agent.owner)),
+    }));
+  }
+};
 
-  // return agents.map((agent) => ({
-  //   ...agent,
-  //   ownerDisplayName: ownerDisplayNameById.get(agent.owner.toString()),
-  // }));
+/**
+ * Retrieve an agent by ID
+ */
+const getAgent = async (agentId: string): Promise<Agent> => {
+  const response = await apiFetch(`${AGENT_API_BASE}/${agentId}`);
+  const data = await handleResponse<Agent>(response);
+  let ownerDisplayName: string | undefined;
+  try {
+    const owner = await PeopleService.getUserById(data.owner.toString());
+    ownerDisplayName = owner?.displayName;
+  } catch {
+  } finally {
+    return { ...data, ownerDisplayName };
+  }
 };
 
 /**
  * Create a new agent
  */
-interface AgentPayload {
-  name: string;
-  description: string;
-  prompt: string;
-  systemMessage: string;
-  model?: string;
-  settings?: Record<string, any>;
-  context?: Record<string, any>;
-  toolkitIds?: string[];
-}
-
 const createAgent = async (agent: Agent): Promise<Agent> => {
   const payload: AgentPayload = {
     name: agent.name,
@@ -60,11 +69,18 @@ const createAgent = async (agent: Agent): Promise<Agent> => {
     prompt: agent.prompt,
     systemMessage: agent.systemMessage,
     model: agent.model,
-    context: agent.context,
+    settings: agent.settings ?? {
+      properties: {
+        reasoningEffort: 'MEDIUM',
+        allowSkipPlanning: false,
+        memoryRetrievalEnabled: true,
+      },
+    },
+    context: agent.context ?? { dataSourceIds: [], fileSets: [] },
     toolkitIds: agent.toolkitIds,
   };
 
-  const response = await fetch(AGENT_API_BASE, {
+  const response = await apiFetch(AGENT_API_BASE, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -73,18 +89,22 @@ const createAgent = async (agent: Agent): Promise<Agent> => {
   return handleResponse<Agent>(response);
 };
 
+/**
+ * Update an existing agent
+ */
 const updateAgent = async (agent: Agent): Promise<Agent> => {
-  const payload: AgentPayload = {
+  const payload = {
     name: agent.name,
     description: agent.description,
     prompt: agent.prompt,
     systemMessage: agent.systemMessage,
     model: agent.model,
+    settings: agent.settings,
     context: agent.context,
     toolkitIds: agent.toolkitIds,
   };
 
-  const response = await fetch(`${AGENT_API_BASE}/${agent.id}`, {
+  const response = await apiFetch(`${AGENT_API_BASE}/${agent.id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -94,11 +114,12 @@ const updateAgent = async (agent: Agent): Promise<Agent> => {
 };
 
 /**
- * Retrieve a single agent by ID
+ * Delete an agent by ID
  */
-const getAgent = async (agentId: string): Promise<Agent> => {
-  const response = await fetch(`${AGENT_API_BASE}/${agentId}`);
-  return handleResponse<Agent>(response);
+const deleteAgent = async (agentId: string): Promise<void> => {
+  await apiFetch(`${AGENT_API_BASE}/${agentId}`, {
+    method: 'DELETE',
+  });
 };
 
 export const AgentService = {
@@ -106,4 +127,5 @@ export const AgentService = {
   getAgent,
   createAgent,
   updateAgent,
+  deleteAgent,
 };

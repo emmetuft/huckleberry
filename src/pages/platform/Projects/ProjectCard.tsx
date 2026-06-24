@@ -1,7 +1,6 @@
 import { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Tag } from 'antd';
-import { UserIcon, UsersIcon } from '@phosphor-icons/react';
 import styles from './Projects.module.css';
 import { Project } from 'constants/projects';
 import { platformRoutePaths, AppPage } from 'models/enums/appPage';

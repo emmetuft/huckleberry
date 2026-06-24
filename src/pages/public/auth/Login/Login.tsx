@@ -22,14 +22,14 @@ import { Preview } from './Preview';
 type Mode = 'signin' | 'signup';
 
 export const Login: FC = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const urlMode: Mode =
     searchParams.get('mode') === 'signup' ? 'signup' : 'signin';
   const [mode, setMode] = useState<Mode>(urlMode);
   const [email, setEmail] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [, setError] = useState<string | null>(null);
 
   // Keep `mode` in sync when the user clicks a header button that just
   // changes the URL without remounting (e.g., already on /login and clicks

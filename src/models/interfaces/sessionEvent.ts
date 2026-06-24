@@ -1,3 +1,10 @@
+/** Token usage returned by an AI model provider. */
+export interface ModelProviderUsage {
+  inputTokens: number;
+  outputTokens: number;
+  totalTokens: number;
+}
+
 // ─── Primitives ───────────────────────────────────────────────────────────────
 
 export enum AISessionEventType {
@@ -33,6 +40,8 @@ export enum AISessionEventType {
   MCP_RESPONSE = 'MCP_RESPONSE',
   MCP_NOTIFICATION = 'MCP_NOTIFICATION',
   CONFIRMATION_REQUEST = 'CONFIRMATION_REQUEST',
+  AGENT_THINKING_STARTED = 'AGENT_THINKING_STARTED',
+  AGENT_THINKING_COMPLETED = 'AGENT_THINKING_COMPLETED',
   UNKNOWN = 'UNKNOWN',
 }
 
@@ -58,7 +67,6 @@ export type {
   AssistantPausedEvent,
 };
 type McpMessageDirection = 'SENT' | 'RECEIVED';
-type McpMessageType = 'REQUEST' | 'RESPONSE' | 'NOTIFICATION';
 type McpMethod =
   | 'initialize'
   | 'tools/list'
@@ -166,11 +174,6 @@ interface McpNotificationPayload {
   method: McpMethod;
   params?: unknown;
 }
-
-type McpJsonRpcPayload =
-  | McpRequestPayload
-  | McpResponsePayload
-  | McpNotificationPayload;
 
 // ─── Base ─────────────────────────────────────────────────────────────────────
 
@@ -315,7 +318,14 @@ interface AIServiceRequestEvent extends AISessionEventBase {
 interface AIServiceResponseEvent extends AISessionEventBase {
   type: AISessionEventType.AI_SERVICE_RESPONSE;
   service: string;
-  serviceResponse: unknown;
+  serviceResponse: {
+    modelId: string;
+    modelProviderUsage: ModelProviderUsage;
+    output: string;
+    prompt: string;
+    requestId: string;
+    sessionId: string;
+  };
   durationMs?: number;
 }
 

@@ -1,141 +1,128 @@
-import { FC, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { Input, Collapse, Button, Empty, Tag } from 'antd';
+import { FC, useCallback, useState } from 'react';
+import { Input, Button, Empty, Tag, Spin } from 'antd';
 import {
   CheckIcon,
   MagnifyingGlassIcon,
   PlusIcon,
-  WrenchIcon,
+  ToolboxIcon,
 } from '@phosphor-icons/react';
 import styles from './ToolBrowser.module.css';
-import { selectToolkits } from 'reducers/toolkits/slice';
-import { Tool, Toolkit } from 'models/interfaces/toolkit';
+import { Toolkit } from 'models/interfaces/toolkit';
+import { ToolkitsService } from 'services/toolkits';
+import { useInfiniteScroll } from 'hooks/useInfiniteScroll';
 
 interface ToolBrowserProps {
-  selectedTools: Tool[];
-  onToolsChange: (tools: Tool[]) => void;
+  selectedToolkits: Toolkit[];
+  onToolkitsChange: (toolkits: Toolkit[]) => void;
   height?: number;
 }
 
+// TODO: Add per-tool selection mode when individual tool APIs are available
 export const ToolBrowser: FC<ToolBrowserProps> = ({
-  selectedTools,
-  onToolsChange,
+  selectedToolkits,
+  onToolkitsChange,
   height,
 }) => {
-  const toolkits = useSelector(selectToolkits);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
-  const filteredToolkits = useMemo(() => {
-    if (!searchQuery) return toolkits;
+  const fetcher = useCallback(
+    async (limit: number, offset: number) => {
+      const result = await ToolkitsService.getToolkits({
+        filters: [],
+        limit,
+        offset,
+      });
+      return result;
+    },
+    [searchTerm],
+  );
 
-    const query = searchQuery.toLowerCase();
-    const filtered: Toolkit[] = [];
+  const {
+    items: toolkits,
+    loading,
+    hasMore,
+    sentinelRef,
+  } = useInfiniteScroll<Toolkit>({
+    fetcher,
+    resetDeps: [searchTerm],
+    pageSize: 20,
+    debounceMs: 500,
+  });
 
-    toolkits.forEach((toolkit) => {
-      const matchingTools = toolkit.tools.filter(
-        (tool) =>
-          tool.overrideToolName &&
-          tool.overrideToolName.toLowerCase().includes(query),
+  const isToolkitSelected = (toolkit: Toolkit) =>
+    selectedToolkits.some((tk) => tk.toolkitId === toolkit.toolkitId);
+
+  const handleToggleToolkit = (toolkit: Toolkit) => {
+    if (isToolkitSelected(toolkit)) {
+      onToolkitsChange(
+        selectedToolkits.filter((tk) => tk.toolkitId !== toolkit.toolkitId),
       );
-
-      if (matchingTools.length > 0) {
-        filtered.push({
-          ...toolkit,
-          tools: matchingTools,
-        });
-      }
-    });
-
-    return filtered;
-  }, [toolkits, searchQuery]);
-
-  const isToolSelected = (tool: Tool) =>
-    selectedTools.some((t) => t.toolId === tool.toolId);
-
-  const handleToggleTool = (tool: Tool) => {
-    if (isToolSelected(tool)) {
-      onToolsChange(selectedTools.filter((t) => !(t.toolId === tool.toolId)));
     } else {
-      onToolsChange([...selectedTools, tool]);
+      onToolkitsChange([...selectedToolkits, toolkit]);
     }
   };
-
-  const collapseItems = filteredToolkits.map((toolkit) => ({
-    key: toolkit.toolkitId,
-    label: (
-      <div className={styles.header}>
-        <span className={styles.serverLabel}>{toolkit.name} </span>
-        <span className={styles.toolCount}>
-          {toolkit.tools.length} tool{toolkit.tools.length !== 1 ? 's' : ''}
-        </span>
-      </div>
-    ),
-    children: (
-      <div className={styles.toolList}>
-        {toolkit.tools.map((tool) => {
-          const selected = isToolSelected(tool);
-          return (
-            <div key={tool.toolId} className="appCard">
-              <div className={`defaultAppIcon ${styles.toolIcon}`}>
-                <WrenchIcon />
-              </div>
-              <div className="appInfo">
-                <h4>{tool.overrideToolName || 'No title'}</h4>
-                <p title={tool.overrideToolDescription}>
-                  {tool.overrideToolDescription || 'No description'}
-                </p>
-              </div>
-              <div className={styles.connectAction}>
-                <Button
-                  size="small"
-                  type={selected ? 'primary' : 'default'}
-                  icon={selected ? <CheckIcon /> : <PlusIcon />}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleToggleTool(tool);
-                  }}
-                />
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    ),
-  }));
 
   return (
     <div className={styles.toolBrowser}>
       <Input
-        placeholder="Search tools..."
+        placeholder="Search toolkits..."
         prefix={<MagnifyingGlassIcon />}
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
         allowClear
       />
 
-      {selectedTools.length > 0 && (
+      {selectedToolkits.length > 0 && (
         <div className={styles.selectedList}>
-          {selectedTools.map((tool) => (
+          {selectedToolkits.map((toolkit) => (
             <Tag
-              key={tool.toolId}
+              key={toolkit.toolkitId}
               closable
-              onClose={() => handleToggleTool(tool)}
+              onClose={() => handleToggleToolkit(toolkit)}
             >
-              {tool.overrideToolName || 'No title'}
+              {toolkit.name}
             </Tag>
           ))}
         </div>
       )}
 
-      {filteredToolkits.length === 0 ? (
-        <Empty description={'No tools match your search'} />
-      ) : (
-        <Collapse
-          items={collapseItems}
-          className={styles.serverCollapse}
-          style={{ maxHeight: height ?? 600 }}
-        />
-      )}
+      <div className={styles.toolList} style={{ maxHeight: height ?? 400 }}>
+        {toolkits.length === 0 && !loading ? (
+          <Empty description="No toolkits found" />
+        ) : (
+          <>
+            {toolkits.map((toolkit) => {
+              const selected = isToolkitSelected(toolkit);
+              return (
+                <div key={toolkit.toolkitId} className="appCard">
+                  <div className={`defaultAppIcon ${styles.toolIcon}`}>
+                    <ToolboxIcon />
+                  </div>
+                  <div className="appInfo">
+                    <h4>{toolkit.name}</h4>
+                    <p title={toolkit.description}>
+                      {toolkit.description || 'No description'}
+                    </p>
+                  </div>
+                  <div className={styles.connectAction}>
+                    <Button
+                      size="small"
+                      type={selected ? 'primary' : 'default'}
+                      icon={selected ? <CheckIcon /> : <PlusIcon />}
+                      onClick={() => handleToggleToolkit(toolkit)}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+            {hasMore && (
+              <div ref={sentinelRef} className={styles.loadingTrigger}>
+                {loading && <Spin />}
+              </div>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 };

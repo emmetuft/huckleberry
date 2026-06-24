@@ -2,6 +2,7 @@
   display: flex;
   gap: var(--space-xl);
   width: 100%;
+  margin-top: var(--space-lg);
 
   .agentIcon {
     height: 128px;
@@ -38,7 +39,7 @@
 .agentMetadata {
   display: flex;
   gap: 70px;
-  margin-top: 80px;
+  margin: 40px 0;
   padding: var(--space-md);
   border-top: 1px solid var(--grey-light);
   border-bottom: 1px solid var(--grey-light);

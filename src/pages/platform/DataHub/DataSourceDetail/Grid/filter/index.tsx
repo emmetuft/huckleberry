@@ -42,7 +42,6 @@ export const ColumnFilterPopup: FC<Props> = ({
   useEffect(() => {
     // Update state variables to display existing filter
     if (filter !== undefined) {
-      const values = new Set(filter.value);
       switch (filter.operator) {
         case FilterOperator.BETWEEN:
           setBetweenValues({
@@ -178,13 +177,13 @@ export const ColumnFilterPopup: FC<Props> = ({
               value={
                 isEmpty(betweenValues.from) ? '' : dayjs(betweenValues.from)
               }
-              onChange={(date, dateString) =>
+              onChange={(_date, dateString) =>
                 onChangeBetweenValue(dateString, 'from')
               }
             />
             <DatePicker
               value={isEmpty(betweenValues.to) ? '' : dayjs(betweenValues.to)}
-              onChange={(date, dateString) =>
+              onChange={(_date, dateString) =>
                 onChangeBetweenValue(dateString, 'to')
               }
             />
@@ -205,7 +204,7 @@ export const ColumnFilterPopup: FC<Props> = ({
         return isDateType(dataType) ? (
           <DatePicker
             value={isEmpty(filterValue) ? '' : dayjs(filterValue)}
-            onChange={(date, dateString) =>
+            onChange={(_date, dateString) =>
               setFilterValue(typeof dateString === 'string' ? dateString : '')
             }
           />

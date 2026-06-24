@@ -10,7 +10,6 @@ import { fetchUserPersona } from 'reducers/app/actions';
 import { selectIdentity, selectTheme, setPage } from 'reducers/app/slice';
 import { fetchSessions } from 'reducers/chat/actions';
 import { fetchGroups, fetchUsers } from 'reducers/people/actions';
-import { fetchToolkits } from 'reducers/toolkits/actions';
 import {
   AppPage,
   getAppPageFromPath,
@@ -39,7 +38,6 @@ export const PlatformLayout: FC = () => {
       dispatch(fetchUserPersona());
       dispatch(fetchUsers());
       dispatch(fetchGroups());
-      dispatch(fetchToolkits());
       dispatch(fetchSessions());
       dispatch(fetchAIModels());
     }

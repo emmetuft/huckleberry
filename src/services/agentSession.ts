@@ -1,3 +1,5 @@
+import { apiFetch } from 'services/headers';
+import { SearchQuery } from 'models/interfaces/search';
 import { AgentSession } from 'models/interfaces/session';
 import { AISessionEvent } from 'models/interfaces/sessionEvent';
 import { handleResponse } from 'utils/service';
@@ -5,29 +7,66 @@ import { handleResponse } from 'utils/service';
 const SESSION_API_BASE = '/api/sessions';
 
 /**
- * Retrieve all agent sessions
+ * Search sessions across all users (admin/cross-user endpoint).
  */
-const getSessions = async (): Promise<AgentSession[]> => {
-  const response = await fetch(`${SESSION_API_BASE}`, {
+const getAllSessions = async (
+  query: SearchQuery = {},
+): Promise<AgentSession[]> => {
+  const defaultQuery: SearchQuery = {
+    sortFieldMap: { LAST_ACTIVITY: 'DESC' },
+    limit: 50,
+    offset: 0,
+    ...query,
+  };
+
+  const response = await apiFetch(`${SESSION_API_BASE}/search/all-sessions`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(defaultQuery),
   });
 
   const data = await handleResponse<{
     pageContext: any;
     sessions: AgentSession[];
   }>(response);
-  return data.sessions.sort(
-    (a, b) =>
-      new Date(b.lastActivity).getTime() - new Date(a.lastActivity).getTime(),
+  return data.sessions;
+};
+
+/**
+ * Retrieve agent sessions with optional filters, sorting, and pagination.
+ */
+const getSessions = async (
+  query: SearchQuery = {},
+  agentId?: string,
+): Promise<AgentSession[]> => {
+  const defaultQuery: SearchQuery = {
+    sortFieldMap: { LAST_ACTIVITY: 'DESC' },
+    limit: 50,
+    offset: 0,
+    ...query,
+  };
+
+  const response = await apiFetch(
+    `${SESSION_API_BASE}${agentId ? `?agentId=${agentId}` : ''}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(defaultQuery),
+    },
   );
+
+  const data = await handleResponse<{
+    pageContext: any;
+    sessions: AgentSession[];
+  }>(response);
+  return data.sessions;
 };
 
 /**
  * Retrieve an agent session by session ID
  */
 const getSession = async (sessionId: string): Promise<AgentSession> => {
-  const response = await fetch(`${SESSION_API_BASE}/${sessionId}`, {
+  const response = await apiFetch(`${SESSION_API_BASE}/${sessionId}`, {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
   });
@@ -41,7 +80,7 @@ const getSession = async (sessionId: string): Promise<AgentSession> => {
 const getSessionEvents = async (
   sessionId: string,
 ): Promise<AISessionEvent[]> => {
-  const response = await fetch(`${SESSION_API_BASE}/${sessionId}/events`, {
+  const response = await apiFetch(`${SESSION_API_BASE}/${sessionId}/events`, {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
   });
@@ -59,7 +98,7 @@ const getSessionEvents = async (
  * Delete an agent session by session ID
  */
 const deleteSession = async (sessionId: string): Promise<any> => {
-  const response = await fetch(`${SESSION_API_BASE}/${sessionId}`, {
+  const response = await apiFetch(`${SESSION_API_BASE}/${sessionId}`, {
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json' },
   });
@@ -68,6 +107,7 @@ const deleteSession = async (sessionId: string): Promise<any> => {
 };
 
 export const AgentSessionService = {
+  getAllSessions,
   getSessions,
   getSession,
   getSessionEvents,

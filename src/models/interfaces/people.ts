@@ -1,10 +1,9 @@
 export interface DomoUser {
   id: number;
   displayName: string;
-  userName: string;
+  role: string;
   roleId: number;
-  emailAddress: string;
-  attributes: DomoUserAttribute[];
+  detail: { email: string };
 }
 
 export interface DomoUserAttribute {

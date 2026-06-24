@@ -2,8 +2,11 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { RootState } from 'reducers';
 import { Agent } from 'models/interfaces/agent';
 import { AIModel } from 'models/interfaces/aiModel';
+import { SearchQuery } from 'models/interfaces/search';
 import { AgentService } from 'services/agent';
+import { AgentSessionService } from 'services/agentSession';
 import { DomoAIService } from 'services/ai';
+import { fetchSessionGraph } from 'utils/graph';
 
 export const fetchAgents = createAsyncThunk<
   Agent[],
@@ -26,29 +29,60 @@ export const fetchAIModels = createAsyncThunk<
   if (aiModels.length > 0) {
     return aiModels;
   }
-  return DomoAIService.fetchModels();
+  return DomoAIService.getModels();
 });
 
 export const fetchAgentById = createAsyncThunk<
   Agent,
   string,
   { state: RootState }
->('agents/fetchAgentById', async (agentId) => {
+>('agents/fetchAgentById', async (agentId, { getState }) => {
+  const existing = getState().agents.agents.find((a) => a.id === agentId);
+  if (existing) return existing;
   return AgentService.getAgent(agentId);
 });
 
-export const createCustomAgent = createAsyncThunk<
-  Agent,
-  Agent,
-  { state: RootState }
->('agents/createCustomAgent', async (agent, { getState }) => {
-  return AgentService.createAgent(agent);
-});
+type UpsertAgentPayload = Omit<Agent, 'owner'> & { owner?: number };
 
-export const updateCustomAgent = createAsyncThunk<
-  Agent,
-  Agent,
-  { state: RootState }
->('agents/updateCustomAgent', async (agent, { getState }) => {
-  return AgentService.updateAgent(agent);
-});
+export const upsertCustomAgent = createAsyncThunk<Agent, UpsertAgentPayload>(
+  'agents/upsertCustomAgent',
+  async (agent) => {
+    if (agent.id === 'new') {
+      return AgentService.createAgent(agent as Agent);
+    }
+    return AgentService.updateAgent(agent as Agent);
+  },
+);
+
+export const deleteCustomAgent = createAsyncThunk<string, string>(
+  'agents/deleteCustomAgent',
+  async (agentId) => {
+    await AgentService.deleteAgent(agentId);
+    return agentId;
+  },
+);
+
+export const fetchSessions = createAsyncThunk(
+  'agents/fetchSessions',
+  async ({
+    agentId,
+    query,
+  }: { agentId?: string; query?: SearchQuery } = {}) => {
+    return AgentSessionService.getSessions(query, agentId);
+  },
+);
+
+export const fetchAllSessions = createAsyncThunk(
+  'agents/fetchAllSessions',
+  async (query?: SearchQuery) => {
+    return AgentSessionService.getSessions(query);
+  },
+);
+
+export const fetchSessionGraphThunk = createAsyncThunk(
+  'agents/fetchSessionGraph',
+  async (sessionId: string) => {
+    const graph = await fetchSessionGraph(sessionId);
+    return { sessionId, graph };
+  },
+);

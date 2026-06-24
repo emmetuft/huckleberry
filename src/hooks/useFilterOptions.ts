@@ -7,7 +7,10 @@ type Args = {
   filters: Filter[];
 };
 
-export const useFilterOptions = ({ columnName, filters }: Args) => {
+export const useFilterOptions = ({
+  columnName: _columnName,
+  filters: _filters,
+}: Args) => {
   const [queryResults, setQueryResults] = useState<any[]>([]);
   const [counter, setCounter] = useState(0);
   const [searchOn, setSearchOn] = useState(false);

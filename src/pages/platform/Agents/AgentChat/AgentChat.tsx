@@ -5,6 +5,7 @@ import styles from './AgentChat.module.css';
 import { useAppDispatch } from 'reducers';
 import { selectAgents } from 'reducers/agents/slice';
 import { fetchAgentById } from 'reducers/agents/actions';
+import { clearMessages, setAgentId } from 'reducers/chat/slice';
 import { Chat } from '../Chat/Chat';
 
 export const AgentChat: FC = () => {
@@ -17,9 +18,16 @@ export const AgentChat: FC = () => {
   }, [agents, agentId]);
 
   useEffect(() => {
-    if (!agent && agentId) {
-      dispatch(fetchAgentById(agentId));
+    if (agentId) {
+      dispatch(clearMessages());
+      dispatch(setAgentId(agentId));
+      if (!agent) {
+        dispatch(fetchAgentById(agentId));
+      }
     }
+    return () => {
+      dispatch(clearMessages());
+    };
   }, [agentId]);
 
   return (

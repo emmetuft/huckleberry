@@ -1,184 +1,226 @@
 # Frontend deployment — AWS production
 
-End-to-end runbook for getting the Huckleberry SPA hosted on S3 + CloudFront, fronted by Route 53, with a CD pipeline triggered by `git push`.
+End-to-end runbook for getting the `huckleberry` SPA running in AWS, with a CD pipeline triggered by `git push`.
 
-**Prereq:** laptop-side AWS access set up per **[`~/dev/huckleberry-server/docs/aws-local-setup.md`](../../huckleberry-server/docs/aws-local-setup.md)** (AWS CLI, SSO profile). The S3-upload smoke step below assumes you can already run `aws s3 ls`.
+**Prereq:** laptop-side AWS access set up per the BFF's **`docs/aws-local-setup.md`** (AWS CLI, SSO profile). You should be able to run `aws sts get-caller-identity` against the target account before proceeding.
 
 **Sibling doc:** `~/dev/huckleberry-server/docs/deployment-bff.md` — same shape, for the BFF.
 
 ## What you're standing up
 
 ```
-                   Route 53                       CloudFront
-              huckleberry.com  ───────►  distribution (ACM cert us-east-1)
-                                          │
-                       ┌──────────────────┴───────────────────┐
-                       │ default behavior                     │ /api/* behavior
-                       ▼                                      ▼
-                S3 bucket (private)                   ALB origin (api.huckleberry.com)
-              huckleberry-fe-prod                    → ECS Fargate (BFF)
-                       │
-                       │ access via OAC only
-                       │ (origin access control)
-                       ▼
-                  Vite build artifacts
-                  /index.html
-                  /assets/<hash>.js
-                  /assets/<hash>.css
+      Route 53               CloudFront                       ALB
+  huckleberry.ai  ──►  distribution (us-east-1 cert)  ──►  (BFF ingress)
+                               │
+                               ├── /* ──────────► S3 origin (SPA bundle)
+                               │                  (OAC — no public bucket)
+                               │
+                               ├── /api/* ──────► ALB origin
+                               └── /domo/* ─────► ALB origin
 ```
 
-What each piece is for:
+CloudFront is the only public endpoint. The S3 bucket is private — CloudFront authenticates via **Origin Access Control (OAC)**. All browser traffic to `huckleberry.ai` hits the same distribution, keeping `hb_session` cookies same-origin across the SPA and the API.
 
-- **S3 bucket** — stores the built SPA. Vite outputs `dist/` with `index.html` plus hashed-name assets. Bucket is private; only CloudFront can read it (via OAC).
-- **CloudFront** — global CDN. Caches the SPA at edge locations close to users, terminates TLS, and handles SPA routing via custom error responses (the trick that makes `/workspace` work on direct URL hits even though there's no `workspace` key in S3).
-- **OAC (Origin Access Control)** — the modern replacement for OAI (Origin Access Identity, deprecated). Lets CloudFront sign requests to S3 using SigV4. The bucket policy trusts only that specific CloudFront distribution.
-- **ACM cert in us-east-1** — CloudFront only accepts certs from the `us-east-1` region, no matter where the rest of your stack lives. One-time annoyance.
-- **Route 53 alias** — `huckleberry.com` → CloudFront distribution. Alias records are free (vs. CNAME-style queries) and resolve at the AWS edge.
-- **`/api/*` second behavior** — CloudFront has two behaviors. The default serves S3. A separate behavior for `/api/*` forwards to the ALB without caching. This is what keeps the browser **same-origin** for cookie auth — `huckleberry.com` and `huckleberry.com/api/auth/me` share the cookie jar with no CORS.
-
-Assumptions throughout: region **`us-west-2`** for the bucket. Domain **`huckleberry.com`**.
+SPA routing: CloudFront returns `index.html` (HTTP 200) for any 403/404 from S3, so React Router handles client-side navigation normally.
 
 ---
 
-## How SPA routing on S3 + CloudFront works
+## Environments
 
-A common point of confusion. When you visit `huckleberry.com/workspace`:
+Naming pattern mirrors the BFF: `<env>-huckleberry-fe-*`.
 
-1. Browser asks CloudFront for `/workspace`.
-2. CloudFront looks for that key in S3. It doesn't exist — your build only emits `/index.html`, `/assets/*.js`, etc.
-3. S3 returns 403 (because of OAC, you don't even get 404 — listing is forbidden so missing keys come back as 403).
-4. CloudFront's **custom error response** rule sees the 403, swaps the response to `/index.html` with status 200.
-5. The SPA boots up, React Router reads the URL, renders the `/workspace` route.
+| Env      | S3 bucket                          | CloudFront distribution |
+| -------- | ---------------------------------- | ----------------------- |
+| dev3     | `dev3-huckleberry-fe`              | TBD                     |
+| staging  | `staging-huckleberry-fe`           | TBD                     |
+| prod     | `huckleberry-fe`                   | TBD                     |
 
-Without the error-response rule, you'd see "Access Denied" on every URL except `/`. This is also how production `next` querystrings survive a refresh.
+The doc uses `<env>` as a placeholder; substitute the actual prefix when running commands.
 
 ---
 
 ## One-time AWS setup
 
-### 1. S3 bucket for the SPA bundle
+Done once per environment.
+
+### 1. S3 bucket
 
 ```bash
+ENV=dev3   # change per environment
+
 aws s3api create-bucket \
-  --bucket huckleberry-fe-prod \
-  --region us-west-2 \
-  --create-bucket-configuration LocationConstraint=us-west-2
+  --bucket ${ENV}-huckleberry-fe \
+  --region us-east-1
 
-# Block all public access — CloudFront via OAC is the only reader
+# Block all public access — CloudFront uses OAC, not a public bucket policy
 aws s3api put-public-access-block \
-  --bucket huckleberry-fe-prod \
+  --bucket ${ENV}-huckleberry-fe \
   --public-access-block-configuration \
-    "BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true"
+    BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true
 
-# Enable versioning for rollback
+# Versioning lets you see prior deploys and roll back the object store
 aws s3api put-bucket-versioning \
-  --bucket huckleberry-fe-prod \
+  --bucket ${ENV}-huckleberry-fe \
   --versioning-configuration Status=Enabled
-
-# Server-side encryption with SSE-S3 (free)
-aws s3api put-bucket-encryption \
-  --bucket huckleberry-fe-prod \
-  --server-side-encryption-configuration '{
-    "Rules": [{"ApplyServerSideEncryptionByDefault": {"SSEAlgorithm": "AES256"}}]
-  }'
 ```
 
-Versioning matters: a bad deploy is fixed by promoting the previous version's `index.html` back to current. Without versioning, the previous bytes are gone the moment you `aws s3 cp`.
+No static website hosting config — objects are served through CloudFront, not the S3 website endpoint.
 
-### 2. ACM cert in us-east-1
+### 2. ACM certificate (us-east-1)
+
+CloudFront requires the cert in **us-east-1** regardless of your distribution's origin region.
 
 ```bash
 aws acm request-certificate \
-  --domain-name huckleberry.com \
-  --subject-alternative-names www.huckleberry.com \
+  --domain-name huckleberry.ai \
+  --subject-alternative-names "*.huckleberry.ai" \
   --validation-method DNS \
-  --region us-east-1   # <-- must be us-east-1 for CloudFront
+  --region us-east-1
 ```
 
-ACM returns a DNS validation record per domain. Add them to Route 53 (or whatever DNS host you use), wait for validation (usually 5–15 min).
+Validate by adding the CNAME record ACM provides into Route 53. Standard 5–15 minute wait.
 
-### 3. CloudFront Origin Access Control
+### 3. CloudFront distribution
+
+Create the distribution with two origins — S3 for the SPA, ALB for the API.
+
+First, create the OAC (one-time per account, reusable):
 
 ```bash
-aws cloudfront create-origin-access-control \
+OAC_ID=$(aws cloudfront create-origin-access-control \
   --origin-access-control-config '{
-    "Name": "huckleberry-fe-prod-oac",
-    "OriginAccessControlOriginType": "s3",
+    "Name": "huckleberry-fe-oac",
+    "Description": "OAC for huckleberry S3 origin",
+    "SigningProtocol": "sigv4",
     "SigningBehavior": "always",
-    "SigningProtocol": "sigv4"
-  }'
+    "OriginAccessControlOriginType": "s3"
+  }' \
+  --query 'OriginAccessControl.Id' --output text)
+echo "OAC ID: $OAC_ID"
 ```
 
-Save the OAC ID — the distribution config below references it.
-
-### 4. CloudFront distribution
-
-This is the gnarly part. Either author through the AWS console (the easier path the first time) or via the CLI with a JSON config. Console flow:
-
-- **Origins** — two:
-  1. **S3 origin** — your bucket, OAC selected, "Origin access" = "Origin access control settings (recommended)".
-  2. **ALB origin** (BFF) — domain name `api-internal.huckleberry.com` *or* the ALB DNS name directly. Use HTTPS only, viewer protocol policy "Redirect HTTP to HTTPS".
-
-- **Behaviors** — two, in this order (CloudFront matches in declared order):
-
-  | Path pattern | Origin | Cache policy | Origin request policy | Viewer protocol policy |
-  |---|---|---|---|---|
-  | `/api/*` | ALB | `CachingDisabled` (managed) | `AllViewer` (managed; forwards all headers, cookies, query strings) | HTTPS only |
-  | `Default (*)` | S3 | `CachingOptimized` (managed) | none | Redirect HTTP→HTTPS |
-
-  Why the ordering: the BFF needs to receive every request as if it weren't behind a CDN — pass headers (including `Cookie`, `Authorization`, `Content-Type`), don't cache anything. The SPA bundle is the opposite: cache aggressively, don't forward anything from the request.
-
-- **Custom error responses** — under "Error pages":
-
-  | HTTP error code | Response page path | HTTP response code | TTL |
-  |---|---|---|---|
-  | 403 | `/index.html` | 200 | 0 |
-  | 404 | `/index.html` | 200 | 0 |
-
-- **Alternate domain names (CNAMEs)** — `huckleberry.com`, `www.huckleberry.com`.
-- **SSL certificate** — your us-east-1 ACM cert.
-- **Default root object** — `index.html`.
-- **Price class** — "Use all edge locations" or "US, Canada, Europe" depending on user geography. Cheaper price classes = fewer PoPs.
-
-After creating, grab the distribution domain name (`d1234567890.cloudfront.net`) and ID.
-
-### 5. S3 bucket policy — trust the OAC
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [{
-    "Sid": "AllowCloudFrontServicePrincipal",
-    "Effect": "Allow",
-    "Principal": { "Service": "cloudfront.amazonaws.com" },
-    "Action": "s3:GetObject",
-    "Resource": "arn:aws:s3:::huckleberry-fe-prod/*",
-    "Condition": {
-      "StringEquals": {
-        "AWS:SourceArn": "arn:aws:cloudfront::<ACCT>:distribution/<DISTRIBUTION_ID>"
-      }
-    }
-  }]
-}
-```
-
-The `SourceArn` condition is what makes OAC secure — only requests from this specific distribution can read.
-
-### 6. Route 53 alias
-
-In your hosted zone for `huckleberry.com`:
+Then create the distribution (replace `<ACCT>`, `<ALB_DNS>`, `<CERT_ARN>`, `<OAC_ID>`):
 
 ```bash
-aws route53 change-resource-record-sets --hosted-zone-id <ZONE_ID> \
+aws cloudfront create-distribution --distribution-config '{
+  "CallerReference": "huckleberry-fe-1",
+  "Comment": "huckleberry SPA + BFF",
+  "Enabled": true,
+  "HttpVersion": "http2and3",
+  "PriceClass": "PriceClass_100",
+  "Aliases": { "Quantity": 1, "Items": ["huckleberry.ai"] },
+  "ViewerCertificate": {
+    "ACMCertificateArn": "<CERT_ARN>",
+    "SSLSupportMethod": "sni-only",
+    "MinimumProtocolVersion": "TLSv1.2_2021"
+  },
+  "Origins": {
+    "Quantity": 2,
+    "Items": [
+      {
+        "Id": "s3-spa",
+        "DomainName": "<ENV>-huckleberry-fe.s3.us-east-1.amazonaws.com",
+        "S3OriginConfig": { "OriginAccessIdentity": "" },
+        "OriginAccessControlId": "<OAC_ID>"
+      },
+      {
+        "Id": "alb-bff",
+        "DomainName": "<ALB_DNS>",
+        "CustomOriginConfig": {
+          "HTTPSPort": 443,
+          "OriginProtocolPolicy": "https-only",
+          "OriginSSLProtocols": { "Quantity": 1, "Items": ["TLSv1.2"] }
+        }
+      }
+    ]
+  },
+  "DefaultCacheBehavior": {
+    "TargetOriginId": "s3-spa",
+    "ViewerProtocolPolicy": "redirect-to-https",
+    "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+    "Compress": true,
+    "AllowedMethods": { "Quantity": 2, "Items": ["GET", "HEAD"], "CachedMethods": { "Quantity": 2, "Items": ["GET", "HEAD"] } }
+  },
+  "CacheBehaviors": {
+    "Quantity": 2,
+    "Items": [
+      {
+        "PathPattern": "/api/*",
+        "TargetOriginId": "alb-bff",
+        "ViewerProtocolPolicy": "https-only",
+        "CachePolicyId": "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
+        "OriginRequestPolicyId": "b689b0a8-53d0-40ab-baf2-68738e2966ac",
+        "AllowedMethods": { "Quantity": 7, "Items": ["GET","HEAD","OPTIONS","PUT","PATCH","POST","DELETE"], "CachedMethods": { "Quantity": 2, "Items": ["GET","HEAD"] } },
+        "Compress": true
+      },
+      {
+        "PathPattern": "/domo/*",
+        "TargetOriginId": "alb-bff",
+        "ViewerProtocolPolicy": "https-only",
+        "CachePolicyId": "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
+        "OriginRequestPolicyId": "b689b0a8-53d0-40ab-baf2-68738e2966ac",
+        "AllowedMethods": { "Quantity": 7, "Items": ["GET","HEAD","OPTIONS","PUT","PATCH","POST","DELETE"], "CachedMethods": { "Quantity": 2, "Items": ["GET","HEAD"] } },
+        "Compress": true
+      }
+    ]
+  },
+  "CustomErrorResponses": {
+    "Quantity": 2,
+    "Items": [
+      { "ErrorCode": 403, "ResponseCode": "200", "ResponsePagePath": "/index.html", "ErrorCachingMinTTL": 0 },
+      { "ErrorCode": 404, "ResponseCode": "200", "ResponsePagePath": "/index.html", "ErrorCachingMinTTL": 0 }
+    ]
+  }
+}'
+```
+
+Cache policy IDs used above (AWS managed):
+- `658327ea-...` — **CachingOptimized** (default S3 behavior; uses `Cache-Control` headers)
+- `4135ea2d-...` — **CachingDisabled** (API paths — no caching at all)
+- `b689b0a8-...` — **AllViewerExceptHostHeader** origin request policy (forwards cookies + query strings to the ALB)
+
+After creating the distribution, note the **Distribution ID** and **CloudFront domain name** (`*.cloudfront.net`).
+
+### 4. S3 bucket policy (allow CloudFront OAC)
+
+```bash
+DIST_ARN="arn:aws:cloudfront::<ACCT>:distribution/<DIST_ID>"
+
+aws s3api put-bucket-policy \
+  --bucket ${ENV}-huckleberry-fe \
+  --policy "{
+    \"Version\": \"2012-10-17\",
+    \"Statement\": [{
+      \"Sid\": \"AllowCloudFrontOAC\",
+      \"Effect\": \"Allow\",
+      \"Principal\": { \"Service\": \"cloudfront.amazonaws.com\" },
+      \"Action\": \"s3:GetObject\",
+      \"Resource\": \"arn:aws:s3:::${ENV}-huckleberry-fe/*\",
+      \"Condition\": {
+        \"StringEquals\": {
+          \"AWS:SourceArn\": \"$DIST_ARN\"
+        }
+      }
+    }]
+  }"
+```
+
+### 5. Route 53 alias
+
+Create an A record (alias) pointing `huckleberry.ai` at the CloudFront distribution. CloudFront's hosted zone ID is always `Z2FDTNDATAQYW2`:
+
+```bash
+aws route53 change-resource-record-sets \
+  --hosted-zone-id <HOSTED_ZONE_ID> \
   --change-batch '{
     "Changes": [{
-      "Action": "UPSERT",
+      "Action": "CREATE",
       "ResourceRecordSet": {
-        "Name": "huckleberry.com",
+        "Name": "huckleberry.ai",
         "Type": "A",
         "AliasTarget": {
-          "HostedZoneId": "Z2FDTNDATAQYW2",        
-          "DNSName": "d1234567890.cloudfront.net",
+          "HostedZoneId": "Z2FDTNDATAQYW2",
+          "DNSName": "<CLOUDFRONT_DOMAIN>.cloudfront.net",
           "EvaluateTargetHealth": false
         }
       }
@@ -186,13 +228,9 @@ aws route53 change-resource-record-sets --hosted-zone-id <ZONE_ID> \
   }'
 ```
 
-The magic `Z2FDTNDATAQYW2` is CloudFront's fixed hosted zone ID — every CloudFront alias uses it. Repeat for `www.huckleberry.com`.
+### 6. IAM: deploy role assumed by the FE workflow
 
-### 7. IAM: OIDC provider + deployment role
-
-The same OIDC provider you set up for the BFF works here. Add a second role scoped to this repo for FE deploys.
-
-Trust policy:
+Same OIDC pattern as the BFF role. Trust policy scoped to the frontend repo:
 
 ```json
 {
@@ -200,7 +238,7 @@ Trust policy:
   "Statement": [{
     "Effect": "Allow",
     "Principal": {
-      "Federated": "arn:aws:iam::<ACCT>:oidc-provider/token.actions.githubusercontent.com"
+      "Federated": "arn:aws:iam::<ACCOUNT_ID>:oidc-provider/token.actions.githubusercontent.com"
     },
     "Action": "sts:AssumeRoleWithWebIdentity",
     "Condition": {
@@ -208,39 +246,38 @@ Trust policy:
         "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
       },
       "StringLike": {
-        "token.actions.githubusercontent.com:sub":
-          "repo:domo-development/huckleberry:*"
+        "token.actions.githubusercontent.com:sub": "repo:domo-development/huckleberry:*"
       }
     }
   }]
 }
 ```
 
-Permissions: read+write the bucket, invalidate CloudFront paths. Nothing else.
+Permissions — the deploy role only needs to push files to S3 and invalidate the distribution:
 
 ```json
 {
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Sid": "PushToFEBucket",
+      "Sid": "S3Sync",
       "Effect": "Allow",
       "Action": [
         "s3:PutObject",
-        "s3:GetObject",
         "s3:DeleteObject",
-        "s3:ListBucket"
+        "s3:ListBucket",
+        "s3:GetObject"
       ],
       "Resource": [
-        "arn:aws:s3:::huckleberry-fe-prod",
-        "arn:aws:s3:::huckleberry-fe-prod/*"
+        "arn:aws:s3:::<ENV>-huckleberry-fe",
+        "arn:aws:s3:::<ENV>-huckleberry-fe/*"
       ]
     },
     {
-      "Sid": "InvalidateCloudFront",
+      "Sid": "CloudFrontInvalidate",
       "Effect": "Allow",
       "Action": "cloudfront:CreateInvalidation",
-      "Resource": "arn:aws:cloudfront::<ACCT>:distribution/<DISTRIBUTION_ID>"
+      "Resource": "arn:aws:cloudfront::<ACCOUNT_ID>:distribution/<DIST_ID>"
     }
   ]
 }
@@ -248,36 +285,24 @@ Permissions: read+write the bucket, invalidate CloudFront paths. Nothing else.
 
 ---
 
-## First manual deploy
+## Build output
+
+The Vite config writes the production bundle to `build/`. The deploy syncs that directory to S3.
+
+Asset hashing: Vite appends content hashes to JS/CSS filenames (e.g. `assets/index-BhGt3kF9.js`), so assets can be cached with a long TTL. `index.html` itself should have a short or no-cache TTL — it's the entry point that references the hashed assets.
+
+Set cache headers via S3 metadata on sync:
 
 ```bash
-# Build (Vite emits to ./dist)
-pnpm build
-
-# Upload — two passes because cache lifetimes differ.
-
-# 1. Hashed assets: immutable, cache 1 year
-aws s3 sync dist/ s3://huckleberry-fe-prod/ \
+# Long TTL for hashed assets (1 year)
+aws s3 sync build/ s3://${ENV}-huckleberry-fe/ \
   --exclude "index.html" \
-  --cache-control "public, max-age=31536000, immutable"
+  --cache-control "public,max-age=31536000,immutable"
 
-# 2. index.html: revalidate every minute, never cache for long
-aws s3 cp dist/index.html s3://huckleberry-fe-prod/index.html \
-  --cache-control "public, max-age=60, must-revalidate" \
-  --content-type "text/html; charset=utf-8"
-
-# Invalidate index.html at the edge (assets are already unique per build, no invalidation needed)
-aws cloudfront create-invalidation \
-  --distribution-id <DISTRIBUTION_ID> \
-  --paths "/index.html"
-
-# Smoke
-curl -I https://huckleberry.com/                       # should be 200
-curl -I https://huckleberry.com/workspace              # should be 200 (the index.html trick)
-curl -I https://huckleberry.com/api/auth/me            # should be 200 (ALB origin) or 401
+# No-cache for index.html (browsers must revalidate)
+aws s3 cp build/index.html s3://${ENV}-huckleberry-fe/index.html \
+  --cache-control "no-cache,no-store,must-revalidate"
 ```
-
-The two-pass upload matters. Vite emits filenames like `index.abc123.js` — those are content-addressed, so a 1-year `Cache-Control: immutable` is safe. `index.html` is the entry point that references those filenames, so it must revalidate frequently or browsers will keep loading the old build's JS bundle.
 
 ---
 
@@ -296,9 +321,9 @@ permissions:
   contents: read
 
 env:
-  AWS_REGION: us-west-2
-  S3_BUCKET: huckleberry-fe-prod
-  CLOUDFRONT_DISTRIBUTION: ${{ vars.CLOUDFRONT_DISTRIBUTION }}
+  AWS_REGION: us-east-1
+  S3_BUCKET: dev3-huckleberry-fe        # override per env via workflow_dispatch input or branch matrix
+  CLOUDFRONT_DIST_ID: <DIST_ID>
 
 jobs:
   deploy:
@@ -306,17 +331,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: pnpm
 
-      - name: Enable Corepack + install
-        run: |
-          corepack enable
-          corepack pnpm install --frozen-lockfile
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: corepack pnpm build
+        run: pnpm build
+        env:
+          DOMO_API_BASE_URL: https://huckleberry.ai   # adjust per env
 
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
@@ -324,114 +354,98 @@ jobs:
           role-to-assume: arn:aws:iam::<ACCT>:role/huckleberry-fe-deploy
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Sync hashed assets (1-year immutable)
+      - name: Sync hashed assets (long TTL)
         run: |
-          aws s3 sync dist/ s3://${{ env.S3_BUCKET }}/ \
+          aws s3 sync build/ s3://${{ env.S3_BUCKET }}/ \
             --exclude "index.html" \
-            --cache-control "public, max-age=31536000, immutable" \
+            --cache-control "public,max-age=31536000,immutable" \
             --delete
 
-      - name: Upload index.html (short TTL)
+      - name: Upload index.html (no-cache)
         run: |
-          aws s3 cp dist/index.html s3://${{ env.S3_BUCKET }}/index.html \
-            --cache-control "public, max-age=60, must-revalidate" \
-            --content-type "text/html; charset=utf-8"
+          aws s3 cp build/index.html s3://${{ env.S3_BUCKET }}/index.html \
+            --cache-control "no-cache,no-store,must-revalidate"
 
-      - name: Invalidate CloudFront
+      - name: Invalidate CloudFront (index.html only)
         run: |
           aws cloudfront create-invalidation \
-            --distribution-id ${{ env.CLOUDFRONT_DISTRIBUTION }} \
+            --distribution-id ${{ env.CLOUDFRONT_DIST_ID }} \
             --paths "/index.html"
-
-      - name: Smoke test
-        run: |
-          curl --fail -I https://huckleberry.com/
-          curl --fail -I https://huckleberry.com/workspace
 ```
 
-Pipeline phases:
-
-1. Check out + install pnpm via Corepack.
-2. `pnpm build` — Vite outputs `dist/`.
-3. Assume the FE deploy role via OIDC.
-4. Sync assets to S3 (two passes for cache-control split).
-5. Invalidate `index.html` at CloudFront (assets are content-hashed, no invalidation needed).
-6. Smoke-test the production URL.
-
-The `--delete` flag on the assets pass removes files no longer in the build. Combined with versioning on the bucket, the previous versions stay recoverable for rollback.
-
-`vars.CLOUDFRONT_DISTRIBUTION` is a repo-level variable (Settings → Secrets and variables → Actions → Variables). Distribution IDs aren't sensitive but they're per-environment, so this lets dev/staging/prod workflows share the file.
+The invalidation targets only `index.html` — hashed assets never need invalidation because any change produces a new filename. This keeps invalidation costs near zero (CloudFront charges per path beyond 1000/month).
 
 ---
 
-## API call routing — how same-origin works
+## First manual deploy (smoke test before CD)
 
-Local dev: Vite dev server (`localhost:5173`) proxies `/api/*` to the BFF at `localhost:3000` (config in `vite.config.ts`). Browser sees everything as same-origin on `localhost:5173`.
+```bash
+cd ~/dev/huckleberry
 
-Production: CloudFront does the same job. Browser sees everything as `huckleberry.com`. The `hb_session` cookie is set with `Domain=huckleberry.com`, `SameSite=Lax`, `Secure`, `HttpOnly` — and it works on both `/login` (S3) and `/api/auth/signin` (ALB) without CORS.
+# Build
+pnpm build
 
-The `/api/*` behavior in CloudFront must:
+# Auth
+aws sso login --profile <PROFILE>
 
-- Use cache policy `CachingDisabled` — auth tokens, CSRF, SSE responses should never be cached.
-- Use origin request policy `AllViewer` — forwards every header, cookie, and query parameter to the BFF.
-- Forward `Host` set to the ALB's hostname (not `huckleberry.com`) — this is the default; only override if the BFF starts caring about the original Host.
+# Sync
+ENV=dev3
+DIST_ID=<DIST_ID>
 
----
+aws s3 sync build/ s3://${ENV}-huckleberry-fe/ \
+  --exclude "index.html" \
+  --cache-control "public,max-age=31536000,immutable" \
+  --delete
 
-## Observability
+aws s3 cp build/index.html s3://${ENV}-huckleberry-fe/index.html \
+  --cache-control "no-cache,no-store,must-revalidate"
 
-CloudFront access logs land in an S3 bucket (configure on the distribution). For day-to-day, the CloudFront console's "Reports & analytics" tab shows requests, bandwidth, and error rates.
+# Invalidate
+aws cloudfront create-invalidation \
+  --distribution-id $DIST_ID \
+  --paths "/index.html"
 
-Useful CloudWatch alarms:
-
-| Alarm | Metric | Threshold |
-|---|---|---|
-| FE 5xx surge | CloudFront `5xxErrorRate` > 5% over 5 min | Page |
-| FE 4xx surge | CloudFront `4xxErrorRate` > 50% over 5 min | Warn (could be a missing asset after a bad deploy) |
-| Cache hit rate drop | CloudFront `CacheHitRate` < 80% over 10 min | Warn |
-
-Most FE-side issues show up as 4xx (missing assets after a deploy) or 5xx (BFF being unreachable from the ALB origin). Real-User Monitoring (CloudWatch RUM, Datadog, Sentry — pick one) is the right tool for client-side errors; CloudFront logs only see what reached the edge.
+# Smoke — wait ~30s for the invalidation to propagate
+curl -I https://huckleberry.ai
+```
 
 ---
 
 ## Rollback
 
-Two paths, fast to slow:
+Because Vite hashes every asset filename, every deploy leaves the previous version's files in S3 intact until `--delete` removes them. To roll back:
 
-1. **Bad deploy, last-good is still in the bucket as a prior version.**
+1. Find the previous `index.html` in S3 version history:
    ```bash
-   # List previous versions of index.html
-   aws s3api list-object-versions --bucket huckleberry-fe-prod \
-     --prefix index.html --max-keys 5
-
-   # Promote a previous version to current
-   aws s3api copy-object --bucket huckleberry-fe-prod \
-     --copy-source "huckleberry-fe-prod/index.html?versionId=<PREV>" \
-     --key index.html \
-     --cache-control "public, max-age=60, must-revalidate"
-
-   # Invalidate the edge
-   aws cloudfront create-invalidation \
-     --distribution-id <DIST_ID> --paths "/index.html"
+   aws s3api list-object-versions --bucket ${ENV}-huckleberry-fe --prefix index.html
    ```
-   Same dance for the matching assets if hashed names changed.
+2. Restore it by copying the desired version ID back:
+   ```bash
+   aws s3api copy-object \
+     --bucket ${ENV}-huckleberry-fe \
+     --copy-source "${ENV}-huckleberry-fe/index.html?versionId=<VERSION_ID>" \
+     --key index.html \
+     --metadata-directive REPLACE \
+     --cache-control "no-cache,no-store,must-revalidate"
+   ```
+3. Invalidate:
+   ```bash
+   aws cloudfront create-invalidation \
+     --distribution-id $DIST_ID --paths "/index.html"
+   ```
 
-2. **Total redeploy.** Check out the last-good commit, re-run the workflow with `workflow_dispatch`. Vite output is deterministic from a given commit + lockfile.
-
-The first path is faster but requires you to know what changed. The second is foolproof.
+The restored `index.html` references the old asset hashes, which are still in the bucket — so the rollback is instant and doesn't require a rebuild.
 
 ---
 
-## Cost estimate (rough, low traffic)
+## Cost estimate (rough, us-east-1, low traffic)
 
-| Resource | Monthly |
-|---|---|
-| S3 storage (50 MB of bundles + versions) | $0.01 |
-| S3 requests (100k GETs from CloudFront) | $0.04 |
-| CloudFront (1 GB out + 200k requests) | $1.10 |
-| CloudFront SSL via SNI (free with ACM) | $0 |
-| Route 53 (1 hosted zone, queries) | $0.50 |
-| ACM cert | $0 |
-| **Total** | **~$2/month** |
-
-CloudFront pricing is per-GB out + per 10k requests, so this scales linearly with traffic but stays cheap for SaaS-scale apps. The first 1 TB/month is around $85.
+| Resource                              | Monthly  |
+| ------------------------------------- | -------- |
+| S3 storage (100 MB bundle, versioned) | < $0.01  |
+| S3 GET requests (~50k/mo)             | $0.02    |
+| CloudFront (10 GB data out, 1M reqs)  | $1–5     |
+| Route 53 hosted zone                  | $0.50    |
+| ACM cert                              | free     |
+| CloudFront invalidations (< 1000/mo)  | free     |
+| **Total**                             | **~$2–6** |
