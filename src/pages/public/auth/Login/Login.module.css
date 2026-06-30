@@ -45,6 +45,60 @@
       color: var(--purple);
     }
 
+    .errorMessage {
+      padding: var(--space-md);
+      border-radius: var(--br-lg);
+      background-color: var(--error-light, #fef2f2);
+      color: var(--error, #dc2626);
+    }
+
+    .pathChoice {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-sm);
+    }
+
+    .pathCard {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: var(--space-md);
+      border: 1.5px solid var(--grey-light);
+      border-radius: var(--br-lg);
+      background: transparent;
+      cursor: pointer;
+      text-align: left;
+      transition:
+        border-color 0.15s,
+        background 0.15s;
+
+      &:hover {
+        border-color: var(--purple);
+      }
+
+      &.selected {
+        border-color: var(--purple);
+        background: var(--purple-light);
+      }
+    }
+
+    .pathCardLabel {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .pathCardDesc {
+      font-size: 11px;
+      color: var(--grey-text);
+    }
+
+    .fieldError {
+      font-size: var(--font-xs);
+      color: var(--error, #dc2626);
+      margin-top: calc(-1 * var(--space-sm));
+    }
+
     .disclaimer {
       font-size: var(--font-xs);
       color: var(--grey-text);
