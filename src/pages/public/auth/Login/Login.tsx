@@ -6,20 +6,8 @@ import { Button, Input } from 'antd';
 import { PublicPage, publicRoutePaths } from 'models/enums/appPage';
 import { Preview } from './Preview';
 
-/**
- * Magic-link sign-in / sign-up form. No password.
- *
- *  - Sign in: server sends a magic-link only if the email already has an
- *    account. Always returns 202 (existence-oracle protection).
- *  - Sign up: server provisions a Domo instance + user, creates the
- *    huckleberry account in `pending_link`, then sends the magic-link.
- *    First sign-in kicks the user into the PKCE auth-code flow to mint
- *    a Domo refresh token.
- *
- * Magic-link callback lands on `/auth/signin?token=...` (see Signin
- * component) which exchanges the token for a session cookie.
- */
 type Mode = 'signin' | 'signup';
+type SignupPath = 'new' | 'existing';
 
 export const Login: FC = () => {
   const [searchParams] = useSearchParams();
@@ -27,13 +15,12 @@ export const Login: FC = () => {
     searchParams.get('mode') === 'signup' ? 'signup' : 'signin';
   const [mode, setMode] = useState<Mode>(urlMode);
   const [email, setEmail] = useState('');
+  const [path, setPath] = useState<SignupPath>('new');
+  const [instanceUrl, setInstanceUrl] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
-  const [, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  // Keep `mode` in sync when the user clicks a header button that just
-  // changes the URL without remounting (e.g., already on /login and clicks
-  // "Try for free" → ?mode=signup).
   useEffect(() => {
     setMode(urlMode);
     setError(null);
@@ -45,7 +32,13 @@ export const Login: FC = () => {
     setSubmitting(true);
     try {
       if (mode === 'signup') {
-        await AuthService.signup(email.trim());
+        await AuthService.signup({
+          email: email.trim(),
+          path,
+          ...(path === 'existing'
+            ? { instanceUrl: `https://${instanceUrl.trim()}.domo.com` }
+            : {}),
+        });
       } else {
         await AuthService.requestMagicLink(email.trim());
       }
@@ -56,6 +49,27 @@ export const Login: FC = () => {
       setSubmitting(false);
     }
   };
+
+  const isValidSubdomain = (s: string): boolean => {
+    const trimmed = s.trim();
+    if (!trimmed.length) return false;
+    return trimmed
+      .split('.')
+      .every((label) => /^[a-z0-9]([a-z0-9-]*[a-z0-9])?$/i.test(label));
+  };
+
+  const instanceUrlError =
+    path === 'existing' &&
+    instanceUrl.trim().length > 0 &&
+    !isValidSubdomain(instanceUrl)
+      ? 'Letters, numbers, hyphens, and dots only'
+      : null;
+
+  const canSubmit =
+    email.trim().length > 0 &&
+    (mode !== 'signup' ||
+      path === 'new' ||
+      (path === 'existing' && isValidSubdomain(instanceUrl)));
 
   return (
     <div className={styles.login}>
@@ -76,11 +90,57 @@ export const Login: FC = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
+        {mode === 'signup' && (
+          <>
+            <div className={styles.pathChoice}>
+              <button
+                className={`${styles.pathCard} ${path === 'new' ? styles.selected : ''}`}
+                onClick={() => setPath('new')}
+              >
+                <span className={styles.pathCardLabel}>
+                  Set up a new workspace
+                </span>
+                <span className={styles.pathCardDesc}>
+                  We'll provision a fresh Domo instance for you
+                </span>
+              </button>
+              <button
+                className={`${styles.pathCard} ${path === 'existing' ? styles.selected : ''}`}
+                onClick={() => setPath('existing')}
+              >
+                <span className={styles.pathCardLabel}>
+                  Connect an existing instance
+                </span>
+                <span className={styles.pathCardDesc}>
+                  Link to a Domo instance you already have
+                </span>
+              </button>
+            </div>
+            {path === 'existing' && (
+              <>
+                <Input
+                  variant="filled"
+                  size="large"
+                  placeholder="your-instance"
+                  value={instanceUrl}
+                  onChange={(e) => setInstanceUrl(e.target.value)}
+                  status={instanceUrlError ? 'error' : undefined}
+                  addonBefore="https://"
+                  addonAfter=".domo.com"
+                />
+                {instanceUrlError && (
+                  <p className={styles.fieldError}>{instanceUrlError}</p>
+                )}
+              </>
+            )}
+          </>
+        )}
         <Button
           type="primary"
           shape="round"
           size="large"
           loading={submitting}
+          disabled={!canSubmit}
           onClick={onSubmit}
         >
           Continue with email
@@ -94,12 +154,13 @@ export const Login: FC = () => {
               </>
             ) : (
               <>
-                If an account exists, we’ve sent a secure sign-in link. The link
+                If an account exists, we've sent a secure sign-in link. The link
                 expires in 15 minutes.
               </>
             )}
           </p>
         )}
+        {error && <p className={styles.errorMessage}>{error}</p>}
         <p className={styles.disclaimer}>
           By continuing, you agree to the{' '}
           <Link to={publicRoutePaths[PublicPage.TERMS]}>Terms of Use</Link> and{' '}
