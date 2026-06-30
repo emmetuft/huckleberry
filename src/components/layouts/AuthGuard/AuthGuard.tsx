@@ -25,7 +25,7 @@ export const AuthGuard: FC = () => {
   const location = useLocation();
   const init = useRef<boolean>(false);
   const [sessionState, setSessionState] = useState<
-    'loading' | 'signed-in' | 'signed-out' | 'link-error'
+    'loading' | 'provisioning' | 'signed-in' | 'signed-out' | 'link-error'
   >('loading');
   const [linkError, setLinkError] = useState<string | null>(null);
   const isAuthenticating = useSelector(selectLoading).identity;
@@ -44,6 +44,10 @@ export const AuthGuard: FC = () => {
       // created, Domo instance provisioned) but hasn't yet completed the
       // PKCE auth-code flow to mint a Domo refresh token. Kick into the
       // browser-side OAuth dance now.
+      if (me.status === 'pending_provision') {
+        setSessionState('provisioning');
+        return;
+      }
       if (me.status === 'pending_link') {
         try {
           const { authorizeUrl } = await AuthService.startDomoLink();
@@ -67,6 +71,25 @@ export const AuthGuard: FC = () => {
     await AuthService.logout();
     window.location.href = publicRoutePaths[PublicPage.LOGIN];
   };
+
+  if (sessionState === 'provisioning') {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100vh',
+          gap: '1rem',
+          textAlign: 'center',
+        }}
+      >
+        <Loader />
+        <p style={{ color: '#666' }}>Setting up your workspace...</p>
+      </div>
+    );
+  }
 
   if (sessionState === 'link-error') {
     return (
