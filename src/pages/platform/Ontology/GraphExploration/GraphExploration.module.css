@@ -66,6 +66,14 @@
   border-radius: var(--br-md);
 }
 
+.relationshipItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-lg) 0;
+  border-bottom: 1px solid var(--grey-light);
+}
+
 .properties {
   display: grid;
   grid-template-columns: 1fr 1fr;

@@ -58,8 +58,8 @@ export const WorkflowDetail: FC = () => {
           variant={BackgroundVariant.Dots}
           gap={25}
           size={2}
-          color={isDark ? '#727272ff' : '#b7b6b6'}
-          bgColor={isDark ? '#1a1a1a' : '#f6f6f6'}
+          color={isDark ? '#505050' : '#d3d3d3'}
+          bgColor={isDark ? '#242424' : '#ffffff'}
         />
       </ReactFlow>
     </div>

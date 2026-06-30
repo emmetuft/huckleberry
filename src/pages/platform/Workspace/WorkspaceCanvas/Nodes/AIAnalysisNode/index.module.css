@@ -1,0 +1,157 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.title {
+  font-size: var(--font-md);
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.2;
+  flex: 1;
+}
+
+.statusBadge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.running {
+  background-color: color-mix(in srgb, var(--node-cyan) 15%, transparent);
+  color: var(--node-cyan);
+}
+
+.complete {
+  background-color: color-mix(in srgb, var(--node-green) 15%, transparent);
+  color: var(--node-green);
+}
+
+.failed {
+  background-color: color-mix(in srgb, var(--node-red) 15%, transparent);
+  color: var(--node-red);
+}
+
+.summary {
+  font-size: var(--font-xs);
+  color: var(--grey-text);
+  line-height: 1.4;
+}
+
+.confidenceSection {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.confidenceHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.confidenceLabel {
+  font-size: 10px;
+  color: var(--grey-text);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 500;
+}
+
+.confidenceValue {
+  font-size: var(--font-xs);
+  color: var(--text);
+  font-weight: 600;
+}
+
+.confidenceTrack {
+  height: 4px;
+  background-color: var(--grey-light);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.confidenceBar {
+  height: 100%;
+  background-color: var(--node-cyan);
+  border-radius: 999px;
+}
+
+.divider {
+  height: 1px;
+  background-color: var(--grey-border);
+  margin: var(--space-xs) 0;
+}
+
+.insights {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sectionLabel {
+  font-size: var(--font-xs);
+  font-weight: 500;
+  color: var(--grey-text);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 2px;
+}
+
+.insightItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.insightIcon {
+  color: var(--node-cyan);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.insightText {
+  font-size: var(--font-xs);
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.footerItem {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+}
+
+.footerLabel {
+  font-size: 10px;
+  color: var(--grey-text);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 500;
+  width: 52px;
+  flex-shrink: 0;
+}
+
+.footerValue {
+  font-size: var(--font-xs);
+  color: var(--text);
+  font-weight: 500;
+}

@@ -25,6 +25,8 @@ export const MessageThread: FC<MessageThreadProps> = ({ chatMode }) => {
     }
   }, [turns]);
 
+  if (turns.length === 0) return null;
+
   return (
     <div
       className={`${styles.messageThread} ${styles[chatMode]}`}

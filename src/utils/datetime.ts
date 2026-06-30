@@ -3,7 +3,7 @@ import { ConversationTurn } from 'models/interfaces/message';
 
 export const ONE_HOUR_MS = 60 * 60 * 1000;
 
-export const formatDate = (date: Date) => format(date, 'YYYY-MM-DD');
+export const formatDate = (date: Date) => format(date, 'yyyy-MM-dd');
 
 /**
  * Formats a date or timestamp into 'yyyy-MM-dd HH:mm:ss'.

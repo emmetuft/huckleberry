@@ -1,0 +1,98 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.name {
+  font-size: var(--font-md);
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.2;
+  flex: 1;
+}
+
+.statusBadge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.active {
+  background-color: color-mix(in srgb, var(--node-green) 15%, transparent);
+  color: var(--node-green);
+}
+
+.paused {
+  background-color: color-mix(in srgb, var(--node-yellow) 15%, transparent);
+  color: var(--node-yellow);
+}
+
+.complete {
+  background-color: color-mix(in srgb, var(--node-blue) 15%, transparent);
+  color: var(--node-blue);
+}
+
+.description {
+  font-size: var(--font-xs);
+  color: var(--grey-text);
+  line-height: 1.4;
+}
+
+.divider {
+  height: 1px;
+  background-color: var(--grey-border);
+  margin: var(--space-xs) 0;
+}
+
+.metadata {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-sm) var(--space-xl);
+}
+
+.metaItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.metaLabel {
+  font-size: 10px;
+  color: var(--grey-text);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 500;
+}
+
+.metaValue {
+  font-size: var(--font-xs);
+  color: var(--text);
+  font-weight: 500;
+}
+
+.progressTrack {
+  height: 4px;
+  background-color: var(--grey-light);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 2px;
+}
+
+.progressBar {
+  height: 100%;
+  background-color: var(--node-green);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}

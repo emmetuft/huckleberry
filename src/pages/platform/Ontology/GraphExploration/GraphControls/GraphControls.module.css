@@ -24,13 +24,15 @@
   }
 
   .playbackDrawer {
-    margin-top: var(--space-sm);
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.35s ease;
+    transition:
+      max-height 0.35s ease,
+      margin-top 0.35s ease;
 
     &.open {
       max-height: 100px;
+      margin-top: var(--space-sm);
     }
   }
 }
