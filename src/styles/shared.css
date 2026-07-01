@@ -17,13 +17,6 @@ svg:focus {
     display: flex;
     flex-direction: column;
     height: 100%;
-
-    /* overflow: hidden;
-
-    @media (width <= 768px) {
-      height: auto;
-      overflow: visible;
-    } */
   }
 
   .loadingOverlay {
@@ -103,6 +96,41 @@ svg:focus {
     border-radius: var(--br-md);
   }
 
+  .itemBrowser {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+
+    .selectedList {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+    }
+
+    .itemList {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-lg);
+      overflow-y: auto;
+      border: 1px solid var(--grey-border);
+      border-radius: var(--br-lg);
+      padding: var(--space-lg);
+
+      .connectAction {
+        display: flex;
+        align-items: center;
+        margin-left: auto;
+        flex-shrink: 0;
+      }
+    }
+
+    .loadingTrigger {
+      display: flex;
+      justify-content: center;
+      padding: var(--space-lg);
+    }
+  }
+
   @media (width <= 768px) {
     .appCard {
       gap: var(--space-md);
@@ -149,4 +177,30 @@ svg:focus {
 .agentNode:hover .react-flow__handle,
 .agentNode .react-flow__handle.connected {
   opacity: 1;
+}
+
+/* Tag styles */
+.defaultTag {
+  color: var(--purple);
+  background-color: var(--purple-light);
+}
+
+.successTag {
+  color: var(--success-icon);
+  background-color: var(--success-bg);
+}
+
+.infoTag {
+  color: var(--info-icon);
+  background-color: var(--info-bg);
+}
+
+.errorTag {
+  color: var(--error-icon);
+  background-color: var(--error-bg);
+}
+
+.warningTag {
+  color: var(--medium-icon);
+  background-color: var(--medium-bg);
 }

@@ -63,7 +63,7 @@ export const DataSourceBrowser: FC<DataSourceBrowserProps> = ({
   };
 
   return (
-    <div className={styles.dataSourceBrowser}>
+    <div className="itemBrowser">
       <Input
         placeholder="Search datasources..."
         prefix={<MagnifyingGlassIcon />}
@@ -73,7 +73,7 @@ export const DataSourceBrowser: FC<DataSourceBrowserProps> = ({
       />
 
       {selectedDataSources.length > 0 && (
-        <div className={styles.selectedList}>
+        <div className="selectedList">
           {selectedDataSources.map((dataSource) => (
             <Tag
               key={dataSource.id}
@@ -86,7 +86,7 @@ export const DataSourceBrowser: FC<DataSourceBrowserProps> = ({
         </div>
       )}
 
-      <div className={styles.dataSourceList} style={{ height: height ?? 400 }}>
+      <div className="itemList" style={{ height: height ?? 400 }}>
         {dataSources.length === 0 && !loading ? (
           <Empty description="No datasources found" />
         ) : (
@@ -115,7 +115,7 @@ export const DataSourceBrowser: FC<DataSourceBrowserProps> = ({
                       </span>
                     </p>
                   </div>
-                  <div className={styles.connectAction}>
+                  <div className="connectAction">
                     <Button
                       size="small"
                       type={selected ? 'primary' : 'default'}
@@ -130,7 +130,7 @@ export const DataSourceBrowser: FC<DataSourceBrowserProps> = ({
               );
             })}
             {hasMore && (
-              <div ref={sentinelRef} className={styles.loadingTrigger}>
+              <div ref={sentinelRef} className="loadingTrigger">
                 {loading && <Spin />}
               </div>
             )}

@@ -16,9 +16,9 @@ const getUsers = async (ids?: string[]): Promise<User[]> => {
   const data = await handleResponse<DomoUser[]>(response);
   return data.map((domoUser) => ({
     id: domoUser.id,
-    username: '',
     displayName: domoUser.displayName,
     email: domoUser.detail.email,
+    role: domoUser.role,
   }));
 };
 
@@ -40,9 +40,9 @@ const getUserById = async (id: string): Promise<User | null> => {
   const user = data[0];
   return {
     id: user.id,
-    username: '',
     displayName: user.displayName,
     email: user.detail.email,
+    role: user.role,
   };
 };
 

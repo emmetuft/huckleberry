@@ -94,11 +94,16 @@ function node(
   };
 }
 
+const COL = (n: number) => n * 400;
+const FILLED_Y = 0;
+const EMPTY_Y = 700;
+
 const TEMPLATE_NODES = [
+  // Data Source
   node(
     'ds-1',
     CanvasNodeType.DATA_SOURCE,
-    { x: 0, y: 0 },
+    { x: COL(0), y: FILLED_Y },
     {
       name: 'Salesforce CRM',
       sourceId: 'salesforce-prod',
@@ -132,41 +137,15 @@ const TEMPLATE_NODES = [
   node(
     'ds-2',
     CanvasNodeType.DATA_SOURCE,
-    { x: 0, y: 360 },
-    {
-      name: 'Revenue Data Warehouse',
-      sourceId: 'snowflake-revenue',
-      sourceType: 'Data Warehouse',
-      rowCount: 2100000,
-      columnCount: 18,
-      lastUpdated: 'Jun 29, 2026',
-      columns: ['Month', 'Segment', 'Revenue', 'Churn'],
-      sampleRows: [
-        {
-          Month: 'Apr 2026',
-          Segment: 'Enterprise',
-          Revenue: '$980k',
-          Churn: '2.1%',
-        },
-        {
-          Month: 'May 2026',
-          Segment: 'Enterprise',
-          Revenue: '$940k',
-          Churn: '2.8%',
-        },
-        {
-          Month: 'Jun 2026',
-          Segment: 'Enterprise',
-          Revenue: '$890k',
-          Churn: '3.4%',
-        },
-      ],
-    },
+    { x: COL(0), y: EMPTY_Y },
+    undefined,
   ),
+
+  // Metric
   node(
     'metric-1',
     CanvasNodeType.METRIC,
-    { x: 420, y: 0 },
+    { x: COL(1), y: FILLED_Y },
     {
       name: 'Q3 Committed Revenue',
       value: '$2.81M',
@@ -179,26 +158,13 @@ const TEMPLATE_NODES = [
       target: '$3.1M',
     },
   ),
-  node(
-    'metric-2',
-    CanvasNodeType.METRIC,
-    { x: 420, y: 260 },
-    {
-      name: 'Enterprise Churn Rate',
-      value: '3.4%',
-      unit: '',
-      change: 62,
-      changeDirection: 'up',
-      isPositive: false,
-      period: 'last quarter',
-      lastUpdated: 'Jun 28, 2026',
-      target: '< 2%',
-    },
-  ),
+  node('metric-2', CanvasNodeType.METRIC, { x: COL(1), y: EMPTY_Y }, undefined),
+
+  // Goal
   node(
     'goal-1',
     CanvasNodeType.GOAL,
-    { x: 760, y: 100 },
+    { x: COL(2), y: FILLED_Y },
     {
       title: 'Hit Q3 Revenue Target',
       status: 'at_risk',
@@ -214,36 +180,29 @@ const TEMPLATE_NODES = [
       ],
     },
   ),
+  node('goal-empty', CanvasNodeType.GOAL, { x: COL(2), y: EMPTY_Y }, undefined),
+
+  // Person
   node(
     'person-1',
     CanvasNodeType.PERSON,
-    { x: 1160, y: 0 },
+    { x: COL(3), y: FILLED_Y },
     {
-      name: 'Sarah Chen',
-      role: 'VP of Sales',
-      department: 'Revenue',
-      email: 'sarah.chen@company.com',
-      tags: ['Deal owner', 'Q3 lead'],
-      initials: 'SC',
+      user: {
+        id: 'user-123',
+        displayName: 'Sarah Chen',
+        email: 'sarah.chen@company.com',
+        role: 'Sales Director',
+      },
     },
   ),
-  node(
-    'person-2',
-    CanvasNodeType.PERSON,
-    { x: 1160, y: 300 },
-    {
-      name: 'Marcus Webb',
-      role: 'Customer Success Lead',
-      department: 'CS',
-      email: 'marcus.webb@company.com',
-      tags: ['Churn prevention'],
-      initials: 'MW',
-    },
-  ),
+  node('person-2', CanvasNodeType.PERSON, { x: COL(3), y: EMPTY_Y }, undefined),
+
+  // Decision
   node(
     'decision-1',
     CanvasNodeType.DECISION,
-    { x: 420, y: 520 },
+    { x: COL(4), y: FILLED_Y },
     {
       title: 'Prioritize enterprise vs. SMB pipeline',
       status: 'reviewing',
@@ -262,9 +221,17 @@ const TEMPLATE_NODES = [
     },
   ),
   node(
+    'decision-empty',
+    CanvasNodeType.DECISION,
+    { x: COL(4), y: EMPTY_Y },
+    undefined,
+  ),
+
+  // Idea
+  node(
     'idea-1',
     CanvasNodeType.IDEA,
-    { x: 760, y: 520 },
+    { x: COL(5), y: FILLED_Y },
     {
       title: 'Targeted upsell for high-intent accounts',
       status: 'exploring',
@@ -273,13 +240,38 @@ const TEMPLATE_NODES = [
       category: 'Revenue Growth',
       author: 'Marcus Webb',
       createdAt: 'Jun 25, 2026',
-      tags: ['Expansion', 'CS-led', 'Q3'],
+    },
+  ),
+  node('idea-empty', CanvasNodeType.IDEA, { x: COL(5), y: EMPTY_Y }, undefined),
+
+  // Project
+  node(
+    'project-1',
+    CanvasNodeType.PROJECT,
+    { x: COL(6), y: FILLED_Y },
+    {
+      name: 'Q3 Sales Enablement',
+      status: 'active',
+      description:
+        'Equip the sales team with tooling, training, and content to hit Q3 revenue targets.',
+      owner: 'Marcus Webb',
+      startDate: 'Jun 1, 2026',
+      dueDate: 'Sep 30, 2026',
+      progress: 35,
     },
   ),
   node(
+    'project-empty',
+    CanvasNodeType.PROJECT,
+    { x: COL(6), y: EMPTY_Y },
+    undefined,
+  ),
+
+  // AI Analysis
+  node(
     'ai-1',
     CanvasNodeType.AI_ANALYSIS,
-    { x: 1160, y: 520 },
+    { x: COL(7), y: FILLED_Y },
     {
       title: 'Revenue Risk Analysis',
       status: 'complete',
@@ -295,6 +287,20 @@ const TEMPLATE_NODES = [
       confidence: 84,
       analyzedAt: 'Jun 29, 2026',
       sources: 6,
+    },
+  ),
+  node(
+    'ai-empty',
+    CanvasNodeType.AI_ANALYSIS,
+    { x: COL(7), y: EMPTY_Y },
+    {
+      title: 'Revenue Risk Analysis',
+      status: 'not_started',
+      summary: '',
+      insights: [],
+      model: '',
+      confidence: 0,
+      analyzedAt: '',
     },
   ),
 ];

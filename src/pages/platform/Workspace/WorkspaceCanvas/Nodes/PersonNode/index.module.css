@@ -1,28 +1,7 @@
-.container {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-}
-
 .avatarSection {
   display: flex;
   align-items: center;
   gap: var(--space-md);
-}
-
-.avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: color-mix(in srgb, var(--node-purple) 15%, transparent);
-  color: var(--node-purple);
-  font-size: var(--font-sm);
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  letter-spacing: 0.02em;
 }
 
 .identity {
@@ -47,12 +26,6 @@
   color: var(--grey-text);
 }
 
-.divider {
-  height: 1px;
-  background-color: var(--grey-border);
-  margin: var(--space-xs) 0;
-}
-
 .detail {
   display: flex;
   align-items: baseline;
@@ -75,20 +48,4 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  margin-top: 2px;
-}
-
-.tag {
-  font-size: 10px;
-  font-weight: 500;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background-color: color-mix(in srgb, var(--node-purple) 10%, transparent);
-  color: var(--node-purple);
 }

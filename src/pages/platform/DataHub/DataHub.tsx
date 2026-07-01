@@ -25,7 +25,6 @@ import { dataSourceColumns } from 'constants/data';
 import { Avatar } from 'components/shared/Avatar/Avatar';
 import { DataControls } from './DataControls/DataControls';
 import { renderVal } from 'utils/data';
-import { defaultTagStyle } from 'constants/styles';
 
 interface DataHubProps {}
 
@@ -107,7 +106,7 @@ export const DataHub: FC<DataHubProps> = ({}) => {
       return (
         <div className={styles.tags}>
           {tagList.map((tag: string) => (
-            <Tag style={defaultTagStyle}>{tag}</Tag>
+            <Tag className="defaultTag">{tag}</Tag>
           ))}
         </div>
       );

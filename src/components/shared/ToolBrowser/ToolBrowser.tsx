@@ -63,7 +63,7 @@ export const ToolBrowser: FC<ToolBrowserProps> = ({
   };
 
   return (
-    <div className={styles.toolBrowser}>
+    <div className="itemBrowser">
       <Input
         placeholder="Search toolkits..."
         prefix={<MagnifyingGlassIcon />}
@@ -73,7 +73,7 @@ export const ToolBrowser: FC<ToolBrowserProps> = ({
       />
 
       {selectedToolkits.length > 0 && (
-        <div className={styles.selectedList}>
+        <div className="selectedList">
           {selectedToolkits.map((toolkit) => (
             <Tag
               key={toolkit.toolkitId}
@@ -86,7 +86,7 @@ export const ToolBrowser: FC<ToolBrowserProps> = ({
         </div>
       )}
 
-      <div className={styles.toolList} style={{ maxHeight: height ?? 400 }}>
+      <div className="itemList" style={{ maxHeight: height ?? 400 }}>
         {toolkits.length === 0 && !loading ? (
           <Empty description="No toolkits found" />
         ) : (
@@ -104,7 +104,7 @@ export const ToolBrowser: FC<ToolBrowserProps> = ({
                       {toolkit.description || 'No description'}
                     </p>
                   </div>
-                  <div className={styles.connectAction}>
+                  <div className="connectAction">
                     <Button
                       size="small"
                       type={selected ? 'primary' : 'default'}
@@ -116,7 +116,7 @@ export const ToolBrowser: FC<ToolBrowserProps> = ({
               );
             })}
             {hasMore && (
-              <div ref={sentinelRef} className={styles.loadingTrigger}>
+              <div ref={sentinelRef} className="loadingTrigger">
                 {loading && <Spin />}
               </div>
             )}

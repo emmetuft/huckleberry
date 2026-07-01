@@ -1,13 +1,22 @@
 import { FC } from 'react';
-import { NodeProps, Node } from '@xyflow/react';
+import { NodeProps, Node, useReactFlow } from '@xyflow/react';
+import { Button, Progress, Spin, Tag } from 'antd';
 import { SparkleIcon } from '@phosphor-icons/react';
 import styles from './index.module.css';
-import { NodeWrapper } from '../NodeWrapper';
+import sharedStyles from '../shared.module.css';
 import { CanvasNode } from 'models/interfaces/canvasNode';
+import { NodeWrapper } from '../NodeWrapper';
+
+export enum AIAnalysisNodeStatus {
+  NotStarted = 'not_started',
+  Running = 'running',
+  Complete = 'complete',
+  Failed = 'failed',
+}
 
 export interface AIAnalysisNodeData {
   title: string;
-  status: 'running' | 'complete' | 'failed';
+  status: AIAnalysisNodeStatus;
   summary: string;
   insights: string[];
   model: string;
@@ -20,12 +29,40 @@ const STATUS_CONFIG: Record<
   AIAnalysisNodeData['status'],
   { label: string; className: string }
 > = {
-  running: { label: 'Running', className: 'running' },
-  complete: { label: 'Complete', className: 'complete' },
-  failed: { label: 'Failed', className: 'failed' },
+  [AIAnalysisNodeStatus.NotStarted]: {
+    label: 'Not Started',
+    className: 'defaultTag',
+  },
+  [AIAnalysisNodeStatus.Running]: { label: 'Running', className: 'infoTag' },
+  [AIAnalysisNodeStatus.Complete]: {
+    label: 'Complete',
+    className: 'successTag',
+  },
+  [AIAnalysisNodeStatus.Failed]: { label: 'Failed', className: 'errorTag' },
 };
 
-export const AIAnalysisNode: FC<NodeProps<Node<CanvasNode>>> = ({ data }) => {
+export const AIAnalysisNode: FC<NodeProps<Node<CanvasNode>>> = ({
+  id,
+  data,
+}) => {
+  const { updateNodeData } = useReactFlow();
+  const nodeData = data.data as AIAnalysisNodeData | undefined;
+
+  const handleRunAnalysis = () => {
+    updateNodeData(id, {
+      ...data,
+      data: {
+        title: title ?? 'Analysis',
+        status: AIAnalysisNodeStatus.Running,
+        summary: '',
+        insights: [],
+        model: 'claude-sonnet-4-6',
+        confidence: 0,
+        analyzedAt: '',
+      } satisfies AIAnalysisNodeData,
+    });
+  };
+
   const {
     title,
     status,
@@ -35,68 +72,91 @@ export const AIAnalysisNode: FC<NodeProps<Node<CanvasNode>>> = ({ data }) => {
     confidence,
     analyzedAt,
     sources,
-  } = data.data as AIAnalysisNodeData;
-  const { label, className } = STATUS_CONFIG[status];
+  } = nodeData ?? {};
+  const { label, className } = status
+    ? STATUS_CONFIG[status]
+    : { label: '', className: '' };
 
   return (
     <NodeWrapper node={data} style={{ width: 300 }}>
-      <div className={styles.container}>
+      <div className={sharedStyles.container}>
         <div className={styles.header}>
-          <h3 className={styles.title}>{title}</h3>
-          <span className={`${styles.statusBadge} ${styles[className]}`}>
-            {label}
-          </span>
+          <h3 className={styles.title}>{title ?? 'Analysis'}</h3>
+          {status && <Tag className={className}>{label}</Tag>}
         </div>
 
-        <p className={styles.summary}>{summary}</p>
-
-        <div className={styles.confidenceSection}>
-          <div className={styles.confidenceHeader}>
-            <span className={styles.confidenceLabel}>Confidence</span>
-            <span className={styles.confidenceValue}>{confidence}%</span>
+        {status === AIAnalysisNodeStatus.NotStarted ? (
+          <Button
+            type="primary"
+            size="small"
+            icon={<SparkleIcon size={14} />}
+            onClick={handleRunAnalysis}
+          >
+            Run analysis
+          </Button>
+        ) : status === AIAnalysisNodeStatus.Running ? (
+          <div className={styles.loadingState}>
+            <Spin size="small" />
+            <span className={styles.loadingText}>Analyzing...</span>
           </div>
-          <div className={styles.confidenceTrack}>
-            <div
-              className={styles.confidenceBar}
-              style={{ width: `${confidence}%` }}
-            />
-          </div>
-        </div>
+        ) : (
+          <>
+            {summary && <p className={styles.summary}>{summary}</p>}
 
-        <div className={styles.divider} />
+            {(confidence ?? 0) > 0 && (
+              <div className={styles.confidenceSection}>
+                <div className={styles.confidenceHeader}>
+                  <span className={styles.confidenceLabel}>Confidence</span>
+                  <span className={styles.confidenceValue}>{confidence}%</span>
+                </div>
+                <Progress
+                  percent={confidence}
+                  showInfo={false}
+                  strokeColor="var(--node-cyan)"
+                />
+              </div>
+            )}
 
-        <div className={styles.insights}>
-          <p className={styles.sectionLabel}>Insights</p>
-          {insights.map((insight, i) => (
-            <div key={i} className={styles.insightItem}>
-              <SparkleIcon
-                size={11}
-                weight="fill"
-                className={styles.insightIcon}
-              />
-              <span className={styles.insightText}>{insight}</span>
-            </div>
-          ))}
-        </div>
+            {insights && insights.length > 0 && (
+              <>
+                <div className={sharedStyles.divider} />
+                <div className={styles.insights}>
+                  <p className={sharedStyles.sectionLabel}>Insights</p>
+                  {insights.map((insight, i) => (
+                    <div key={i} className={styles.insightItem}>
+                      <SparkleIcon
+                        size={11}
+                        weight="fill"
+                        className={styles.insightIcon}
+                      />
+                      <span className={styles.insightText}>{insight}</span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
 
-        <div className={styles.divider} />
-
-        <div className={styles.footer}>
-          <div className={styles.footerItem}>
-            <span className={styles.footerLabel}>Model</span>
-            <span className={styles.footerValue}>{model}</span>
-          </div>
-          <div className={styles.footerItem}>
-            <span className={styles.footerLabel}>On</span>
-            <span className={styles.footerValue}>{analyzedAt}</span>
-          </div>
-          {sources !== undefined && (
-            <div className={styles.footerItem}>
-              <span className={styles.footerLabel}>Sources</span>
-              <span className={styles.footerValue}>{sources}</span>
-            </div>
-          )}
-        </div>
+            {(model || analyzedAt) && (
+              <>
+                <div className={sharedStyles.divider} />
+                <div className={sharedStyles.metadata}>
+                  <div className={sharedStyles.metaItem}>
+                    <span className={sharedStyles.metaLabel}>Model</span>
+                    <span className={sharedStyles.metaValue}>{model}</span>
+                  </div>
+                  <div className={sharedStyles.metaItem}>
+                    <span className={sharedStyles.metaLabel}>On</span>
+                    <span className={sharedStyles.metaValue}>{analyzedAt}</span>
+                  </div>
+                  <div className={sharedStyles.metaItem}>
+                    <span className={sharedStyles.metaLabel}>Sources</span>
+                    <span className={sharedStyles.metaValue}>{sources}</span>
+                  </div>
+                </div>
+              </>
+            )}
+          </>
+        )}
       </div>
     </NodeWrapper>
   );

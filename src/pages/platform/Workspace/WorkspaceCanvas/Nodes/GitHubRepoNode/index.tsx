@@ -1,7 +1,8 @@
 import { FC } from 'react';
 import { NodeProps, Node } from '@xyflow/react';
-import { GitBranchIcon, GitForkIcon, StarIcon } from '@phosphor-icons/react';
+import { GitForkIcon, StarIcon } from '@phosphor-icons/react';
 import styles from './index.module.css';
+import sharedStyles from '../shared.module.css';
 import { NodeWrapper } from '../NodeWrapper';
 import { CanvasNode } from 'models/interfaces/canvasNode';
 
@@ -47,7 +48,7 @@ export const GitHubRepoNode: FC<NodeProps<Node<CanvasNode>>> = ({ data }) => {
 
   return (
     <NodeWrapper node={data} style={{ width: 280 }}>
-      <div className={styles.container}>
+      <div className={sharedStyles.container}>
         <div className={styles.header}>
           <div className={styles.titleGroup}>
             <h3 className={styles.title}>{name}</h3>
@@ -68,7 +69,7 @@ export const GitHubRepoNode: FC<NodeProps<Node<CanvasNode>>> = ({ data }) => {
           <span className={styles.langLabel}>{language}</span>
         </div>
 
-        <div className={styles.divider} />
+        <div className={sharedStyles.divider} />
 
         <div className={styles.statsRow}>
           <div className={styles.stat}>
@@ -85,18 +86,18 @@ export const GitHubRepoNode: FC<NodeProps<Node<CanvasNode>>> = ({ data }) => {
           </div>
         </div>
 
-        <div className={styles.divider} />
+        <div className={sharedStyles.divider} />
 
-        <div className={styles.footer}>
-          <div className={styles.footerItem}>
-            <GitBranchIcon size={11} className={styles.footerIcon} />
-            <span className={styles.footerValue}>
+        <div className={sharedStyles.metadata}>
+          <div className={sharedStyles.metaItem}>
+            <span className={sharedStyles.metaLabel}>Last commit</span>
+            <span className={sharedStyles.metaValue}>
               {defaultBranch ?? 'main'}
             </span>
           </div>
-          <div className={styles.footerItem}>
-            <span className={styles.footerLabel}>Last commit</span>
-            <span className={styles.footerValue}>{lastCommit}</span>
+          <div className={sharedStyles.metaItem}>
+            <span className={sharedStyles.metaLabel}>Last commit</span>
+            <span className={sharedStyles.metaValue}>{lastCommit}</span>
           </div>
         </div>
       </div>

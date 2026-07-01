@@ -1,4 +1,4 @@
-import { User, Group, MentionItem } from './mention';
+import { User, Group, MentionItem, isUser } from './mention';
 import { Tool } from './toolkit';
 
 export interface CommandPopupItem {
@@ -18,8 +18,8 @@ export const toolToCommandItem = (tool: Tool): CommandPopupItem => ({
 
 export const userToCommandItem = (user: User): CommandPopupItem => ({
   id: user.id.toString(),
-  name: user.displayName || user.username,
-  description: `@${user.username}`,
+  name: user.displayName,
+  description: `@${user.displayName}`,
   groupKey: 'users',
   groupName: 'Users',
 });
@@ -33,7 +33,7 @@ export const groupToCommandItem = (group: Group): CommandPopupItem => ({
 });
 
 export const mentionToCommandItem = (item: MentionItem): CommandPopupItem => {
-  if ('username' in item) {
+  if (isUser(item)) {
     return userToCommandItem(item);
   } else {
     return groupToCommandItem(item);

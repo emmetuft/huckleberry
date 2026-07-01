@@ -10,7 +10,6 @@ import { useNavigate } from 'react-router-dom';
 import styles from './Agents.module.css';
 import { useAppDispatch } from 'reducers';
 import { deleteCustomAgent } from 'reducers/agents/actions';
-import { blueTagStyle, defaultTagStyle, greenTagStyle } from 'constants/styles';
 import { Agent } from 'models/interfaces/agent';
 import { Avatar } from 'components/shared/Avatar/Avatar';
 import { isEmpty } from 'utils/misc';
@@ -43,9 +42,9 @@ export const AgentCard: FC<AgentCardProps> = ({ agent }) => {
         <div className={styles.agentDetails}>
           <h4>{agent.name}</h4>
           {isNew ? (
-            <Tag style={greenTagStyle}>New</Tag>
+            <Tag className="successTag">New</Tag>
           ) : isUpdated ? (
-            <Tag style={blueTagStyle}>Updated</Tag>
+            <Tag className="infoTag">Updated</Tag>
           ) : null}
         </div>
         <p>
@@ -59,11 +58,11 @@ export const AgentCard: FC<AgentCardProps> = ({ agent }) => {
             height={16}
           />
           <Tag
+            className="defaultTag"
             onClick={(e) => {
               e.stopPropagation();
               navigate(`/agents/${agent.id}/chat`);
             }}
-            style={defaultTagStyle}
           >
             <RocketLaunchIcon />
             Launch

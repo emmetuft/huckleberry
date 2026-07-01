@@ -1,9 +1,9 @@
 export interface User {
   id: number;
-  username: string;
-  displayName?: string;
+  displayName: string;
   email?: string;
   avatar?: string;
+  role?: string;
 }
 
 export interface Group {
@@ -16,9 +16,9 @@ export interface Group {
 export type MentionItem = User | Group;
 
 export const isUser = (item: MentionItem): item is User => {
-  return 'username' in item;
+  return 'displayName' in item;
 };
 
 export const isGroup = (item: MentionItem): item is Group => {
-  return 'name' in item && !('username' in item);
+  return 'name' in item && !('displayName' in item);
 };

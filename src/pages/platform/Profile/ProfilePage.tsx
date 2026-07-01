@@ -1,10 +1,11 @@
 import { FC, useState } from 'react';
-import { Button, Modal, Tabs, TabsProps } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import { AuthService } from 'services/auth';
+import { Button, Modal, Tabs, TabsProps } from 'antd';
+import styles from './ProfilePage.module.css';
 import { AccountsTab } from 'pages/platform/Profile/AccountsTab/AccountsTab';
 import { SettingsTab } from 'pages/platform/Profile/SettingsTab/SettingsTab';
 import { PersonaTab } from './PersonaTab/PersonaTab';
+import { AuthService } from 'services/auth';
 
 export const ProfilePage: FC = () => {
   const navigate = useNavigate();
@@ -39,9 +40,9 @@ export const ProfilePage: FC = () => {
   ];
 
   return (
-    <div className="platformPage">
+    <div className={`platformPage ${styles.profilePage}`}>
       <Tabs items={tabItems} />
-      <div style={{ marginTop: 24 }}>
+      <div className={styles.logoutButton}>
         <Button danger onClick={() => setLogoutModalOpen(true)}>
           Sign out
         </Button>

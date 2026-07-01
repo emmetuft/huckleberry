@@ -53,7 +53,7 @@ const personKey = (item: User | Group) =>
   `${isUser(item) ? 'user' : 'group'}-${item.id}`;
 
 const personLabel = (item: User | Group) =>
-  isUser(item) ? (item.displayName ?? item.username) : item.name;
+  isUser(item) ? item.displayName : item.name;
 
 const renderPrivacyNotice = (itemsAnd: string, itemsOr: string) => (
   <div className={styles.privacyNotice}>

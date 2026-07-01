@@ -2,7 +2,6 @@ import { FC } from 'react';
 import { FlowArrowIcon } from '@phosphor-icons/react';
 import { Tag } from 'antd';
 import styles from './Workflows.module.css';
-import { defaultTagStyle } from 'constants/styles';
 import { Workflow } from 'models/interfaces/workflow';
 import { Avatar } from 'components/shared/Avatar/Avatar';
 import { isEmpty } from 'utils/misc';
@@ -35,7 +34,7 @@ export const WorkflowCard: FC<WorkflowCardProps> = ({ workflow }) => {
         <div className={styles.workflowDetails}>
           <h4>{workflow.name}</h4>
           {isNew ? (
-            <Tag style={defaultTagStyle}>New</Tag>
+            <Tag className="defaultTag">New</Tag>
           ) : isUpdated ? (
             <Tag>Updated</Tag>
           ) : null}

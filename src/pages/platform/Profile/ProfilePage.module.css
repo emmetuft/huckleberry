@@ -1,2 +1,9 @@
 .profilePage {
+  position: relative;
+
+  .logoutButton {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
 }
