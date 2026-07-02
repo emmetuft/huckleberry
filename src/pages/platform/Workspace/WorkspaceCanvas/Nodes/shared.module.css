@@ -19,6 +19,20 @@
   margin: var(--space-xs) 0;
 }
 
+.hintTitle {
+  font-size: var(--font-sm);
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 var(--space-xs) 0;
+}
+
+.hintDescription {
+  font-size: var(--font-xs);
+  color: var(--grey-text);
+  line-height: 1.5;
+  margin: 0 0 var(--space-sm) 0;
+}
+
 .metadata {
   display: grid;
   grid-template-columns: 1fr 1fr;

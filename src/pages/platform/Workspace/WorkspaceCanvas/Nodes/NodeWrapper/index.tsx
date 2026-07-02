@@ -13,6 +13,7 @@ import {
   UserIcon,
 } from '@phosphor-icons/react';
 import styles from './index.module.css';
+import sharedStyles from '../shared.module.css';
 import { CanvasNodeType } from 'models/enums/nodeType';
 import { CustomHandle } from 'components/flow/Handle';
 import { MotionWrapper } from 'components/flow/MotionWrapper';
@@ -82,9 +83,21 @@ export const NodeWrapper: FC<{
         <TypeIcon size={12} weight="fill" />
         <span className={styles.typeLabel}>{label}</span>
       </div>
+      {!node.data && (
+        <>
+          {node.hint?.title && (
+            <p className={sharedStyles.hintTitle}>{node.hint.title}</p>
+          )}
+          {node.hint?.description && (
+            <p className={sharedStyles.hintDescription}>
+              {node.hint.description}
+            </p>
+          )}
+        </>
+      )}
       {children}
-      <CustomHandle id="top" type="target" position={Position.Top} />
-      <CustomHandle id="left" type="target" position={Position.Left} />
+      <CustomHandle id="top" type="source" position={Position.Top} />
+      <CustomHandle id="left" type="source" position={Position.Left} />
       <CustomHandle id="right" type="source" position={Position.Right} />
       <CustomHandle id="bottom" type="source" position={Position.Bottom} />
     </MotionWrapper>

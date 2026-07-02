@@ -86,14 +86,21 @@ export const AIAnalysisNode: FC<NodeProps<Node<CanvasNode>>> = ({
         </div>
 
         {status === AIAnalysisNodeStatus.NotStarted ? (
-          <Button
-            type="primary"
-            size="small"
-            icon={<SparkleIcon size={14} />}
-            onClick={handleRunAnalysis}
-          >
-            Run analysis
-          </Button>
+          <>
+            {data.hint?.description && (
+              <p className={sharedStyles.hintDescription}>
+                {data.hint.description}
+              </p>
+            )}
+            <Button
+              type="primary"
+              size="small"
+              icon={<SparkleIcon size={14} />}
+              onClick={handleRunAnalysis}
+            >
+              Run analysis
+            </Button>
+          </>
         ) : status === AIAnalysisNodeStatus.Running ? (
           <div className={styles.loadingState}>
             <Spin size="small" />
