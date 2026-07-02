@@ -15,19 +15,13 @@ import {
   staggerChildrenMotionProps,
   staggeredChildMotionProps,
 } from 'constants/styles';
+import { CANVAS_TEMPLATES, CanvasTemplate } from 'constants/canvasTemplates';
 import { platformRoutePaths, AppPage } from 'models/enums/appPage';
 import { CanvasCard } from './CanvasCard/CanvasCard';
+import { FilesSection } from './FilesSection/FilesSection';
 import { Avatar } from 'components/shared/Avatar/Avatar';
 
 const { TextArea } = Input;
-
-const CANVAS_TEMPLATES = [
-  'Competitive landscape',
-  'Churn analysis',
-  'OKR breakdown',
-  'Data pipeline map',
-  'Stakeholder map',
-];
 
 export const WorkspaceDetail: FC = () => {
   const dispatch = useDispatch();
@@ -39,7 +33,7 @@ export const WorkspaceDetail: FC = () => {
 
   const [prompt, setPrompt] = useState<string>('');
 
-  const handleCreate = (intent: string) => {
+  const handleCreate = (intent: string, template?: CanvasTemplate) => {
     if (!intent.trim()) return;
     const canvasId = `canvas-${Date.now()}`;
     dispatch(
@@ -47,6 +41,9 @@ export const WorkspaceDetail: FC = () => {
         id: canvasId,
         spaceId: workspaceId,
         intent: intent.trim(),
+        templateId: template?.id,
+        nodes: template?.nodes,
+        edges: template?.edges,
         ownerId: 1, // Replace with actual user ID
         ownerName: 'John Doe', // Replace with actual user name
       }),
@@ -62,7 +59,7 @@ export const WorkspaceDetail: FC = () => {
   return (
     <div className={styles.workspaceDetail}>
       <motion.div {...defaultMotionProps}>
-        <div className={styles.left}>
+        <div className={styles.side}>
           <motion.div {...staggerChildrenMotionProps}>
             <div className={styles.hero}>
               <div className={styles.heroIcon}>
@@ -82,21 +79,25 @@ export const WorkspaceDetail: FC = () => {
               </div>
             </div>
           </motion.div>
-          <div className={styles.promptSection}>
+          <div className={styles.section}>
             <TextArea
               autoSize={{ minRows: 3 }}
               placeholder="What do you want to explore?"
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
             />
+            <span className={styles.sectionLabel}>Start from a template</span>
             <div className={styles.templates}>
               {CANVAS_TEMPLATES.map((template) => (
                 <Button
-                  key={template}
-                  shape="round"
-                  onClick={() => handleCreate(template)}
+                  key={template.id}
+                  // shape="round"
+                  onClick={() => handleCreate(template.name, template)}
                 >
-                  {template}
+                  <span>{template.name}</span>
+                  <span className={styles.templateDescription}>
+                    {template.description}
+                  </span>
                 </Button>
               ))}
             </div>
@@ -117,7 +118,7 @@ export const WorkspaceDetail: FC = () => {
           )}
         </div>
       </motion.div>
-      <div className={styles.right}>
+      <div className={styles.side}>
         <div className={styles.section}>
           <span className={styles.sectionLabel}>Members</span>
           <div className={styles.memberList}>
@@ -130,6 +131,10 @@ export const WorkspaceDetail: FC = () => {
               />
             ))}
           </div>
+        </div>
+        <div className={styles.section}>
+          <span className={styles.sectionLabel}>Files</span>
+          <FilesSection />
         </div>
       </div>
     </div>
