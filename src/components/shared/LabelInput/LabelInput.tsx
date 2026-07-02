@@ -59,6 +59,7 @@ const FreeformTagInput: FC<{
         placeholder={placeholder}
         onChange={(e) => setInputVal(e.target.value)}
         onPressEnter={add}
+        onBlur={add}
       />
       {value.length > 0 && (
         <div className={styles.tagList}>

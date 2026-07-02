@@ -1,5 +1,4 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { RootState } from 'reducers';
 import { Persona } from 'models/interfaces/persona';
 import { StorageService } from 'services/storage';
 import { IdentityService } from 'services/identity';
@@ -9,28 +8,16 @@ export const authenticate = createAsyncThunk<any, void>(
   IdentityService.authenticate,
 );
 
-export const fetchUserPersona = createAsyncThunk<
-  Persona,
-  void,
-  { state: RootState }
->('app/fetchUserPersona', async (_, { getState }) => {
-  const { identity } = getState().app;
-  if (!identity) {
-    throw new Error('User identity is not available');
-  }
-  return StorageService.getUserPersona(identity.id);
-});
+export const fetchUserPersona = createAsyncThunk<Persona, void>(
+  'app/fetchUserPersona',
+  async () => {
+    return StorageService.getUserPersona();
+  },
+);
 
-export const saveUserPersona = createAsyncThunk<
-  Persona,
-  Persona,
-  { state: RootState }
->('app/saveUserPersona', async (persona: Persona, { getState }) => {
-  const state = getState() as { app: { identity?: any } };
-  const userId = state.app.identity?.userId;
-  if (!userId) {
-    throw new Error('User identity is not available');
-  }
-  const updatedPersona = await StorageService.saveUserPersona(userId, persona);
-  return updatedPersona;
-});
+export const saveUserPersona = createAsyncThunk<Persona, Persona>(
+  'app/saveUserPersona',
+  async (persona: Persona) => {
+    return StorageService.saveUserPersona(persona);
+  },
+);
