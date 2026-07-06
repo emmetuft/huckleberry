@@ -67,6 +67,13 @@ async function requestMagicLink(email: string): Promise<void> {
       body: JSON.stringify({ email }),
     }),
   );
+  if (res.status === 429) {
+    const retryAfter = res.headers.get('Retry-After');
+    const minutes = retryAfter ? Math.ceil(Number(retryAfter) / 60) : 15;
+    throw new Error(
+      `Too many attempts. Try again in ${minutes} minute${minutes !== 1 ? 's' : ''}.`,
+    );
+  }
   if (!res.ok && res.status !== 202) {
     throw new Error(`signin request failed: HTTP ${res.status}`);
   }
@@ -92,6 +99,13 @@ async function signup(params: SignupParams): Promise<void> {
       body: JSON.stringify(params),
     }),
   );
+  if (res.status === 429) {
+    const retryAfter = res.headers.get('Retry-After');
+    const minutes = retryAfter ? Math.ceil(Number(retryAfter) / 60) : 15;
+    throw new Error(
+      `Too many attempts. Try again in ${minutes} minute${minutes !== 1 ? 's' : ''}.`,
+    );
+  }
   if (!res.ok && res.status !== 202) {
     throw new Error(`signup failed: HTTP ${res.status}`);
   }
