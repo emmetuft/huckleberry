@@ -54,6 +54,26 @@ function withCsrf(init: RequestInit = {}): RequestInit {
   return { ...init, headers, credentials: 'same-origin' };
 }
 
+function tooManyAttemptsError(headers: Headers): Error {
+  const raw = headers.get('Retry-After');
+  let minutes = 15;
+  if (raw) {
+    const seconds = Number(raw);
+    if (Number.isFinite(seconds)) {
+      minutes = Math.ceil(seconds / 60);
+    } else {
+      const date = Date.parse(raw);
+      if (!Number.isNaN(date)) {
+        minutes = Math.ceil((date - Date.now()) / 60_000);
+      }
+    }
+  }
+  const clamped = Math.max(1, minutes);
+  return new Error(
+    `Too many attempts. Try again in ${clamped} minute${clamped !== 1 ? 's' : ''}.`,
+  );
+}
+
 /**
  * Send a sign-in magic-link. Server only sends if a user with this email
  * already exists; otherwise it silently no-ops. Returns 202 either way
@@ -67,13 +87,7 @@ async function requestMagicLink(email: string): Promise<void> {
       body: JSON.stringify({ email }),
     }),
   );
-  if (res.status === 429) {
-    const retryAfter = res.headers.get('Retry-After');
-    const minutes = retryAfter ? Math.ceil(Number(retryAfter) / 60) : 15;
-    throw new Error(
-      `Too many attempts. Try again in ${minutes} minute${minutes !== 1 ? 's' : ''}.`,
-    );
-  }
+  if (res.status === 429) throw tooManyAttemptsError(res.headers);
   if (!res.ok && res.status !== 202) {
     throw new Error(`signin request failed: HTTP ${res.status}`);
   }
@@ -99,13 +113,7 @@ async function signup(params: SignupParams): Promise<void> {
       body: JSON.stringify(params),
     }),
   );
-  if (res.status === 429) {
-    const retryAfter = res.headers.get('Retry-After');
-    const minutes = retryAfter ? Math.ceil(Number(retryAfter) / 60) : 15;
-    throw new Error(
-      `Too many attempts. Try again in ${minutes} minute${minutes !== 1 ? 's' : ''}.`,
-    );
-  }
+  if (res.status === 429) throw tooManyAttemptsError(res.headers);
   if (!res.ok && res.status !== 202) {
     throw new Error(`signup failed: HTTP ${res.status}`);
   }
