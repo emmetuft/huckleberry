@@ -83,7 +83,10 @@ describe('MCPService', () => {
 
       const result = await MCPService.getServers();
 
-      expect(fetchMock).toHaveBeenCalledWith('/api/mcp/servers', undefined);
+      expect(fetchMock).toHaveBeenCalledWith(
+        '/api/mcp/servers',
+        expect.objectContaining({ credentials: 'same-origin' }),
+      );
       expect(result).toEqual([mockServer]);
     });
 
@@ -97,7 +100,7 @@ describe('MCPService', () => {
 
       expect(fetchMock).toHaveBeenCalledWith(
         '/api/mcp/servers?enabled=true',
-        undefined,
+        expect.objectContaining({ credentials: 'same-origin' }),
       );
     });
   });
@@ -113,7 +116,7 @@ describe('MCPService', () => {
 
       expect(fetchMock).toHaveBeenCalledWith(
         '/api/mcp/servers/test-id',
-        undefined,
+        expect.objectContaining({ credentials: 'same-origin' }),
       );
       expect(result).toEqual(mockServer);
     });
@@ -240,7 +243,10 @@ describe('MCPService', () => {
 
       const result = await MCPService.getTools();
 
-      expect(fetchMock).toHaveBeenCalledWith('/api/mcp/tools', undefined);
+      expect(fetchMock).toHaveBeenCalledWith(
+        '/api/mcp/tools',
+        expect.objectContaining({ credentials: 'same-origin' }),
+      );
       expect(result).toEqual(mockTools);
     });
   });
