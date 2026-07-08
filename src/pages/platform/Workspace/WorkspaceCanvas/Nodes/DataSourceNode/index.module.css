@@ -1,0 +1,48 @@
+.name {
+  font-size: var(--font-md);
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.sourceId {
+  font-size: var(--font-xs);
+  color: var(--grey-text);
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  border-radius: var(--br-sm);
+  border: 1px solid var(--grey-border);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-xs);
+}
+
+.th {
+  background-color: var(--grey-bg-contrast);
+  color: var(--grey-text);
+  font-weight: 500;
+  text-align: left;
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--grey-border);
+  white-space: nowrap;
+}
+
+.td {
+  padding: 4px 8px;
+  color: var(--text);
+  border-bottom: 1px solid var(--grey-light);
+  white-space: nowrap;
+  max-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tr:last-child .td {
+  border-bottom: none;
+}

@@ -21,6 +21,7 @@ import { AccessEntry, Permission } from 'models/enums/permission';
 import { Agent } from 'models/interfaces/agent';
 import { Group, isUser, User } from 'models/interfaces/mention';
 import { DataSource } from 'models/interfaces/dataSource';
+import { Toolkit } from 'models/interfaces/toolkit';
 import { Avatar } from 'components/shared/Avatar/Avatar';
 import { DataSourceBrowser } from 'components/shared/DataSourceBrowser/DataSourceBrowser';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
@@ -39,8 +40,8 @@ interface AgentStepContentProps {
   currentStep: AgentStep;
   agentForm: Partial<Agent>;
   onFieldChange: (key: keyof Agent, value: any) => void;
-  selectedToolkitIds: string[];
-  onToolkitIdsChange: (ids: string[]) => void;
+  selectedToolkits: Toolkit[];
+  onToolkitsChange: (toolkits: Toolkit[]) => void;
   selectedDataSources: DataSource[];
   onDataSourcesChange: (dataSources: DataSource[]) => void;
   usersAndGroups: AccessEntry[];
@@ -52,7 +53,7 @@ const personKey = (item: User | Group) =>
   `${isUser(item) ? 'user' : 'group'}-${item.id}`;
 
 const personLabel = (item: User | Group) =>
-  isUser(item) ? (item.displayName ?? item.username) : item.name;
+  isUser(item) ? item.displayName : item.name;
 
 const renderPrivacyNotice = (itemsAnd: string, itemsOr: string) => (
   <div className={styles.privacyNotice}>
@@ -70,8 +71,8 @@ export const AgentStepContent: FC<AgentStepContentProps> = ({
   currentStep,
   agentForm,
   onFieldChange,
-  selectedToolkitIds,
-  onToolkitIdsChange,
+  selectedToolkits,
+  onToolkitsChange,
   selectedDataSources,
   onDataSourcesChange,
   usersAndGroups,
@@ -315,9 +316,8 @@ export const AgentStepContent: FC<AgentStepContentProps> = ({
             </p>
             <div className={labelInputStyles.inputWrapper}>
               <ToolBrowser
-                mode="toolkit"
-                selectedToolkitIds={selectedToolkitIds}
-                onToolkitIdsChange={onToolkitIdsChange}
+                selectedToolkits={selectedToolkits}
+                onToolkitsChange={onToolkitsChange}
                 height={400}
               />
             </div>

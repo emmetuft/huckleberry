@@ -287,6 +287,13 @@ export const Nav: FC<NavProps> = ({}) => {
               key: space.id,
               icon: <FolderIcon size={iconSize} />,
               label: space.name,
+              onClick: () =>
+                navigate(
+                  platformRoutePaths[AppPage.WORKSPACE_DETAIL].replace(
+                    ':workspaceId',
+                    space.id,
+                  ),
+                ),
             }),
           )}
         </div>

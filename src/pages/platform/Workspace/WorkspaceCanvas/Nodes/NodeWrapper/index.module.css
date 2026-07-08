@@ -1,0 +1,19 @@
+.nodeWrapper {
+  background-color: var(--background);
+  box-shadow: var(--box-shadow);
+  border: 1px solid var(--grey-light);
+}
+
+.typeHeader {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: var(--space-sm);
+}
+
+.typeLabel {
+  font-size: var(--font-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}

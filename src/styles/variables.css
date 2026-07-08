@@ -29,6 +29,10 @@
   --node-blue: #2792c7;
   --node-purple: #7b3fe4;
   --node-yellow: #e6bf3e;
+  --node-orange: #e07a30;
+  --node-teal: #0e9f8e;
+  --node-indigo: #4f46e5;
+  --node-cyan: #0891b2;
 
   /* Spacing + Sizing */
   --default-page-padding: 84px 280px 45px 76px;
@@ -77,6 +81,10 @@
   --node-blue: #38bdf8;
   --node-purple: #c084fc;
   --node-yellow: #facc15;
+  --node-orange: #fb923c;
+  --node-teal: #2dd4bf;
+  --node-indigo: #818cf8;
+  --node-cyan: #22d3ee;
 }
 
 @media (width <= 768px) {

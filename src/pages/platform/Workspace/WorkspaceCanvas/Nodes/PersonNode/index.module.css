@@ -1,0 +1,51 @@
+.avatarSection {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.identity {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.name {
+  font-size: var(--font-md);
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.role {
+  font-size: var(--font-xs);
+  color: var(--grey-text);
+}
+
+.detail {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+}
+
+.detailLabel {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--grey-text);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  width: 36px;
+  flex-shrink: 0;
+}
+
+.detailValue {
+  font-size: var(--font-xs);
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

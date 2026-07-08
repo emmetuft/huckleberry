@@ -1,0 +1,49 @@
+.name {
+  font-size: var(--font-xs);
+  font-weight: 500;
+  color: var(--grey-text);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.valueSection {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.unit {
+  font-size: var(--font-sm);
+  font-weight: 500;
+  color: var(--grey-text);
+}
+
+.change {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: var(--font-xs);
+  font-weight: 600;
+}
+
+.positive {
+  color: var(--node-green);
+}
+
+.negative {
+  color: var(--node-red);
+}
+
+.changePeriod {
+  font-weight: 400;
+  color: var(--grey-text);
+  margin-left: 2px;
+}

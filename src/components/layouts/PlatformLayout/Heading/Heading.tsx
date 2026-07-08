@@ -19,6 +19,8 @@ const hiddenPages = [
   AppPage.PROJECT_DETAIL,
   AppPage.SESSION,
   AppPage.WORKFLOW_DETAIL,
+  AppPage.WORKSPACE_DETAIL,
+  AppPage.WORKSPACE_CANVAS,
 ];
 
 interface HeadingProps {}

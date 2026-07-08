@@ -1,0 +1,20 @@
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.name {
+  font-size: var(--font-md);
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.2;
+  flex: 1;
+}
+
+.description {
+  font-size: var(--font-xs);
+  color: var(--grey-text);
+  line-height: 1.4;
+}

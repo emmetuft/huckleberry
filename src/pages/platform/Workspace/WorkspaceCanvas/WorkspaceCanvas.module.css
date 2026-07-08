@@ -1,0 +1,72 @@
+.workspaceCanvas {
+  position: relative;
+  display: flex;
+  height: 100%;
+
+  .header {
+    position: absolute;
+    top: var(--space-xl);
+    left: var(--space-xl);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-lg);
+    background-color: var(--grey-bg);
+    border-radius: 30px;
+    border: 1px solid var(--grey-light);
+    z-index: 1000;
+    max-width: 600px;
+
+    .backButton {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+      padding: 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--grey-text);
+      font-size: var(--font-xs);
+      font-weight: 500;
+
+      &:hover {
+        color: var(--text);
+      }
+    }
+
+    .headerDivider {
+      color: var(--grey-text);
+      font-size: var(--font-xs);
+    }
+
+    .canvasIntent {
+      font-size: var(--font-xs);
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .infiniteCanvas {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+  }
+
+  .controlPanel {
+    position: absolute;
+    bottom: var(--space-xl);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    width: 300px;
+    padding: var(--space-sm) var(--space-md);
+    background-color: var(--grey-bg);
+    border-radius: 30px;
+    border: 1px solid var(--grey-light);
+    z-index: 1000;
+  }
+}

@@ -9,7 +9,7 @@ import { selectLoading, selectSessionId } from 'reducers/chat/slice';
 import { AppPage } from 'models/enums/appPage';
 import { InputCommand } from 'models/enums/inputCommand';
 import { DataSource } from 'models/interfaces/dataSource';
-import { MentionItem } from 'models/interfaces/mention';
+import { isUser, MentionItem } from 'models/interfaces/mention';
 import { Toolkit } from 'models/interfaces/toolkit';
 import { CommandPopup } from './CommandPopup/CommandPopup';
 import { ContextItems } from './ContextItems/ContextItems';
@@ -60,8 +60,8 @@ export const IntentInput: FC<IntentInputProps> = ({ placeholder, animate }) => {
     removeOnSelect: false,
     popupRef,
     replaceWith: (item) => {
-      if ('username' in item) {
-        const name = item.displayName || item.username;
+      if (isUser(item)) {
+        const name = item.displayName;
         return `${InputCommand.MENTION}${name.replace(/\s+/g, '')}`;
       } else {
         return `${InputCommand.MENTION}${item.name.replace(/\s+/g, '')}`;

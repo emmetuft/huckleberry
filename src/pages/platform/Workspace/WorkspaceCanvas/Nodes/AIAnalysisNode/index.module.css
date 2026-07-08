@@ -1,0 +1,76 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-sm);
+
+  .title {
+    font-size: var(--font-md);
+    font-weight: 600;
+    flex: 1;
+  }
+}
+
+.loadingState {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md) 0;
+
+  .loadingText {
+    color: var(--grey-text);
+  }
+}
+
+.summary {
+  font-size: var(--font-xs);
+  color: var(--grey-text);
+  line-height: 1.4;
+}
+
+.confidenceSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+
+  .confidenceHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .confidenceLabel {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--grey-text);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .confidenceValue {
+      font-size: var(--font-xs);
+      font-weight: 600;
+    }
+  }
+}
+
+.insights {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+
+  .insightItem {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+
+    .insightIcon {
+      color: var(--node-cyan);
+      flex-shrink: 0;
+    }
+
+    .insightText {
+      font-size: var(--font-xs);
+      line-height: 1.3;
+    }
+  }
+}

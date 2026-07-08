@@ -1,16 +1,16 @@
 import { RefObject, useState, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { selectUsers, selectGroups } from 'reducers/people/slice';
+import { selectAllTools } from 'reducers/toolkits/selectors';
 import { InputCommand } from 'models/enums/inputCommand';
 import {
   CommandPopupItem,
   toolToCommandItem,
   mentionToCommandItem,
 } from 'models/interfaces/commandPopup';
-import { MentionItem } from 'models/interfaces/mention';
+import { isUser, MentionItem } from 'models/interfaces/mention';
 import { Tool } from 'models/interfaces/toolkit';
 import { setCaretPosition } from 'utils/dom';
-import { selectAllTools } from 'reducers/toolkits/selectors';
 
 export interface CommandConfig<T = any> {
   /** The trigger character (e.g., '/' or '@') */
@@ -77,8 +77,8 @@ export const useCommandPopup = <T = any>(
   ): MentionItem[] => {
     const searchLower = searchQuery.toLowerCase();
     return items.filter((item) => {
-      if ('username' in item) {
-        return item.displayName?.toLowerCase().includes(searchLower);
+      if (isUser(item)) {
+        return item.displayName.toLowerCase().includes(searchLower);
       } else {
         return item.name.toLowerCase().includes(searchLower);
       }

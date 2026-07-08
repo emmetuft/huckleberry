@@ -15,6 +15,7 @@ import { AGENT_FORM_FIELDS, AgentStep } from 'constants/agent';
 import { AccessEntry } from 'models/enums/permission';
 import { Agent } from 'models/interfaces/agent';
 import { DataSource } from 'models/interfaces/dataSource';
+import { Toolkit } from 'models/interfaces/toolkit';
 import { Chat } from '../Chat/Chat';
 import { AgentStepContent } from './AgentStepContent';
 
@@ -29,7 +30,7 @@ export const AgentEdit: FC = () => {
 
   const [currentStep, setCurrentStep] = useState<AgentStep>(AgentStep.Persona);
   const [agentForm, setAgentForm] = useState<AgentFormState>({});
-  const [selectedToolkitIds, setSelectedToolkitIds] = useState<string[]>([]);
+  const [selectedToolkits, setSelectedToolkits] = useState<Toolkit[]>([]);
   const [selectedDataSources, setSelectedDataSources] = useState<DataSource[]>(
     [],
   );
@@ -54,10 +55,11 @@ export const AgentEdit: FC = () => {
   useEffect(() => {
     if (agent) {
       setAgentForm(agent);
-      setSelectedToolkitIds(agent.toolkitIds ?? []);
+      // TODO: Fetch toolkits by IDs
+      // setSelectedToolkitIds(agent.toolkitIds ?? []);
     } else {
       setAgentForm({});
-      setSelectedToolkitIds([]);
+      setSelectedToolkits([]);
     }
     setCurrentStep(AgentStep.Persona);
   }, [agent]);
@@ -72,7 +74,7 @@ export const AgentEdit: FC = () => {
   const isPersonaComplete = AGENT_FORM_FIELDS.every((field) =>
     Boolean(agentForm[field.key]),
   );
-  const isToolkitSelected = selectedToolkitIds.length > 0;
+  const isToolkitSelected = selectedToolkits.length > 0;
 
   const hasChanges = useMemo(() => {
     if (isNewAgent) return true;
@@ -81,10 +83,10 @@ export const AgentEdit: FC = () => {
       (field) => agentForm[field.key] !== agent[field.key],
     );
     const toolkitsChanged =
-      JSON.stringify([...selectedToolkitIds].sort()) !==
+      JSON.stringify([...selectedToolkits].sort()) !==
       JSON.stringify([...(agent.toolkitIds ?? [])].sort());
     return formChanged || toolkitsChanged;
-  }, [agentForm, selectedToolkitIds, agent, isNewAgent]);
+  }, [agentForm, selectedToolkits, agent, isNewAgent]);
 
   const isContinueDisabled =
     currentStep === AgentStep.Persona && !isPersonaComplete;
@@ -119,7 +121,7 @@ export const AgentEdit: FC = () => {
         prompt,
         systemMessage,
         model,
-        toolkitIds: selectedToolkitIds,
+        toolkitIds: selectedToolkits.map((tk) => tk.toolkitId),
         context,
         settings: agentForm.settings,
       }),
@@ -197,8 +199,8 @@ export const AgentEdit: FC = () => {
             currentStep={currentStep}
             agentForm={agentForm}
             onFieldChange={updateField}
-            selectedToolkitIds={selectedToolkitIds}
-            onToolkitIdsChange={setSelectedToolkitIds}
+            selectedToolkits={selectedToolkits}
+            onToolkitsChange={setSelectedToolkits}
             selectedDataSources={selectedDataSources}
             onDataSourcesChange={setSelectedDataSources}
             usersAndGroups={usersAndGroups}

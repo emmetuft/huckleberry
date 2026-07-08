@@ -35,6 +35,8 @@ export enum AppPage {
   SESSION = 'session',
   WORKFLOWS = 'workflows',
   WORKFLOW_DETAIL = 'workflow_detail',
+  WORKSPACE_DETAIL = 'workspace_detail',
+  WORKSPACE_CANVAS = 'workspace_canvas',
 }
 
 export const AppPageTitle: Record<string, string> = {
@@ -57,6 +59,8 @@ export const AppPageTitle: Record<string, string> = {
   [AppPage.SESSION]: 'Session',
   [AppPage.WORKFLOWS]: 'Workflows',
   [AppPage.WORKFLOW_DETAIL]: 'Workflow',
+  [AppPage.WORKSPACE_DETAIL]: 'Space',
+  [AppPage.WORKSPACE_CANVAS]: 'Canvas',
 };
 
 export const AppPageSubtitle: Record<string, string> = {
@@ -106,6 +110,8 @@ export const platformRoutePaths: Record<AppPage, string> = {
   [AppPage.SESSION]: '/sessions/:sessionId',
   [AppPage.WORKFLOWS]: '/workflows',
   [AppPage.WORKFLOW_DETAIL]: '/workflows/:workflowId',
+  [AppPage.WORKSPACE_DETAIL]: '/workspace/:workspaceId',
+  [AppPage.WORKSPACE_CANVAS]: '/workspace/:workspaceId/:canvasId',
 };
 
 export interface NavSubPageEntry {

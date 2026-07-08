@@ -3,9 +3,9 @@ import { Persona } from 'models/interfaces/persona';
 
 const PERSONA_API_BASE = '/api/persona';
 
-const getUserPersona = async (userId: number): Promise<Persona> => {
+const getUserPersona = async (): Promise<Persona> => {
   try {
-    const response = await apiFetch(`${PERSONA_API_BASE}/${userId}`, {
+    const response = await apiFetch(PERSONA_API_BASE, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -30,12 +30,9 @@ const getUserPersona = async (userId: number): Promise<Persona> => {
   }
 };
 
-const saveUserPersona = async (
-  userId: number,
-  userPersona: Persona,
-): Promise<Persona> => {
+const saveUserPersona = async (userPersona: Persona): Promise<Persona> => {
   try {
-    const response = await apiFetch(`${PERSONA_API_BASE}/${userId}`, {
+    const response = await apiFetch(PERSONA_API_BASE, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

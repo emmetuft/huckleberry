@@ -1,0 +1,20 @@
+.fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+  padding: var(--space-md) 0;
+}
+
+.fullWidth {
+  grid-column: 1 / -1;
+}
+
+.halfWidth {
+  grid-column: span 1;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+}

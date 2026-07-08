@@ -1,6 +1,6 @@
 import { FC, useCallback, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Button, Drawer, Input, List, Popover, Select } from 'antd';
+import { Button, Drawer, Input, Popover, Select } from 'antd';
 import { ArrowRightIcon } from '@phosphor-icons/react';
 import styles from './GraphExploration.module.css';
 import { selectGraphData, selectNodeLabels } from 'reducers/ontology/slice';
@@ -106,10 +106,9 @@ export const NodeDrawer: FC<NodeDrawerProps> = ({
           </div>
           <div className={styles.section}>
             <h4>Relationships{` (${relatedLinks.length})`}</h4>
-            <List
-              dataSource={relatedLinks}
-              renderItem={(link) => (
-                <List.Item>
+            <div>
+              {relatedLinks.map((link) => (
+                <div key={link.id} className={styles.relationshipItem}>
                   <span
                     style={{
                       color: getNodeColor(link.source),
@@ -133,13 +132,13 @@ export const NodeDrawer: FC<NodeDrawerProps> = ({
                             </span>
                           </div>
                         ))}
+                        {Object.keys(link.properties).length === 0 && (
+                          <span className={styles.noProperties}>
+                            No properties
+                          </span>
+                        )}
                       </div>
                     }
-                    styles={{
-                      body: {
-                        backgroundColor: 'var(--background)',
-                      },
-                    }}
                   >
                     <div className={styles.relationship}>{link.type}</div>
                   </Popover>
@@ -154,9 +153,9 @@ export const NodeDrawer: FC<NodeDrawerProps> = ({
                   >
                     {getNodeDisplayName(link.target)}
                   </span>
-                </List.Item>
-              )}
-            />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       );
@@ -262,7 +261,7 @@ export const NodeDrawer: FC<NodeDrawerProps> = ({
         )
       }
       mask={false}
-      width={500}
+      size={500}
       open={drawerOpen}
       onClose={() => setDrawerOpen(false)}
       afterOpenChange={(open) => {

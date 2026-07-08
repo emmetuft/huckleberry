@@ -34,18 +34,3 @@ export const staggeredChildMotionProps = {
   },
   transition: { duration: 0.3, ease: 'easeOut' as Easing },
 };
-
-export const defaultTagStyle = {
-  color: 'var(--purple)',
-  backgroundColor: 'var(--purple-light)',
-};
-
-export const greenTagStyle = {
-  color: 'var(--success-icon)',
-  backgroundColor: 'var(--success-bg)',
-};
-
-export const blueTagStyle = {
-  color: 'var(--info-icon)',
-  backgroundColor: 'var(--info-bg)',
-};

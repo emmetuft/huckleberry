@@ -6,7 +6,7 @@ import { Button, Spin, Tag } from 'antd';
 import { FlowArrowIcon, PlusIcon } from '@phosphor-icons/react';
 import styles from './Workflows.module.css';
 import { selectIdentity } from 'reducers/app/slice';
-import { defaultMotionProps, defaultTagStyle } from 'constants/styles';
+import { defaultMotionProps } from 'constants/styles';
 import { FEATURED_WORKFLOWS } from 'constants/workflows';
 import { Workflow } from 'models/interfaces/workflow';
 import { PageControls } from 'components/shared/PageControls/PageControls';
@@ -110,7 +110,7 @@ export const Workflows: FC = () => {
               <div className={styles.featuredSection}>
                 <div className={styles.heading}>
                   <h3>Featured</h3>
-                  <Tag style={defaultTagStyle}>Beta</Tag>
+                  <Tag className="defaultTag">Beta</Tag>
                 </div>
                 <div className={styles.featuredItems}>
                   {FEATURED_WORKFLOWS.map((workflow) => (

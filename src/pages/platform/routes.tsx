@@ -26,6 +26,8 @@ import { Session } from './Session/Session';
 import { Workflows } from './Workflows/Workflows';
 import { WorkflowDetail } from './Workflows/WorkflowDetail/WorkflowDetail';
 import { Workspace } from './Workspace/Workspace';
+import { WorkspaceDetail } from './Workspace/WorkspaceDetail/WorkspaceDetail';
+import { WorkspaceCanvas } from './Workspace/WorkspaceCanvas/WorkspaceCanvas';
 import { getBentoLayout } from 'config/bentoConfig';
 
 // Home page component wrapper
@@ -131,6 +133,14 @@ export const platformRoutes: RouteObject[] = [
           {
             path: platformRoutePaths[AppPage.WORKFLOW_DETAIL],
             element: <WorkflowDetail />,
+          },
+          {
+            path: platformRoutePaths[AppPage.WORKSPACE_DETAIL],
+            element: <WorkspaceDetail />,
+          },
+          {
+            path: platformRoutePaths[AppPage.WORKSPACE_CANVAS],
+            element: <WorkspaceCanvas />,
           },
         ],
       },

@@ -1,0 +1,36 @@
+.filesSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+
+  .emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+  }
+}
+
+.fileCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+
+  .top {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+
+    .fileName {
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .fileDetails {
+    font-size: var(--font-xs);
+    color: var(--grey-text);
+  }
+}

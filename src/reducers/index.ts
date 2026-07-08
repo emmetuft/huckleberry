@@ -12,6 +12,7 @@ import WorkspaceReducer from './workspace/slice';
 import DatasourceReducer from './datasource/slice';
 import AgentsReducer from './agents/slice';
 //-- importRef
+import SpacesReducer from './spaces/slice';
 import { useDispatch } from 'react-redux';
 import { errorToastMiddleware } from 'middleware/errorToast';
 
@@ -26,6 +27,7 @@ export const store = configureStore({
     people: PeopleReducer,
     toolkits: ToolkitsReducer,
     workspace: WorkspaceReducer,
+    spaces: SpacesReducer,
     //-- reducerRef
   },
   middleware: (getDefaultMiddleware) =>
