@@ -15,7 +15,8 @@ const getUserPersona = async (): Promise<Persona | null> => {
     );
   }
 
-  const personas: Persona[] = await response.json();
+  const result = await response.json();
+  const personas: Persona[] = result.data ?? result;
   return personas[0] ?? null;
 };
 
@@ -46,7 +47,8 @@ const saveUserPersona = async (persona: Persona): Promise<Persona> => {
     );
   }
 
-  return response.json() as Promise<Persona>;
+  const result = await response.json();
+  return (result.data ?? result) as Persona;
 };
 
 export const StorageService = {
