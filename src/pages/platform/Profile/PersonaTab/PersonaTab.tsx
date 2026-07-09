@@ -4,6 +4,7 @@ import { Button } from 'antd';
 import styles from './PersonaTab.module.css';
 import { useAppDispatch } from 'reducers';
 import { selectPersona } from 'reducers/app/slice';
+import { defaultPersona } from 'constants/persona';
 import { saveUserPersona } from 'reducers/app/actions';
 import { Persona } from 'models/interfaces/persona';
 import { LabelInput } from 'components/shared/LabelInput/LabelInput';
@@ -20,7 +21,7 @@ import {
 
 export const PersonaTab: FC = () => {
   const dispatch = useAppDispatch();
-  const persona = useSelector(selectPersona);
+  const persona = { ...defaultPersona, ...useSelector(selectPersona) };
 
   const [expandedSection, setExpandedSection] = useState<PersonaSection | null>(
     null,
