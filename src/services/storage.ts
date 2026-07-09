@@ -22,9 +22,17 @@ const getUserPersona = async (): Promise<Persona | null> => {
 const saveUserPersona = async (persona: Persona): Promise<Persona> => {
   const isNew = !persona.id;
   const url = isNew ? PERSONAS_API : `${PERSONAS_API}/${persona.id}`;
+  // Strip server-managed fields that are not in UpdatePersonaDto
+  const {
+    id: _id,
+    isDefault: _isd,
+    createdAt: _ca,
+    updatedAt: _ua,
+    ...update
+  } = persona as any;
   const body = isNew
     ? { ...persona, name: persona.role || 'My Persona' }
-    : persona;
+    : update;
 
   const response = await apiFetch(url, {
     method: isNew ? 'POST' : 'PUT',
