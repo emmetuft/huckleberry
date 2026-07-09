@@ -36,12 +36,13 @@ describe('StorageService', () => {
     updatedAt: '2026-07-09T00:00:00.000Z',
   };
 
+  // The BFF wraps all JSON responses in a { success, data } envelope
   function mockResponse(body: unknown, ok = true) {
     return {
       ok,
       status: ok ? 200 : 400,
       statusText: ok ? 'OK' : 'Bad Request',
-      json: async () => body,
+      json: async () => (ok ? { success: true, data: body } : body),
     };
   }
 
