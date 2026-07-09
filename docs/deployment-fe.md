@@ -4,6 +4,41 @@ End-to-end runbook for getting the `huckleberry` SPA running in AWS, with a CD p
 
 **Prereq:** laptop-side AWS access set up per the BFF's **`docs/aws-local-setup.md`** (AWS CLI, SSO profile). You should be able to run `aws sts get-caller-identity` against the target account before proceeding.
 
+---
+
+## Dev3 container deployment (EKS)
+
+Dev3 runs the frontend as a Docker container in EKS, not via S3/CloudFront. The container is served by nginx alongside the BFF pod.
+
+### Deploy flow
+
+1. **Merge a PR to `master`** — the `build-huckleberry-ui.yml` workflow triggers on push to `master` for changes under `src/`, `public/`, `package.json`, `pnpm-lock.yaml`, `Dockerfile`, `nginx.conf`, or `vite.config.*`.
+
+2. **Note the image tag** — the workflow tags the image `YYYY-MM-DD-bN` (e.g. `2026-07-08-b7`). Find it in the GitHub Actions run output or in ECR.
+
+3. **Update gitops** — in `~/dev/huckleberry-gitops`, update `instances/dev-ai/dev3/values.yaml`:
+   ```yaml
+   frontend:
+     image:
+       tag: "2026-07-08-b7"   # replace with actual tag
+   ```
+   Commit and push to the active feature branch, then merge to `master`.
+
+4. **ArgoCD syncs** — the dev3 app auto-syncs within a few minutes. The old pod is replaced rolling; no manual restart needed unless the sync is stalled.
+
+### Verify
+
+```bash
+# Health check — returns {"status":"ok"} from the BFF
+curl https://huckleberry-dev.domotech.io/health
+
+# Or check the running image tag via kubectl (requires cluster access)
+kubectl get pods -n <namespace> -o jsonpath='{.items[*].spec.containers[*].image}' \
+  | tr ' ' '\n' | grep huckleberry-frontend
+```
+
+---
+
 **Sibling doc:** `~/dev/huckleberry-server/docs/deployment-bff.md` — same shape, for the BFF.
 
 ## What you're standing up
