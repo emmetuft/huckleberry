@@ -1,10 +1,10 @@
 import { apiFetch } from 'services/headers';
 import { Persona } from 'models/interfaces/persona';
 
-const PERSONA_API_BASE = '/api/persona';
+const PERSONAS_API = '/api/personas';
 
 const getUserPersona = async (): Promise<Persona | null> => {
-  const response = await apiFetch(PERSONA_API_BASE, {
+  const response = await apiFetch(PERSONAS_API, {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
   });
@@ -15,14 +15,21 @@ const getUserPersona = async (): Promise<Persona | null> => {
     );
   }
 
-  return response.json() as Promise<Persona | null>;
+  const personas: Persona[] = await response.json();
+  return personas[0] ?? null;
 };
 
-const saveUserPersona = async (userPersona: Persona): Promise<Persona> => {
-  const response = await apiFetch(PERSONA_API_BASE, {
-    method: 'POST',
+const saveUserPersona = async (persona: Persona): Promise<Persona> => {
+  const isNew = !persona.id;
+  const url = isNew ? PERSONAS_API : `${PERSONAS_API}/${persona.id}`;
+  const body = isNew
+    ? { ...persona, name: persona.role || 'My Persona' }
+    : persona;
+
+  const response = await apiFetch(url, {
+    method: isNew ? 'POST' : 'PUT',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(userPersona),
+    body: JSON.stringify(body),
   });
 
   if (!response.ok) {
