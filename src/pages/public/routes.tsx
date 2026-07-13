@@ -15,15 +15,14 @@ export const publicRoutes: RouteObject[] = [
   {
     element: <PublicLayout />,
     children: [
-      // Routes a signed-in visitor shouldn't see — bounce them to /workspace
-      // before rendering the marketing landing or the sign-in form.
+      {
+        path: publicRoutePaths[PublicPage.LANDING],
+        element: <Landing />,
+      },
+      // Redirect signed-in users away from login back to /workspace.
       {
         element: <RedirectIfAuthenticated />,
         children: [
-          {
-            path: publicRoutePaths[PublicPage.LANDING],
-            element: <Landing />,
-          },
           {
             path: publicRoutePaths[PublicPage.LOGIN],
             element: <Login />,

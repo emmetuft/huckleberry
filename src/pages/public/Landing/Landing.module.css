@@ -1,71 +1,60 @@
 .landing {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  gap: 100px;
   overflow-x: hidden;
 
-  .title {
-    font-family: Inter, sans-serif;
-    font-weight: 600;
-    font-size: 12rem;
-    color: var(--grey-dark);
-    margin-bottom: var(--space-lg);
-  }
-
-  .subtitle {
-    font-size: var(--font-lg);
-    color: var(--grey-text);
-    margin-bottom: var(--space-lg);
-  }
-
-  .section {
+  .hero {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-lg);
-    margin: 32px 0;
 
-    .sectionHeading {
-      text-align: center;
-
-      .sectionTitle {
-        font-weight: 500;
-        font-size: 48px;
-        color: var(--grey-dark);
-      }
-
-      .sectionTitle:nth-child(2) {
-        color: var(--purple);
-      }
+    .title {
+      font-family: Inter, sans-serif;
+      font-weight: 500;
+      font-size: 14rem;
+      color: var(--grey-dark);
+      margin-bottom: var(--space-lg);
     }
 
-    .graphs {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: var(--space-sm);
+    .subtitle {
+      font-size: 26px;
+      color: var(--grey-text);
+      margin-bottom: var(--space-3xl);
+    }
+  }
 
-      .graphContainer {
-        display: flex;
-        flex-direction: column;
-        width: 30vw;
-        height: 500px;
-        padding: 32px;
-        border: 1px solid black;
-        border-radius: 30px;
-        box-sizing: border-box;
+  .btnWrapper {
+    display: flex;
+    gap: var(--space-lg);
+    margin-bottom: var(--space-3xl);
+  }
 
-        h2 {
-          margin-bottom: 10px;
-          font-size: 30px;
-          font-weight: 500;
-        }
+  .section {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: var(--space-3xl);
+    width: 100vw;
+    padding: 0 150px;
+    box-sizing: border-box;
 
-        h4 {
-          font-size: 18px;
-          font-weight: 500;
-          color: var(--grey-text);
-        }
-      }
+    .sectionContent {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3xl);
+    }
+
+    .sectionTitle {
+      max-width: 50vw;
+      font-size: 90px;
+      font-weight: 500;
+      line-height: 1;
+    }
+
+    .sectionSubtitle {
+      max-width: 40vw;
+      font-size: 26px;
+      color: var(--grey-text);
     }
   }
 }
@@ -80,33 +69,6 @@
       font-size: var(--font-xs);
       max-width: 80vw;
       text-align: center;
-    }
-
-    .section {
-      .sectionHeading {
-        .sectionTitle {
-          font-size: 30px;
-        }
-      }
-
-      .graphs {
-        grid-template-columns: 1fr;
-        gap: var(--space-lg);
-
-        .graphContainer {
-          width: 70vw;
-          height: 300px;
-          padding: 20px;
-
-          h2 {
-            font-size: 20px;
-          }
-
-          h4 {
-            font-size: 14px;
-          }
-        }
-      }
     }
   }
 }

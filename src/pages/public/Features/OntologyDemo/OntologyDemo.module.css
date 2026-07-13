@@ -1,0 +1,11 @@
+.container {
+  width: 100%;
+}
+
+.svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgb(0 0 0 / 18%);
+}
