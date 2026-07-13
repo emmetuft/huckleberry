@@ -1,0 +1,139 @@
+.panel {
+  width: 100%;
+  border-radius: var(--br-lg);
+  background: #141414;
+  border: 1px solid #2a2a2a;
+  overflow: hidden;
+  box-shadow: 0 24px 64px rgb(0 0 0 / 20%);
+}
+
+.header {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-md);
+  border-bottom: 1px solid #222;
+  background: #0f0f0f;
+  color: var(--grey-text);
+}
+
+.messages {
+  padding: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 220px;
+}
+
+.userMsg {
+  align-self: flex-end;
+  background: var(--purple);
+  color: white;
+  padding: 9px 13px;
+  border-radius: 16px 16px 3px;
+  font-size: 13px;
+  line-height: 1.4;
+  max-width: 82%;
+}
+
+.thinking {
+  display: flex;
+  gap: 4px;
+  padding: 6px 10px;
+  align-self: flex-start;
+}
+
+.dot1,
+.dot2,
+.dot3 {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #555;
+  animation: blink 1.2s ease-in-out infinite;
+}
+
+.dot2 {
+  animation-delay: 0.2s;
+}
+
+.dot3 {
+  animation-delay: 0.4s;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+.steps {
+  background: #1c1c1c;
+  border: 1px solid #2a2a2a;
+  border-radius: var(--br-md);
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.stepIcon {
+  color: #4caf50;
+  flex-shrink: 0;
+}
+
+.stepTitle {
+  flex: 1;
+  font-size: 11.5px;
+  color: #aaa;
+}
+
+.stepDuration {
+  font-size: 10px;
+  color: #555;
+}
+
+.response {
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+}
+
+.avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--purple);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.responseLines {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.responseLine {
+  font-size: 12.5px;
+  color: #ccc;
+  line-height: 1.5;
+  margin: 0;
+}

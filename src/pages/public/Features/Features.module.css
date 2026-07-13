@@ -1,14 +1,57 @@
 .features {
-  padding: 4rem 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 120px;
+  overflow-x: hidden;
+  padding-bottom: 120px;
+}
 
-  h1 {
-    margin-bottom: var(--space-xl);
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: 120px;
+}
+
+.cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3xl);
+  text-align: center;
+  padding: 0 24px;
+}
+
+.ctaTitle {
+  font-size: 64px;
+  font-weight: 500;
+  line-height: 1.1;
+  color: var(--grey-dark);
+  margin: 0;
+}
+
+.ctaSubtitle {
+  font-size: 18px;
+  color: var(--grey-text);
+  max-width: 480px;
+  margin: 0;
+}
+
+.ctaBtns {
+  display: flex;
+  gap: var(--space-lg);
+}
+
+@media (width <= 768px) {
+  .features {
+    gap: 80px;
+    padding-bottom: 80px;
   }
 
-  p {
-    font-size: 1.1rem;
-    color: var(--grey-text);
+  .sections {
+    gap: 80px;
+  }
+
+  .ctaTitle {
+    font-size: 36px;
   }
 }

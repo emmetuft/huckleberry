@@ -15,7 +15,7 @@ export const PublicHeader: FC = () => {
         className={styles.logoDetails}
       >
         <img src="/static/logo.svg" className={styles.logo} />
-        <h2>Work smarter.</h2>
+        {/* <h2>Work smarter.</h2> */}
       </Link>
 
       {/* <nav className={styles.nav}>
@@ -27,17 +27,12 @@ export const PublicHeader: FC = () => {
 
       <div className={styles.authButtons}>
         <Link to={publicRoutePaths[PublicPage.LOGIN]}>
-          <Button shape="round" size={isMobile ? 'small' : 'large'}>
-            Sign in
-          </Button>
-        </Link>
-        <Link to={`${publicRoutePaths[PublicPage.LOGIN]}?mode=signup`}>
           <Button
             type="primary"
             shape="round"
-            size={isMobile ? 'small' : 'large'}
+            size={isMobile ? 'small' : 'medium'}
           >
-            Try for free
+            Sign in
           </Button>
         </Link>
       </div>
