@@ -9,13 +9,16 @@ import {
   selectDataSourceLoading,
   setDataSourceFilters,
 } from 'reducers/datasource/slice';
-import { fetchDataSourceList } from 'reducers/datasource/actions';
 import { Filter } from 'models/interfaces/filter';
 import { FilterPopup } from 'components/shared/FilterPopup/FilterPopup';
 import { DATA_SOURCE_FILTER_COLUMNS } from 'constants/dataSourceFilters';
 import { PeopleService } from 'services/people';
 
-export const DataControls: FC = () => {
+interface DataControlsProps {
+  onSearch: (term: string) => void;
+}
+
+export const DataControls: FC<DataControlsProps> = ({ onSearch }) => {
   const dispatch = useAppDispatch();
   const filters = useSelector(selectDataSourceFilters);
   const loading = useSelector(selectDataSourceLoading).dataSourceList;
@@ -23,23 +26,23 @@ export const DataControls: FC = () => {
   const [searchValue, setSearchValue] = useState<string>('');
   const [filterPopoverOpen, setFilterPopoverOpen] = useState<boolean>(false);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const isInitialMount = useRef(true);
 
   useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
     if (!searchValue.trim()) {
-      dispatch(fetchDataSourceList({ page: 1, size: 20 }));
+      onSearch('');
       return;
     }
 
     debounceRef.current = setTimeout(() => {
-      dispatch(
-        fetchDataSourceList({
-          page: 1,
-          size: 20,
-          searchTerm: searchValue.trim(),
-        }),
-      );
+      onSearch(searchValue.trim());
     }, 500);
 
     return () => {

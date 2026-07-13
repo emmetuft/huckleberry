@@ -63,6 +63,7 @@ export const PlatformLayout: FC = () => {
   const noPaddingRoutes = [
     platformRoutePaths[AppPage.AGENT_CHAT],
     platformRoutePaths[AppPage.AGENT_EDIT],
+    platformRoutePaths[AppPage.DATASOURCE],
     platformRoutePaths[AppPage.ONTOLOGY],
     platformRoutePaths[AppPage.WORKFLOW_DETAIL],
     platformRoutePaths[AppPage.WORKSPACE_CANVAS],
