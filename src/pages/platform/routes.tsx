@@ -1,8 +1,4 @@
-import { useSelector } from 'react-redux';
 import { RouteObject } from 'react-router-dom';
-import styles from 'components/layouts/PlatformLayout/PlatformLayout.module.css';
-import { selectPersona } from 'reducers/app/slice';
-import { selectDismissedCards } from 'reducers/workspace/slice';
 import { platformRoutePaths, AppPage } from 'models/enums/appPage';
 import { AuthGuard } from 'components/layouts/AuthGuard/AuthGuard';
 import { PlatformLayout } from 'components/layouts/PlatformLayout/PlatformLayout';
@@ -28,24 +24,12 @@ import { WorkflowDetail } from './Workflows/WorkflowDetail/WorkflowDetail';
 import { Workspace } from './Workspace/Workspace';
 import { WorkspaceDetail } from './Workspace/WorkspaceDetail/WorkspaceDetail';
 import { WorkspaceCanvas } from './Workspace/WorkspaceCanvas/WorkspaceCanvas';
-import { getBentoLayout } from 'config/bentoConfig';
 
-// Home page component wrapper
-const HomePage = () => {
-  const persona = useSelector(selectPersona);
-  const dismissedCards = useSelector(selectDismissedCards);
-
-  const bentoLayout = getBentoLayout(persona?.department);
-  const isBentoMode =
-    !!bentoLayout &&
-    bentoLayout.cards.some((c) => !dismissedCards.includes(c.id));
-
-  return (
-    <div className={isBentoMode ? '' : styles.home}>
-      <Workspace />
-    </div>
-  );
-};
+const HomePage = () => (
+  <div style={{ height: '100%' }}>
+    <Workspace />
+  </div>
+);
 
 export const platformRoutes: RouteObject[] = [
   {
