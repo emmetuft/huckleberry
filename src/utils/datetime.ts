@@ -1,29 +1,23 @@
-import { format, isValid } from 'date-fns';
+import dayjs from 'dayjs';
 import { ConversationTurn } from 'models/interfaces/message';
 
 export const ONE_HOUR_MS = 60 * 60 * 1000;
 
-export const formatDate = (date: Date) => format(date, 'yyyy-MM-dd');
+export const formatDate = (date: Date) => dayjs(date).format('YYYY-MM-DD');
 
-/**
- * Formats a date or timestamp into 'yyyy-MM-dd HH:mm:ss'.
- * @param date - The date object or timestamp to format.
- * @returns The formatted date string.
- */
 export function formatDateTime(date: Date | number): string {
-  return format(date, 'yyyy-MM-dd HH:mm:ss');
+  return dayjs(date).format('YYYY-MM-DD HH:mm:ss');
 }
 
 export const formatCurrentDate = (): string => {
-  return format(new Date(), 'EEEE, MMMM dd, yyyy');
+  return dayjs().format('dddd, MMMM DD, YYYY');
 };
 
 export const isValidDate = (value: string) => {
   // Reject entirely numeric strings
   if (/^\d+$/.test(value)) return false;
 
-  const date = new Date(value);
-  return isValid(date);
+  return dayjs(value).isValid();
 };
 
 export const formatTime = (ts: number) =>

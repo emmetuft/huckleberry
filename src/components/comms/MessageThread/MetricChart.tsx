@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { format } from 'date-fns';
+import dayjs from 'dayjs';
 import {
   BarChart,
   Bar,
@@ -53,7 +53,7 @@ export const MetricChart: FC<MetricChartProps> = ({
   const formatXAxisTick = (value: any) => {
     try {
       const date = new Date(value);
-      return format(date, 'MMM d, yyyy');
+      return dayjs(date).format('MMM D, YYYY');
     } catch {
       return value;
     }
