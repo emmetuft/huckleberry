@@ -10,6 +10,7 @@ import {
   CURSOR_SYSTEM_PROMPT,
   RESUME_SYSTEM_PROMPT,
   SCREENSHOT_SYSTEM_PROMPT,
+  SYNONYMS_SYSTEM_PROMPT,
 } from 'utils/prompt';
 import { handleResponse } from 'utils/service';
 
@@ -101,6 +102,19 @@ export async function analyzeCursorContext(
     input: fullInput,
     system: CURSOR_SYSTEM_PROMPT,
   });
+}
+
+export async function generateColumnSynonyms(
+  columnName: string,
+  datasetName: string,
+): Promise<string[]> {
+  return generateText<string[]>(
+    {
+      input: `Dataset: ${datasetName}\nColumn: ${columnName}`,
+      system: SYNONYMS_SYSTEM_PROMPT,
+    },
+    true,
+  );
 }
 
 export async function analyzeScreenshot(

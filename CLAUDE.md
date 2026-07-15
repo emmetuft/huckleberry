@@ -1,12 +1,32 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+## Overview
 
-## Package manager
+Huckleberry is an AI-native decision intelligence platform designed to help people and teams reason through complex problems, capture organizational knowledge, and collaborate with AI.
 
-This project uses **pnpm** exclusively. Never use npm or yarn.
+Rather than picturing a “jack of all trades” superstar employee, picture Huckleberry AS your business personified. It interacts with everyone in the company in different ways, based on their role and current work. It changes, grows, and matures with time. It understands your data deeply, but is still flexible when things change.
+
+### Things that power Huckleberry
+
+- Ontology for the business itself, so AI recognizes entities that could be ambiguous
+- Connection between ontology entities and where we get the actual data from (connection to data sources)
+- User persona (their role, their team, their goals, projects, skills, etc.)
+- What “things” exist for the user to interact with (entities), like data sources, apps, chats, automations, agents, etc.
+- A metric catalog, and how metrics are defined per user/team/department (ties into data readiness)
+- Ability to connect to external data sources
+- Short term memory
+- Long term memory that grows with the user (remembering preferences, things already discussed, etc.)
+- Ability to surface insights based on what other users are doing on the platform
+- Ability to access the internet so insights stay relevant
+- Ability to run background processes
+- Permissions and data governance, so users cannot access anything they shouldn’t be able to (nor their agents)
+- Ability to capture user feedback, so they can steer the AI to help the way they want it to
+- Background process that cleans things up regularly (removing duplicates, managing decay rates on memories)
+- Capturing which things are referenced most often/which things are most useful, to generate levels of confidence
 
 ## Commands
+
+This project uses **pnpm** exclusively. Never use npm or yarn.
 
 ```bash
 pnpm dev          # Vite dev server on http://localhost:5173 (strict port)
@@ -17,11 +37,7 @@ pnpm lint         # ESLint
 pnpm lint:css     # Stylelint
 pnpm format       # Prettier (writes in place)
 pnpm run-checks   # format + lint + lint:css + test:ci (same as pre-commit)
-pnpm storybook    # Storybook on :6006
-pnpm generate     # da generate (scaffold components/reducers)
 ```
-
-To run a single test file: `pnpm test src/path/to/file.test.ts`
 
 TypeScript paths are rooted at `src/` — imports like `import { Foo } from 'components/Foo'` resolve without `./` prefix.
 
@@ -58,6 +74,15 @@ AI streaming uses SSE via `src/services/agentStream.ts`. The Vite proxy disables
 
 ## Preferences
 
+### Libraries
+
+Use the following libraries when building components:
+
+- antd for general components
+- recharts for charts
+- @phosphor-icons/react for all icons
+- dayjs for all date utils
+
 ### Utils
 
 The `src/utils` folder contains a variety of utility functions, organized in category files. Use the existing util functions before you write any new functions when implementing features.
@@ -75,3 +100,5 @@ Do your best to use existing models before creating new ones.
 All CSS classes should use nesting. When creating a new CSS file, do not put every new class as a top-level class. Nest classes the same way the components are nested in the component file.
 
 When using colors, always reference existing variable colors defined in the @src/styles/variables.css file. Ask for permission before creating new colors or referencing color codes in CSS files.
+
+Use other defined variables when possible, including variables for font sizing, spacing, and border radius.

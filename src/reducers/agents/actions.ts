@@ -86,3 +86,8 @@ export const fetchSessionGraphThunk = createAsyncThunk(
     return { sessionId, graph };
   },
 );
+
+export const deleteSession = createAsyncThunk(
+  'agents/deleteSession',
+  AgentSessionService.deleteSession,
+);

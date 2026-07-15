@@ -1,6 +1,10 @@
 import { apiFetch } from 'services/headers';
 import { Column } from 'models/interfaces/column';
 import { DataSource } from 'models/interfaces/dataSource';
+import {
+  DataDictionary,
+  DataDictionaryResult,
+} from 'models/interfaces/dataDictionary';
 import { getDatasetRequestBody, handleResponse } from 'utils/service';
 
 const DATA_SOURCES_URL = '/api/datasources';
@@ -56,6 +60,38 @@ const getDataSource = async (
   }
 };
 
+const getDataDictionary = async (
+  dataSourceId: string,
+): Promise<DataDictionaryResult[]> => {
+  try {
+    const response = await apiFetch(
+      `${DATA_SOURCES_URL}/${dataSourceId}/data-dictionary`,
+    );
+    return await handleResponse<DataDictionaryResult[]>(response);
+  } catch (error: any) {
+    throw error;
+  }
+};
+
+const updateDataDictionary = async (
+  dataSourceId: string,
+  dataDictionary: DataDictionary,
+): Promise<DataDictionaryResult> => {
+  try {
+    const response = await apiFetch(
+      `${DATA_SOURCES_URL}/${dataSourceId}/data-dictionary`,
+      {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dataDictionary),
+      },
+    );
+    return await handleResponse<DataDictionaryResult>(response);
+  } catch (error: any) {
+    throw error;
+  }
+};
+
 interface FetchDataParams {
   dataSourceId: string;
   schema: Column[];
@@ -103,5 +139,7 @@ const formatRowsWithKeys = (schema: Column[], rows: string[][]) =>
 export const DataService = {
   getDataSources,
   getDataSource,
+  getDataDictionary,
+  updateDataDictionary,
   getDataSourceRows,
 };

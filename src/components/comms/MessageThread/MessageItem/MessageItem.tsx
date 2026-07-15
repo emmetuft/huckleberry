@@ -1,5 +1,6 @@
 import { FC, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { WarningCircle } from '@phosphor-icons/react';
 import styles from './MessageItem.module.css';
 import { useAppDispatch } from 'reducers';
 import { selectDataSources, toggleProcessStep } from 'reducers/chat/slice';
@@ -83,7 +84,14 @@ export const MessageItem: FC<MessageItemProps> = ({ turn, showTimestamp }) => {
               onSubmit={handleElicitationResponse}
             />
           )}
-        <MessageContent content={turn.content} isUser={isUser} />
+        {!isUser && turn.error ? (
+          <div className={styles.errorMessage}>
+            <WarningCircle size={16} weight="fill" />
+            {turn.error}
+          </div>
+        ) : (
+          <MessageContent content={turn.content} isUser={isUser} />
+        )}
         {isUser &&
           turn.context?.dataSourceIds &&
           turn.context.dataSourceIds.length > 0 && (

@@ -1,0 +1,270 @@
+.sectionLabel {
+  font-size: var(--font-xs);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1.32px;
+  color: var(--grey-text);
+}
+
+.overviewSection {
+  min-height: 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  padding: var(--default-page-padding);
+  padding-top: 45px;
+  overflow-y: auto;
+
+  .header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+
+    .titleRow {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+
+      h2 {
+        font-size: var(--font-lg);
+        font-weight: 600;
+        margin: 0;
+      }
+    }
+  }
+
+  .attentionGrid {
+    columns: 2;
+    column-gap: var(--space-lg);
+    margin-bottom: var(--space-3xl);
+  }
+
+  /* ── Content styles for card children ── */
+
+  .cardDescription {
+    font-size: var(--font-sm);
+    color: var(--grey-text);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .metricRow {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-sm);
+
+    .metricValue {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .metricLabel {
+      font-size: var(--font-xs);
+      color: var(--grey-text);
+    }
+  }
+
+  .chartSection {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+
+    .chartLabel {
+      font-size: var(--font-xs);
+      font-weight: 500;
+      font-family: 'IBM Plex Mono', monospace;
+      color: var(--grey-text);
+      text-transform: uppercase;
+    }
+
+    .barChart {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+
+      .barRow {
+        display: grid;
+        grid-template-columns: 120px 1fr 32px;
+        align-items: center;
+        gap: var(--space-sm);
+
+        .barLabel {
+          font-size: var(--font-xs);
+          color: var(--grey-text);
+        }
+
+        .barTrack {
+          height: 10px;
+          background: var(--grey-light);
+          border-radius: var(--br-sm);
+          overflow: hidden;
+
+          .barFill {
+            height: 100%;
+            background: var(--node-orange);
+            border-radius: var(--br-sm);
+          }
+        }
+
+        .barCount {
+          font-size: var(--font-xs);
+          color: var(--grey-text);
+          text-align: right;
+        }
+      }
+    }
+  }
+
+  .findingText {
+    font-size: var(--font-sm);
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .findingEmphasis {
+    font-size: var(--font-sm);
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .findingSources {
+    font-size: var(--font-xs);
+    color: var(--grey-text);
+  }
+
+  /* ── Decisions in flight ── */
+
+  .decisionsSection {
+    display: flex;
+    flex-direction: column;
+
+    .decisionsSectionHeader {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-xl);
+
+      .decisionsCount {
+        font-size: var(--font-xs);
+        font-weight: 600;
+        color: var(--grey-text);
+        background: var(--grey-light);
+        padding: 1px var(--space-sm);
+        border-radius: 99px;
+      }
+    }
+
+    .decisionsTable {
+      padding: 0;
+      overflow: hidden;
+
+      .decisionsTableHeader {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1.5fr 1fr;
+        gap: var(--space-lg);
+        padding: var(--space-md) var(--space-xl);
+        background-color: var(--grey-bg);
+        border-bottom: 1px solid var(--grey-light);
+
+        span {
+          font-family: 'IBM Plex Mono', monospace;
+          font-size: var(--font-xs);
+          font-weight: 500;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          color: var(--grey-text);
+        }
+      }
+
+      .decisionsTableRow {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1.5fr 1fr;
+        padding: var(--space-lg) var(--space-xl);
+        border-bottom: 1px solid var(--grey-light);
+        align-items: center;
+        gap: var(--space-lg);
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        &:hover {
+          background: var(--grey-bg);
+        }
+
+        .decisionTitleCell {
+          display: flex;
+          flex-direction: column;
+          gap: var(--space-xs);
+
+          .decisionTitle {
+            font-size: var(--font-sm);
+            font-weight: 500;
+          }
+
+          .decisionCommitted {
+            font-size: 10px;
+            font-family: 'IBM Plex Mono', monospace;
+            color: var(--grey-text);
+            letter-spacing: 0.05em;
+          }
+        }
+
+        .decisionOwnerCell {
+          font-size: var(--font-sm);
+        }
+
+        .decisionStatusCell {
+          display: flex;
+          flex-direction: column;
+          gap: var(--space-xs);
+          font-size: var(--font-sm);
+
+          .decisionStatusDetail {
+            font-size: var(--font-xs);
+            color: var(--grey-text);
+          }
+
+          .statusGreen {
+            color: var(--success-icon);
+          }
+        }
+
+        .decisionCheckBackCell {
+          display: flex;
+          flex-direction: column;
+          gap: var(--space-xs);
+
+          .checkBackOrange {
+            color: var(--node-orange);
+            font-weight: 600;
+          }
+
+          .checkBackDetail {
+            font-size: 10px;
+            font-family: 'IBM Plex Mono', monospace;
+            color: var(--grey-text);
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (width <= 768px) {
+  .overviewSection {
+    padding: var(--space-xl) var(--space-lg);
+
+    .attentionGrid {
+      columns: 1;
+    }
+
+    .decisionsTable {
+      .decisionsTableHeader,
+      .decisionsTableRow {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  }
+}

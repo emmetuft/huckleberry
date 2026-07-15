@@ -44,7 +44,7 @@
   gap: var(--space-sm);
 
   .rowLabel {
-    width: 220px;
+    width: 120px;
     flex-shrink: 0;
     font-size: 12px;
     overflow: hidden;

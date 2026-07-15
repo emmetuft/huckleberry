@@ -1,29 +1,23 @@
-import { format, isValid } from 'date-fns';
+import dayjs from 'dayjs';
 import { ConversationTurn } from 'models/interfaces/message';
 
 export const ONE_HOUR_MS = 60 * 60 * 1000;
 
-export const formatDate = (date: Date) => format(date, 'yyyy-MM-dd');
+export const formatDate = (date: Date) => dayjs(date).format('YYYY-MM-DD');
 
-/**
- * Formats a date or timestamp into 'yyyy-MM-dd HH:mm:ss'.
- * @param date - The date object or timestamp to format.
- * @returns The formatted date string.
- */
 export function formatDateTime(date: Date | number): string {
-  return format(date, 'yyyy-MM-dd HH:mm:ss');
+  return dayjs(date).format('YYYY-MM-DD HH:mm:ss');
 }
 
 export const formatCurrentDate = (): string => {
-  return format(new Date(), 'EEEE, MMMM dd, yyyy');
+  return dayjs().format('dddd, MMMM DD, YYYY');
 };
 
 export const isValidDate = (value: string) => {
   // Reject entirely numeric strings
   if (/^\d+$/.test(value)) return false;
 
-  const date = new Date(value);
-  return isValid(date);
+  return dayjs(value).isValid();
 };
 
 export const formatTime = (ts: number) =>
@@ -68,6 +62,61 @@ export const formatMessageTimestamp = (timestamp: number | string): string => {
     minute: '2-digit',
     hour12: true,
   });
+};
+
+/** Formats an ISO timestamp as a short date/time for card header display. Today → "7:12 AM"; older → "Jun 12". */
+export const formatCardTimestamp = (isoTimestamp: string): string => {
+  const date = new Date(isoTimestamp);
+  const now = new Date();
+  const isToday = date.toDateString() === now.toDateString();
+  if (isToday) {
+    return date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
+  }
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+};
+
+/** Returns a relative notice phrase for a "Noticed" status card: "14 minutes ago", "2 hours ago", "overnight", "3 days ago", etc. */
+export const getRelativeNoticeTime = (isoTimestamp: string): string => {
+  const date = new Date(isoTimestamp);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMin = Math.floor(diffMs / 60000);
+
+  if (diffMin < 1) return 'just now';
+  if (diffMin < 60) return `${diffMin} minute${diffMin === 1 ? '' : 's'} ago`;
+
+  const hour = date.getHours();
+  const isOvernightHour = hour >= 22 || hour < 6;
+  const isToday = date.toDateString() === now.toDateString();
+  const yesterday = new Date(now);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const isYesterday = date.toDateString() === yesterday.toDateString();
+
+  if (isOvernightHour && (isToday || isYesterday)) return 'overnight';
+
+  if (isToday) {
+    const diffHours = Math.floor(diffMs / 3600000);
+    return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
+  }
+
+  const startOfToday = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
+  );
+  const startOfDate = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+  );
+  const calDays = Math.round(
+    (startOfToday.getTime() - startOfDate.getTime()) / 86400000,
+  );
+  return `${calDays} day${calDays === 1 ? '' : 's'} ago`;
 };
 
 export const formatDuration = (ms: number): string => {

@@ -1,0 +1,88 @@
+.attentionCard {
+  display: flex;
+  flex-direction: column;
+  break-inside: avoid;
+  gap: var(--space-md);
+  padding: var(--space-xl);
+  margin-bottom: var(--space-lg);
+
+  &.isNew {
+    border: 1.5px solid var(--node-orange);
+  }
+
+  .cardTopRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .categoryRow {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .categoryLabel {
+      font-size: var(--font-xs);
+      font-weight: 500;
+      font-family: 'IBM Plex Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+  }
+
+  .cardMeta {
+    font-size: var(--font-xs);
+    color: var(--grey-text);
+  }
+
+  .cardTitle {
+    font-size: var(--font-sm);
+    font-weight: 600;
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  .cardOwner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    margin-top: auto;
+    font-size: var(--font-sm);
+
+    .ownerRole {
+      color: var(--grey-text);
+    }
+  }
+
+  .cardFooter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-lg);
+    margin-top: var(--space-md);
+    padding-top: var(--space-xl);
+    border-top: 1px solid var(--grey-light);
+    font-size: var(--font-xs);
+    color: var(--grey-text);
+
+    .footerContent {
+      span {
+        font-size: var(--font-xs);
+        color: var(--grey-text);
+      }
+    }
+
+    .footerButton {
+      span {
+        font-size: var(--font-xs);
+      }
+    }
+  }
+}

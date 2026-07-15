@@ -1,6 +1,7 @@
 import { createAppSlice } from '../createAppSlice';
 import {
   deleteCustomAgent,
+  deleteSession,
   fetchAgentById,
   fetchAgents,
   fetchAIModels,
@@ -127,6 +128,12 @@ export const AgentsSlice = createAppSlice({
       .addCase(deleteCustomAgent.fulfilled, (state, action) => {
         const agentId = action.payload;
         state.agents = state.agents.filter((a) => a.id !== agentId);
+      })
+      .addCase(deleteSession.fulfilled, (state, { meta }) => {
+        const sessionId = meta.arg;
+        state.agentSessions = state.agentSessions.filter(
+          (s) => s.id !== sessionId,
+        );
       })
       .addCase(fetchSessionGraphThunk.pending, (state, action) => {
         state.loadingSessionGraphs[action.meta.arg] = true;
