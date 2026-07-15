@@ -44,11 +44,6 @@ export const fetchSession = createAsyncThunk(
   },
 );
 
-export const deleteSession = createAsyncThunk(
-  'chat/deleteSession',
-  AgentSessionService.deleteSession,
-);
-
 const handleStreamEvent = (
   event: AISessionEvent,
   dispatch: any,

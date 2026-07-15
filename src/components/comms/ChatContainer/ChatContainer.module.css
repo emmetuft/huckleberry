@@ -3,19 +3,6 @@
   flex-direction: column;
 }
 
-.fullScreen {
-  flex: 1;
-  justify-content: space-between;
-
-  .inputArea {
-    position: sticky;
-    bottom: 0;
-    width: 48rem;
-    margin-inline: auto;
-    z-index: 100;
-  }
-}
-
 .panel {
   flex: 1;
   position: relative;

@@ -9,7 +9,7 @@ import {
 } from '@phosphor-icons/react';
 import styles from './SessionItem.module.css';
 import { useAppDispatch } from 'reducers';
-import { deleteSession } from 'reducers/chat/actions';
+import { deleteSession } from 'reducers/agents/actions';
 import { AgentSession } from 'models/interfaces/session';
 import { IconBtn } from 'components/shared/IconBtn/IconBtn';
 

@@ -1,5 +1,5 @@
 import { FC, useEffect, useMemo, useState } from 'react';
-import { Spin, Tabs } from 'antd';
+import { Spin, Tabs, Tooltip } from 'antd';
 import { AnimatePresence } from 'framer-motion';
 import {
   AISessionEvent,
@@ -203,6 +203,8 @@ const Legend: FC<{ rows: WaterfallRow[] }> = ({ rows: _rows }) => (
   </div>
 );
 
+const MIN_LABEL_WIDTH_PCT = 6;
+
 const WaterfallChart: FC<{
   rows: WaterfallRow[];
   onRowClick: (key: string) => void;
@@ -222,19 +224,29 @@ const WaterfallChart: FC<{
               {row.label}
             </div>
             <div className={styles.rowTrack}>
-              <div
-                className={styles.bar}
-                style={{
-                  left: `${safeStart}%`,
-                  width: `${safeWidth}%`,
-                  backgroundColor: CATEGORY_COLORS[row.category],
-                }}
-                onClick={() => onRowClick(row.key)}
+              <Tooltip
+                title={
+                  safeWidth < MIN_LABEL_WIDTH_PCT
+                    ? formatDuration(row.durationMs)
+                    : undefined
+                }
               >
-                <span className={styles.durationLabel}>
-                  {formatDuration(row.durationMs)}
-                </span>
-              </div>
+                <div
+                  className={styles.bar}
+                  style={{
+                    left: `${safeStart}%`,
+                    width: `${safeWidth}%`,
+                    backgroundColor: CATEGORY_COLORS[row.category],
+                  }}
+                  onClick={() => onRowClick(row.key)}
+                >
+                  {safeWidth >= MIN_LABEL_WIDTH_PCT && (
+                    <span className={styles.durationLabel}>
+                      {formatDuration(row.durationMs)}
+                    </span>
+                  )}
+                </div>
+              </Tooltip>
             </div>
           </div>
         );

@@ -5,7 +5,6 @@ import { PlatformLayout } from 'components/layouts/PlatformLayout/PlatformLayout
 import { Agents } from './Agents/Agents';
 import { AgentDetail } from './Agents/AgentDetail/AgentDetail';
 import { AgentEdit } from './Agents/AgentEdit/AgentEdit';
-import { AgentChat } from './Agents/AgentChat/AgentChat';
 import { AgentsMonitoring } from './Agents/AgentsMonitoring/AgentsMonitoring';
 import { Applications } from './Applications/Applications';
 import { Automation } from './Automation/Automation';
@@ -53,10 +52,6 @@ export const platformRoutes: RouteObject[] = [
           {
             path: platformRoutePaths[AppPage.AGENT_EDIT],
             element: <AgentEdit />,
-          },
-          {
-            path: platformRoutePaths[AppPage.AGENT_CHAT],
-            element: <AgentChat />,
           },
           {
             path: platformRoutePaths[AppPage.AGENTS_MONITORING],

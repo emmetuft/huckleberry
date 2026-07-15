@@ -12,12 +12,13 @@ import {
 } from 'reducers/agents/slice';
 import { fetchAgentById, upsertCustomAgent } from 'reducers/agents/actions';
 import { AGENT_FORM_FIELDS, AgentStep } from 'constants/agent';
+import { ChatMode } from 'models/enums/chatMode';
 import { AccessEntry } from 'models/enums/permission';
 import { Agent } from 'models/interfaces/agent';
 import { DataSource } from 'models/interfaces/dataSource';
 import { Toolkit } from 'models/interfaces/toolkit';
-import { Chat } from '../Chat/Chat';
 import { AgentStepContent } from './AgentStepContent';
+import { ChatContainer } from 'components/comms/ChatContainer/ChatContainer';
 
 type AgentFormState = Partial<Agent>;
 
@@ -224,7 +225,7 @@ export const AgentEdit: FC = () => {
         <div className={styles.agentHeader}>
           <p className={styles.preview}>Preview</p>
         </div>
-        <Chat agent={agent} showHeader={false} />
+        <ChatContainer chatMode={ChatMode.panel} placeholder={'Ask anything'} />
       </div>
     </div>
   );

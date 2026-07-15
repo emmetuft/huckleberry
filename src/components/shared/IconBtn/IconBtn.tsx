@@ -7,6 +7,7 @@ interface IconBtnProps {
   label?: ReactNode;
   labelHidden?: boolean;
   disabled?: boolean;
+  loading?: boolean;
   className?: string;
   onClick?: (e: React.MouseEvent<HTMLElement>) => void;
 }
@@ -16,6 +17,7 @@ export const IconBtn: FC<IconBtnProps> = ({
   label,
   labelHidden = false,
   disabled = false,
+  loading = false,
   className,
   onClick,
 }) => (
@@ -23,6 +25,7 @@ export const IconBtn: FC<IconBtnProps> = ({
     type="text"
     icon={icon}
     disabled={disabled}
+    loading={loading}
     onClick={onClick}
     className={`${styles.iconBtn} ${label ? styles.withLabel : ''} ${className ?? ''}`}
   >

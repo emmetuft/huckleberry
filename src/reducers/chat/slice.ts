@@ -1,6 +1,5 @@
 import { createAppSlice } from '../createAppSlice';
 import {
-  deleteSession,
   executeStream,
   fetchDataSources,
   fetchSession,
@@ -21,6 +20,7 @@ import {
   createAssistantTurn,
   createUserTurn,
 } from 'utils/conversationTurn';
+import { deleteSession } from 'reducers/agents/actions';
 
 interface State {
   sessions: AgentSession[];
@@ -170,6 +170,11 @@ export const ChatSlice = createAppSlice({
         state.loading = false;
         state.error =
           action.error.message || 'Failed to send streaming request';
+        const turn = getStreamingTurn(state);
+        if (turn) {
+          turn.error =
+            action.error.message || 'Something went wrong. Please try again.';
+        }
         state.streamingTurnId = null;
       })
       .addCase(executeStream.fulfilled, (state) => {
@@ -188,6 +193,11 @@ export const ChatSlice = createAppSlice({
         state.loading = false;
         state.error =
           action.error.message || 'Failed to submit elicitation response';
+        const turn = getStreamingTurn(state);
+        if (turn) {
+          turn.error =
+            action.error.message || 'Something went wrong. Please try again.';
+        }
         state.streamingTurnId = null;
       })
       .addCase(resumeStream.fulfilled, (state) => {

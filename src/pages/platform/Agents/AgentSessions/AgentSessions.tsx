@@ -1,23 +1,29 @@
 import { FC, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { Button, Table } from 'antd';
 import type { TableColumnsType } from 'antd';
 import { AgentSession } from 'models/interfaces/session';
-import { ScalesIcon } from '@phosphor-icons/react';
+import { ScalesIcon, TrashIcon } from '@phosphor-icons/react';
 import styles from './AgentSessions.module.css';
 import { useAppDispatch } from 'reducers';
-import { fetchAllSessions, fetchSessions } from 'reducers/agents/actions';
+import {
+  deleteSession,
+  fetchAllSessions,
+  fetchSessions,
+} from 'reducers/agents/actions';
 import {
   selectAgents,
   selectAgentSessions,
   selectAIModels,
   selectAllSessions,
 } from 'reducers/agents/slice';
+import { SearchFilter } from 'models/interfaces/search';
 import { Avatar } from 'components/shared/Avatar/Avatar';
+import { IconBtn } from 'components/shared/IconBtn/IconBtn';
 import { SessionAnalytics } from './SessionAnalytics/SessionAnalytics';
 import { SessionCompare } from './SessionCompare/SessionCompare';
 import { formatDateTime } from 'utils/datetime';
-import { SearchFilter } from 'models/interfaces/search';
 
 interface AgentSessionsProps {
   agentId?: string;
@@ -26,6 +32,7 @@ interface AgentSessionsProps {
 
 export const AgentSessions: FC<AgentSessionsProps> = ({ agentId, filters }) => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const agents = useSelector(selectAgents);
   const agentSessions = useSelector(selectAgentSessions);
   const allAgentSessions = useSelector(selectAllSessions);
@@ -36,6 +43,7 @@ export const AgentSessions: FC<AgentSessionsProps> = ({ agentId, filters }) => {
   const [selectedSession, setSelectedSession] = useState<AgentSession | null>(
     null,
   );
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [compareIds, setCompareIds] = useState<string[]>([]);
   const [showCompare, setShowCompare] = useState(false);
 
@@ -96,6 +104,36 @@ export const AgentSessions: FC<AgentSessionsProps> = ({ agentId, filters }) => {
       dataIndex: 'lastActivity',
       key: 'lastActivity',
       render: (value) => formatDateTime(value),
+    },
+    {
+      title: '',
+      key: 'actions',
+      render: (_: unknown, record: AgentSession) => (
+        <div className={styles.actionsContainer}>
+          <Button
+            size="small"
+            type="primary"
+            shape="round"
+            className={styles.viewButton}
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/sessions/${record.id}`);
+            }}
+          >
+            View session
+          </Button>
+          <IconBtn
+            icon={<TrashIcon size={16} />}
+            loading={deletingId === record.id}
+            onClick={async (e) => {
+              e.stopPropagation();
+              setDeletingId(record.id);
+              await dispatch(deleteSession(record.id));
+              setDeletingId(null);
+            }}
+          />
+        </div>
+      ),
     },
   ];
 
