@@ -123,10 +123,13 @@ export const LabelInput: FC<LabelInputProps> = ({
             options={options ? (toSelectOptions(options) as any) : undefined}
             onChange={onChange}
             showSearch
-            filterOption={(input, option) =>
-              String(option?.label ?? '')
-                .toLowerCase()
-                .includes(input.toLowerCase())
+            filterOption={
+              inputProps?.onSearch
+                ? false
+                : (input: string, option: any) =>
+                    String(option?.label ?? '')
+                      .toLowerCase()
+                      .includes(input.toLowerCase())
             }
             style={{ width: '100%' }}
           />

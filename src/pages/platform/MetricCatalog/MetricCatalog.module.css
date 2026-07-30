@@ -1,6 +1,17 @@
+.header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--space-md);
+}
+
+.tableWrapper {
+  flex: 1;
+  min-height: 0;
+}
+
 .dataTable {
-  box-shadow: var(--box-shadow);
-  border-radius: var(--br-md);
+  border: 1px solid var(--grey-light);
+  border-radius: var(--br-lg);
 }
 
 .tag {

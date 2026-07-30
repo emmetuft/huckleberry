@@ -1,78 +1,121 @@
-import { FC, useMemo, useRef, useState } from 'react';
+import { FC, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Table } from 'antd';
+import { Button, Table } from 'antd';
+import { PlusIcon } from '@phosphor-icons/react';
 import styles from './MetricCatalog.module.css';
-import { selectMetricCatalogSchema } from 'reducers/metrics/slice';
-import { departmentColors } from 'constants/metrics';
-import { renderVal } from 'utils/data';
+import { useAppDispatch } from 'reducers';
+import { fetchMetrics } from 'reducers/metrics/actions';
+import { selectMetrics, selectMetricsLoading } from 'reducers/metrics/slice';
+import { Metric } from 'models/interfaces/metric';
+import { SaveMetricModal } from 'components/modals/SaveMetricModal/SaveMetricModal';
+
+const columns = [
+  { title: 'Name', dataIndex: 'name', key: 'name' },
+  { title: 'Datasource', dataIndex: 'dataSourceName', key: 'dataSourceName' },
+  { title: 'Owner', dataIndex: 'ownerDisplayName', key: 'ownerDisplayName' },
+  {
+    title: 'Grain',
+    dataIndex: 'preferredDateGrain',
+    key: 'preferredDateGrain',
+  },
+  {
+    title: 'Aggregation',
+    key: 'aggregation',
+    render: (_: unknown, m: Metric) =>
+      m.aggregation ? `${m.aggregation.function}(${m.aggregation.value})` : '—',
+  },
+  {
+    title: 'Modified',
+    dataIndex: 'modified',
+    key: 'modified',
+    render: (val?: number) => (val ? new Date(val).toLocaleDateString() : '—'),
+  },
+];
 
 export const MetricCatalog: FC = () => {
-  const metricCatalogSchema = useSelector(selectMetricCatalogSchema);
+  const dispatch = useAppDispatch();
+  const metrics = useSelector(selectMetrics);
+  const loading = useSelector(selectMetricsLoading);
+  const [modalState, setModalState] = useState<{
+    open: boolean;
+    metric?: Metric;
+  }>({ open: false });
 
-  const [data] = useState<any[]>([]);
-  const [page, setPage] = useState<number>(1);
-  const [size, setSize] = useState<number>(20);
-  const [totalRows] = useState<number>(0);
-  const [loading] = useState<boolean>(false);
-  const loadingRef = useRef<boolean>(false);
+  const tableWrapperRef = useRef<HTMLDivElement>(null);
+  const [tableHeight, setTableHeight] = useState(0);
 
-  const onChangePagination = (newPage: number, newSize: number) => {
-    setPage(newPage);
-    setSize(newSize);
-  };
+  useLayoutEffect(() => {
+    const wrapper = tableWrapperRef.current;
+    if (!wrapper) return;
 
-  const commonColConfig = {
-    minWidth: 100,
-    maxWidth: 200,
-    width: loadingRef.current ? 100 : undefined,
-  };
-
-  const columns = useMemo(
-    () =>
-      metricCatalogSchema.map((col) => ({
-        ...commonColConfig,
-        ...col,
-        title: col.name,
-        key: col.id,
-        dataIndex: col.name,
-        render: (val: any) => cellRenderer(col, val),
-      })),
-    [metricCatalogSchema],
-  );
-
-  const cellRenderer = (col: any, val: any) => {
-    if (col.id === 'department') {
-      return (
-        <div className={styles.tag} style={departmentColors[val]}>
-          {val}
-        </div>
+    const measure = () => {
+      const header = wrapper.querySelector(
+        '.ant-table-thead',
+      ) as HTMLElement | null;
+      const pagination = wrapper.querySelector(
+        '.ant-pagination',
+      ) as HTMLElement | null;
+      const headerHeight = header?.offsetHeight ?? 0;
+      const paginationHeight = pagination?.offsetHeight ?? 0;
+      const paginationMargin = pagination ? 16 : 0;
+      setTableHeight(
+        wrapper.clientHeight -
+          headerHeight -
+          paginationHeight -
+          paginationMargin,
       );
-    }
+    };
 
-    return renderVal(col, val);
-  };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(wrapper);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    dispatch(fetchMetrics());
+  }, [dispatch]);
 
   return (
     <div className="platformPage">
-      <Table
-        dataSource={data}
-        columns={columns}
-        loading={loading}
-        pagination={{
-          current: page,
-          pageSize: size,
-          pageSizeOptions: ['20', '50', '100'],
-          showSizeChanger: true,
-          total: totalRows,
-          onChange: onChangePagination,
-        }}
-        scroll={{
-          scrollToFirstRowOnChange: true,
-          x: 'max-content',
-          //   y: tableHeight,
-        }}
-        tableLayout="auto"
-        className={styles.dataTable}
+      <div className={styles.header}>
+        <Button
+          type="primary"
+          icon={<PlusIcon />}
+          onClick={() => setModalState({ open: true })}
+        >
+          New Metric
+        </Button>
+      </div>
+      <div ref={tableWrapperRef} className={styles.tableWrapper}>
+        <Table
+          rowKey="id"
+          dataSource={metrics}
+          columns={columns}
+          loading={loading}
+          pagination={{
+            pageSize: 20,
+            pageSizeOptions: ['20', '50', '100'],
+            showSizeChanger: true,
+          }}
+          scroll={{
+            scrollToFirstRowOnChange: true,
+            x: 'max-content',
+            y: tableHeight,
+          }}
+          tableLayout="auto"
+          className={styles.dataTable}
+          onRow={(record) => ({
+            onClick: () => setModalState({ open: true, metric: record }),
+            style: { cursor: 'pointer' },
+          })}
+        />
+      </div>
+      <SaveMetricModal
+        isOpen={modalState.open}
+        metric={modalState.metric}
+        onClose={() => setModalState({ open: false })}
+        onSaved={() => dispatch(fetchMetrics())}
       />
     </div>
   );

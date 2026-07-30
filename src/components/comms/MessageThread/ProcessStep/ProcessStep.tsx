@@ -35,8 +35,11 @@ export const ProcessStep: FC<ProcessStepProps> = ({ step, onToggle }) => {
     });
   };
 
-  // TODO: Show "Save Metric" button when it makes sense
-  /** 
+  // TODO: Show a contextual "Save Metric" button when a step yields a metric
+  // definition. SaveMetricModal now takes structured seed values (not raw SQL);
+  // wire `initialValues` from the step's outputs once the agent emits a metric
+  // definition (datasourceId, aggregation, dimensions, dateColumn, ...).
+  /**
     <>
       <Button
         style={{ background: 'rgba(255, 255, 255, 0.339)' }}
@@ -48,8 +51,7 @@ export const ProcessStep: FC<ProcessStepProps> = ({ step, onToggle }) => {
       <SaveMetricModal
         isOpen={showSaveMetricModal}
         onClose={() => setShowSaveMetricModal(false)}
-        datasourceId={details.metadata?.datasourceId}
-        query={details.metadata?.query}
+        initialValues={{ datasourceId: someStep.datasourceId }}
       />
     </>
   **/

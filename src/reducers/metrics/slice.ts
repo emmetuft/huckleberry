@@ -1,33 +1,50 @@
-import { Column } from 'models/interfaces/column';
 import { createAppSlice } from '../createAppSlice';
+import { fetchMetrics, updateMetric } from './actions';
+import { Metric } from 'models/interfaces/metric';
 
 interface State {
-  metricCatalogSchema: Column[];
-  loading: {
-    fetchingSchema: boolean;
-  };
+  metrics: Metric[];
+  loading: boolean;
+  error: string | null;
 }
 
 const initialState: State = {
-  metricCatalogSchema: [],
-  loading: {
-    fetchingSchema: false,
-  },
+  metrics: [],
+  loading: false,
+  error: null,
 };
 
 export const MetricsSlice = createAppSlice({
   name: 'metrics',
   initialState,
   reducers: () => ({}),
-  extraReducers: (_builder) => {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchMetrics.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchMetrics.fulfilled, (state, action) => {
+        state.loading = false;
+        state.metrics = action.payload;
+      })
+      .addCase(fetchMetrics.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to load metrics';
+      })
+      .addCase(updateMetric.fulfilled, (state, action) => {
+        const idx = state.metrics.findIndex((m) => m.id === action.payload.id);
+        if (idx !== -1) state.metrics[idx] = action.payload;
+      });
+  },
   selectors: {
-    selectMetricCatalogSchema: (state) => state.metricCatalogSchema,
+    selectMetrics: (state) => state.metrics,
+    selectMetricsLoading: (state) => state.loading,
+    selectMetricsError: (state) => state.error,
   },
 });
 
-export const {
-  /** incrementByAmount, incrementAsync */
-} = MetricsSlice.actions;
-export const { selectMetricCatalogSchema } = MetricsSlice.selectors;
+export const { selectMetrics, selectMetricsLoading, selectMetricsError } =
+  MetricsSlice.selectors;
 
 export default MetricsSlice.reducer;
