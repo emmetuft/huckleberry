@@ -29,8 +29,16 @@ async function* processStream(
   logPrefix: string,
 ): AsyncGenerator<AISessionEvent, void, unknown> {
   if (!response.ok) {
+    let message: string | undefined;
+    try {
+      const body = await response.json();
+      message = body?.message;
+    } catch {
+      // ignore parse errors, fall back to status text
+    }
     throw new Error(
-      `Stream request failed: ${response.status} ${response.statusText}`,
+      message ??
+        `Stream request failed: ${response.status} ${response.statusText}`,
     );
   }
 

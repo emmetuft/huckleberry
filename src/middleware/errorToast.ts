@@ -17,7 +17,7 @@ const errorMessages: Record<string, string> = {
   'chat/resumeStream': 'Something went wrong. Please try again.',
   'datasource/fetchDataSourceList': 'Could not load data sources.',
   'datasource/fetchDataSource': 'Could not load data source.',
-  'metrics/fetchMetricCatalog': 'Could not load metrics.',
+  'metrics/fetchMetrics': 'Could not load metrics.',
   'ontology/fetchAllNodeLabels': 'Could not load labels.',
   'ontology/fetchNodes': 'Could not load nodes.',
   'people/fetchUsers': 'Could not load users.',

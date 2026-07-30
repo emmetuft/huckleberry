@@ -59,6 +59,14 @@ Infer preferredFormat, tone, and decisionStyle from the style and content of the
 
 export const CURSOR_SYSTEM_PROMPT = `You are a helpful assistant embedded in a web application. The user has clicked on a UI element and is asking a question about it. Answer concisely and helpfully. Keep responses under 3 sentences unless more detail is clearly needed. You are given context about the element the user clicked on.`;
 
+export const SYNONYMS_SYSTEM_PROMPT = `You are a data dictionary assistant. Given a column name and its dataset context, generate a list of natural-language synonyms and alternative names that business users might use to refer to this column.
+
+Rules:
+- Return ONLY a valid JSON array of strings, e.g. ["alias one", "alias two"]
+- Include 1-3 synonyms that are concise and business-friendly
+- Do not repeat the original column name
+- Do not include explanations or any text outside the JSON array`;
+
 export const SCREENSHOT_SYSTEM_PROMPT = `You are an expert at analyzing website and application screenshots.
 
 When given a screenshot and a user question:

@@ -9,6 +9,33 @@
     margin: 0;
   }
 
+  .aiBar {
+    display: flex;
+    gap: var(--space-sm);
+    align-items: center;
+  }
+
+  .fieldList {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    overflow-y: auto;
+    max-height: calc(100vh - 340px);
+    padding-right: var(--space-xs);
+  }
+
+  .fieldWrapper {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: start;
+    column-gap: var(--space-sm);
+
+    .magicIcon {
+      margin-top: 1px;
+      color: var(--grey-text);
+    }
+  }
+
   .queryPreview {
     display: flex;
     flex-direction: column;

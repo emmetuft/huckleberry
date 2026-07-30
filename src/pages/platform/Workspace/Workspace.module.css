@@ -1,10 +1,35 @@
+.snapContainer {
+  height: 100%;
+  scroll-snap-type: y mandatory;
+  overflow: hidden scroll;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.heroSection {
+  height: calc(
+    100% - 112px
+  ); /* overview top padding + title + subtitle + breathing room */
+
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .workspace {
   display: flex;
   flex-direction: column;
   gap: var(--space-xl);
   max-width: 48rem;
+  width: 100%;
   margin-left: auto;
   margin-right: auto;
+  padding: 0 var(--space-lg);
 
   .greeting {
     display: flex;
@@ -23,25 +48,9 @@
   }
 }
 
-.bentoWorkspace {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-xl);
-  padding: var(--space-xl) var(--space-xl) var(--space-xl) 102px;
-
-  .leftPanel {
-    gap: var(--space-xl);
-  }
-}
-
 @media (width <= 768px) {
   .workspace {
     margin-left: var(--space-lg);
     margin-right: var(--space-lg);
-  }
-
-  .bentoWorkspace {
-    grid-template-columns: 1fr;
-    padding: var(--space-lg);
   }
 }

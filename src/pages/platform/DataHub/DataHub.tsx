@@ -39,6 +39,7 @@ export const DataHub: FC<DataHubProps> = ({}) => {
 
   const [page, setPage] = useState<number>(1);
   const [size, setSize] = useState<number>(20);
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
   const tableWrapperRef = useRef<HTMLDivElement>(null);
   const [tableHeight, setTableHeight] = useState<number>(0);
@@ -72,11 +73,18 @@ export const DataHub: FC<DataHubProps> = ({}) => {
   }, []);
 
   useEffect(() => {
-    if (!loading) fetchDataSources();
-  }, [page, size]);
+    dispatch(
+      fetchDataSourceList({
+        page,
+        size,
+        ...(searchTerm ? { searchTerm } : {}),
+      }),
+    );
+  }, [page, size, searchTerm]);
 
-  const fetchDataSources = async () => {
-    dispatch(fetchDataSourceList({ page, size }));
+  const handleSearch = (term: string) => {
+    setPage(1);
+    setSearchTerm(term);
   };
 
   const commonColConfig = {
@@ -122,7 +130,7 @@ export const DataHub: FC<DataHubProps> = ({}) => {
 
   return (
     <div className="platformPage">
-      <DataControls />
+      <DataControls onSearch={handleSearch} />
       <div ref={tableWrapperRef} className={styles.tableWrapper}>
         <Table
           dataSource={dataSourceList}

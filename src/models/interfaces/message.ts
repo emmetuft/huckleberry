@@ -52,6 +52,7 @@ export interface AssistantTurn {
   insights: AIInsight[];
   warnings: AIWarning[];
   confirmationRequests?: ConfirmationRequest[];
+  error?: string;
 }
 
 export enum TurnType {

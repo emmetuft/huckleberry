@@ -70,7 +70,7 @@ export const AgentDetail: FC = () => {
               shape="round"
               type="primary"
               icon={<PlayIcon weight="fill" color="white" />}
-              onClick={() => navigate(`/agents/${agentId}/chat`)}
+              onClick={() => navigate(`/sessions?agentId=${agentId}`)}
             >
               Run agent
             </Button>
