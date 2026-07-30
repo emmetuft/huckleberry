@@ -1,7 +1,8 @@
 import { FC, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { Button, Select } from 'antd';
+import { Button, Select, Skeleton } from 'antd';
+import { TreeStructure } from '@phosphor-icons/react';
 import styles from './Session.module.css';
 import { useAppDispatch } from 'reducers';
 import { fetchSession } from 'reducers/chat/actions';
@@ -11,9 +12,15 @@ import {
   setAgentId,
   clearMessages,
 } from 'reducers/chat/slice';
-import { selectAgents } from 'reducers/agents/slice';
+import {
+  selectAgents,
+  selectSessionGraphs,
+  selectLoadingSessionGraphs,
+} from 'reducers/agents/slice';
+import { fetchSessionGraphThunk } from 'reducers/agents/actions';
 import { ChatMode } from 'models/enums/chatMode';
 import { ChatContainer } from 'components/comms/ChatContainer/ChatContainer';
+import { ContextGraph } from 'components/comms/MessageThread/ContextGraph';
 
 export const Session: FC = () => {
   const dispatch = useAppDispatch();
@@ -27,6 +34,14 @@ export const Session: FC = () => {
   const agentId = useSelector(selectAgentId);
   const agents = useSelector(selectAgents);
   const agent = agents.find((a) => a.id === agentId) ?? null;
+  const sessionGraphs = useSelector(selectSessionGraphs);
+  const loadingSessionGraphs = useSelector(selectLoadingSessionGraphs);
+
+  const activeSessionId = sessionId || chatSessionId;
+  const graphData = activeSessionId ? sessionGraphs[activeSessionId] : null;
+  const isLoadingGraph = activeSessionId
+    ? (loadingSessionGraphs[activeSessionId] ?? false)
+    : false;
 
   const queryAgentId = searchParams.get('agentId');
   const pendingNavigate = useRef(false);
@@ -58,6 +73,13 @@ export const Session: FC = () => {
     }
   }, [sessionId]);
 
+  // Fetch session graph when a session is active
+  useEffect(() => {
+    if (activeSessionId && !sessionGraphs[activeSessionId]) {
+      dispatch(fetchSessionGraphThunk(activeSessionId));
+    }
+  }, [activeSessionId]);
+
   return (
     <div className={styles.sessionWrapper}>
       <div className={styles.left}>
@@ -73,7 +95,23 @@ export const Session: FC = () => {
         )}
         <ChatContainer chatMode={ChatMode.panel} placeholder="Ask anything" />
       </div>
-      <div className={styles.right} />
+      <div className={styles.right}>
+        <div className={styles.contextPanel}>
+          <div className={styles.contextPanelHeader}>
+            <TreeStructure size={16} weight="duotone" />
+            <span>Session Context</span>
+          </div>
+          {isLoadingGraph && <Skeleton active paragraph={{ rows: 4 }} />}
+          {!isLoadingGraph && graphData && graphData.nodes.length > 0 && (
+            <ContextGraph context={graphData} minify />
+          )}
+          {!isLoadingGraph && (!graphData || graphData.nodes.length === 0) && (
+            <div className={styles.emptyGraph}>
+              <span>No context accessed yet</span>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
