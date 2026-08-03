@@ -24,8 +24,32 @@
     min-height: 0;
     display: flex;
     flex-direction: column;
-    padding: var(--space-2xl) 46px;
+    padding: var(--space-2xl) var(--space-2xl);
     background-color: var(--grey-bg);
     overflow-y: auto;
+
+    .contextPanel {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-lg);
+
+      .contextPanelHeader {
+        display: flex;
+        align-items: center;
+        gap: var(--space-sm);
+        font-size: var(--font-sm);
+        font-weight: 600;
+        color: var(--grey-text);
+      }
+
+      .emptyGraph {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: var(--space-3xl) 0;
+        font-size: var(--font-sm);
+        color: var(--grey-text);
+      }
+    }
   }
 }
