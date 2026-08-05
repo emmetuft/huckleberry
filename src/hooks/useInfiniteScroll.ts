@@ -42,11 +42,18 @@ export const useInfiniteScroll = <T>({
     setHasMore(true);
     setLoading(true);
     debounceRef.current = setTimeout(() => {
-      fetcherRef.current(pageSize, 0).then((results) => {
-        setItems(results);
-        setHasMore(results.length === pageSize);
-        setLoading(false);
-      });
+      fetcherRef
+        .current(pageSize, 0)
+        .then((results) => {
+          setItems(results);
+          setHasMore(results.length === pageSize);
+        })
+        .catch(() => {
+          setHasMore(false);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     }, debounceMs);
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -58,11 +65,18 @@ export const useInfiniteScroll = <T>({
   useEffect(() => {
     if (offset === 0) return;
     setLoading(true);
-    fetcherRef.current(pageSize, offset).then((results) => {
-      setItems((prev) => [...prev, ...results]);
-      setHasMore(results.length === pageSize);
-      setLoading(false);
-    });
+    fetcherRef
+      .current(pageSize, offset)
+      .then((results) => {
+        setItems((prev) => [...prev, ...results]);
+        setHasMore(results.length === pageSize);
+      })
+      .catch(() => {
+        setHasMore(false);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, [offset, pageSize]);
 
   // Observe sentinel to advance offset

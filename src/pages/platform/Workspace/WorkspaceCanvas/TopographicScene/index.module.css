@@ -1,0 +1,63 @@
+.scene {
+  position: absolute;
+  inset: 0;
+  background-color: #fff;
+
+  .tooltip {
+    position: absolute;
+    pointer-events: none;
+    background-color: var(--grey-bg);
+    border: 1px solid var(--grey-border);
+    border-radius: var(--br-md);
+    padding: var(--space-sm) var(--space-md);
+    box-shadow: var(--box-shadow);
+    min-width: 180px;
+    z-index: 10;
+
+    .tooltipTitle {
+      font-size: var(--font-xs);
+      font-weight: 600;
+      margin-bottom: var(--space-sm);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .metricRow {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+      margin-bottom: var(--space-xs);
+
+      .metricLabel {
+        font-size: var(--font-xs);
+        color: var(--grey-text);
+        width: 78px;
+        flex-shrink: 0;
+      }
+
+      .metricBar {
+        flex: 1;
+        height: 4px;
+        background-color: var(--grey-light);
+        border-radius: 2px;
+        overflow: hidden;
+
+        .metricFill {
+          height: 100%;
+          background-color: var(--purple);
+          border-radius: 2px;
+          transition: width 0.15s ease;
+        }
+      }
+
+      .metricValue {
+        font-size: var(--font-xs);
+        color: var(--grey-text);
+        width: 30px;
+        text-align: right;
+        flex-shrink: 0;
+      }
+    }
+  }
+}

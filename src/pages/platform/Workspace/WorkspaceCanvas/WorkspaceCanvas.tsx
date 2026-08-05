@@ -1,4 +1,4 @@
-import { FC, useCallback } from 'react';
+import { FC, useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
@@ -21,6 +21,7 @@ import {
   selectCanvasesBySpaceId,
 } from 'reducers/spaces/slice';
 import { CanvasNodeType } from 'models/enums/nodeType';
+import { CanvasViewMode } from 'models/enums/canvasViewMode';
 import { platformRoutePaths, AppPage } from 'models/enums/appPage';
 import AppTooltip from 'components/shared/Tooltip';
 import { DataSourceNode } from './Nodes/DataSourceNode';
@@ -33,6 +34,8 @@ import { GitHubRepoNode } from './Nodes/GitHubRepoNode';
 import { DecisionNode } from './Nodes/DecisionNode';
 import { AIAnalysisNode } from './Nodes/AIAnalysisNode';
 import { useIsMobile } from 'hooks/useIsMobile';
+import { ViewModeToggle } from './ViewModeToggle';
+import { TopographicScene } from './TopographicScene';
 
 const ZoomControls: FC<{ iconSize: number; isMobile: boolean }> = ({
   iconSize,
@@ -84,6 +87,9 @@ export const WorkspaceCanvas: FC = () => {
   const isDark = theme === 'dark';
   const isMobile = useIsMobile();
   const navigate = useNavigate();
+  const [viewMode, setViewMode] = useState<CanvasViewMode>(
+    CanvasViewMode.GRAPH,
+  );
 
   const { workspaceId = '', canvasId = '' } = useParams<{
     workspaceId: string;
@@ -114,42 +120,49 @@ export const WorkspaceCanvas: FC = () => {
 
   return (
     <div className={styles.workspaceCanvas}>
-      <div className={styles.header}>
-        <button
-          className={styles.backButton}
-          onClick={() => navigate(spaceDetailPath)}
-        >
-          {space?.name ?? 'Space'}
-        </button>
-        {canvas && (
-          <>
-            <span className={styles.headerDivider}>/</span>
-            <p className={styles.canvasIntent}>{canvas.intent}</p>
-          </>
-        )}
+      <div className={styles.top}>
+        <div className={styles.header}>
+          <button
+            className={styles.backButton}
+            onClick={() => navigate(spaceDetailPath)}
+          >
+            {space?.name ?? 'Space'}
+          </button>
+          {canvas && (
+            <>
+              <span className={styles.headerDivider}>/</span>
+              <p className={styles.canvasIntent}>{canvas.intent}</p>
+            </>
+          )}
+        </div>
+        <ViewModeToggle value={viewMode} onChange={setViewMode} />
       </div>
       <div className={styles.infiniteCanvas}>
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          nodeTypes={nodeTypes}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          connectionLineType={ConnectionLineType.SimpleBezier}
-          connectionMode={ConnectionMode.Loose}
-          fitView
-          fitViewOptions={{ padding: 2 }}
-        >
-          <Background
-            variant={BackgroundVariant.Cross}
-            gap={25}
-            size={2}
-            color={isDark ? '#505050' : '#d3d3d3'}
-            bgColor={isDark ? '#242424' : '#ffffff'}
-          />
-          <ZoomControls iconSize={iconSize} isMobile={isMobile} />
-        </ReactFlow>
+        {viewMode === CanvasViewMode.GRAPH ? (
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            nodeTypes={nodeTypes}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            connectionLineType={ConnectionLineType.SimpleBezier}
+            connectionMode={ConnectionMode.Loose}
+            fitView
+            fitViewOptions={{ padding: 2 }}
+          >
+            <Background
+              variant={BackgroundVariant.Cross}
+              gap={25}
+              size={2}
+              color={isDark ? '#505050' : '#d3d3d3'}
+              bgColor={isDark ? '#242424' : '#ffffff'}
+            />
+            <ZoomControls iconSize={iconSize} isMobile={isMobile} />
+          </ReactFlow>
+        ) : (
+          <TopographicScene nodes={nodes} edges={edges} />
+        )}
       </div>
       <div className={styles.controlPanel}>
         <Input

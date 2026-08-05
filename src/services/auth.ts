@@ -8,7 +8,11 @@
  * CSRF: state-changing requests must echo the `csrf_token` cookie value as
  * an `x-csrf-token` header (double-submit pattern). The cookie is NOT
  * HttpOnly so we can read it from JS here; the session cookie is HttpOnly.
+ *
+ * Dev bypass: apiFetch injects x-domo-developer-token when DOMO_DEV_TOKEN
+ * is set so local dev skips the full session/CIMD auth dance.
  */
+import { apiFetch } from 'services/headers';
 
 export interface MeResponse {
   id: string;
@@ -23,11 +27,6 @@ export interface ConsumeResponse {
 }
 
 const BASE = '/api/auth';
-
-function readCookie(name: string): string | null {
-  const match = document.cookie.match(new RegExp(`(?:^|;\\s*)${name}=([^;]+)`));
-  return match ? decodeURIComponent(match[1]) : null;
-}
 
 async function parseJson<T>(res: Response): Promise<T> {
   const body = (await res.json()) as {
@@ -46,12 +45,12 @@ async function parseJson<T>(res: Response): Promise<T> {
   return body.data;
 }
 
-function withCsrf(init: RequestInit = {}): RequestInit {
-  const csrf = readCookie('csrf_token');
-  const headers = new Headers(init.headers ?? {});
-  if (csrf) headers.set('x-csrf-token', csrf);
-  headers.set('content-type', 'application/json');
-  return { ...init, headers, credentials: 'same-origin' };
+function jsonPost(body: unknown): RequestInit {
+  return {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(body),
+  };
 }
 
 function tooManyAttemptsError(headers: Headers): Error {
@@ -80,13 +79,7 @@ function tooManyAttemptsError(headers: Headers): Error {
  * (existence-oracle protection).
  */
 async function requestMagicLink(email: string): Promise<void> {
-  const res = await fetch(
-    `${BASE}/signin/request`,
-    withCsrf({
-      method: 'POST',
-      body: JSON.stringify({ email }),
-    }),
-  );
+  const res = await apiFetch(`${BASE}/signin/request`, jsonPost({ email }));
   if (res.status === 429) throw tooManyAttemptsError(res.headers);
   if (!res.ok && res.status !== 202) {
     throw new Error(`signin request failed: HTTP ${res.status}`);
@@ -106,13 +99,7 @@ export interface SignupParams {
  * already exists (idempotent, existence-oracle protection).
  */
 async function signup(params: SignupParams): Promise<void> {
-  const res = await fetch(
-    `${BASE}/signup`,
-    withCsrf({
-      method: 'POST',
-      body: JSON.stringify(params),
-    }),
-  );
+  const res = await apiFetch(`${BASE}/signup`, jsonPost(params));
   if (res.status === 429) throw tooManyAttemptsError(res.headers);
   if (!res.ok && res.status !== 202) {
     throw new Error(`signup failed: HTTP ${res.status}`);
@@ -125,21 +112,21 @@ async function signup(params: SignupParams): Promise<void> {
  * already used.
  */
 async function consumeMagicLink(token: string): Promise<ConsumeResponse> {
-  const res = await fetch(`${BASE}/signin?token=${encodeURIComponent(token)}`, {
-    credentials: 'same-origin',
-  });
+  const res = await apiFetch(
+    `${BASE}/signin?token=${encodeURIComponent(token)}`,
+  );
   return parseJson<ConsumeResponse>(res);
 }
 
 /** Returns the signed-in user — null if no valid session. */
 async function me(): Promise<MeResponse | null> {
-  const res = await fetch(`${BASE}/me`, { credentials: 'same-origin' });
+  const res = await apiFetch(`${BASE}/me`);
   if (res.status === 401) return null;
   return parseJson<MeResponse>(res);
 }
 
 async function logout(): Promise<void> {
-  await fetch(`${BASE}/logout`, withCsrf({ method: 'POST' }));
+  await apiFetch(`${BASE}/logout`, { method: 'POST' });
 }
 
 /**
@@ -150,10 +137,7 @@ async function logout(): Promise<void> {
  * `/workspace?linked=1`.
  */
 async function startDomoLink(): Promise<{ authorizeUrl: string }> {
-  const res = await fetch(
-    `${BASE}/domo/link/start`,
-    withCsrf({ method: 'POST', body: '{}' }),
-  );
+  const res = await apiFetch(`${BASE}/domo/link/start`, jsonPost({}));
   return parseJson<{ authorizeUrl: string }>(res);
 }
 

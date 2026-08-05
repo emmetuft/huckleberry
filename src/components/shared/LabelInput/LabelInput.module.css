@@ -5,10 +5,12 @@
 
   .label {
     font-weight: 500;
+    line-height: 17px;
   }
 
   .description {
     color: var(--grey-text);
+    line-height: 17px;
   }
 
   .inputWrapper {

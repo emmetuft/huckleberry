@@ -3,10 +3,17 @@
   display: flex;
   height: 100%;
 
-  .header {
+  .top {
     position: absolute;
     top: var(--space-xl);
     left: var(--space-xl);
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    z-index: 1000;
+  }
+
+  .header {
     display: flex;
     align-items: center;
     gap: var(--space-sm);
@@ -14,7 +21,6 @@
     background-color: var(--grey-bg);
     border-radius: 30px;
     border: 1px solid var(--grey-light);
-    z-index: 1000;
     max-width: 600px;
 
     .backButton {
@@ -52,6 +58,12 @@
     flex: 1;
     min-height: 0;
     width: 100%;
+    position: relative;
+
+    > * {
+      position: absolute;
+      inset: 0;
+    }
   }
 
   .controlPanel {

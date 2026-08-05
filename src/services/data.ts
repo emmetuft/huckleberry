@@ -112,6 +112,9 @@ const getDataSourceRows = async ({
   const url = `${DATA_SOURCES_URL}/${dataSourceId}/data?page=${page - 1}&size=${pageSize}`;
   const options = {
     method: 'POST',
+    // Must be application/json — the BFF's body parser ignores text/plain
+    // (fetch's default for a string body), which silently drops `columns`.
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(requestBody),
   };
 
