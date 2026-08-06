@@ -370,6 +370,7 @@ export const SaveMetricModal: FC<SaveMetricModalProps> = ({
             }
           >
             <Button
+              shape="round"
               icon={<MagicWandIcon />}
               loading={aiFilling}
               disabled={!aiReady}

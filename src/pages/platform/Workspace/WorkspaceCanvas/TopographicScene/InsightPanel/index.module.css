@@ -1,0 +1,168 @@
+.panel {
+  position: absolute;
+  top: var(--space-xl);
+  right: var(--space-xl);
+  z-index: 10;
+  width: 270px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  max-height: calc(100% - var(--space-xl) * 2);
+  pointer-events: all;
+
+  .panelHeader {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-xs) var(--space-sm);
+    color: var(--grey-text);
+
+    .panelTitle {
+      flex: 1;
+      font-size: var(--font-xs);
+      font-weight: 600;
+      color: var(--grey-text);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    .insightCount {
+      font-size: var(--font-xs);
+      font-family: 'IBM Plex Mono', monospace;
+      color: var(--grey-text);
+      background: var(--grey-light);
+      border-radius: 10px;
+      padding: 1px 6px;
+      line-height: 1.4;
+    }
+  }
+
+  .cardList {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    overflow-y: auto;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .insightCard {
+    gap: var(--space-sm);
+    padding: var(--space-md);
+    box-shadow: none;
+
+    &.warning {
+      border-color: color-mix(in srgb, var(--node-orange) 30%, transparent);
+    }
+
+    &.info {
+      border-color: color-mix(in srgb, var(--info-icon) 30%, transparent);
+    }
+
+    &.success {
+      border-color: color-mix(in srgb, var(--node-green) 30%, transparent);
+    }
+
+    .cardTop {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+
+      .severityIcon {
+        display: flex;
+        align-items: center;
+
+        &.warning {
+          color: var(--node-orange);
+        }
+
+        &.info {
+          color: var(--info-icon);
+        }
+
+        &.success {
+          color: var(--node-green);
+        }
+      }
+
+      .severityLabel {
+        font-size: var(--font-xs);
+        font-family: 'IBM Plex Mono', monospace;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+
+        &.warning {
+          color: var(--node-orange);
+        }
+
+        &.info {
+          color: var(--info-icon);
+        }
+
+        &.success {
+          color: var(--node-green);
+        }
+      }
+    }
+
+    .cardTitle {
+      font-size: var(--font-sm);
+      font-weight: 600;
+      margin: 0;
+      line-height: 1.3;
+    }
+
+    .cardDesc {
+      font-size: var(--font-xs);
+      color: var(--grey-text);
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .nodeList {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-xs);
+
+      .nodeTag {
+        font-size: var(--font-xs);
+        padding: 2px var(--space-sm);
+        background: var(--grey-light);
+        border-radius: var(--br-sm);
+        color: var(--grey-dark);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 110px;
+      }
+
+      .nodeTagMore {
+        font-size: var(--font-xs);
+        color: var(--grey-text);
+        padding: 2px var(--space-sm);
+        align-self: center;
+      }
+    }
+
+    .cardAction {
+      font-size: var(--font-xs);
+      font-weight: 500;
+      margin: 0;
+      margin-top: var(--space-xs);
+      color: var(--purple);
+    }
+  }
+
+  .overflowNote {
+    font-size: var(--font-xs);
+    color: var(--grey-text);
+    text-align: center;
+    margin: 0;
+    padding: var(--space-xs) 0;
+  }
+}

@@ -6,9 +6,11 @@ import { CanvasNode } from 'models/interfaces/canvasNode';
 import { KnowledgeMetrics } from 'models/interfaces/knowledgeMetrics';
 import { computeAllMetrics, NodeWithMetrics } from 'utils/knowledgeMetrics';
 import { computeScalarField, ScalarField } from 'utils/topography';
+import { computeTopoInsights } from 'utils/topoInsights';
 import { Terrain } from './Terrain';
 import { GridPlane } from './GridPlane';
 import { HillPins } from './HillPins';
+import { InsightPanel } from './InsightPanel';
 import styles from './index.module.css';
 
 const FOG_COLOR = '#ffffff';
@@ -125,6 +127,11 @@ export const TopographicScene: FC<Props> = ({ nodes, edges }) => {
     [nodesWithMetrics],
   );
 
+  const insights = useMemo(
+    () => computeTopoInsights(nodesWithMetrics),
+    [nodesWithMetrics],
+  );
+
   const handleHover = useCallback(
     (e: ThreeEvent<PointerEvent>) => {
       const nearest = findNearestNode(
@@ -169,6 +176,7 @@ export const TopographicScene: FC<Props> = ({ nodes, edges }) => {
           <MetricRow label="Freshness" value={tooltip.metrics.freshness} />
         </div>
       )}
+      <InsightPanel insights={insights} />
     </div>
   );
 };

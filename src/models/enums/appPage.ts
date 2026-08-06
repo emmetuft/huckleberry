@@ -70,6 +70,8 @@ export const AppPageSubtitle: Record<string, string> = {
     'Launch the apps you use every day, or explore the marketplace to add new ones to your workspace.',
   [AppPage.DATA_HUB]: 'Browse the data sources powering your workspace.',
   [AppPage.INTEGRATIONS]: 'Manage your connected data sources.',
+  [AppPage.METRICS]:
+    'Explore, create, and manage a shared library of trusted metrics.',
   [AppPage.PROFILE]:
     'Manage your account, connect services, and personalize how Huckleberry works for you.',
 };

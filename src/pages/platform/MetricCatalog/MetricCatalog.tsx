@@ -81,6 +81,7 @@ export const MetricCatalog: FC = () => {
       <div className={styles.header}>
         <Button
           type="primary"
+          shape="round"
           icon={<PlusIcon />}
           onClick={() => setModalState({ open: true })}
         >
