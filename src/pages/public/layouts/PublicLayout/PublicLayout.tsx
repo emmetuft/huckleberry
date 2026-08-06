@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { Outlet } from 'react-router-dom';
-import { ConfigProvider } from 'antd';
+import { ConfigProvider, theme as antdTheme } from 'antd';
 import styles from './PublicLayout.module.css';
 import { PublicHeader } from './PublicHeader/PublicHeader';
 import { PublicFooter } from './PublicFooter/PublicFooter';
@@ -9,6 +9,7 @@ export const PublicLayout: FC = () => {
   return (
     <ConfigProvider
       theme={{
+        algorithm: antdTheme.defaultAlgorithm,
         token: {
           colorPrimary: '#000',
         },
@@ -28,7 +29,7 @@ export const PublicLayout: FC = () => {
         },
       }}
     >
-      <div className={styles.publicLayout}>
+      <div className={styles.publicLayout} data-theme="light">
         <PublicHeader />
         <main className={styles.content}>
           <Outlet />
